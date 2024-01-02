@@ -52,5 +52,11 @@
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
     }
+  },
+  "custom": {
+    "customResource5b71fb59": {
+      "providerPlugin": "awscloudformation",
+      "service": "customCDK"
+    }
   }
 }
