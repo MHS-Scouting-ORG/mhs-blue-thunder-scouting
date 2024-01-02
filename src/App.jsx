@@ -9,9 +9,9 @@ import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 
 const redirectSignInUri = awsconfig.oauth.redirectSignIn.split(',')
-awsconfig.oauth.redirectSignIn = redirectSignInUri[parseInt(import.meta.env.REACT_APP_REDIRECT_INDEX)]
+awsconfig.oauth.redirectSignIn = redirectSignInUri[parseInt(import.meta.env.VITE_REDIRECT_INDEX)]
 const redirectSignOutUri = awsconfig.oauth.redirectSignOut.split(',')
-awsconfig.oauth.redirectSignOut = redirectSignOutUri[parseInt(import.meta.env.REACT_APP_REDIRECT_INDEX)]
+awsconfig.oauth.redirectSignOut = redirectSignOutUri[parseInt(import.meta.env.VITE_REDIRECT_INDEX)]
 
 Amplify.configure(awsconfig)
 
