@@ -1,0 +1,38 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-frcscoutingapp-dev-143540-authRole",
+      "UnauthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-dev-143540-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-dev-143540-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-frcscoutingapp-dev-143540-deployment",
+      "UnauthRoleName": "amplify-frcscoutingapp-dev-143540-unauthRole",
+      "StackName": "amplify-frcscoutingapp-dev-143540",
+      "StackId": "arn:aws:cloudformation:us-west-1:187619627858:stack/amplify-frcscoutingapp-dev-143540/dc0f1d20-a906-11ee-880a-0681b94da61f",
+      "AmplifyAppId": "d3v7vx1s6l2bad"
+    },
+    "categories": {
+      "auth": {
+        "frcscoutingapp49f69a47": {}
+      }
+    }
+  },
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-frcscoutingapp-main-144956-authRole",
+      "UnauthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-main-144956-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-main-144956-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-frcscoutingapp-main-144956-deployment",
+      "UnauthRoleName": "amplify-frcscoutingapp-main-144956-unauthRole",
+      "StackName": "amplify-frcscoutingapp-main-144956",
+      "StackId": "arn:aws:cloudformation:us-west-1:187619627858:stack/amplify-frcscoutingapp-main-144956/da7cf980-a908-11ee-aed0-02c58df5bb17",
+      "AmplifyAppId": "d3v7vx1s6l2bad"
+    },
+    "categories": {
+      "auth": {
+        "frcscoutingapp49f69a47": {}
+      }
+    }
+  }
+}
