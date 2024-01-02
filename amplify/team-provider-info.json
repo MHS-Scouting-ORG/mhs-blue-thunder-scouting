@@ -14,6 +14,12 @@
     "categories": {
       "auth": {
         "frcscoutingapp49f69a47": {}
+      },
+      "api": {
+        "frcscoutingapp": {}
+      },
+      "custom": {
+        "customResource5b71fb59": {}
       }
     }
   },
