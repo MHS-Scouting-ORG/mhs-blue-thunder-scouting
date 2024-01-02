@@ -32,6 +32,9 @@
     "categories": {
       "auth": {
         "frcscoutingapp49f69a47": {}
+      },
+      "api": {
+        "frcscoutingapp": {}
       }
     }
   }
