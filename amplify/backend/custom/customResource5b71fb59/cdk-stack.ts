@@ -32,7 +32,7 @@ export class cdkStack extends cdk.Stack {
       secretName: `bluealliance-apikey-${cdk.Fn.ref('env')}`
       
     }) 
-//    secret.grantRead(authRole)
+    secret.grantRead(authRole)
 
   }
 }

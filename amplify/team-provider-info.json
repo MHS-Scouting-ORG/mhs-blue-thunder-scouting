@@ -41,6 +41,9 @@
       },
       "api": {
         "frcscoutingapp": {}
+      },
+      "custom": {
+        "customResource5b71fb59": {}
       }
     }
   }

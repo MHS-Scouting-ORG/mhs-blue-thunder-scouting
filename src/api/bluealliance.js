@@ -1,5 +1,5 @@
 import config from '../config.json'
-import { Auth } from 'aws-amplify'
+import * as Auth from 'aws-amplify/auth'
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager'
 
 
@@ -19,8 +19,10 @@ async function getOprs(event_key) {
 
 // get bluealliance api key
 async function getApiKey() {
-  const user = await Auth.currentAuthenticatedUser()
-  const credentials = await Auth.currentCredentials(user)
+  //  const user = await Auth.currentAuthenticatedUser()
+  //  const credentials = await Auth.currentCredentials(user)
+  const { credentials } = await Auth.fetchAuthSession()
+  console.log(credentials)
   const client = new SecretsManagerClient({
     region: 'us-west-1',
     credentials,
@@ -65,7 +67,7 @@ const getTeamsInRegional = async function (regional) {
 }
 
 const getMatchesForRegional = async function (regional) {
-  return  _fetch(`/event/${regional}/matches`)
+  return _fetch(`/event/${regional}/matches`)
 }
 
 export { getMatchesForRegional, getOprs, getTeamInfo, getRegionals, getTeamsInRegional } 

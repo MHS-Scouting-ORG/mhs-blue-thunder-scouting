@@ -1,8 +1,11 @@
-import { graphqlOperation, API } from 'aws-amplify'
+//import { graphqlOperation, API } from 'aws-amplify'
+import { generateClient } from 'aws-amplify/api'
 import { teamMatchesByRegional, getTeam, listTeams} from '../graphql/queries'
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import  buildMatchEntry  from './builder'
+
+const client = generateClient()
 
 /**
  * Subscribe to create and update events
@@ -11,11 +14,11 @@ import  buildMatchEntry  from './builder'
  */
 const apiSubscribeToMatchUpdates = async function(updateFn, errorFn) {
 
-    API.graphql(graphqlOperation(onCreateTeamMatch)).subscribe({
+    client.graphql({ query: onCreateTeamMatch }).subscribe({
         next: ({value}) => updateFn(value),
         error: (errorFn || (err => console.log(err)))
     })
-    API.graphql(graphqlOperation(onUpdateTeamMatch)).subscribe({
+    client.graphql({ query : onUpdateTeamMatch }).subscribe({
         next: updateFn,
         error : (errorFn || (err => console.log(err)))
     })
@@ -25,30 +28,30 @@ const apiSubscribeToMatchUpdates = async function(updateFn, errorFn) {
  * Get a Team by their TeamNumber  that are currently in our database
  */
 const apiGetTeam = async function(teamNumber) {
-    return await API.graphql(graphqlOperation(getTeam, {id:teamNumber}))
+    return await client.graphql({query: getTeam, variables :{ id:teamNumber} })
 }
 
 /*
  * Add a team to our database
  */
 const apiAddTeam = async function(team) {
-    await API.graphql(graphqlOperation(createTeam, { input: team }))
+    await client.graphql({ query: createTeam, variables : { input: team }})
 }
 
 const apiUpdateTeam = async function(team, data) {
-  await API.graphql(graphqlOperation(updateTeam, {
+  await client.graphql({ query : updateTeam, variables : {
     input: {
        ...data,
       id: team.id,
     }
-  }))
+  }})
 }
 
 /*
  * Get All the teams in our database
  */
 const apiListTeams = async function() {
-    return API.graphql(graphqlOperation(listTeams, {}))
+    return client.graphql({ query : listTeams })
 }
 
 /*
@@ -59,18 +62,18 @@ const apiListTeams = async function() {
  */
 const getMatchesForRegional = async function(regionalId, teamNumber) {
     if(!teamNumber) { 
-        return API.graphql(graphqlOperation(teamMatchesByRegional, {
+        return client.graphql({ query : teamMatchesByRegional, variables : {
             Regional: regionalId,
-        }))  
+        }})  
     }
-    return API.graphql(graphqlOperation(teamMatchesByRegional, {
+    return client.graphql({ query : teamMatchesByRegional, variables :{
         Regional: regionalId,
         filter: {
             Team: {
                 eq: teamNumber
             }
         }
-    })) 
+    }}) 
 }
 
 /*
@@ -91,9 +94,9 @@ const apiCreateTeamMatchEntry = async function(regionalId, teamId, matchId) {
         throw new Error(`MatchId not provided; matchId ${matchId}`)
     }
 
-    return API.graphql(graphqlOperation(createTeamMatch, {
+    return client.graphql({ query : createTeamMatch, variables :{
         input: buildMatchEntry(regionalId, teamId, matchId),
-    }))
+    }})
 }
 
 
@@ -115,19 +118,19 @@ const apiUpdateTeamMatch = async function(regionalId, teamId, matchId, data) {
             Regional: regionalId,
     }    
 
-    return API.graphql(graphqlOperation(updateTeamMatch, {
+    return client.graphql({ query : updateTeamMatch, variables : {
         input
-   }))
+   }})
 
 
 }
 
 const apiDeleteTeamMatch = async function(regionalId, teamId, matchId) {
-    await API.graphql(graphqlOperation(deleteTeamMatch, {input : {
+    await client.graphql({ query : deleteTeamMatch, variables : {input : {
         id: matchId,
         Team: teamId,
         Regional: regionalId
-    }  }))
+    }  }})
 }
 
 export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
