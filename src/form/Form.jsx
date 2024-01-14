@@ -1,16 +1,16 @@
 import React from 'react';
-import CheckBox from './CheckBox';
-import DropDown from './DropDown';
-import MatchDropDown from './MatchDropDown';
-import EndGame from './EndGame';
-import ChargeStation from './ChargeStation';
-import CounterBox from './CounterBox';
-import TextBox from './TextBox';
-import Headers from './Header';
-//import StationTimer from './StationTimer';
+import CheckBox from './components/checkBox/CheckBox';
+import DropDown from './components/dropDownBox/DropDown';
+import MatchDropDown from './components/dropDownBox/MatchDropDown';
+import EndGame from './components/endGameBox/EndGame';
+import ChargeStation from './components/chargeStation/ChargeStation';
+import CounterBox from './components/counterBox/CounterBox';
+import TextBox from './components/TextBox';
+import Headers from './components/Header';
+
+import { makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
+
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
-//import { ConsoleLogger } from '@aws-amplify/core';
-//import { ChargeStationType, RankingPtsOpts } from '../api/builder';
 import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder'
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -18,17 +18,15 @@ class Form extends React.Component {
   constructor(props) {
     super(props);
 
-    this.matchData = props.matchData;
+    this.matchData = props.matchData; // OVERALL MATCH DATA
 
     this.regional = props.regional;
-
+    
     this.changeMatchType = this.changeMatchType.bind(this);
     this.changeElmNum = this.changeElmNum.bind(this);
     this.changeMatchNumber = this.changeMatchNumber.bind(this);
     this.makeMatchTypeDropDown = this.makeMatchTypeDropDown.bind(this);
-    this.makeMatchDropDown = this.makeMatchDropDown.bind(this);
-
-    this.logState = this.logState.bind(this);
+    // this.makeMatchDropDown = this.makeMatchDropDown.bind(this);
 
     this.getMatchTeams = this.getMatchTeams.bind(this);
     this.changeTeam = this.changeTeam.bind(this);
@@ -75,16 +73,13 @@ class Form extends React.Component {
       // initializing form by making array of data
       console.log(`initializing form`)
       this.state = {
-        comments: '',
-        //summaryComments: '',
-        stationComments: '',
-        matchType: '',
-        elmNum: '',
-        matchNumber: '',
-        matchData: 'not found',
+        comments: '', //comments
+        matchType: '', //match type
+        elmNum: '', //elimination
+        matchNumber: '', //match number
+        matchData: 'not found', //data for a given match
         teamNumber: ' ',
         teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],
-        matchOverride: false,
         override: false,
         endGameVal: ['', '', ''],
         chargeStationValAuto: '',
@@ -92,15 +87,10 @@ class Form extends React.Component {
         checkedWhoWon: [' ', ' '],
         rankingPts: 0,
         rankingState: ["", "", ""],
-        bonusVal: [' ', ' '],
-        bonusState: '',
         penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '],
         dropDownVal: ['', '', ''],
-        //autoPlacement: 0,
         counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        //smartPlacementVal: false,
         strategyVal: [null, null, null, null, null, null, null, null, null],//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        //mobilityVal: false,
         booleans: [false, false],
         totalPoints: 0,
         totalGrid: 0,
@@ -198,18 +188,14 @@ class Form extends React.Component {
     // creating variable to get match type (quals, elims), and match number
     const [a, r, matchType, matchNumber] = m.id.match(/(.+)_([a-z]{1,2}[0-9]?)m([0-9+]{1,2})/)
 
-    //this.state = {
     this.setState({
       comments: m.Comments,
-      //summaryComments: '',
-      stationComments: "", //UNUSED
       matchType: matchType,
       elmNum: (((m.id.substring(8)).indexOf("f") >= 0) ? (m.id.substring(m.id.length())) : ''), //MATCH ELM NUMBER
       matchNumber: matchNumber,
       matchData: [],
       teamNumber: m.Team,
       teams: [],
-      matchOverride: false, //UNUSED
       override: true, //OVERRIDE
       endGameVal: [
           /*0 - Tele Charge Station*/m.Teleop.EndGame,
@@ -217,12 +203,10 @@ class Form extends React.Component {
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
       chargeStationValAuto: m.Autonomous.ChargeStation,
-      whoWon: '', //UNUSED
-      checkedWhoWon: ['', ''], //UNUSED
-      rankingPts: rankingPoints, //USED
+      whoWon: '', 
+      checkedWhoWon: ['', ''],
+      rankingPts: rankingPoints,
       rankingState: rankingStates, //RANKING PTS STATES
-      bonusVal: '', //UNUSED
-      bonusState: ["", ""], //UNUSED
       penaltyVal: penaltyStates,
       dropDownVal: [
           /*0 - AutoPlacement*/m.Autonomous.AutonomousPlacement,
@@ -259,9 +243,7 @@ class Form extends React.Component {
           /*24*/m.Penalties.Fouls,
           /*25*/m.Penalties.Tech
       ],
-      //smartPlacementVal: false,
       strategyVal: priorityStates,//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      //mobilityVal: false,
       booleans: [
           /*0 - MobilityVal*/m.Autonomous.LeftCommunity,
           /*1 - SmartPlacement*/m.Teleop.SmartPlacement
@@ -276,6 +258,7 @@ class Form extends React.Component {
   }
 
   //------------------------------------------------------------------------------------------------------------------------//
+
 
   changeMatchType(event) {
     let matchType = event;
@@ -299,7 +282,7 @@ class Form extends React.Component {
     }
     this.setState({ matchNumber: event.target.value });
     this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-    this.setState({ teamNumber: '' });
+    this.setState({ teamNumber: ' ' });
   }
 
   makeMatchTypeDropDown(matchType) {
@@ -310,56 +293,20 @@ class Form extends React.Component {
     }
   }
 
-  makeMatchDropDown() {
-    let matchTypeState = this.state.matchType;
-    let matchState = '';
-    if (matchTypeState === 'q') {
-      matchState = "Qualification";
-    } else if (matchTypeState === 'qf') {
-      matchState = "QuarterFinal";
-    } else if (matchTypeState === 'sf') {
-      matchState = "SemiFinal";
-    } else if (matchTypeState === 'f') {
-      matchState = "Final";
-    }
-    return (
-      <div>
-        <MatchDropDown
-          setMatchType={this.changeMatchType}
-          setElmNum={this.changeElmNum}
-          generateMatchTypeNum={this.makeMatchTypeDropDown}
-          setMatchNumber={this.changeMatchNumber}
-          matchTypeValue={matchState}
-          matchNumber={this.state.matchNumber}
-        />
-      </div>
-    )
-  }
+  //CHANGE THE REGIONAL KEY VIA 'main.jsx'
 
-
-  logState() {
-    console.log(this.state)
-  }
-
+  /* gets given teams of a match */
   async getMatchTeams() {
-    //this.regional = '2022hiho'  /* change event_key */
-    let matchKey =  /*put this years event*//*/*/ this.regional  /* */ /*await getRegionals() /* */ + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
+    let matchKey =  /*put this years event*/ this.regional + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
     const teams = async () => {
-      /*
-     await fetch('https://www.thebluealliance.com/api/v3/event/' + this.regional  + '/matches', {
-       mode: 'cors',
-       headers: {
-         'X-TBA-Auth-Key': 'TKWj89sH9nu6hwIza0zK91UQBRUaW5ETVJrZ7KhHOolwmuKxKqD3UkQMAoqHahsn'
-       } */
       getMatchesForRegional(this.regional)
-        //.then(response => response.json())
         .then(data => {
-          data.map((matches) => {
-            console.log(matches.key)
-            if (matches.key === matchKey) {
-              this.setState({ matchData: matches })
-              this.setState({ teams: matches.alliances.blue.team_keys.concat(matches.alliances.red.team_keys) });
-              console.log({ teams: matches.alliances.blue.team_keys.concat(matches.alliances.red.team_keys) });
+          data.map((match) => {
+            console.log(match.key)
+            if (match.key === matchKey) {
+              this.setState({ matchData: match })
+              this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+              console.log({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
 
             }
           })
@@ -384,22 +331,6 @@ class Form extends React.Component {
     })
 
     let whoWon = '';
-    //let wonState = this.state.whoWon;
-    /*if (wonState === '') {
-      if (data.alliances.blue.score > data.alliances.red.score) {
-        wonState = 'blue';
-      } else if (data.alliances.blue.score < data.alliances.red.score) {
-        wonState = 'red';
-      } else {
-        wonState = 'Tie';
-      }
-    } else if (wonState === 'blue') {
-      whoWon = 'blue';
-    } else if (wonState === 'red') {
-      whoWon = 'red';
-    } else {
-      whoWon = 'Tie';
-    }*/
 
     if (data.alliances.blue.score > data.alliances.red.score) {
       whoWon = 'blue';
@@ -425,8 +356,6 @@ class Form extends React.Component {
     rankingStates[1] = '';
     rankingStates[2] = '';
     this.setState({ whoWon: whoWon });
-    //this.setState({ checkedWhoWon: [' ', ' '] });
-    //this.setState({ bonusVal: [' ', ' '] });
   }
 
   makeTeamDropdown() {
@@ -448,41 +377,9 @@ class Form extends React.Component {
   }
 
   whoWonClicked(i, label) {
-    //let data = this.state.matchData;
-    /*if (data === 'not found') {
-      window.alert("PICK A TEAM FIRST");
-    }
-    else {
-      if (label === 'Team Won ') {
-        this.setState({ rankingPts: 2 });
-        this.setState({ rankingState: "Win" });
-      } else if (label === 'Team Tied ') {
-        this.setState({ rankingPts: 1 });
-        this.setState({ rankingState: "Tie" });
-      } else if (label === 'Team Lose '){
-        this.setState({ rankingPts: 0})
-        this.setState({ rankingState: 'Loss'})
-      }
-
-      this.setState({ bonusVal: [' ', ' '] })
-
-      let whoWon = this.state.checkedWhoWon
-      whoWon[i - 1] = ' ';
-      whoWon[i + 1] = ' ';
-      if (whoWon[i] === label) {
-        whoWon[i] = ' ';
-      } else if (whoWon[i] === ' ') {
-        whoWon[i] = label;
-      }
-
-      if (whoWon[0] === ' ' && whoWon[1] === ' ') {
-        this.setState({ rankingPts: 0 });
-        this.setState({ rankingState: "Lose" })
-      }
-    }*/
 
     let data = this.state.matchData;
-    let rankingStates = /*this.copyArray*/(this.state.rankingState);
+    let rankingStates = (this.state.rankingState);
     if (data === "not found") {
       window.alert("PICK A TEAM FIRST");
     }
@@ -616,25 +513,6 @@ class Form extends React.Component {
     )
   }
 
-  /*
-  autoPlacmentChanged(event){
-    let autoPlacementState = this.state.autoPlacement;
-    autoPlacementState = event.target.value;
-  }
-
-  makeAutoPlacement(title, option, i){
-    return(
-      <div>
-        <DropDown
-          title={title}
-          choices={option}
-          place={i}
-          setState={this.autoPlacmentChanged}
-        />
-      </div>
-    )
-  }*/
-
   //--------------------------------------------------------------------------------------------------------------//
 
   changeEndGame(event) {
@@ -759,28 +637,6 @@ class Form extends React.Component {
     )
   }
 
-  /*
-  smartPlacementChecked(label) {
-    let smartPlacementState = this.state.smartPlacementVal;
-    if (smartPlacementState === label) {
-      smartPlacementState = false;
-    } else {
-      smartPlacementState = true;
-    }
-  }
-
-  makeSmartPlacementBox(name, i) {
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.smartPlacementChecked}
-          place={i}
-        />
-      </div>
-    )
-  } */
-
   bonusBoxChecked(i, label) {
     let ranking = this.copyArray(this.state.rankingState);
     if (ranking[i] === label) {
@@ -820,36 +676,7 @@ class Form extends React.Component {
     )
   }
 
-  /*
-  mobilityBoxClick(i, label) {
-    let mobilityState = this.state.mobilityVal;
-    if (mobilityState === label) {
-      mobilityState = false;
-    } else {
-      mobilityState = true;
-    }
-  }
-
-  makeMobilityBox(name, i) {
-    let mobilityState = this.state.mobilityVal;
-    if (mobilityState === name) {
-      mobilityState = true;
-    } else {
-      mobilityState = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.mobilityBoxClick}
-          place={i}
-          checked={mobilityState}
-        />
-      </div>
-    )
-  } */
-
-  overrideChange(fill, filler) {
+  overrideChange() {
     this.setState({ override: !this.state.override });
   }
 
@@ -878,7 +705,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonMinus(event, i) {
+  buttonMinus(i) {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] > 0) {
       counterStates[i] = parseInt(counterStates[i] - 1)
@@ -888,7 +715,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonPlus(event, i) {
+  buttonPlus(i) {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] >= 0) {
       counterStates[i] = parseInt(counterStates[i] + 1)
@@ -918,7 +745,7 @@ class Form extends React.Component {
 
   async submitState() {
     let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-    let matchKey = /*put this years event*//*/*/ this.regional  /* */ /*await getRegionals() /* */ + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
+    let matchKey = /*put this years event*/ this.regional  + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
     let teamNum = this.state.teamNumber;
 
     let comments = this.state.comments;
@@ -927,11 +754,7 @@ class Form extends React.Component {
     let autoPlacement = dropVal[0];
     let driveStrength = dropVal[1];
     let driveSpeed = dropVal[2];
-    //let doubleStation = dropVal[3];
 
-    //let autoPlacement = this.state.autoPlacement;
-
-    //let ranking = this.state.rankingPts;
     let rankingState = this.state.rankingState;
 
     let endGame = this.state.endGameVal;
@@ -942,11 +765,10 @@ class Form extends React.Component {
     let chargeStationAuto = this.state.chargeStationValAuto;
     let booleans = this.state.booleans;
 
-    //let bonuses = this.state.bonusVal;
     let strats = this.state.strategyVal.slice();
     let strategies = this.state.strategyVal;
     let penalties = this.state.penaltyVal;
-    let smartPlacement = booleans[1]; //this.state.smartPlacementVal;
+    let smartPlacement = booleans[1];
 
     let counterVal = this.state.counterBoxVals;
 
@@ -1011,7 +833,7 @@ class Form extends React.Component {
 
     /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
 
-    let mobility = booleans[0]; //this.state.mobilityVal;
+    let mobility = booleans[0];
 
     let incompleteForm = false;
     let incompletePriorities = true;
@@ -1089,7 +911,6 @@ class Form extends React.Component {
       }
     }
 
-    //JASON NEEDS TO FIX THE GRAPHQL
     let stratFinal = [];
     for (let i = 0; i < strategies.length; i++) {
       let strategy = strategies[i];
@@ -1158,15 +979,6 @@ class Form extends React.Component {
 
     let chargeTeleFinal = setChargeStationType(endGameUsed);
     let chargeAutoFinal = setChargeStationType(chargeStationAuto);
-    //endGameUsed
-    //chargeStationAuto
-    /*
-    <option value='None'>None</option>
-    <option value='DockedEngaged'>Docked & Engaged</option>
-    <option value='Docked'>Docked & Not Enaged</option>
-    <option value='Parked'>Parked</option>
-    <option value='Attempted'>Attempted</option>
-    */
 
 
     //POINT CALCULATIONS
@@ -1182,21 +994,17 @@ class Form extends React.Component {
 
     let cubesHighTeleAutoAccuracy = 100 * ((highAutoCubes + highTeleCubes) / (highCubesAttempted + highAutoCubes + highTeleCubes));
     let conesHighTeleAutoAccuracy = 100 * ((highAutoCones + highTeleCones) / (highConesAttempted + highAutoCones + highTeleCones));
-    //let highAccuracy = 100 * ((conesHighTeleAutoAccuracy + cubesHighTeleAutoAccuracy) / (highCubesAttempted + highConesAttempted));
 
     let cubesMidTeleAutoAccuracy = 100 * ((midAutoCubes + midTeleCubes) / (midCubesAttempted + midAutoCubes + midTeleCubes));
     let conesMidTeleAutoAccuracy = 100 * ((midAutoCones + midTeleCones) / (midConesAttempted + midAutoCones + midTeleCones));
-    //let midAccuracy = 100 * ((cubesMidTeleAutoAccuracy + conesMidTeleAutoAccuracy) / (midCubesAttempted + midConesAttempted));
 
     let cubesLowTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes) / (lowCubesAttempted + lowAutoCubes + lowTeleCubes));
     let conesLowTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones) / (lowConesAttempted + lowAutoCones + lowTeleCones));
-    //let lowAccuracy = 100 * ((cubesLowTeleAutoAccuracy + conesLowTeleAutoAccuracy) / (lowCubesAttempted + lowConesAttempted));
 
     let totalGridPts = highGridPoints + midGridPoints + lowGridPoints;
 
     let cubesTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes) / (cubesAttempted + lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes));
     let conesTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones) / (conesAttempted + lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones));
-    //*/
 
     this.setState({
       totalPoints: points,
@@ -1249,28 +1057,25 @@ class Form extends React.Component {
       }
     })
 
-    if (incompletePriorities === true) {
+    if (incompletePriorities) {
       incompleteForm = true;
       windowAlertMsg = windowAlertMsg + "\nRobot priorities/strategies";
     }
 
-    if (incompleteForm === true && override === false) {
+    if (incompleteForm && !override) {
       window.alert(windowAlertMsg);
-    } else if (incompleteForm === false || override === true) {
-      //console.log(penalties);
+    } else if (!incompleteForm || override) {
       const matchEntry = buildMatchEntry(this.regional, teamNum, matchKey)
-      //matchEntry.name=''
-      //matchEntry.description=''
 
       //AUTONOMOUS MATCH ENTREES
       matchEntry.Autonomous.AutonomousPlacement = autoPlacement
 
-      matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted //DEBUGGING 
-      matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted //DEBUGGING
+      matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted 
+      matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted 
+      matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted 
+      matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted  
+      matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted 
+      matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted 
 
       matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
       matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
@@ -1290,14 +1095,13 @@ class Form extends React.Component {
       matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
       matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
 
-      matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted //DEBUGGING
+      matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted 
 
-      //matchEntry.Teleop.ChargeStation=chargeTeleFinal
       matchEntry.Teleop.EndGame = chargeTeleFinal
       matchEntry.Teleop.EndGameTally.Start = endGameStart
       matchEntry.Teleop.EndGameTally.End = endGameEnd
@@ -1331,8 +1135,6 @@ class Form extends React.Component {
       matchEntry.Teleop.CubesAccuracy.Low = cubesLowTeleAutoAccuracy
       matchEntry.Teleop.CubesAccuracy.Overall = cubesTeleAutoAccuracy
 
-      //TOTAL ACCURACIES
-
       //MATCH DETAILS
       matchEntry.RankingPts = rankFinal;
 
@@ -1342,10 +1144,6 @@ class Form extends React.Component {
       matchEntry.Penalties.Tech = techFouls
       matchEntry.Penalties.Penalties = penFinal;
 
-      // console.log(stratFinal);
-      // console.log(PriorityOpts.HIGH)
-      // console.log(PriorityOpts.SINGLE_SUBSTATION)
-      // console.log(PriorityOpts.DOUBLE_STATION_SHUTE)
       matchEntry.Priorities = stratFinal;
 
       if (this.matchData === undefined) {
@@ -1354,11 +1152,6 @@ class Form extends React.Component {
       }
 
       await apiUpdateTeamMatch(this.regional, teamNum, matchKey, matchEntry);
-
-      /*await *///
-      //console.log(this.state);
-
-      // console.log(this.regional,teamNum,matchKey,matchEntry)
     }
   }
 
@@ -1369,8 +1162,8 @@ class Form extends React.Component {
     return (
       <div>
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
-        <button onClick={this.logState}> Check State </button>
-        {this.makeMatchDropDown()}
+        <button onClick={ () => console.log(this.state) }> Check State </button>
+        {makeMatchDropDown(this.matchType, this.matchNumber, this.changeMatchType, this.changeElmNum, this.makeMatchTypeDropDown, this.changeMatchNumber)}
         <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
         <br></br>
         {this.makeTeamDropdown()}
@@ -1396,7 +1189,7 @@ class Form extends React.Component {
         {this.makeCounterBox("Mid Cones Attempted: ", 10)}
         {this.makeCounterBox("Low Cones Attempted: ", 11)}
         <br></br>
-        {this.makeBooleanCheckBox("Mobility ", 0)}{/*this.makeMobilityBox("Mobility ")*/}
+        {this.makeBooleanCheckBox("Mobility ", 0)}
         <br></br>
         {this.makeChargeStationAuto()}
         <br></br>
@@ -1418,11 +1211,10 @@ class Form extends React.Component {
         {this.makeCounterBox("Mid Cones Attempted: ", 22)}
         {this.makeCounterBox("Low Cones Attempted: ", 23)}
         <br></br>
-        {/*this.makeChargeStationTimer("Charge Station Timer: ")*/}
         {this.makeEndGameDropDown()}
         {this.makeEndGameStartEndBox()}
         <br></br>
-        {this.makeBooleanCheckBox("Smart Placement (creates links) ", 1)}{/*this.makeSmartPlacementBox("Smart Placement ")*/}
+        {this.makeBooleanCheckBox("Smart Placement (creates links) ", 1)}
         <br></br>
         {this.makeDropDownBox("Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
         {this.makeDropDownBox("Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
