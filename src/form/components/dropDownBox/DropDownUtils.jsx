@@ -36,12 +36,12 @@ export function makeMatchDropDown(matchTypeState, matchNumber, changeMatchType, 
     return (
       <div>
         <MatchDropDown //makes MatchDropDown component from given params
-          setMatchType={changeMatchType} //calls to changeMatchType method from the form class
-          setElmNum={changeElmNum} //calls to changeElmNum method from the form class
-          generateMatchTypeNum={makeMatchTypeDropDown} //calls to makeMatchTypeDropDown method from the form class
-          setMatchNumber={changeMatchNumber} //calls to changeMatchNumber method from the form class
-          matchTypeValue={matchState} //obtains matchstate (i.e. 'qualification', 'quarterfinal', etc. )
-          matchNumber={matchNumber} //obtains matchNumber from param
+          setMatchType={changeMatchType} 
+          setElmNum={changeElmNum} 
+          generateMatchTypeNum={makeMatchTypeDropDown} 
+          setMatchNumber={changeMatchNumber} 
+          matchTypeValue={matchState} 
+          matchNumber={matchNumber}
         />
       </div>
     )
