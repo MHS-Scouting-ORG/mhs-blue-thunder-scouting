@@ -14,15 +14,11 @@ import MatchDropDown from './MatchDropDown';
 
 /**
  * function for making the matchdropdown
- * @param {*} matchTypeState [STRING] state of matchType (q, qf, sf, f) from Form
- * @param {*} matchNumber [NUM] state of matchNumber from Form
- * @param {*} changeMatchType [FUNCTION] changeMatchType function from Form
- * @param {*} changeElmNum [FUNCTION] changeElmNum function from Form
- * @param {*} makeMatchTypeDropDown [FUNCTION] makeMatchTypeDropDown function from Form
- * @param {*} changeMatchNumber [FUNCTION] changeMatchNumber function from Form
+ * @param {*} props passes down the form component
  * @returns 
  */
-export function makeMatchDropDown(matchTypeState, matchNumber, changeMatchType, changeElmNum, makeMatchTypeDropDown, changeMatchNumber) {
+export function makeMatchDropDown(props) {
+    let matchTypeState = props.matchType
     let matchState = '';
     if (matchTypeState === 'q') {
       matchState = "Qualification";
@@ -35,13 +31,13 @@ export function makeMatchDropDown(matchTypeState, matchNumber, changeMatchType, 
     }
     return (
       <div>
-        <MatchDropDown //makes MatchDropDown component from given params
-          setMatchType={changeMatchType} 
-          setElmNum={changeElmNum} 
-          generateMatchTypeNum={makeMatchTypeDropDown} 
-          setMatchNumber={changeMatchNumber} 
+        <MatchDropDown //makes MatchDropDown via functions in Form component
+          setMatchType={props.changeMatchType}
+          setElmNum={props.changeElmNum} 
+          generateMatchTypeNum={props.makeMatchTypeDropDown} 
+          setMatchNumber={props.changeMatchNumber} 
           matchTypeValue={matchState} 
-          matchNumber={matchNumber}
+          matchNumber={props.state.matchNumber}
         />
       </div>
     )

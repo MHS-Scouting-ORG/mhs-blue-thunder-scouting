@@ -1,14 +1,26 @@
 import React from 'react';
+// checkbox imports //
 import CheckBox from './components/checkBox/CheckBox';
+
+// dropdown imports //
 import DropDown from './components/dropDownBox/DropDown';
 import MatchDropDown from './components/dropDownBox/MatchDropDown';
+import { makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
+
+// endgame imports //
 import EndGame from './components/endGameBox/EndGame';
+// import { makeEndGameStartEndBox, } from './components/endGameBox/EndGameUtils';
+
+// chargestation imports //
 import ChargeStation from './components/chargeStation/ChargeStation';
+
+
+// counterbox imports //
 import CounterBox from './components/counterBox/CounterBox';
+
+
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
-
-import { makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
 
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder'
@@ -43,13 +55,14 @@ class Form extends React.Component {
     this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
     this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
 
+    // this.makeMatchDropDown = this.makeMatchDropDown.bind(this)
     this.dropDownChanged = this.dropDownChanged.bind(this);
     this.makeDropDownBox = this.makeDropDownBox.bind(this);
 
     this.changeEndGame = this.changeEndGame.bind(this);
     this.changeEndGameStartBox = this.changeEndGameStartBox.bind(this);
     this.changeEndGameEndBox = this.changeEndGameEndBox.bind(this);
-    this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
+    // this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
     this.makeEndGameDropDown = this.makeEndGameDropDown.bind(this);
     this.changeChargeStation = this.changeChargeStation.bind(this);
     this.makeChargeStationAuto = this.makeChargeStationAuto.bind(this);
@@ -78,10 +91,10 @@ class Form extends React.Component {
         elmNum: '', //elimination
         matchNumber: '', //match number
         matchData: 'not found', //data for a given match
-        teamNumber: ' ',
-        teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],
-        override: false,
-        endGameVal: ['', '', ''],
+        teamNumber: ' ', //team num
+        teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
+        override: false, //override bool
+        endGameVal: ['', '', ''], //
         chargeStationValAuto: '',
         whoWon: '',
         checkedWhoWon: [' ', ' '],
@@ -259,6 +272,31 @@ class Form extends React.Component {
 
   //------------------------------------------------------------------------------------------------------------------------//
 
+    // makeMatchDropDown() {
+  //   let matchTypeState = this.state.matchType;
+  //   let matchState = '';
+  //   if (matchTypeState === 'q') {
+  //     matchState = "Qualification";
+  //   } else if (matchTypeState === 'qf') {
+  //     matchState = "QuarterFinal";
+  //   } else if (matchTypeState === 'sf') {
+  //     matchState = "SemiFinal";
+  //   } else if (matchTypeState === 'f') {
+  //     matchState = "Final";
+  //   }
+  //   return (
+  //     <div>
+  //       <MatchDropDown
+  //         setMatchType={this.changeMatchType}
+  //         setElmNum={this.changeElmNum}
+  //         generateMatchTypeNum={this.makeMatchTypeDropDown}
+  //         setMatchNumber={this.changeMatchNumber}
+  //         matchTypeValue={matchState}
+  //         matchNumber={this.state.matchNumber}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   changeMatchType(event) {
     let matchType = event;
@@ -1163,7 +1201,7 @@ class Form extends React.Component {
       <div>
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
         <button onClick={ () => console.log(this.state) }> Check State </button>
-        {makeMatchDropDown(this.matchType, this.matchNumber, this.changeMatchType, this.changeElmNum, this.makeMatchTypeDropDown, this.changeMatchNumber)}
+        {makeMatchDropDown(this)}
         <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
         <br></br>
         {this.makeTeamDropdown()}
