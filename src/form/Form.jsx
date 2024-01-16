@@ -17,7 +17,7 @@ import ChargeStation from './components/chargeStation/ChargeStation';
 
 // counterbox imports //
 import CounterBox from './components/counterBox/CounterBox';
-
+import { makeWhoWonBox, makeStrategyBox } from './components/checkBox/CheckBoxUtils';
 
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
@@ -45,12 +45,12 @@ class Form extends React.Component {
     this.makeTeamDropdown = this.makeTeamDropdown.bind(this);
 
     this.whoWonClicked = this.whoWonClicked.bind(this);
-    this.makeWhoWonBox = this.makeWhoWonBox.bind(this);
+    // this.makeWhoWonBox = this.makeWhoWonBox.bind(this);
 
     this.copyArray = this.copyArray.bind(this);
 
     this.strategyBox = this.strategyBox.bind(this);
-    this.makeStrategyBox = this.makeStrategyBox.bind(this);
+    // this.makeStrategyBox = this.makeStrategyBox.bind(this);
 
     this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
     this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
@@ -95,22 +95,22 @@ class Form extends React.Component {
         teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
         override: false, //override bool
         endGameVal: ['', '', ''], //
-        chargeStationValAuto: '',
-        whoWon: '',
-        checkedWhoWon: [' ', ' '],
-        rankingPts: 0,
-        rankingState: ["", "", ""],
-        penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '],
-        dropDownVal: ['', '', ''],
-        counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        strategyVal: [null, null, null, null, null, null, null, null, null],//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        booleans: [false, false],
-        totalPoints: 0,
-        totalGrid: 0,
-        cubesAccuracy: 0,
-        conesAccuracy: 0,
-        cubesPts: 0,
-        conesPts: 0,
+        chargeStationValAuto: '', //charge station status during auto
+        whoWon: '', //whichever team won
+        checkedWhoWon: [' ', ' '], /* UNUSED */
+        rankingPts: 0, //teams ranking points
+        rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
+        penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
+        dropDownVal: ['', '', ''], //dropdown vals???
+        counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted
+        strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
+        booleans: [false, false], //mobility, smartplacement
+        totalPoints: 0, //total points
+        totalGrid: 0, //total grid points
+        cubesAccuracy: 0, //cube accuracy
+        conesAccuracy: 0, //cone accuracy
+        cubesPts: 0, //cube pts
+        conesPts: 0, //cone pts
       }
     
   }
@@ -272,7 +272,7 @@ class Form extends React.Component {
 
   //------------------------------------------------------------------------------------------------------------------------//
 
-    // makeMatchDropDown() {
+  // makeMatchDropDown() {
   //   let matchTypeState = this.state.matchType;
   //   let matchState = '';
   //   if (matchTypeState === 'q') {
@@ -448,25 +448,25 @@ class Form extends React.Component {
     }
   }
 
-  makeWhoWonBox(name, i) {
-    let rankingStates = this.state.rankingState;
-    let checkVal;
-    if (rankingStates[0] === name) {
-      checkVal = true;
-    } else {
-      checkVal = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.whoWonClicked}
-          place={i}
-          checked={checkVal}
-        />
-      </div>
-    )
-  }
+  // makeWhoWonBox(name, i) {
+  //   let rankingStates = this.state.rankingState;
+  //   let checkVal;
+  //   if (rankingStates[0] === name) {
+  //     checkVal = true;
+  //   } else {
+  //     checkVal = false;
+  //   }
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={name}
+  //         changeCheckBoxState={this.whoWonClicked}
+  //         place={i}
+  //         checked={checkVal}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   copyArray(Array) {
     let arrayCopy = [];
@@ -489,25 +489,25 @@ class Form extends React.Component {
     this.setState({ strategyVal: strategyStates })
   }
 
-  makeStrategyBox(name, i) {
-    let strategyState = this.state.strategyVal;
-    let checkedVal;
-    if (strategyState[i] === name) {
-      checkedVal = true;
-    } else {
-      checkedVal = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.strategyBox}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
-    )
-  }
+  // makeStrategyBox(name, i) {
+  //   let strategyState = this.state.strategyVal;
+  //   let checkedVal;
+  //   if (strategyState[i] === name) {
+  //     checkedVal = true;
+  //   } else {
+  //     checkedVal = false;
+  //   }
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={name}
+  //         changeCheckBoxState={this.strategyBox}
+  //         place={i}
+  //         checked={checkedVal}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   changeBooleanCheckBox(i) {
     let booleanStates = this.copyArray(this.state.booleans)
@@ -1268,23 +1268,23 @@ class Form extends React.Component {
         {this.makePenaltyBox("No Show ", 5)}
         <br></br>
         <h3>RANKING POINTS:</h3>
-        {this.makeWhoWonBox("Team Won ", 0)}
-        {this.makeWhoWonBox("Team Tied ", 1)}
-        {this.makeWhoWonBox("Team Lost ", 2)}
+        {makeWhoWonBox(this, "Team Won ", 0)}
+        {makeWhoWonBox(this, "Team Tied ", 1)}
+        {makeWhoWonBox(this, "Team Lost ", 2)}
         {this.makeBonusBox("Activation ", 1)}
         {this.makeBonusBox("Sustainability ", 2)}
         <Headers display={this.state.rankingPts} />
         <br></br>
         <h3>📝STRATEGY & PRIORITIES:</h3>
-        {this.makeStrategyBox("Low Node ", 0)}
-        {this.makeStrategyBox("Mid Node ", 1)}
-        {this.makeStrategyBox("High Node ", 2)}
-        {this.makeStrategyBox("Cubes ", 3)}
-        {this.makeStrategyBox("Cones ", 4)}
-        {this.makeStrategyBox("Charge Station ", 5)}
-        {this.makeStrategyBox("Single Substation ", 6)}
-        {this.makeStrategyBox("Double Substation ", 7)}
-        {this.makeStrategyBox("Defense ", 8)}
+        {makeStrategyBox(this, "Low Node ", 0)}
+        {makeStrategyBox(this, "Mid Node ", 1)}
+        {makeStrategyBox(this, "High Node ", 2)}
+        {makeStrategyBox(this, "Cubes ", 3)}
+        {makeStrategyBox(this, "Cones ", 4)}
+        {makeStrategyBox(this, "Charge Station ", 5)}
+        {makeStrategyBox(this, "Single Substation ", 6)}
+        {makeStrategyBox(this, "Double Substation ", 7)}
+        {makeStrategyBox(this, "Defense ", 8)}
         <br></br>
         <TextBox title={"💬Comments: "} commentState={this.setComment} value={this.state.comments}></TextBox>
 
