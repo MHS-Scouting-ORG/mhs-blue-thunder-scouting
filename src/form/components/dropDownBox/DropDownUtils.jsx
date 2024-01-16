@@ -42,36 +42,3 @@ export function makeMatchDropDown(props) {
       </div>
     )
 }
-
-// function changeMatchType(event) {
-//   let matchType = event;
-//   if (matchType === 'q') {
-//     this.setState({ elmNum: '' });
-//   }
-//   this.setState({ matchType: event });
-//   this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-//   this.setState({ teamNumber: ' ' });
-// }
-
-// function changeElmNum(event) {
-//   this.setState({ elmNum: (event.target.value) });
-//   this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-//   this.setState({ teamNumber: ' ' });
-// }
-
-// function changeMatchNumber(event) {
-//   if (event.target.value !== 0) {
-//     this.setState({ override: false })
-//   }
-//   this.setState({ matchNumber: event.target.value });
-//   this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-//   this.setState({ teamNumber: ' ' });
-// }
-
-// function makeMatchTypeDropDown(matchType) {
-//   if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
-//     return (
-//       <input value={this.state.elmNum} onChange={this.changeElmNum} />
-//     )
-//   }
-// }

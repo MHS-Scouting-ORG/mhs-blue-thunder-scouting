@@ -743,7 +743,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonMinus(i) {
+  buttonMinus(event, i) {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] > 0) {
       counterStates[i] = parseInt(counterStates[i] - 1)
@@ -753,7 +753,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonPlus(i) {
+  buttonPlus(event, i) {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] >= 0) {
       counterStates[i] = parseInt(counterStates[i] + 1)
