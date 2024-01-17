@@ -5,7 +5,7 @@ import CheckBox from './components/checkBox/CheckBox';
 // dropdown imports //
 import DropDown from './components/dropDownBox/DropDown';
 import MatchDropDown from './components/dropDownBox/MatchDropDown';
-import { makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
+import { makeDropDownBox, makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame imports //
 import EndGame from './components/endGameBox/EndGame';
@@ -17,7 +17,7 @@ import ChargeStation from './components/chargeStation/ChargeStation';
 
 // counterbox imports //
 import CounterBox from './components/counterBox/CounterBox';
-import { makeWhoWonBox, makeStrategyBox } from './components/checkBox/CheckBoxUtils';
+import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
@@ -49,20 +49,20 @@ class Form extends React.Component {
 
     this.copyArray = this.copyArray.bind(this);
 
-    this.strategyBox = this.strategyBox.bind(this);
+    this.strategyBoxChanged = this.strategyBoxChanged.bind(this);
     // this.makeStrategyBox = this.makeStrategyBox.bind(this);
 
     this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
-    this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
+    // this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
 
     // this.makeMatchDropDown = this.makeMatchDropDown.bind(this)
     this.dropDownChanged = this.dropDownChanged.bind(this);
-    this.makeDropDownBox = this.makeDropDownBox.bind(this);
+    // this.makeDropDownBox = this.makeDropDownBox.bind(this);
 
     this.changeEndGame = this.changeEndGame.bind(this);
     this.changeEndGameStartBox = this.changeEndGameStartBox.bind(this);
     this.changeEndGameEndBox = this.changeEndGameEndBox.bind(this);
-    // this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
+    this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
     this.makeEndGameDropDown = this.makeEndGameDropDown.bind(this);
     this.changeChargeStation = this.changeChargeStation.bind(this);
     this.makeChargeStationAuto = this.makeChargeStationAuto.bind(this);
@@ -70,11 +70,11 @@ class Form extends React.Component {
     this.setComment = this.setComment.bind(this);
 
     this.penaltyBoxChecked = this.penaltyBoxChecked.bind(this);
-    this.makePenaltyBox = this.makePenaltyBox.bind(this);
+    // this.makePenaltyBox = this.makePenaltyBox.bind(this);
     this.bonusBoxChecked = this.bonusBoxChecked.bind(this);
-    this.makeBonusBox = this.makeBonusBox.bind(this);
+    // this.makeBonusBox = this.makeBonusBox.bind(this);
     this.overrideChange = this.overrideChange.bind(this);
-    this.makeOverrideBox = this.makeOverrideBox.bind(this);
+    // this.makeOverrideBox = this.makeOverrideBox.bind(this);
 
     this.counterBoxChanged = this.counterBoxChanged.bind(this);
     this.buttonMinus = this.buttonMinus.bind(this);
@@ -478,7 +478,7 @@ class Form extends React.Component {
 
   }
 
-  strategyBox(i, label) {
+  strategyBoxChanged(i, label) {
     let strategyStates = this.copyArray(this.state.strategyVal);
     if (strategyStates[i] === label) {
       strategyStates[i] = ' ';
@@ -515,19 +515,19 @@ class Form extends React.Component {
     this.setState({ booleans: booleanStates })
   }
 
-  makeBooleanCheckBox(name, i) {
-    let booleanStates = this.state.booleans;
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.changeBooleanCheckBox}
-          place={i}
-          checked={booleanStates[i]}
-        />
-      </div>
-    )
-  }
+  // makeBooleanCheckBox(name, i) {
+  //   let booleanStates = this.state.booleans;
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={name}
+  //         changeCheckBoxState={this.changeBooleanCheckBox}
+  //         place={i}
+  //         checked={booleanStates[i]}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   //---------------------------------------------------------------------------------------------------------------//
 
@@ -536,20 +536,20 @@ class Form extends React.Component {
     dropDownStates[i] = event.target.value;
   }
 
-  makeDropDownBox(title, option, i) {
-    let dropDownStates = this.state.dropDownVal;
-    return (
-      <div>
-        <DropDown
-          title={title}
-          choices={option}
-          place={i}
-          value={dropDownStates[i]}
-          setState={this.dropDownChanged}
-        />
-      </div>
-    )
-  }
+  // makeDropDownBox(title, option, i) {
+  //   let dropDownStates = this.state.dropDownVal;
+  //   return (
+  //     <div>
+  //       <DropDown
+  //         title={title}
+  //         choices={option}
+  //         place={i}
+  //         value={dropDownStates[i]}
+  //         setState={this.dropDownChanged}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   //--------------------------------------------------------------------------------------------------------------//
 
@@ -693,43 +693,43 @@ class Form extends React.Component {
     this.setState({ rankingState: ranking })
   }
 
-  makeBonusBox(name, i) {
-    let rankingState = this.state.rankingState;
-    let checkedVal;
-    if (rankingState[i] === name) {
-      checkedVal = true;
-    }
-    else {
-      checkedVal = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.bonusBoxChecked}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
-    )
-  }
+  // makeBonusBox(name, i) {
+  //   let rankingState = this.state.rankingState;
+  //   let checkedVal;
+  //   if (rankingState[i] === name) {
+  //     checkedVal = true;
+  //   }
+  //   else {
+  //     checkedVal = false;
+  //   }
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={name}
+  //         changeCheckBoxState={this.bonusBoxChecked}
+  //         place={i}
+  //         checked={checkedVal}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   overrideChange() {
     this.setState({ override: !this.state.override });
   }
 
-  makeOverrideBox() {
-    let overrideState = this.state.override;
-    return (
-      <div>
-        <CheckBox
-          label={"Overide "}
-          changeCheckBoxState={this.overrideChange}
-          checked={overrideState}
-        />
-      </div>
-    )
-  }
+  // makeOverrideBox() {
+  //   let overrideState = this.state.override;
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={"Overide "}
+  //         changeCheckBoxState={this.overrideChange}
+  //         checked={overrideState}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   //-------------------------------------------------------------------------------------------------------------//
 
@@ -1199,16 +1199,23 @@ class Form extends React.Component {
   render() {
     return (
       <div>
+        {/* TITLE */}
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
+
+        {/* CHECK STATE BUTTON */}
         <button onClick={ () => console.log(this.state) }> Check State </button>
-        {makeMatchDropDown(this)}
+
+        {/* MATCH INITIATION */}
+        {makeMatchDropDown({ matchType: this.state.matchType, matchNumber: this.state.matchNumber, changeMatchType: this.changeMatchType, changeElmNum: this.changeElmNum, makeMatchTypeDropDown: this.makeMatchTypeDropDown, changeMatchNumber: this.changeMatchNumber })}
         <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
         <br></br>
         {this.makeTeamDropdown()}
         <br></br>
+
+        {/* AUTONOMOUS */}
         <h3>AUTONOMOUS:</h3>
         <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
-        {this.makeDropDownBox("Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
         <br></br>
         <p>🟪Cubes Scored</p>
         {this.makeCounterBox("High Cubes Made: ", 0)}
@@ -1227,10 +1234,12 @@ class Form extends React.Component {
         {this.makeCounterBox("Mid Cones Attempted: ", 10)}
         {this.makeCounterBox("Low Cones Attempted: ", 11)}
         <br></br>
-        {this.makeBooleanCheckBox("Mobility ", 0)}
+        {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Mobility ", 0)}
         <br></br>
         {this.makeChargeStationAuto()}
         <br></br>
+
+        {/* TELEOP */}
         <h3>TELE-OP:</h3>
         <p>🟪Cubes Scored</p>
         {this.makeCounterBox("High Cubes Made: ", 12)}
@@ -1252,42 +1261,53 @@ class Form extends React.Component {
         {this.makeEndGameDropDown()}
         {this.makeEndGameStartEndBox()}
         <br></br>
-        {this.makeBooleanCheckBox("Smart Placement (creates links) ", 1)}
+
+        {/* ROBOT/TEAM INFO */}
+        {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Smart Placement (creates links) ", 1)}
         <br></br>
-        {this.makeDropDownBox("Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-        {this.makeDropDownBox("Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
+        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
+        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
         <br></br>
+
+        {/* PENALTIES */}
         <h3>PENALTIES:</h3>
         {this.makeCounterBox("Fouls: ", 24)}
         {this.makeCounterBox("Tech Fouls: ", 25)}
-        {this.makePenaltyBox("Yellow Card ", 0)}
-        {this.makePenaltyBox("Red Card ", 1)}
-        {this.makePenaltyBox("Disable ", 2)}
-        {this.makePenaltyBox("Disqualifed ", 3)}
-        {this.makePenaltyBox("Bot Broke ", 4)}
-        {this.makePenaltyBox("No Show ", 5)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Yellow Card ", 0)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Red Card ", 1)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disable ", 2)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disqualifed ", 3)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Bot Broke ", 4)}
+        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "No Show ", 5)}
         <br></br>
+
+        {/* RANKING POINTS */}
         <h3>RANKING POINTS:</h3>
-        {makeWhoWonBox(this, "Team Won ", 0)}
-        {makeWhoWonBox(this, "Team Tied ", 1)}
-        {makeWhoWonBox(this, "Team Lost ", 2)}
-        {this.makeBonusBox("Activation ", 1)}
-        {this.makeBonusBox("Sustainability ", 2)}
+        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Won ", 0)}
+        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Tied ", 1)}
+        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Lost ", 2)}
+        {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Activation ", 1)}
+        {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts} />
         <br></br>
+
+        {/* STRATEGY & PRIORITIES */}
         <h3>📝STRATEGY & PRIORITIES:</h3>
-        {makeStrategyBox(this, "Low Node ", 0)}
-        {makeStrategyBox(this, "Mid Node ", 1)}
-        {makeStrategyBox(this, "High Node ", 2)}
-        {makeStrategyBox(this, "Cubes ", 3)}
-        {makeStrategyBox(this, "Cones ", 4)}
-        {makeStrategyBox(this, "Charge Station ", 5)}
-        {makeStrategyBox(this, "Single Substation ", 6)}
-        {makeStrategyBox(this, "Double Substation ", 7)}
-        {makeStrategyBox(this, "Defense ", 8)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Low Node ", 0)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Mid Node ", 1)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "High Node ", 2)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cubes ", 3)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cones ", 4)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Charge Station ", 5)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Single Substation ", 6)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Double Substation ", 7)}
+        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Defense ", 8)}
         <br></br>
+
+        {/* COMMENTS */}
         <TextBox title={"💬Comments: "} commentState={this.setComment} value={this.state.comments}></TextBox>
 
+        {/* SUBMISSION */}
         <div>
           <br></br>
           <button onClick={(evt) => {
@@ -1309,7 +1329,7 @@ class Form extends React.Component {
           }>SUBMIT</button>
         </div>
         <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-        {this.makeOverrideBox()}
+        {makeOverrideBox({ override: this.state.override, overrideChange: this.overrideChange })}
         <br></br>
       </div>
     )

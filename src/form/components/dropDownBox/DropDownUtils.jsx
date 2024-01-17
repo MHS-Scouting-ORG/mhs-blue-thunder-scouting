@@ -6,16 +6,33 @@ import React from 'react';
 import DropDown from './DropDown';
 import MatchDropDown from './MatchDropDown';
 
-/* REGULAR DROPDOWN */
-
-
-
-/* MATCH DROPDOWN */
+/**
+ * function for making regular dropdown boxes
+ * @param props obj from form component containing matchType, matchNumber, changeMatchType, changeElmNum, makeMatchTypeDropDown, changeMatchNumber
+ * @param title title that displays next to dropdown box
+ * @param option array of options
+ * @param i position in state array
+ * @returns a MatchDropDownBox component
+ */
+export function makeDropDownBox(props, title, option, i) {
+  let dropDownStates = props.dropDownVal;
+  return (
+    <div>
+      <DropDown
+        title={title}
+        choices={option}
+        place={i}
+        value={dropDownStates[i]}
+        setState={props.dropDownChanged}
+      />
+    </div>
+  )
+}
 
 /**
  * function for making the matchdropdown
- * @param {*} props passes down the form component
- * @returns 
+ * @param props obj from form component containing matchType, matchNumber, changeMatchType, changeElmNum, makeMatchTypeDropDown, changeMatchNumber
+ * @returns a MatchDropDownBox component
  */
 export function makeMatchDropDown(props) {
   let matchTypeState = props.matchType
@@ -37,7 +54,7 @@ export function makeMatchDropDown(props) {
         generateMatchTypeNum={props.makeMatchTypeDropDown} 
         setMatchNumber={props.changeMatchNumber} 
         matchTypeValue={matchState} 
-        matchNumber={props.state.matchNumber}
+        matchNumber={props.matchNumber}
       />
     </div>
   )
