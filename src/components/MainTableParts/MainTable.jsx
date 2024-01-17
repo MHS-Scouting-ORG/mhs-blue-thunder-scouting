@@ -1,13 +1,15 @@
 
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getMatchesForRegional} from "../api";
-import { getTeamsInRegional, getOprs } from "../api/bluealliance";
-import { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable } from "./InnerTables/InnerTableUtils";
+import { getMatchesForRegional} from "../../api";
+import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
+import { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable, tableHandler } from "../InnerTables/InnerTableUtils";
 import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
-import GlobalFilter from "./GlobalFilter";
-import List from "./List";
-import Modal from "./Modal";
+import { ueDebug, ueSetTeamObj } from "./MTEffectFunc"
+//import { tableData } from "./TableData"
+import GlobalFilter from "../GlobalFilter";
+import List from "../List";
+import Modal from "../Modal";
 
 function MainTable(props) {
   const regional = props.regional
@@ -36,20 +38,16 @@ function MainTable(props) {
   const [sortBy,setSortBy] = useState([]);
 
 
-   useEffect(() => {
-    getMatchesForRegional(regional)
-    .then(data => {
-      console.log(data.data.teamMatchesByRegional.items)
-    })
-  },[]) //debug purposes or test ^ 
+   //useEffect(ueDebug) //debug purposes or test ^ 
   
-   useEffect(() => { // sets team numbers of objects
+   useEffect(() => {
     getTeams()
       .then(data => {
         setTeamsData(data)
       })
       .catch(console.log.bind(console))
-   },[]) 
+   },[])
+   // ^sets team numbers of objects 
 
    useEffect(() => { //debug, reference, or test
     getMatchesForRegional(regional)
@@ -92,7 +90,7 @@ function MainTable(props) {
       teamStats = teamStats.filter(x => x.id !== regional + "_" + deletedRow.original.Match)
     });
 
-    console.log(teamStats)
+    //console.log(teamStats)
     //console.log(apiData);
 
     const points = teamStats.map(x => x.Teleop.ScoringTotal.Total) //for deviation
@@ -241,21 +239,6 @@ const getTeams = async () => {
     .catch(err => console.log(err))
 }
 
-const handleDelete = (row) => {
-  let deleted = deletedData;
-  setDeletedData(deletedData.concat(row));
-  console.log(deletedData);
-}
-
-const handleEdit = (row) => {
-  setModalState(true);
-  //console.log(row);
-  //console.log(apiData)
-  let setModal = apiData;
-  setModal = setModal.filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
-  setModalData(setModal);
-}
-
 const modalClose = () => {
   setModalState(false);
 }
@@ -269,90 +252,10 @@ function gridStateHandler(bool, bool2, bool3, bool4, bool5, bool6){
   setTeamState(bool6);
 }
 
-function tableHandler(row){ //handles which state and inner table should be shown
-    if(gridState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "10rem"
-        }}
-        >
-          {renderRowSubComponentGrid ({row},tableData)}
-        </td>
-      </tr>
-      )
-    }
-    else if(coneAccState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
-        >
-          {renderRowSubComponentConeAccTable ({row},tableData)}
-        </td>
-      </tr>
-      )
-    }
-    else if(conePtsState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
-        >
-          {renderRowSubComponentConePtsTable ({row},tableData)}
-        </td>
-      </tr>
-      )
-    }
-    else if(cubeAccState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
-        >
-          {renderRowSubComponentCubeAccTable ({row},tableData)}
-        </td>
-      </tr>
-      )
-    }
-    else if(cubePtsState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
-        >
-          {renderRowSubComponentCubePtsTable ({row},tableData)}
-        </td>
-      </tr>
-      )
-    }
-    else if(teamState === true){
-      return (
-      <tr>
-        <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
-        >
-          {renderRowSubComponent ({row},apiData)}
-        </td>
-      </tr>
-      )
-    }
-    else{console.log('error in tablehandler or nothing shown')}
-  } 
+ 
 
 // ======================================= !TABLE HERE! ===========================================
-const data = React.useMemo(
+const data = /*tableData;*/ React.useMemo(
   () => tableData.map(team => {
     const grade = calcColumnSort(sortBy, team.NGridPoints, team.NConePoints, team.NConeAccuracy, team.NCubePoints, team.NCubeAccuracy, team.NChargeStation)
     
@@ -381,8 +284,8 @@ const data = React.useMemo(
       NChargeStation: team.NChargeStation,
 
     }
-  }) , [tableData, sortBy]
-) 
+  }) , [tableData, sortBy] 
+)
 
   const columns = React.useMemo(
     () => [
@@ -584,29 +487,32 @@ const data = React.useMemo(
               <tr {...row.getRowProps()}>
                 {row.cells.map(cell => {
                   return (   
-                    <td
-                      onClick={() => { //calls and returns parameters for inner tables
-                        if(cell.column.Header === "Avg Grid Points"){
-                          gridStateHandler(!false, false, false, false, false, false ) //AVG GRID POINTS [0]
-                          }
-                        else if(cell.column.Header === "Team #"){
-                          gridStateHandler(false, false, false, false, false, !false ) //TEAM NUMBER [5]
-                          }
-                        else if(cell.column.Header === "Avg Cone Points"){
-                          gridStateHandler(false, !false, false, false, false, false ) //AVG CONE POINTS [1]
-                          }
-                        else if(cell.column.Header === "Avg Cone Acc"){
-                            gridStateHandler(false, false, !false, false, false, false ) //AVG CONE ACC [2]
-                            }
-                        else if(cell.column.Header === "Avg Cube Points"){
-                            gridStateHandler(false, false, false, false, !false, false ) //AVG CUBE POINTS [3]
-                            }
-                        else if(cell.column.Header === "Avg Cube Acc"){
-                            gridStateHandler(false, false, false, !false, false, false ) //AVG CUBE ACC [4]
-                            }
-                        else {
-                          console.log('wrong cell or fail')
-                            }
+                    <td 
+                      onClick = {() => { //calls and returns parameters for inner tables
+
+                        gridStateHandler(cell.column.Header)
+
+                        // if(cell.column.Header === "Avg Grid Points"){
+                        //   gridStateHandler(!bool, bool2, bool3, bool4, bool5, bool6 ) //AVG GRID POINTS [0]
+                        //   }
+                        // else if(cell.column.Header === "Team #"){
+                        //   gridStateHandler(bool, bool2, bool, bool4, bool5, !bool6 ) //TEAM NUMBER [5]
+                        //   }
+                        // else if(cell.column.Header === "Avg Cone Points"){
+                        //   gridStateHandler(bool, !bool2, bool3, bool4, bool5, bool6 ) //AVG CONE POINTS [1]
+                        //   }
+                        // else if(cell.column.Header === "Avg Cone Acc"){
+                        //     gridStateHandler(bool, bool2, !bool3, bool4, bool5, bool6 ) //AVG CONE ACC [2]
+                        //     }
+                        // else if(cell.column.Header === "Avg Cube Points"){
+                        //     gridStateHandler(bool, bool2, bool3, bool4, !bool5, bool6 ) //AVG CUBE POINTS [3]
+                        //     }
+                        // else if(cell.column.Header === "Avg Cube Acc"){
+                        //     gridStateHandler(bool, bool2, bool3, !bool4, bool5, bool6 ) //AVG CUBE ACC [4]
+                        //     }
+                        // else {
+                        //   console.log('wrong cell or fail')
+                        //     }
                         }
                       }//cell.column.Header === "Avg Grid Points" ? gridStateHandler(true, false, false, false, false) : gridStateHandler(false) }}
 

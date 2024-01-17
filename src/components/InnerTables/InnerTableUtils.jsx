@@ -4,6 +4,29 @@ import ConeAccTable from "./ConeAccTable"
 import ConePtsTable from "./ConePtsTable"
 import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
+import TeamInnerTable from './TeamInnerTable'
+
+let gridState = false
+let teamState = false
+let conePtsState = false  //using let because do not how to pass states/variables that store data which changes in this case gridstatehandler
+let coneAccState = false
+let cubePtsState = false
+let cubeAccState = false
+
+const handleEdit = (row) => {
+    setModalState(true);
+    //console.log(row);
+    //console.log(apiData)
+    let setModal = apiData;   //needs refining/doesn't work
+    setModal = setModal.filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
+    setModalData(setModal);
+  }
+
+const handleDelete = (row) => {
+    let deleted = deletedData;
+    setDeletedData(deletedData.concat(row)); //needs refining/doesn't work
+    console.log(deletedData);
+  }
 
 const renderRowSubComponentGrid = ({row},tableData) => {
 
@@ -175,4 +198,109 @@ const renderRowSubComponent = ({ row }, apiData) => {
     );
 }
 
-export { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable };
+function tableHandler(row){ //handles which state and inner table should be shown
+
+    if(gridState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "10rem"
+        }}
+        >
+          {renderRowSubComponentGrid ({row},tableData)} { /*needs tableData from maintable component*/ }
+        </td>
+      </tr>
+      )
+    }
+    else if(coneAccState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "1200px"
+        }}
+        >
+          {renderRowSubComponentConeAccTable ({row},tableData)}
+        </td>
+      </tr>
+      )
+    }
+    else if(conePtsState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "1200px"
+        }}
+        >
+          {renderRowSubComponentConePtsTable ({row},tableData)}
+        </td>
+      </tr>
+      )
+    }
+    else if(cubeAccState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "1200px"
+        }}
+        >
+          {renderRowSubComponentCubeAccTable ({row},tableData)}
+        </td>
+      </tr>
+      )
+    }
+    else if(cubePtsState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "1200px"
+        }}
+        >
+          {renderRowSubComponentCubePtsTable ({row},tableData)}
+        </td>
+      </tr>
+      )
+    }
+    else if(teamState === true){
+      return (
+      <tr>
+        <td colSpan={visibleColumns.length}
+        style = {{
+          maxWidth: "1200px"
+        }}
+        >
+          {renderRowSubComponent ({row},apiData)}
+        </td>
+      </tr>
+      )
+    }
+    else{console.log('error in tablehandler or nothing shown')}
+  } 
+
+  function gridStateHandler(header){
+    if(header === "Avg Grid Points"){
+        gridState = !gridState
+    }
+    else if(header === "Team #"){
+        teamState = !teamState
+    }
+    else if(header === "Avg Cone Points"){
+        conePtsState = !conePtsState
+    }
+    else if(header === "Avg Cone Acc"){
+        coneAccState = !coneAccState
+    }
+    else if(header === "Avg Cube Points"){
+        cubePtsState = !cubePtsState
+    }
+    else if(header === "Avg Cube Acc"){
+        cubeAccState = !cubeAccState
+    }
+
+  }
+
+export { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable, tableHandler, gridStateHandler };
