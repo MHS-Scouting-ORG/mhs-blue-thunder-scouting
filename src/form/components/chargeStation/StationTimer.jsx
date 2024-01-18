@@ -14,7 +14,7 @@ class StationTimer extends React.Component{
     }
 
     runTimer(event) {
-        this.props.startButton(event, this.props.place);
+        this.props.startButton(event, this.props.index);
         const time = document.getElementById("time");
         this.setState({stop: false, debounce: this.state.debounce + 1});
         if (this.state.debounce < 1 && this.state.stop === false) {
@@ -32,7 +32,7 @@ class StationTimer extends React.Component{
     
     stopTimer(event) {
         const time = document.getElementById("time");
-        this.props.stopButton(event, this.props.place);
+        this.props.stopButton(event, this.props.index);
         time.value = parseInt(Math.round((this.state.timer + .1) * 10) / 10);
         this.setState({stop: true, debounce: 0});
     }

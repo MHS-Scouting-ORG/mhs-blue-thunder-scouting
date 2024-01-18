@@ -1,8 +1,13 @@
 import React from 'react';
 import EndGame from './components/endGameBox/EndGame';
 
-export function makeEndGameStartEndBox(endGameValues, ) {
-    // let endGameValues = this.state.endGameVal;
+/**
+ * function for making the endgamebox
+ * @param props obj from form component containing endGameVal,              
+ * @returns 
+ */
+export function makeEndGameStartEndBox(props) {
+    let endGameValues = this.state.endGameVal;
     let endGame = endGameValues[0];
     if (endGame !== "None" && endGame !== '') {
       if (endGame === "Attempted") {
@@ -10,7 +15,7 @@ export function makeEndGameStartEndBox(endGameValues, ) {
           <div>
             <p>Match Timer EX:125 (1:25)</p>
             <label> {"End Game Start: "}
-              <input value={endGameValues[1]} style={{ width: '10%' }} type="number" onChange={changeEndGameStartBox}></input>
+              <input value={this.state.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={changeEndGameStartBox}></input>
             </label>
           </div>
         )

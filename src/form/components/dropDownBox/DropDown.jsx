@@ -7,7 +7,7 @@ class DropDown extends React.Component{
     }
 
     dropDownChange(event){
-        this.props.setState(event,this.props.place);
+        this.props.setState(event,this.props.index);
     }
 
     render(){

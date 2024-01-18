@@ -1,10 +1,8 @@
 import React from 'react';
 // checkbox imports //
-import CheckBox from './components/checkBox/CheckBox';
+import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown imports //
-import DropDown from './components/dropDownBox/DropDown';
-import MatchDropDown from './components/dropDownBox/MatchDropDown';
 import { makeDropDownBox, makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame imports //
@@ -14,14 +12,13 @@ import EndGame from './components/endGameBox/EndGame';
 // chargestation imports //
 import ChargeStation from './components/chargeStation/ChargeStation';
 
-
 // counterbox imports //
-import CounterBox from './components/counterBox/CounterBox';
-import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
 
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
 
+// api imports //
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder'
 import { getMatchesForRegional } from '../api/bluealliance';
@@ -79,7 +76,7 @@ class Form extends React.Component {
     this.counterBoxChanged = this.counterBoxChanged.bind(this);
     this.buttonMinus = this.buttonMinus.bind(this);
     this.buttonPlus = this.buttonPlus.bind(this);
-    this.makeCounterBox = this.makeCounterBox.bind(this);
+    // this.makeCounterBox = this.makeCounterBox.bind(this);
 
     this.submitState = this.submitState.bind(this);
 
@@ -461,7 +458,7 @@ class Form extends React.Component {
   //       <CheckBox
   //         label={name}
   //         changeCheckBoxState={this.whoWonClicked}
-  //         place={i}
+  //         index={i}
   //         checked={checkVal}
   //       />
   //     </div>
@@ -502,7 +499,7 @@ class Form extends React.Component {
   //       <CheckBox
   //         label={name}
   //         changeCheckBoxState={this.strategyBox}
-  //         place={i}
+  //         index={i}
   //         checked={checkedVal}
   //       />
   //     </div>
@@ -522,7 +519,7 @@ class Form extends React.Component {
   //       <CheckBox
   //         label={name}
   //         changeCheckBoxState={this.changeBooleanCheckBox}
-  //         place={i}
+  //         index={i}
   //         checked={booleanStates[i]}
   //       />
   //     </div>
@@ -543,7 +540,7 @@ class Form extends React.Component {
   //       <DropDown
   //         title={title}
   //         choices={option}
-  //         place={i}
+  //         index={i}
   //         value={dropDownStates[i]}
   //         setState={this.dropDownChanged}
   //       />
@@ -655,25 +652,25 @@ class Form extends React.Component {
     this.setState({ penaltyVal: penaltyStates })
   }
 
-  makePenaltyBox(name, i) {
-    let penaltyStates = this.state.penaltyVal;
-    let checkedVal;
-    if (penaltyStates[i] === name) {
-      checkedVal = true;
-    } else {
-      checkedVal = false
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.penaltyBoxChecked}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
-    )
-  }
+  // makePenaltyBox(name, i) {
+  //   let penaltyStates = this.state.penaltyVal;
+  //   let checkedVal;
+  //   if (penaltyStates[i] === name) {
+  //     checkedVal = true;
+  //   } else {
+  //     checkedVal = false
+  //   }
+  //   return (
+  //     <div>
+  //       <CheckBox
+  //         label={name}
+  //         changeCheckBoxState={this.penaltyBoxChecked}
+  //         index={i}
+  //         checked={checkedVal}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   bonusBoxChecked(i, label) {
     let ranking = this.copyArray(this.state.rankingState);
@@ -707,7 +704,7 @@ class Form extends React.Component {
   //       <CheckBox
   //         label={name}
   //         changeCheckBoxState={this.bonusBoxChecked}
-  //         place={i}
+  //         index={i}
   //         checked={checkedVal}
   //       />
   //     </div>
@@ -763,21 +760,21 @@ class Form extends React.Component {
     }
   }
 
-  makeCounterBox(title, i) {
-    let counterStates = this.state.counterBoxVals;
-    return (
-      <div>
-        <CounterBox
-          label={title}
-          setState={this.counterBoxChanged}
-          place={i}
-          state={counterStates[i]}
-          minusButton={this.buttonMinus}
-          plusButton={this.buttonPlus}
-        />
-      </div>
-    )
-  }
+  // makeCounterBox(title, i) {
+  //   let counterStates = this.state.counterBoxVals;
+  //   return (
+  //     <div>
+  //       <CounterBox
+  //         label={title}
+  //         setState={this.counterBoxChanged}
+  //         index={i}
+  //         state={counterStates[i]}
+  //         minusButton={this.buttonMinus}
+  //         buttonPlus={this.buttonPlus}
+  //       />
+  //     </div>
+  //   )
+  // }
 
   //-------------------------------------------------------------------------------------------------------------//
 
@@ -1218,21 +1215,21 @@ class Form extends React.Component {
         {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
         <br></br>
         <p>🟪Cubes Scored</p>
-        {this.makeCounterBox("High Cubes Made: ", 0)}
-        {this.makeCounterBox("Mid Cubes Made:  ", 1)}
-        {this.makeCounterBox("Low Cubes Made:  ", 2)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 0)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made:  ", 1)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made:  ", 2)}
         <p>🟪Cubes Attempted</p>
-        {this.makeCounterBox("High Cubes Attempted: ", 3)}
-        {this.makeCounterBox("Mid Cubes Attempted: ", 4)}
-        {this.makeCounterBox("Low Cubes Attempted: ", 5)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 3)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 4)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 5)}
         <p>🔺Cones Scored</p>
-        {this.makeCounterBox("High Cones Made: ", 6)}
-        {this.makeCounterBox("Mid Cones Made: ", 7)}
-        {this.makeCounterBox("Low Cones Made: ", 8)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 6)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 7)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 8)}
         <p>🔺Cones Attempted</p>
-        {this.makeCounterBox("High Cones Attempted: ", 9)}
-        {this.makeCounterBox("Mid Cones Attempted: ", 10)}
-        {this.makeCounterBox("Low Cones Attempted: ", 11)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 9)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 10)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 11)}
         <br></br>
         {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Mobility ", 0)}
         <br></br>
@@ -1242,21 +1239,21 @@ class Form extends React.Component {
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
         <p>🟪Cubes Scored</p>
-        {this.makeCounterBox("High Cubes Made: ", 12)}
-        {this.makeCounterBox("Mid Cubes Made: ", 13)}
-        {this.makeCounterBox("Low Cubes Made: ", 14)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 12)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made: ", 13)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made: ", 14)}
         <p>🟪Cubes Attempted</p>
-        {this.makeCounterBox("High Cubes Attempted: ", 15)}
-        {this.makeCounterBox("Mid Cubes Attempted: ", 16)}
-        {this.makeCounterBox("Low Cubes Attempted: ", 17)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 15)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 16)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 17)}
         <p>🔺Cones Scored</p>
-        {this.makeCounterBox("High Cones Made: ", 18)}
-        {this.makeCounterBox("Mid Cones Made: ", 19)}
-        {this.makeCounterBox("Low Cones Made: ", 20)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 18)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 19)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 20)}
         <p>🔺Cones Attempted</p>
-        {this.makeCounterBox("High Cones Attempted: ", 21)}
-        {this.makeCounterBox("Mid Cones Attempted: ", 22)}
-        {this.makeCounterBox("Low Cones Attempted: ", 23)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 21)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 22)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 23)}
         <br></br>
         {this.makeEndGameDropDown()}
         {this.makeEndGameStartEndBox()}
@@ -1271,8 +1268,8 @@ class Form extends React.Component {
 
         {/* PENALTIES */}
         <h3>PENALTIES:</h3>
-        {this.makeCounterBox("Fouls: ", 24)}
-        {this.makeCounterBox("Tech Fouls: ", 25)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Fouls: ", 24)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Tech Fouls: ", 25)}
         {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Yellow Card ", 0)}
         {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Red Card ", 1)}
         {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disable ", 2)}

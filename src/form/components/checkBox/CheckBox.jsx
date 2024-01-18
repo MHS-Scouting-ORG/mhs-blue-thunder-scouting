@@ -7,7 +7,7 @@ class CheckBox extends React.Component{
     }
 
     changeCheckBoxState(){
-        this.props.changeCheckBoxState(this.props.place,this.props.label);
+        this.props.changeCheckBoxState(this.props.index,this.props.label);
     }
 
     render(){

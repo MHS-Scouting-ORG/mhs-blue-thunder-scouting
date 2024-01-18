@@ -23,7 +23,7 @@ export function makeWhoWonBox(props, name, i) {
         <CheckBox
           label={name}
           changeCheckBoxState={props.whoWonClicked}
-          place={i}
+          index={i}
           checked={checkVal}
         />
       </div>
@@ -50,7 +50,7 @@ export function makeStrategyBox(props, name, i) {
       <CheckBox
         label={name}
         changeCheckBoxState={props.strategyBox}
-        place={i}
+        index={i}
         checked={checkedVal}
       />
     </div>
@@ -58,7 +58,7 @@ export function makeStrategyBox(props, name, i) {
 }
 
 /**
- * function for making boolean boxes (mobility, smartplacement)
+ * function for making boolean boxes (mobility, smartindexment)
  * @param props obj from form component containing booleans, changeBooleanCheckBox method
  * @param name text that displays next to checkbox
  * @param i array position
@@ -71,7 +71,7 @@ export function makeBooleanCheckBox(props, name, i) {
       <CheckBox
         label={name}
         changeCheckBoxState={props.changeBooleanCheckBox}
-        place={i}
+        index={i}
         checked={booleanStates[i]}
       />
     </div>
@@ -98,7 +98,7 @@ export function makePenaltyBox(props, name, i) {
       <CheckBox
         label={name}
         changeCheckBoxState={props.penaltyBoxChecked}
-        place={i}
+        index={i}
         checked={checkedVal}
       />
     </div>
@@ -126,7 +126,7 @@ export function makeBonusBox(props, name, i) {
       <CheckBox
         label={name}
         changeCheckBoxState={props.bonusBoxChecked}
-        place={i}
+        index={i}
         checked={checkedVal}
       />
     </div>

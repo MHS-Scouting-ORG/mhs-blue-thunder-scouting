@@ -21,7 +21,7 @@ export function makeDropDownBox(props, title, option, i) {
       <DropDown
         title={title}
         choices={option}
-        place={i}
+        index={i}
         value={dropDownStates[i]}
         setState={props.dropDownChanged}
       />

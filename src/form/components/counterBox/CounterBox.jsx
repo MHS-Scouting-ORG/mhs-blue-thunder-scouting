@@ -12,8 +12,8 @@ class CounterBox extends React.Component{
     }
 
     buttonMinus(event) {
-        this.props.minusButton(event,this.props.place);
-        const input = document.getElementById(this.props.place);
+        this.props.minusButton(event,this.props.index);
+        const input = document.getElementById(this.props.index);
         let value = parseInt(this.state.count);
         if (value > 0) {
             this.setState({count:parseInt(this.state.count) - 1});
@@ -26,8 +26,8 @@ class CounterBox extends React.Component{
     }
     
     buttonPlus(event) {
-        this.props.plusButton(event,this.props.place);
-        const input = document.getElementById(this.props.place);
+        this.props.plusButton(event,this.props.index);
+        const input = document.getElementById(this.props.index);
         if (event.target.value >= 0) {
             this.setState({count:parseInt(this.state.count) + 1});
             input.value = parseInt(this.state.count) + 1;
@@ -45,7 +45,7 @@ class CounterBox extends React.Component{
         else {
             this.setState({counter: event.target.value})
         }
-        this.props.setState(event, this.props.place)
+        this.props.setState(event, this.props.index)
     }
     
     render() {
@@ -53,7 +53,7 @@ class CounterBox extends React.Component{
             <div> 
                 <label>{this.props.label}</label>
                 <button value={this.props.state} onClick={this.buttonMinus}>-</button>
-                <input style={{width: '10%', textAlign: 'center'}} type='number' min='0' id={this.props.place} onChange={this.counterChanged} readOnly={true} value={this.state.count}/>
+                <input style={{width: '10%', textAlign: 'center'}} type='number' min='0' id={this.props.index} onChange={this.counterChanged} readOnly={true} value={this.state.count}/>
                 <button value={this.props.state} onClick={this.buttonPlus}>+</button>
                 
                 
