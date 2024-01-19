@@ -6,11 +6,10 @@ import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, ma
 import { makeDropDownBox, makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame imports //
-import EndGame from './components/endGameBox/EndGame';
-// import { makeEndGameStartEndBox, } from './components/endGameBox/EndGameUtils';
+import { makeEndGameStartEndBox, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // chargestation imports //
-import ChargeStation from './components/chargeStation/ChargeStation';
+import { makeChargeStationAuto } from './components/chargeStation/ChargeStationUtils';
 
 // counterbox imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
@@ -29,54 +28,44 @@ class Form extends React.Component {
 
     this.matchData = props.matchData; // OVERALL MATCH DATA
 
-    this.regional = props.regional;
-    
+    this.regional = props.regional; // REGIONAL KEY
+
     this.changeMatchType = this.changeMatchType.bind(this);
     this.changeElmNum = this.changeElmNum.bind(this);
     this.changeMatchNumber = this.changeMatchNumber.bind(this);
     this.makeMatchTypeDropDown = this.makeMatchTypeDropDown.bind(this);
-    // this.makeMatchDropDown = this.makeMatchDropDown.bind(this);
 
     this.getMatchTeams = this.getMatchTeams.bind(this);
     this.changeTeam = this.changeTeam.bind(this);
     this.makeTeamDropdown = this.makeTeamDropdown.bind(this);
 
     this.whoWonClicked = this.whoWonClicked.bind(this);
-    // this.makeWhoWonBox = this.makeWhoWonBox.bind(this);
 
     this.copyArray = this.copyArray.bind(this);
 
     this.strategyBoxChanged = this.strategyBoxChanged.bind(this);
-    // this.makeStrategyBox = this.makeStrategyBox.bind(this);
 
     this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
-    // this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
 
-    // this.makeMatchDropDown = this.makeMatchDropDown.bind(this)
     this.dropDownChanged = this.dropDownChanged.bind(this);
-    // this.makeDropDownBox = this.makeDropDownBox.bind(this);
 
     this.changeEndGame = this.changeEndGame.bind(this);
     this.changeEndGameStartBox = this.changeEndGameStartBox.bind(this);
     this.changeEndGameEndBox = this.changeEndGameEndBox.bind(this);
-    this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
-    this.makeEndGameDropDown = this.makeEndGameDropDown.bind(this);
+
     this.changeChargeStation = this.changeChargeStation.bind(this);
-    this.makeChargeStationAuto = this.makeChargeStationAuto.bind(this);
 
     this.setComment = this.setComment.bind(this);
 
     this.penaltyBoxChecked = this.penaltyBoxChecked.bind(this);
-    // this.makePenaltyBox = this.makePenaltyBox.bind(this);
+
     this.bonusBoxChecked = this.bonusBoxChecked.bind(this);
-    // this.makeBonusBox = this.makeBonusBox.bind(this);
+
     this.overrideChange = this.overrideChange.bind(this);
-    // this.makeOverrideBox = this.makeOverrideBox.bind(this);
 
     this.counterBoxChanged = this.counterBoxChanged.bind(this);
     this.buttonMinus = this.buttonMinus.bind(this);
     this.buttonPlus = this.buttonPlus.bind(this);
-    // this.makeCounterBox = this.makeCounterBox.bind(this);
 
     this.submitState = this.submitState.bind(this);
 
@@ -109,7 +98,7 @@ class Form extends React.Component {
         cubesPts: 0, //cube pts
         conesPts: 0, //cone pts
       }
-    
+
   }
 
   componentDidMount() {
@@ -195,9 +184,6 @@ class Form extends React.Component {
       }
     }
 
-    // creating variable to get match type (quals, elims), and match number
-    const [a, r, matchType, matchNumber] = m.id.match(/(.+)_([a-z]{1,2}[0-9]?)m([0-9+]{1,2})/)
-
     this.setState({
       comments: m.Comments,
       matchType: matchType,
@@ -213,7 +199,7 @@ class Form extends React.Component {
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
       chargeStationValAuto: m.Autonomous.ChargeStation,
-      whoWon: '', 
+      whoWon: '',
       checkedWhoWon: ['', ''],
       rankingPts: rankingPoints,
       rankingState: rankingStates, //RANKING PTS STATES
@@ -269,32 +255,6 @@ class Form extends React.Component {
 
   //------------------------------------------------------------------------------------------------------------------------//
 
-  // makeMatchDropDown() {
-  //   let matchTypeState = this.state.matchType;
-  //   let matchState = '';
-  //   if (matchTypeState === 'q') {
-  //     matchState = "Qualification";
-  //   } else if (matchTypeState === 'qf') {
-  //     matchState = "QuarterFinal";
-  //   } else if (matchTypeState === 'sf') {
-  //     matchState = "SemiFinal";
-  //   } else if (matchTypeState === 'f') {
-  //     matchState = "Final";
-  //   }
-  //   return (
-  //     <div>
-  //       <MatchDropDown
-  //         setMatchType={this.changeMatchType}
-  //         setElmNum={this.changeElmNum}
-  //         generateMatchTypeNum={this.makeMatchTypeDropDown}
-  //         setMatchNumber={this.changeMatchNumber}
-  //         matchTypeValue={matchState}
-  //         matchNumber={this.state.matchNumber}
-  //       />
-  //     </div>
-  //   )
-  // }
-
   changeMatchType(event) {
     let matchType = event;
     if (matchType === 'q') {
@@ -337,7 +297,7 @@ class Form extends React.Component {
       getMatchesForRegional(this.regional)
         .then(data => {
           data.map((match) => {
-            console.log(match.key)
+            // console.log(match.key)
             if (match.key === matchKey) {
               this.setState({ matchData: match })
               this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
@@ -347,7 +307,6 @@ class Form extends React.Component {
           })
         })
         .catch(err => console.log(err))
-
     }
     console.log(this.matchKey);
     console.log(this.matchData)
@@ -412,14 +371,12 @@ class Form extends React.Component {
   }
 
   whoWonClicked(i, label) {
-
     let data = this.state.matchData;
     let rankingStates = (this.state.rankingState);
     if (data === "not found") {
       window.alert("PICK A TEAM FIRST");
     }
     else {
-
       if (rankingStates[0] === label) {
         rankingStates[0] = '';
         this.setState({ rankingPts: 0 })
@@ -445,26 +402,6 @@ class Form extends React.Component {
     }
   }
 
-  // makeWhoWonBox(name, i) {
-  //   let rankingStates = this.state.rankingState;
-  //   let checkVal;
-  //   if (rankingStates[0] === name) {
-  //     checkVal = true;
-  //   } else {
-  //     checkVal = false;
-  //   }
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={name}
-  //         changeCheckBoxState={this.whoWonClicked}
-  //         index={i}
-  //         checked={checkVal}
-  //       />
-  //     </div>
-  //   )
-  // }
-
   copyArray(Array) {
     let arrayCopy = [];
     for (let i = 0; i < Array.length; i++) {
@@ -472,7 +409,6 @@ class Form extends React.Component {
     }
 
     return arrayCopy
-
   }
 
   strategyBoxChanged(i, label) {
@@ -486,45 +422,11 @@ class Form extends React.Component {
     this.setState({ strategyVal: strategyStates })
   }
 
-  // makeStrategyBox(name, i) {
-  //   let strategyState = this.state.strategyVal;
-  //   let checkedVal;
-  //   if (strategyState[i] === name) {
-  //     checkedVal = true;
-  //   } else {
-  //     checkedVal = false;
-  //   }
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={name}
-  //         changeCheckBoxState={this.strategyBox}
-  //         index={i}
-  //         checked={checkedVal}
-  //       />
-  //     </div>
-  //   )
-  // }
-
   changeBooleanCheckBox(i) {
     let booleanStates = this.copyArray(this.state.booleans)
     booleanStates[i] = !booleanStates[i]
     this.setState({ booleans: booleanStates })
   }
-
-  // makeBooleanCheckBox(name, i) {
-  //   let booleanStates = this.state.booleans;
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={name}
-  //         changeCheckBoxState={this.changeBooleanCheckBox}
-  //         index={i}
-  //         checked={booleanStates[i]}
-  //       />
-  //     </div>
-  //   )
-  // }
 
   //---------------------------------------------------------------------------------------------------------------//
 
@@ -532,21 +434,6 @@ class Form extends React.Component {
     let dropDownStates = this.state.dropDownVal;
     dropDownStates[i] = event.target.value;
   }
-
-  // makeDropDownBox(title, option, i) {
-  //   let dropDownStates = this.state.dropDownVal;
-  //   return (
-  //     <div>
-  //       <DropDown
-  //         title={title}
-  //         choices={option}
-  //         index={i}
-  //         value={dropDownStates[i]}
-  //         setState={this.dropDownChanged}
-  //       />
-  //     </div>
-  //   )
-  // }
 
   //--------------------------------------------------------------------------------------------------------------//
 
@@ -566,72 +453,10 @@ class Form extends React.Component {
     endGame[2] = event.target.value;
   }
 
-  makeEndGameStartEndBox() {
-    let endGameValues = this.state.endGameVal;
-    let endGame = endGameValues[0];
-    if (endGame !== "None" && endGame !== '') {
-      if (endGame === "Attempted") {
-        return (
-          <div>
-            <p>Match Timer EX:125 (1:25)</p>
-            <label> {"End Game Start: "}
-              <input value={this.state.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameStartBox}></input>
-            </label>
-          </div>
-        )
-      } else if (endGame === 'Parked') {
-        return <div></div>
-      } else {
-        return (
-          <div>
-            <div>
-              <p style={{ fontSize: '14px' }}>Match Timer | EX Start: 25 (0:25), EX End: 3 (0:03)</p>
-              <label> {"End Game Start: "}
-                <input value={this.state.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameStartBox}></input>
-              </label>
-            </div>
-            <div>
-              <label> {"End Game End: "}
-                <input value={this.state.endGameVal[2]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameEndBox}></input>
-              </label>
-            </div>
-          </div>
-        )
-      }
-    } else {
-      return <div></div>;
-    }
-  }
-
-  makeEndGameDropDown() {
-    let endGameState = this.state.endGameVal
-    return (
-      <div>
-        <EndGame
-          changeEndGameUsed={this.changeEndGame}
-          makeEndGameStartEndBox={this.makeEndGameStartEndBox}
-          value={endGameState[0]}
-        />
-      </div>
-    )
-  }
-
   changeChargeStation(event) {
     let chargeStation = this.state.chargeStationValAuto;
     chargeStation = event.target.value;
     this.setState({ chargeStationValAuto: chargeStation });
-  }
-
-  makeChargeStationAuto() {
-    let chargeStationState = this.state.chargeStationValAuto;
-    return (
-      <div>
-        <ChargeStation
-          changeChargeStationUsed={this.changeChargeStation}
-          value={chargeStationState}
-        />
-      </div>
-    )
   }
 
   //-------------------------------------------------------------------------------------------------------------//
@@ -652,26 +477,6 @@ class Form extends React.Component {
     this.setState({ penaltyVal: penaltyStates })
   }
 
-  // makePenaltyBox(name, i) {
-  //   let penaltyStates = this.state.penaltyVal;
-  //   let checkedVal;
-  //   if (penaltyStates[i] === name) {
-  //     checkedVal = true;
-  //   } else {
-  //     checkedVal = false
-  //   }
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={name}
-  //         changeCheckBoxState={this.penaltyBoxChecked}
-  //         index={i}
-  //         checked={checkedVal}
-  //       />
-  //     </div>
-  //   )
-  // }
-
   bonusBoxChecked(i, label) {
     let ranking = this.copyArray(this.state.rankingState);
     if (ranking[i] === label) {
@@ -690,43 +495,9 @@ class Form extends React.Component {
     this.setState({ rankingState: ranking })
   }
 
-  // makeBonusBox(name, i) {
-  //   let rankingState = this.state.rankingState;
-  //   let checkedVal;
-  //   if (rankingState[i] === name) {
-  //     checkedVal = true;
-  //   }
-  //   else {
-  //     checkedVal = false;
-  //   }
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={name}
-  //         changeCheckBoxState={this.bonusBoxChecked}
-  //         index={i}
-  //         checked={checkedVal}
-  //       />
-  //     </div>
-  //   )
-  // }
-
   overrideChange() {
     this.setState({ override: !this.state.override });
   }
-
-  // makeOverrideBox() {
-  //   let overrideState = this.state.override;
-  //   return (
-  //     <div>
-  //       <CheckBox
-  //         label={"Overide "}
-  //         changeCheckBoxState={this.overrideChange}
-  //         checked={overrideState}
-  //       />
-  //     </div>
-  //   )
-  // }
 
   //-------------------------------------------------------------------------------------------------------------//
 
@@ -759,22 +530,6 @@ class Form extends React.Component {
       counterStates[i] = 0
     }
   }
-
-  // makeCounterBox(title, i) {
-  //   let counterStates = this.state.counterBoxVals;
-  //   return (
-  //     <div>
-  //       <CounterBox
-  //         label={title}
-  //         setState={this.counterBoxChanged}
-  //         index={i}
-  //         state={counterStates[i]}
-  //         minusButton={this.buttonMinus}
-  //         buttonPlus={this.buttonPlus}
-  //       />
-  //     </div>
-  //   )
-  // }
 
   //-------------------------------------------------------------------------------------------------------------//
 
@@ -1048,7 +803,6 @@ class Form extends React.Component {
       conesAccuracy: conesTeleAutoAccuracy,
       cubesPts: cubePts,
       conesPts: conePts
-
     })
 
     if (autoPlacement === '') {
@@ -1105,12 +859,12 @@ class Form extends React.Component {
       //AUTONOMOUS MATCH ENTREES
       matchEntry.Autonomous.AutonomousPlacement = autoPlacement
 
-      matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted 
-      matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted 
-      matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted 
-      matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted  
-      matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted 
-      matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted 
+      matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted
+      matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted
+      matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted
+      matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted
+      matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted
+      matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted
 
       matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
       matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
@@ -1130,12 +884,12 @@ class Form extends React.Component {
       matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
       matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
 
-      matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted 
-      matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted 
-      matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted 
-      matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted 
-      matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted 
-      matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted 
+      matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted
+      matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted
+      matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted
+      matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted
+      matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted
+      matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted
 
       matchEntry.Teleop.EndGame = chargeTeleFinal
       matchEntry.Teleop.EndGameTally.Start = endGameStart
@@ -1233,7 +987,7 @@ class Form extends React.Component {
         <br></br>
         {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Mobility ", 0)}
         <br></br>
-        {this.makeChargeStationAuto()}
+        {makeChargeStationAuto({ chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
 
         {/* TELEOP */}
@@ -1255,8 +1009,8 @@ class Form extends React.Component {
         {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 22)}
         {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 23)}
         <br></br>
-        {this.makeEndGameDropDown()}
-        {this.makeEndGameStartEndBox()}
+        {makeEndGameDropDown({ endGameVal: this.state.endGameVal, changeEndGame: this.changeEndGame })}
+        {makeEndGameStartEndBox({ endGameVal: this.state.endGameVal, changeEndGameStartBox: this.changeEndGameStartBox, changeEndGameEndBox: this.changeEndGameEndBox })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
