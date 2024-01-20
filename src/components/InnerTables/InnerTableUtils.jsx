@@ -6,12 +6,8 @@ import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 import TeamInnerTable from './TeamInnerTable'
 
-let gridState = false
-let teamState = false
-let conePtsState = false  //using let because do not how to pass states/variables that store data which changes in this case gridstatehandler
-let coneAccState = false
-let cubePtsState = false
-let cubeAccState = false
+//tableData 
+//apiData
 
 const handleEdit = (row) => {
     setModalState(true);
@@ -144,7 +140,7 @@ const renderRowSubComponentCubePtsTable = ({row},tableData) => {
     );
 }
 
-const renderRowSubComponent = ({ row }, apiData) => {
+const renderRowSubComponent = ({ row },apiData) => {
     let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)
   
     const disp = t.map(x => {
@@ -198,9 +194,9 @@ const renderRowSubComponent = ({ row }, apiData) => {
     );
 }
 
-function tableHandler(row){ //handles which state and inner table should be shown
+function tableHandler(row, header, visibleColumns, tableData, apiData){ //handles which state and inner table should be shown
 
-    if(gridState === true){
+    if(header === 'Avg Grid Points'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -213,7 +209,7 @@ function tableHandler(row){ //handles which state and inner table should be show
       </tr>
       )
     }
-    else if(coneAccState === true){
+    else if(header === 'Avg Cone Acc'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -226,7 +222,7 @@ function tableHandler(row){ //handles which state and inner table should be show
       </tr>
       )
     }
-    else if(conePtsState === true){
+    else if(header === 'Avg Cone Points'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -239,7 +235,7 @@ function tableHandler(row){ //handles which state and inner table should be show
       </tr>
       )
     }
-    else if(cubeAccState === true){
+    else if(header === 'Avg Cube Acc'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -252,7 +248,7 @@ function tableHandler(row){ //handles which state and inner table should be show
       </tr>
       )
     }
-    else if(cubePtsState === true){
+    else if(header === 'Avg Cube Points'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -265,7 +261,7 @@ function tableHandler(row){ //handles which state and inner table should be show
       </tr>
       )
     }
-    else if(teamState === true){
+    else if(header === 'Team #'){
       return (
       <tr>
         <td colSpan={visibleColumns.length}
@@ -281,26 +277,5 @@ function tableHandler(row){ //handles which state and inner table should be show
     else{console.log('error in tablehandler or nothing shown')}
   } 
 
-  function gridStateHandler(header){
-    if(header === "Avg Grid Points"){
-        gridState = !gridState
-    }
-    else if(header === "Team #"){
-        teamState = !teamState
-    }
-    else if(header === "Avg Cone Points"){
-        conePtsState = !conePtsState
-    }
-    else if(header === "Avg Cone Acc"){
-        coneAccState = !coneAccState
-    }
-    else if(header === "Avg Cube Points"){
-        cubePtsState = !cubePtsState
-    }
-    else if(header === "Avg Cube Acc"){
-        cubeAccState = !cubeAccState
-    }
 
-  }
-
-export { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable, tableHandler, gridStateHandler };
+export { tableHandler };

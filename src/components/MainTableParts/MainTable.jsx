@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getMatchesForRegional} from "../../api";
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
-import { renderRowSubComponentGrid, renderRowSubComponent, renderRowSubComponentCubePtsTable, renderRowSubComponentCubeAccTable, renderRowSubComponentConePtsTable, renderRowSubComponentConeAccTable, tableHandler } from "../InnerTables/InnerTableUtils";
+import { tableHandler } from "../InnerTables/InnerTableUtils";
 import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 import { ueDebug, ueSetTeamObj } from "./MTEffectFunc"
 //import { tableData } from "./TableData"
@@ -17,14 +17,9 @@ function MainTable(props) {
   const [tableData,setTableData] = useState([]); //data on table
   const [teamsData,setTeamsData] = useState([]); //data of teams
   const [apiData,setApiData] = useState([]) //data retrieved 
-  const [deletedData,setDeletedData] = useState([]); //stores deleted data
-
-  const [gridState,setGridState] = useState(false); 
-  const [teamState,setTeamState] = useState(false); 
-  const [conePtsState,setConePtsState] = useState(false); 
-  const [coneAccState,setConeAccState] = useState(false); 
-  const [cubePtsState,setCubePtsState] = useState(false); 
-  const [cubeAccState,setCubeAccState] = useState(false);  
+  const [deletedData,setDeletedData] = useState([])
+  
+  const [headerState, setHeaderState] = useState([])
 
   const [modalState, setModalState] = useState(false);
   const [modalData, setModalData] = useState();
@@ -239,20 +234,10 @@ const getTeams = async () => {
     .catch(err => console.log(err))
 }
 
+
 const modalClose = () => {
   setModalState(false);
-}
-
-function gridStateHandler(bool, bool2, bool3, bool4, bool5, bool6){
-  setGridState(bool);
-  setConePtsState(bool2);
-  setConeAccState(bool3);
-  setCubeAccState(bool4);
-  setCubePtsState(bool5);
-  setTeamState(bool6);
-}
-
- 
+} 
 
 // ======================================= !TABLE HERE! ===========================================
 const data = /*tableData;*/ React.useMemo(
@@ -296,6 +281,7 @@ const data = /*tableData;*/ React.useMemo(
           <span{...row.getToggleRowExpandedProps()}>
             <div style={{fontWeight: 'bold', fontSize: '17px', }}>
               {row.values.TeamNumber}
+              {row.isExpanded ? console.log('works') : console.log()}
             </div>
           </span>
           )
@@ -303,7 +289,7 @@ const data = /*tableData;*/ React.useMemo(
       {
         Header: "Priorities/Strategies",
         accessor: "Priorities",
-        Cell: ({ row }) => (
+        Cell:({ row }) => (
           <div
               style = {{
                 minWidth:'150px',
@@ -312,7 +298,7 @@ const data = /*tableData;*/ React.useMemo(
           >
             {row.original.Priorities}
           </div>
-        )
+        ) 
       },
       {
         Header: "OPR",
@@ -488,34 +474,12 @@ const data = /*tableData;*/ React.useMemo(
                 {row.cells.map(cell => {
                   return (   
                     <td 
-                      onClick = {() => { //calls and returns parameters for inner tables
+                      onClick = {() => {
+                        setHeaderState(cell.column.Header)
+                        console.log(cell.column.Header)
 
-                        gridStateHandler(cell.column.Header)
-
-                        // if(cell.column.Header === "Avg Grid Points"){
-                        //   gridStateHandler(!bool, bool2, bool3, bool4, bool5, bool6 ) //AVG GRID POINTS [0]
-                        //   }
-                        // else if(cell.column.Header === "Team #"){
-                        //   gridStateHandler(bool, bool2, bool, bool4, bool5, !bool6 ) //TEAM NUMBER [5]
-                        //   }
-                        // else if(cell.column.Header === "Avg Cone Points"){
-                        //   gridStateHandler(bool, !bool2, bool3, bool4, bool5, bool6 ) //AVG CONE POINTS [1]
-                        //   }
-                        // else if(cell.column.Header === "Avg Cone Acc"){
-                        //     gridStateHandler(bool, bool2, !bool3, bool4, bool5, bool6 ) //AVG CONE ACC [2]
-                        //     }
-                        // else if(cell.column.Header === "Avg Cube Points"){
-                        //     gridStateHandler(bool, bool2, bool3, bool4, !bool5, bool6 ) //AVG CUBE POINTS [3]
-                        //     }
-                        // else if(cell.column.Header === "Avg Cube Acc"){
-                        //     gridStateHandler(bool, bool2, bool3, !bool4, bool5, bool6 ) //AVG CUBE ACC [4]
-                        //     }
-                        // else {
-                        //   console.log('wrong cell or fail')
-                        //     }
-                        }
-                      }//cell.column.Header === "Avg Grid Points" ? gridStateHandler(true, false, false, false, false) : gridStateHandler(false) }}
-
+                      }}
+                   
                       {...cell.getCellProps()}
                       style={{
                         padding: '8px',
@@ -529,10 +493,11 @@ const data = /*tableData;*/ React.useMemo(
                 })}
               </tr>
 
-              {row.isExpanded ? tableHandler(row) : null}
+              {
+                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, apiData): null
 
 
-
+              }
                   </React.Fragment>
             )
           })} 
