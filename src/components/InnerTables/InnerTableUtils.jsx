@@ -6,24 +6,6 @@ import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 import TeamInnerTable from './TeamInnerTable'
 
-//tableData 
-//apiData
-
-const handleEdit = (row) => {
-    setModalState(true);
-    //console.log(row);
-    //console.log(apiData)
-    let setModal = apiData;   //needs refining/doesn't work
-    setModal = setModal.filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
-    setModalData(setModal);
-  }
-
-const handleDelete = (row) => {
-    let deleted = deletedData;
-    setDeletedData(deletedData.concat(row)); //needs refining/doesn't work
-    console.log(deletedData);
-  }
-
 const renderRowSubComponentGrid = ({row},tableData) => {
 
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber )
@@ -140,7 +122,7 @@ const renderRowSubComponentCubePtsTable = ({row},tableData) => {
     );
 }
 
-const renderRowSubComponent = ({ row },apiData) => {
+const renderRowSubComponent = ({ row }, apiData, modalFunction, modalDataFunction) => {
     let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)
   
     const disp = t.map(x => {
@@ -185,7 +167,7 @@ const renderRowSubComponent = ({ row },apiData) => {
   
     return disp.length > 0 ?
     (<pre>
-        <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable setModal={handleEdit} delete={handleDelete} information = {disp}/>} </div>
+        <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} delete={handleDelete} information = {disp} setModalData={modalDataFunction} />} </div>
     </pre>)
     : (
         <div style={{
@@ -194,7 +176,7 @@ const renderRowSubComponent = ({ row },apiData) => {
     );
 }
 
-function tableHandler(row, header, visibleColumns, tableData, apiData){ //handles which state and inner table should be shown
+function tableHandler(row, header, visibleColumns, tableData, apiData, modalFunction, setModalData){ //handles which state and inner table should be shown
 
     if(header === 'Avg Grid Points'){
       return (
@@ -269,13 +251,12 @@ function tableHandler(row, header, visibleColumns, tableData, apiData){ //handle
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponent ({row},apiData)}
+          {renderRowSubComponent ({row}, apiData, modalFunction, setModalData)}
         </td>
       </tr>
       )
     }
     else{console.log('error in tablehandler or nothing shown')}
   } 
-
 
 export { tableHandler };

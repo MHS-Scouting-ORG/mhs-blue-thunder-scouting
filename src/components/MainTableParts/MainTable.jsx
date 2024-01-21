@@ -6,7 +6,6 @@ import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
 import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 import { ueDebug, ueSetTeamObj } from "./MTEffectFunc"
-//import { tableData } from "./TableData"
 import GlobalFilter from "../GlobalFilter";
 import List from "../List";
 import Modal from "../Modal";
@@ -23,7 +22,6 @@ function MainTable(props) {
 
   const [modalState, setModalState] = useState(false);
   const [modalData, setModalData] = useState();
-  //states for innerTables ^
 
   const [oprList,setOprList] = useState([]);
   const [dprList,setDprList] = useState([]);
@@ -33,12 +31,13 @@ function MainTable(props) {
   const [sortBy,setSortBy] = useState([]);
 
 
-   //useEffect(ueDebug) //debug purposes or test ^ 
+  //useEffect(ueDebug) //debug purposes or test ^ 
   
    useEffect(() => {
     getTeams()
       .then(data => {
         setTeamsData(data)
+        console.log(modalState)
       })
       .catch(console.log.bind(console))
    },[])
@@ -234,10 +233,21 @@ const getTeams = async () => {
     .catch(err => console.log(err))
 }
 
-
 const modalClose = () => {
   setModalState(false);
 } 
+
+const modalOpen = () => {
+  setModalState(true)
+  return modalState
+}
+
+const setDataModal = (row) => {
+    let setModal = apiData;
+    setModal = setModal.filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
+    setModalData(setModal)
+}
+
 
 // ======================================= !TABLE HERE! ===========================================
 const data = /*tableData;*/ React.useMemo(
@@ -281,7 +291,7 @@ const data = /*tableData;*/ React.useMemo(
           <span{...row.getToggleRowExpandedProps()}>
             <div style={{fontWeight: 'bold', fontSize: '17px', }}>
               {row.values.TeamNumber}
-              {row.isExpanded ? console.log('works') : console.log()}
+              {row.isExpanded ? console.log(modalState) : console.log()}
             </div>
           </span>
           )
@@ -476,8 +486,6 @@ const data = /*tableData;*/ React.useMemo(
                     <td 
                       onClick = {() => {
                         setHeaderState(cell.column.Header)
-                        console.log(cell.column.Header)
-
                       }}
                    
                       {...cell.getCellProps()}
@@ -494,7 +502,7 @@ const data = /*tableData;*/ React.useMemo(
               </tr>
 
               {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, apiData): null
+                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, apiData, modalOpen, setDataModal): null
 
 
               }
@@ -508,4 +516,4 @@ const data = /*tableData;*/ React.useMemo(
   )
 }
 
-export default MainTable; 
+export  default MainTable; 

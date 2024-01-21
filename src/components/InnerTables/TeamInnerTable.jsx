@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTable, useSortBy } from 'react-table'
 
 const TeamInnerTable = (props) => {
-
     const data = props.information;
     const deleteHandler = props.delete;
-    const editHandler = props.setModal;
+    const modalFunc = props.modalOn
+    const setModalData = props.setModalData
 
     const columns = React.useMemo(
         () => [
@@ -189,7 +189,12 @@ const TeamInnerTable = (props) => {
                       Header: 'Edit',
                       Cell: ({row}) => {
                         return <div>
-                          <button onClick={() => editHandler(row)}> EDIT </button>
+                          <button onClick={() => {
+                            modalFunc()
+                            setModalData(row)
+                          }}> 
+                              EDIT 
+                          </button>
                         </div>
                       }
                     }
