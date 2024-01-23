@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
+//import { buildErrorMessage } from 'vite';
   //seperate file for when we figure out prior problems(passing function)
 async function getTeams () {
   return await (getTeamsInRegional('2023azva'))
@@ -9,7 +10,7 @@ async function getTeams () {
        const teamNumObj = {
          TeamNumber: obj.team_number,
          Matches: '',
-         OPR: "",
+         OPR: "", 
          Priorities: '',
          CCWM: "", 
          AvgPoints: 0,
@@ -37,4 +38,36 @@ async function getTeams () {
    .catch(err => console.log(err))
 }
 
-export { getTeams } 
+async function getTeamsMatches(teamNumbers) {
+  return await (getMatchesForRegional('2023azva'))
+  .catch(err => console.log(err))
+  .then(data => {
+    return teamNumbers.map(() => {
+      const teamMatObj = {
+        TeamNumber: teamNumbers.TeamNumber,
+        Matches: data.data.teamMatchesByRegional.items,
+        OPR: teamNumbers.OPR, 
+        Priorities: teamNumbers.Priorities,
+        CCWM: teamNumbers.CCWM, 
+        AvgPoints: teamNumbers.AvgPoints,
+        AvgGridPoints: teamNumbers.AvgGridPoints,
+        AvgConePts: teamNumbers.AvgConePts,
+        AvgConeAcc: teamNumbers.AvgConeAcc,
+        AvgCubePts: teamNumbers.AvgCubePts,
+        AvgCubeAcc: teamNumbers.AvgCubeAcc,
+        AvgCSPoints: teamNumbers.CSPoints,
+        DPR: teamNumbers.DPR,
+        Penalties: teamNumbers.Penalties,
+        TeamNum: teamNumbers.TeamNum,
+
+        NGridPoints: 0,
+        NConePoints: 0, 
+        NConeAccuracy: 0, 
+        NCubePoints: 0, 
+        NCubeAccuracy: 0, 
+        NChargeStation: 0,
+      }
+    })
+  })
+}
+export { getTeams,getTeamsMatches } 

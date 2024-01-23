@@ -1,5 +1,5 @@
 import { getMatchesForRegional} from "../../api";
-import { getTeams } from "./MTUtils"
+import { getTeams, getTeamsMatches } from "./MTUtils"
 //seperate file which holds functions for the useffect in mt
 function ueDebug (){
     getMatchesForRegional('2023azva')
@@ -8,15 +8,29 @@ function ueDebug (){
     }),
     []}
 
-function ueSetTeamObj(){ // sets team numbers of objects
+ function ueSetTeamObj(){ // sets team numbers of objects
   //const [teamsData, setTeamsData] = useState([]);
-  getTeams()
+   getTeams()
     .then(data => {
-      return data
+      console.log(data)
     })
     .catch(console.log.bind(console)),[]
   }
   //doesn't work ^(attempts)
 
+  function ueTableData(){
+    getTeams()
+    .then(tData => {
+      //console.log(data)
+      const teamObj = tData
+      getTeamsData(teamObj)
+      .then(data => {
+        tData.map(() => {
 
-export { ueDebug, ueSetTeamObj };
+        })
+      })
+    })
+  }
+
+
+export { ueDebug, ueSetTeamObj, ueTableData };

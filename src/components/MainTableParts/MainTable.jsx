@@ -5,7 +5,7 @@ import { getMatchesForRegional} from "../../api";
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
 import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
-import { ueDebug, ueSetTeamObj } from "./MTEffectFunc"
+import { ueDebug, ueSetTeamObj, ueTableData } from "./MTEffectFunc"
 import GlobalFilter from "../GlobalFilter";
 import List from "../List";
 import Modal from "../Modal";
@@ -30,23 +30,25 @@ function MainTable(props) {
 
   const [sortBy,setSortBy] = useState([]);
 
+  useEffect(ueTableData) //debug purposes or test ^ 
 
-  //useEffect(ueDebug) //debug purposes or test ^ 
-  
+  //useEffect()
+
    useEffect(() => {
     getTeams()
       .then(data => {
         setTeamsData(data)
-        console.log(modalState)
+        console.log(data)
       })
       .catch(console.log.bind(console))
    },[])
-   // ^sets team numbers of objects 
+   //^sets team numbers of objects 
 
    useEffect(() => { //debug, reference, or test
     getMatchesForRegional(regional)
     .then(data => {
       let setApi = data.data.teamMatchesByRegional.items;
+      console.log(setApi)      
       deletedData.map(deletedRow => {
         setApi = setApi.filter(x => x.id.substring(x.id.indexOf('_')+1) !== deletedData.original.Match)
       })
@@ -65,6 +67,7 @@ function MainTable(props) {
       const cData = oprDataArr[0] //ccwm 
       const dData = oprDataArr[1] //dpr
       const oData = oprDataArr[2] //opr
+      console.log(data)
 
       setOprList(oData)
       setDprList(dData)
@@ -84,8 +87,8 @@ function MainTable(props) {
       teamStats = teamStats.filter(x => x.id !== regional + "_" + deletedRow.original.Match)
     });
 
-    //console.log(teamStats)
-    //console.log(apiData);
+    console.log(teamStats)
+    console.log(apiData);
 
     const points = teamStats.map(x => x.Teleop.ScoringTotal.Total) //for deviation
     const gridPoints = teamStats.map(x => x.Teleop.ScoringTotal.GridPoints)
