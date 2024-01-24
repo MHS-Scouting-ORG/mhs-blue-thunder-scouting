@@ -365,9 +365,9 @@ class Form extends React.Component {
       </div>
     ) : (
       <div>
-        <lable> Team Number
+        <label> Team Number
           <input type='number' onChange={e => { this.setState({ teamNumber: 'frc' + e.target.value }) }}></input>
-        </lable>
+        </label>
       </div>
     )
   }
