@@ -21,8 +21,6 @@ import Headers from './components/Header';
 import { submitState, copyArray } from './FormUtils';
 
 // api imports //
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
-import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder'
 import { getMatchesForRegional } from '../api/bluealliance';
 
 class Form extends React.Component {
@@ -68,7 +66,6 @@ class Form extends React.Component {
     this.buttonMinus = this.buttonMinus.bind(this);
     this.buttonPlus = this.buttonPlus.bind(this);
 
-    // this.submitState = this.submitState.bind(this);
     this.setPoints = this.setPoints.bind(this);
 
       // initializing form by making array of data
@@ -103,6 +100,7 @@ class Form extends React.Component {
 
   }
 
+  //upon component init
   componentDidMount() {
     console.log(`fill form`)
     if (!this.props.matchData)
@@ -211,7 +209,7 @@ class Form extends React.Component {
           /*1 - driveStrength*/m.Teleop.DriveStrength,
           /*2 - driveSpeed*/m.Teleop.DriveSpeed
       ],
-      counterBoxVals: [
+      counterBoxVals: [ // number corresponds to their spot within the counterbox array
           //AUTONOMOUS SCORING
           /*0*/m.Autonomous.Scored.Cubes.Upper,
           /*1*/m.Autonomous.Scored.Cubes.Mid,
@@ -365,9 +363,9 @@ class Form extends React.Component {
       </div>
     ) : (
       <div>
-        <lable> Team Number
+        <label> Team Number
           <input type='number' onChange={e => { this.setState({ teamNumber: 'frc' + e.target.value }) }}></input>
-        </lable>
+        </label>
       </div>
     )
   }
@@ -632,7 +630,7 @@ class Form extends React.Component {
         {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Lost ", 2)}
         {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Activation ", 1)}
         {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Sustainability ", 2)}
-        <Headers display={this.state.rankingPts} />
+        <Headers display={this.state.rankingPts}/>
         <br></br>
 
         {/* STRATEGY & PRIORITIES */}
@@ -669,8 +667,7 @@ class Form extends React.Component {
 
                 }
               })
-          }
-          }>SUBMIT</button>
+          }}>SUBMIT</button>
         </div>
         <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
         {makeOverrideBox({ override: this.state.override, overrideChange: this.overrideChange })}
