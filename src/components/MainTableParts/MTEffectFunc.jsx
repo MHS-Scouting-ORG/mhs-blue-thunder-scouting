@@ -4,7 +4,7 @@ import { getTeams, getTeamsMatches } from "./MTUtils"
 function ueDebug (){
     getMatchesForRegional('2023azva')
     .then(data => {
-      console.log(data.data.teamMatchesByRegional.items)
+      console.log(data)
     }),
     []}
 
@@ -23,9 +23,10 @@ function ueDebug (){
     .then(tData => {
       //console.log(data)
       const teamObj = tData
-      getTeamsData(teamObj)
+      getTeamsMatches(teamObj)
       .then(data => {
         tData.map(() => {
+          console.log(data)
 
         })
       })

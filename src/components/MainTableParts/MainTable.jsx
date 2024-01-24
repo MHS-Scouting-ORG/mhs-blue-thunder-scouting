@@ -32,7 +32,7 @@ function MainTable(props) {
 
   useEffect(ueTableData) //debug purposes or test ^ 
 
-  //useEffect()
+  useEffect(ueDebug)
 
    useEffect(() => {
     getTeams()
@@ -47,6 +47,7 @@ function MainTable(props) {
    useEffect(() => { //debug, reference, or test
     getMatchesForRegional(regional)
     .then(data => {
+      console.log(data)
       let setApi = data.data.teamMatchesByRegional.items;
       console.log(setApi)      
       deletedData.map(deletedRow => {
