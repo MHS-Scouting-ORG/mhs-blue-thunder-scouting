@@ -1,5 +1,5 @@
 import { getMatchesForRegional} from "../../api";
-import { getTeams, getTeamsMatches } from "./MTUtils"
+import { getTeams, getTeamsMatchesAndTableData } from "./MTUtils"
 //seperate file which holds functions for the useffect in mt
 function ueDebug (){
     getMatchesForRegional('2023azva')
@@ -18,17 +18,14 @@ function ueDebug (){
   }
   //doesn't work ^(attempts)
 
-  function ueTableData(){
-    getTeams()
-    .then(tData => {
-      //console.log(data)
+  async function ueTableData(){
+     return await getTeams()
+    .then(async tData => {
       const teamObj = tData
-      getTeamsMatches(teamObj)
+      return await getTeamsMatchesAndTableData(teamObj)
       .then(data => {
-        tData.map(() => {
-          console.log(data)
-
-        })
+        const tableData = data
+        return tableData
       })
     })
   }

@@ -5,7 +5,8 @@ import { getMatchesForRegional} from "../../api";
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
 import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
-import { ueDebug, ueSetTeamObj, ueTableData } from "./MTEffectFunc"
+import { ueDebug, ueSetTeamObj, ueTableData, } from "./MTEffectFunc"
+import { getCcwmList } from "./MTUtils"
 import GlobalFilter from "../GlobalFilter";
 import List from "../List";
 import Modal from "../Modal";
@@ -30,7 +31,16 @@ function MainTable(props) {
 
   const [sortBy,setSortBy] = useState([]);
 
-  useEffect(ueTableData) //debug purposes or test ^ 
+  useEffect(() => setTableData(ueTableData), [])
+  
+  useEffect(() => {
+    ueTableData()
+      .then(data => {
+        console.log(data)
+    })
+  }) 
+  
+  //debug purposes or test ^ 
 
   useEffect(ueDebug)
 
@@ -38,7 +48,7 @@ function MainTable(props) {
     getTeams()
       .then(data => {
         setTeamsData(data)
-        console.log(data)
+        console.log(tableData)
       })
       .catch(console.log.bind(console))
    },[])
@@ -47,7 +57,7 @@ function MainTable(props) {
    useEffect(() => { //debug, reference, or test
     getMatchesForRegional(regional)
     .then(data => {
-      console.log(data)
+      console.log(tableData)
       let setApi = data.data.teamMatchesByRegional.items;
       console.log(setApi)      
       deletedData.map(deletedRow => {
@@ -77,13 +87,13 @@ function MainTable(props) {
     .catch(console.log.bind(console))
    },[teamsData])
 
-   useEffect(() => setTableData(teamsData.map(team => { //'big' or whole data array that is used for table
+   useEffect(() => setTableData(ueTableData), [teamsData, oprList, dprList, ccwmList, deletedData])/*teamsData.map(team => { //'big' or whole data array that is used for table
 
     //console.log(deletedData[0]);
-    let teamStats = apiData.filter(x => x.Team === team.TeamNum)/*.filter(x => x.id !== deletedData.map(del => {
-      console.log(del)
-      del.original.Match
-    }))//*/
+    // let teamStats = apiData.filter(x => x.Team === team.TeamNum)/*.filter(x => x.id !== deletedData.map(del => {
+    //   console.log(del)
+    //   del.original.Match
+    // }))
     deletedData.map(deletedRow => {
       teamStats = teamStats.filter(x => x.id !== regional + "_" + deletedRow.original.Match)
     });
@@ -104,6 +114,8 @@ function MainTable(props) {
     const mCubePoints = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCubePts.substring(2,8))
     const mCubeAcc = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCubeAcc.substring(2,8))
     const mCSPoints = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCSPoints)
+
+    console.log(tableData)
 
     const avgPoints = calcAvgPoints(teamStats)
     const avgGridPoints = calcAvgGrid(teamStats)
@@ -199,7 +211,7 @@ function MainTable(props) {
       NCubeAccuracy: isNaN(rCubeAcc) !== true ? rCubeAcc : 0,
       NChargeStation: isNaN(rCSPoints) !== true ? rCSPoints : 0,
     }
-  })), [teamsData, oprList, dprList, ccwmList, deletedData])
+  })*///), [teamsData, oprList, dprList, ccwmList, deletedData])
 
 const getTeams = async () => {
    return await (getTeamsInRegional(regional))
@@ -236,6 +248,7 @@ const getTeams = async () => {
     })
     .catch(err => console.log(err))
 }
+
 
 const modalClose = () => {
   setModalState(false);
