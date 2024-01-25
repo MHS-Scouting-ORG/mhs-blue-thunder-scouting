@@ -31,73 +31,48 @@ class Form extends React.Component {
 
     this.regional = props.regional; // REGIONAL KEY
 
-    this.changeMatchType = this.changeMatchType.bind(this);
-    this.changeElmNum = this.changeElmNum.bind(this);
-    this.changeMatchNumber = this.changeMatchNumber.bind(this);
-    this.makeMatchTypeDropDown = this.makeMatchTypeDropDown.bind(this);
+    // STATE SETTING FUNCTIONS //
+    // this.setCommentState = this.setCommentState.bind(this);
+    // this.setMatchTypeState = this.setMatchTypeState.bind(this);
+    // this.setElmNumState = this.setElmNumState.bind(this);
+    // this.setMatchNumberState = this.setMatchNumberState.bind(this);
+    // this.setMatchDataState = this.setMatchDataState.bind(this);
+    // this.setTeamNumberState = this.setTeamNumberState.bind(this);
+    // this.setTeamsState = this.setTeamsState.bind(this);
+    // this.setOverrideState = this.setOverrideState.bind(this);
+    // this.setEndGameValState = this.setEndGameValState.bind(this);
+    // this.setChargeStationValAutoState = this.setChargeStationValAutoState.bind(this);
+    // this.setWhoWonState = this.se
 
-    this.getMatchTeams = this.getMatchTeams.bind(this);
-    this.changeTeam = this.changeTeam.bind(this);
-    this.makeTeamDropdown = this.makeTeamDropdown.bind(this);
-
-    this.whoWonClicked = this.whoWonClicked.bind(this);
-
-    this.strategyBoxChanged = this.strategyBoxChanged.bind(this);
-
-    this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
-
-    this.dropDownChanged = this.dropDownChanged.bind(this);
-
-    this.changeEndGame = this.changeEndGame.bind(this);
-    this.changeEndGameStartBox = this.changeEndGameStartBox.bind(this);
-    this.changeEndGameEndBox = this.changeEndGameEndBox.bind(this);
-
-    this.changeChargeStation = this.changeChargeStation.bind(this);
-
-    this.setComment = this.setComment.bind(this);
-
-    this.penaltyBoxChecked = this.penaltyBoxChecked.bind(this);
-
-    this.bonusBoxChecked = this.bonusBoxChecked.bind(this);
-
-    this.overrideChange = this.overrideChange.bind(this);
-
-    this.counterBoxChanged = this.counterBoxChanged.bind(this);
-    this.buttonMinus = this.buttonMinus.bind(this);
-    this.buttonPlus = this.buttonPlus.bind(this);
-
-    this.setPoints = this.setPoints.bind(this);
-
-      // initializing form by making array of data
-      console.log(`initializing form`)
-      this.state = {
-        comments: '', //comments
-        matchType: '', //match type
-        elmNum: '', //elimination
-        matchNumber: '', //match number
-        matchData: 'not found', //data for a given match
-        teamNumber: ' ', //team num
-        teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
-        override: false, //override bool
-        endGameVal: ['', '', ''], //
-        chargeStationValAuto: '', //charge station status during auto
-        whoWon: '', //whichever team won
-        checkedWhoWon: [' ', ' '], /* UNUSED */
-        rankingPts: 0, //teams ranking points
-        rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
-        penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
-        dropDownVal: ['', '', ''], //dropdown vals???
-        counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted
-        strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
-        booleans: [false, false], //mobility, smartplacement
-        totalPoints: 0, //total points
-        totalGrid: 0, //total grid points
-        cubesAccuracy: 0, //cube accuracy
-        conesAccuracy: 0, //cone accuracy
-        cubesPts: 0, //cube pts
-        conesPts: 0, //cone pts
-      }
-
+    // initializing form by making array of data
+    console.log(`initializing form`)
+    this.state = {
+      comments: '', //comments
+      matchType: '', //match type
+      elmNum: '', //elimination
+      matchNumber: '', //match number
+      matchData: 'not found', //data for a given match
+      teamNumber: ' ', //team num
+      teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
+      override: false, //override bool
+      endGameVal: ['', '', ''], //
+      chargeStationValAuto: '', //charge station status during auto
+      whoWon: '', //whichever team won
+      checkedWhoWon: [' ', ' '], /* UNUSED */
+      rankingPts: 0, //teams ranking points
+      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
+      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
+      dropDownVal: ['', '', ''], //dropdown vals???
+      counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted
+      strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
+      booleans: [false, false], //mobility, smartplacement
+      totalPoints: 0, //total points
+      totalGrid: 0, //total grid points
+      cubesAccuracy: 0, //cube accuracy
+      conesAccuracy: 0, //cone accuracy
+      cubesPts: 0, //cube pts
+      conesPts: 0, //cone pts
+    }
   }
 
   //upon component init
@@ -255,23 +230,28 @@ class Form extends React.Component {
 
   //------------------------------------------------------------------------------------------------------------------------//
 
-  changeMatchType(event) {
+  // SET STATE FUNCTIONS //
+  setGivenState = (obj) => {
+    this.setState(obj)
+  }
+
+  changeMatchType = (event) => {
     let matchType = event;
     if (matchType === 'q') {
       this.setState({ elmNum: '' });
     }
-    this.setState({ matchType: event });
+    this.setState({ matchType: event, });
     this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
     this.setState({ teamNumber: ' ' });
   }
 
-  changeElmNum(event) {
+  changeElmNum = (event) => {
     this.setState({ elmNum: (event.target.value) });
     this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
     this.setState({ teamNumber: ' ' });
   }
 
-  changeMatchNumber(event) {
+  changeMatchNumber = (event) => {
     if (event.target.value !== 0) {
       this.setState({ override: false })
     }
@@ -280,7 +260,7 @@ class Form extends React.Component {
     this.setState({ teamNumber: ' ' });
   }
 
-  makeMatchTypeDropDown(matchType) {
+  makeMatchTypeDropDown = (matchType) =>  {
     if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
       return (
         <input value={this.state.elmNum} onChange={this.changeElmNum} />
@@ -291,7 +271,7 @@ class Form extends React.Component {
   //CHANGE THE REGIONAL KEY VIA 'main.jsx'
 
   /* gets given teams of a match */
-  async getMatchTeams() {
+  getMatchTeams = async () =>  {
     let matchKey =  /*put this years event*/ this.regional + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
     const teams = async () => {
       getMatchesForRegional(this.regional)
@@ -313,7 +293,7 @@ class Form extends React.Component {
     teams();
   }
 
-  changeTeam(event) {
+  changeTeam = (event) => {
     this.setState({ teamNumber: event.target.value });
     let data = this.state.matchData;
     let teamColor = 'red';
@@ -352,7 +332,7 @@ class Form extends React.Component {
     this.setState({ whoWon: whoWon });
   }
 
-  makeTeamDropdown() {
+  makeTeamDropdown = () => {
     let alliances = this.state.teams;
     return parseInt(this.state.matchNumber) !== 0 ? (
       <div>
@@ -370,7 +350,7 @@ class Form extends React.Component {
     )
   }
 
-  whoWonClicked(i, label) {
+  whoWonClicked = (i, label) => {
     let data = this.state.matchData;
     let rankingStates = (this.state.rankingState);
     if (data === "not found") {
@@ -402,7 +382,7 @@ class Form extends React.Component {
     }
   }
 
-  strategyBoxChanged(i, label) {
+  strategyBoxChanged = (i, label) => {
     let strategyStates = copyArray(this.state.strategyVal);
     if (strategyStates[i] === label) {
       strategyStates[i] = ' ';
@@ -413,7 +393,7 @@ class Form extends React.Component {
     this.setState({ strategyVal: strategyStates })
   }
 
-  changeBooleanCheckBox(i) {
+  changeBooleanCheckBox = (i) => {
     let booleanStates = copyArray(this.state.booleans)
     booleanStates[i] = !booleanStates[i]
     this.setState({ booleans: booleanStates })
@@ -421,30 +401,30 @@ class Form extends React.Component {
 
   //---------------------------------------------------------------------------------------------------------------//
 
-  dropDownChanged(event, i) {
+  dropDownChanged = (event, i) => {
     let dropDownStates = this.state.dropDownVal;
     dropDownStates[i] = event.target.value;
   }
 
   //--------------------------------------------------------------------------------------------------------------//
 
-  changeEndGame(event) {
+  changeEndGame = (event) => {
     let endGame = Array(this.state.endGameVal);
     endGame[0] = event.target.value;
     this.setState({ endGameVal: endGame });
   }
 
-  changeEndGameStartBox(event) {
+  changeEndGameStartBox = (event) => {
     let endGame = this.state.endGameVal;
     endGame[1] = event.target.value;
   }
 
-  changeEndGameEndBox(event) {
+  changeEndGameEndBox = (event) => {
     let endGame = this.state.endGameVal;
     endGame[2] = event.target.value;
   }
 
-  changeChargeStation(event) {
+  changeChargeStation = (event) => {
     let chargeStation = this.state.chargeStationValAuto;
     chargeStation = event.target.value;
     this.setState({ chargeStationValAuto: chargeStation });
@@ -452,13 +432,13 @@ class Form extends React.Component {
 
   //-------------------------------------------------------------------------------------------------------------//
 
-  setComment(event) {
+  setComment = (event) => {
     this.setState({ comments: event.target.value });
   }
 
   //-------------------------------------------------------------------------------------------------------------//
 
-  penaltyBoxChecked(i, label) {
+  penaltyBoxChecked = (i, label) => {
     let penaltyStates = copyArray(this.state.penaltyVal);
     if (penaltyStates[i] === label) {
       penaltyStates[i] = ' ';
@@ -468,7 +448,7 @@ class Form extends React.Component {
     this.setState({ penaltyVal: penaltyStates })
   }
 
-  bonusBoxChecked(i, label) {
+  bonusBoxChecked = (i, label) => {
     let ranking = copyArray(this.state.rankingState);
     if (ranking[i] === label) {
       this.setState({ rankingPts: this.state.rankingPts - 1 });
@@ -486,13 +466,13 @@ class Form extends React.Component {
     this.setState({ rankingState: ranking })
   }
 
-  overrideChange() {
+  overrideChange = () => {
     this.setState({ override: !this.state.override });
   }
 
   //-------------------------------------------------------------------------------------------------------------//
 
-  counterBoxChanged(event, i) {
+  counterBoxChanged = (event, i) => {
     let counterStates = this.state.counterBoxVals;
     if (event.target.value === '' || event.target.value == null) {
       counterStates[i] = 0
@@ -502,7 +482,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonMinus(event, i) {
+  buttonMinus = (event, i) => {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] > 0) {
       counterStates[i] = parseInt(counterStates[i] - 1)
@@ -512,7 +492,7 @@ class Form extends React.Component {
     }
   }
 
-  buttonPlus(event, i) {
+  buttonPlus = (event, i) => {
     let counterStates = this.state.counterBoxVals;
     if (counterStates[i] >= 0) {
       counterStates[i] = parseInt(counterStates[i] + 1)
@@ -524,7 +504,7 @@ class Form extends React.Component {
 
   //-------------------------------------------------------------------------------------------------------------//
 
-  setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) {
+  setPoints = (points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) => {
     this.setState({
       totalPoints: points,
       totalGrid: totalGridPts,
