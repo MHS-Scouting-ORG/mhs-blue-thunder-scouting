@@ -73,13 +73,13 @@ async function getTeamsMatchesAndTableData(teamNumbers) {
     const dprList = getDprList()
     const ccwmList = getCcwmList()
 
-    const tableData = [] //testing 
+    let tableData = [] //testing 
 
     return teamNumbers/*same as teamsData from maintable*/.map(team => { 
       
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum) ///same as teamstats
-      console.log(teamStats)
+      //console.log(teamStats)
       //console.log(teamMatchData)
 
       const points = teamStats.map(x => x.Teleop.ScoringTotal.Total) //for deviation
@@ -192,7 +192,7 @@ async function getTeamsMatchesAndTableData(teamNumbers) {
 
       }
       //console.log(tableDataObj)
-    return tableDataObj;
+      return tableDataObj;
     })
   })
 }

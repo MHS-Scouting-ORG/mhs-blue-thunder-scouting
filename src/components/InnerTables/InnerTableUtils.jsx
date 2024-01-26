@@ -167,7 +167,7 @@ const renderRowSubComponent = ({ row }, apiData, modalFunction, modalDataFunctio
   
     return disp.length > 0 ?
     (<pre>
-        <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} delete={handleDelete} information = {disp} setModalData={modalDataFunction} />} </div>
+        <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} /*delete={handleDelete}*/ information = {disp} setModalData={modalDataFunction} />} </div>
     </pre>)
     : (
         <div style={{
