@@ -44,34 +44,36 @@ class Form extends React.Component {
     // this.setChargeStationValAutoState = this.setChargeStationValAutoState.bind(this);
     // this.setWhoWonState = this.se
 
+    this.setGivenState = this.setGivenState.bind(this);
+
     // initializing form by making array of data
     console.log(`initializing form`)
     this.state = {
-      comments: '', //comments
-      matchType: '', //match type
-      elmNum: '', //elimination
-      matchNumber: '', //match number
-      matchData: 'not found', //data for a given match
-      teamNumber: ' ', //team num
-      teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
-      override: false, //override bool
-      endGameVal: ['', '', ''], //
-      chargeStationValAuto: '', //charge station status during auto
-      whoWon: '', //whichever team won
-      checkedWhoWon: [' ', ' '], /* UNUSED */
-      rankingPts: 0, //teams ranking points
-      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
-      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
-      dropDownVal: ['', '', ''], //dropdown vals???
-      counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted
-      strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
-      booleans: [false, false], //mobility, smartplacement
-      totalPoints: 0, //total points
-      totalGrid: 0, //total grid points
-      cubesAccuracy: 0, //cube accuracy
-      conesAccuracy: 0, //cone accuracy
-      cubesPts: 0, //cube pts
-      conesPts: 0, //cone pts
+      comments: '', //comments 0
+      matchType: '', //match type 1
+      elmNum: '', //elimination 2
+      matchNumber: '', //match number 3
+      matchData: 'not found', //data for a given match 4
+      teamNumber: ' ', //team num 5
+      teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match 6
+      override: false, //override bool 7
+      endGameVal: ['', '', ''], // 8
+      chargeStationValAuto: '', //charge station status during auto 9
+      whoWon: '', //whichever team won 10
+      //checkedWhoWon: [' ', ' '], /* UNUSED */
+      rankingPts: 0, //teams ranking points 11
+      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability] 12
+      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show 13
+      dropDownVal: ['', '', ''], //dropdown vals??? 14
+      counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted 15
+      strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense) 16
+      booleans: [false, false], //mobility, smartplacement 17
+      totalPoints: 0, //total points 18
+      totalGrid: 0, //total grid points 19
+      cubesAccuracy: 0, //cube accuracy 20
+      conesAccuracy: 0, //cone accuracy 21
+      cubesPts: 0, //cube pts 22
+      conesPts: 0, //cone pts 23
     }
   }
 
@@ -230,9 +232,21 @@ class Form extends React.Component {
 
   //------------------------------------------------------------------------------------------------------------------------//
 
-  // SET STATE FUNCTIONS //
-  setGivenState = (obj) => {
-    this.setState(obj)
+  // SET STATE FUNCTION //
+  setGivenState = (i,newState) => {
+    let stateEntries = Object.entries(this.state);
+    let stateName = stateEntries[i[0]][0];
+    let stateValue = stateEntries[i[0]][1];
+
+    console.log(stateName +  ": " + stateValue)
+    if(Array.isArray(stateValue)){
+       stateValue[i[1]] = newState;
+    }
+    else{
+      stateValue = newState;
+    }
+
+    this.setState(Object.fromEntries(stateEntries));
   }
 
   changeMatchType = (event) => {
@@ -525,10 +539,11 @@ class Form extends React.Component {
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
 
         {/* CHECK STATE BUTTON */}
+        <button onClick={ () => this.setGivenState([16,3],"WORKS")}> Set Given State! </button>
         <button onClick={ () => console.log(this.state) }> Check State </button>
 
         {/* MATCH INITIATION */}
-        {makeMatchDropDown({ matchType: this.state.matchType, matchNumber: this.state.matchNumber, changeMatchType: this.changeMatchType, changeElmNum: this.changeElmNum, makeMatchTypeDropDown: this.makeMatchTypeDropDown, changeMatchNumber: this.changeMatchNumber })}
+        {makeMatchDropDown({ changeState: this.setGivenState, matchType: this.state.matchType, matchNumber: this.state.matchNumber, changeMatchType: this.changeMatchType, changeElmNum: this.changeElmNum, makeMatchTypeDropDown: this.makeMatchTypeDropDown, changeMatchNumber: this.changeMatchNumber })}
         <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
         <br></br>
         {this.makeTeamDropdown()}
@@ -537,93 +552,93 @@ class Form extends React.Component {
         {/* AUTONOMOUS */}
         <h3>AUTONOMOUS:</h3>
         <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
-        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
         <br></br>
         <p>🟪Cubes Scored</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 0)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made:  ", 1)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made:  ", 2)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 0)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made:  ", 1)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made:  ", 2)}
         <p>🟪Cubes Attempted</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 3)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 4)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 5)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 3)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 4)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 5)}
         <p>🔺Cones Scored</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 6)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 7)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 8)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 6)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 7)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 8)}
         <p>🔺Cones Attempted</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 9)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 10)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 11)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 9)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 10)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 11)}
         <br></br>
-        {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Mobility ", 0)}
+        {makeBooleanCheckBox({ changeState: this.setGivenState, booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Mobility ", 0)}
         <br></br>
-        {makeChargeStationAuto({ chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
+        {makeChargeStationAuto({ changeState: this.setGivenState, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
 
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
         <p>🟪Cubes Scored</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 12)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made: ", 13)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made: ", 14)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Made: ", 12)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Made: ", 13)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Made: ", 14)}
         <p>🟪Cubes Attempted</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 15)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 16)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 17)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cubes Attempted: ", 15)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cubes Attempted: ", 16)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cubes Attempted: ", 17)}
         <p>🔺Cones Scored</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 18)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 19)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 20)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Made: ", 18)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Made: ", 19)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Made: ", 20)}
         <p>🔺Cones Attempted</p>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 21)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 22)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 23)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "High Cones Attempted: ", 21)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Mid Cones Attempted: ", 22)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Low Cones Attempted: ", 23)}
         <br></br>
-        {makeEndGameDropDown({ endGameVal: this.state.endGameVal, changeEndGame: this.changeEndGame })}
-        {makeEndGameStartEndBox({ endGameVal: this.state.endGameVal, changeEndGameStartBox: this.changeEndGameStartBox, changeEndGameEndBox: this.changeEndGameEndBox })}
+        {makeEndGameDropDown({ changeState: this.setGivenState, endGameVal: this.state.endGameVal, changeEndGame: this.changeEndGame })}
+        {makeEndGameStartEndBox({ changeState: this.setGivenState, endGameVal: this.state.endGameVal, changeEndGameStartBox: this.changeEndGameStartBox, changeEndGameEndBox: this.changeEndGameEndBox })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
-        {makeBooleanCheckBox({ booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Smart Placement (creates links) ", 1)}
+        {makeBooleanCheckBox({ changeState: this.setGivenState, booleans: this.state.booleans, changeBooleanCheckBox: this.changeBooleanCheckBox }, "Smart Placement (creates links) ", 1)}
         <br></br>
-        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-        {makeDropDownBox({ dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
         <br></br>
 
         {/* PENALTIES */}
         <h3>PENALTIES:</h3>
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Fouls: ", 24)}
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Tech Fouls: ", 25)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Yellow Card ", 0)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Red Card ", 1)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disable ", 2)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disqualifed ", 3)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Bot Broke ", 4)}
-        {makePenaltyBox({ penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "No Show ", 5)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Fouls: ", 24)}
+        {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals, counterboxChanged: this.counterBoxChanged, buttonMinus: this.buttonMinus, buttonPlus: this.buttonPlus }, "Tech Fouls: ", 25)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Yellow Card ", 0)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Red Card ", 1)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disable ", 2)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Disqualifed ", 3)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "Bot Broke ", 4)}
+        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal,penaltyBoxChecked: this.penaltyBoxChecked }, "No Show ", 5)}
         <br></br>
 
         {/* RANKING POINTS */}
         <h3>RANKING POINTS:</h3>
-        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Won ", 0)}
-        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Tied ", 1)}
-        {makeWhoWonBox({ rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Lost ", 2)}
-        {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Activation ", 1)}
-        {makeBonusBox({ rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Sustainability ", 2)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Won ", 0)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Tied ", 1)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, whoWonClicked: this.whoWonClicked }, "Team Lost ", 2)}
+        {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Activation ", 1)}
+        {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, bonusBoxChecked: this.bonusBoxChecked }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts}/>
         <br></br>
 
         {/* STRATEGY & PRIORITIES */}
         <h3>📝STRATEGY & PRIORITIES:</h3>
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Low Node ", 0)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Mid Node ", 1)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "High Node ", 2)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cubes ", 3)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cones ", 4)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Charge Station ", 5)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Single Substation ", 6)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Double Substation ", 7)}
-        {makeStrategyBox({ strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Defense ", 8)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Low Node ", 0)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Mid Node ", 1)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "High Node ", 2)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cubes ", 3)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Cones ", 4)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Charge Station ", 5)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Single Substation ", 6)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Double Substation ", 7)}
+        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal, strategyBox: this.strategyBoxChanged }, "Defense ", 8)}
         <br></br>
 
         {/* COMMENTS */}

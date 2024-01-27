@@ -41,7 +41,7 @@ export function makeStrategyBox(props, name, i) {
   let strategyState = props.strategyVal;
   let checkedVal;
   if (strategyState[i] === name) {
-  checkedVal = true;
+    checkedVal = true;
   } else {
     checkedVal = false;
   }
@@ -49,7 +49,8 @@ export function makeStrategyBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.strategyBox}
+        changeCheckBoxState={props.changeState}
+        stateIndex={16}
         index={i}
         checked={checkedVal}
       />
