@@ -28,7 +28,6 @@ export function makeCounterBox(props, title, i) {
         <div>
             <CounterBox
                 label={title}
-                setState={props.changeState}
                 index={i}
                 state={counterStates[i]}
                 minusButton={buttonMinus}

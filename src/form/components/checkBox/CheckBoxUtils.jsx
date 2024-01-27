@@ -98,7 +98,8 @@ export function makePenaltyBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.penaltyBoxChecked}
+        changeCheckBoxState={props.changeState}
+        stateIndex={13}
         index={i}
         checked={checkedVal}
       />

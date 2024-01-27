@@ -5,58 +5,52 @@ class CounterBox extends React.Component{
         super(props);
         this.buttonMinus = this.buttonMinus.bind(this);
         this.buttonPlus = this.buttonPlus.bind(this);
-        this.counterChanged = this.counterChanged.bind(this)
+        //this.counterChanged = this.counterChanged.bind(this)
         this.state = {
             count: props.state
         }
     }
 
-    buttonMinus(event) {
+    buttonMinus() {
         this.props.minusButton(this.props.index);
-        const input = document.getElementById(this.props.index);
         let value = parseInt(this.state.count);
         if (value > 0) {
             this.setState({count:parseInt(this.state.count) - 1});
-            input.value = parseInt(this.state.count) - 1;
         }
         else if (value <= 0) {
             this.setState({count:0});
-            input.value = 0;
         }
     }
     
-    buttonPlus(event) {
+    buttonPlus() {
         this.props.plusButton(this.props.index);
-        const input = document.getElementById(this.props.index);
-        if (event.target.value >= 0) {
+        let value = parseInt(this.state.count)
+        if (value >= 0) {
             this.setState({count:parseInt(this.state.count) + 1});
-            input.value = parseInt(this.state.count) + 1;
         }
-        else if (event.target.value < 0) {
-            this.setState({count:0});
-            input.value = 0;
+        else if (value < 0) {
+            this.setState({count:0})
         }
     }
 
-    counterChanged(event) {
-        if(event.target.value === '') {
-            this.setState({counter: 0})
+    /*counterChanged(event) {
+        if(event.target.value === '' || this.state.count === 0) {
+            this.setState({count: 0})
+            this.props.changeCounterBoxState([this.props.stateIndex,this.props.index],0)
         }
-        else {
-            this.setState({counter: event.target.value})
+        else{
+            this.setState({count: event.target.value})
+            this.props.changeCounterBoxState([this.props.stateIndex,this.props.index],parseInt(event.target.value))
         }
-        this.props.setState(event, this.props.index)
-    }
+    }*/
     
     render() {
         return(
             <div> 
                 <label>{this.props.label}</label>
                 <button value={this.props.state} onClick={this.buttonMinus}>-</button>
-                <input style={{width: '10%', textAlign: 'center'}} type='number' min='0' id={this.props.index} onChange={this.counterChanged} readOnly={true} value={this.state.count}/>
+                <input style={{width: '10%', textAlign: 'center'}} type='number' min='0' id={this.props.index} readOnly={true} value={this.state.count}/>
                 <button value={this.props.state} onClick={this.buttonPlus}>+</button>
-                
-                
             </div>
         );
     }
