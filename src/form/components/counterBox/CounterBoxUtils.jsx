@@ -6,15 +6,33 @@ import CounterBox from "./CounterBox";
 export function makeCounterBox(props, title, i) {
     let counterStates = props.counterBoxVals;
     
+    function buttonMinus(i) {
+        if (counterStates[i] > 0) {
+            counterStates[i] = parseInt(counterStates[i] - 1)
+        }
+        else if (counterStates[i] <= 0) {
+          counterStates[i] = 0
+        }
+    }
+
+    function buttonPlus(i) {
+        if (counterStates[i] >= 0) {
+            counterStates[i] = parseInt(counterStates[i] + 1)
+        }
+        else if (counterStates[i] < 0) {
+            counterStates[i] = 0
+        }
+    }
+
     return (
         <div>
             <CounterBox
                 label={title}
-                setState={props.counterBoxChanged}
+                setState={props.changeState}
                 index={i}
                 state={counterStates[i]}
-                minusButton={props.buttonMinus}
-                plusButton={props.buttonPlus}
+                minusButton={buttonMinus}
+                plusButton={buttonPlus}
             />
         </div>
     )

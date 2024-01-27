@@ -12,7 +12,7 @@ class CounterBox extends React.Component{
     }
 
     buttonMinus(event) {
-        this.props.minusButton(event,this.props.index);
+        this.props.minusButton(this.props.index);
         const input = document.getElementById(this.props.index);
         let value = parseInt(this.state.count);
         if (value > 0) {
@@ -26,7 +26,7 @@ class CounterBox extends React.Component{
     }
     
     buttonPlus(event) {
-        this.props.plusButton(event,this.props.index);
+        this.props.plusButton(this.props.index);
         const input = document.getElementById(this.props.index);
         if (event.target.value >= 0) {
             this.setState({count:parseInt(this.state.count) + 1});
