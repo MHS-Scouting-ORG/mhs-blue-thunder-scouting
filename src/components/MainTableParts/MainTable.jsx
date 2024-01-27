@@ -27,7 +27,7 @@ function MainTable(props) {
       .then(data => {
         let holdTableData = data
         console.log(holdTableData)
-        setTableData(holTableData)
+        setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
   }, [])
@@ -42,8 +42,17 @@ const modalOpen = () => {
 }
 
 const setDataModal = (row) => {
+
+  const getApiData =  async () => {
+    return await getMatchesForRegional('2023azva')
+      .then(data => {
+        let apiData = data.data.teamMatchesByRegional.items
+          return apiData
+    })
+  }
+
     let setModal = apiData;
-    setModal = setModal.filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
+    setModal = getApiData().filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
     setModalData(setModal)
 }
 
@@ -299,7 +308,7 @@ const data = React.useMemo(
               </tr>
 
               {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, apiData, modalOpen, setDataModal): null
+                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal): null
 
 
               }

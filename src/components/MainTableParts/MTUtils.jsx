@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { getMatchesForRegional} from "../../api";
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
+import { tableDataForUtils } from './MTEffectFunc'
 import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 //import { buildErrorMessage } from 'vite';
   //seperate file for when we figure out prior problems(passing function)
@@ -73,7 +74,7 @@ async function getTeamsMatchesAndTableData(teamNumbers) {
     const dprList = getDprList()
     const ccwmList = getCcwmList()
 
-    let tableData = [] //testing 
+    let tableData = []//tableDataForUtils()  //testing 
 
     return teamNumbers/*same as teamsData from maintable*/.map(team => { 
       
@@ -144,7 +145,7 @@ async function getTeamsMatchesAndTableData(teamNumbers) {
       const rCubeAcc = mCubeAcc / maxCubeAcc
       const rCSPoints = mCSPoints / maxCSPoints
 
-      const tableDataObj = {
+      let tableDataObj = {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,

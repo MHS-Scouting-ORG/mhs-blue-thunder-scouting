@@ -122,8 +122,17 @@ const renderRowSubComponentCubePtsTable = ({row},tableData) => {
     );
 }
 
-const renderRowSubComponent = ({ row }, apiData, modalFunction, modalDataFunction) => {
-    let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)
+const renderRowSubComponent = ({ row }, modalFunction, modalDataFunction) => {
+    
+  const getApiData =  async () => {
+    return await getMatchesForRegional('2023azva')
+      .then(data => {
+        let apiData = data.data.teamMatchesByRegional.items
+          return apiData
+    })
+  }
+
+    let t = getApiData().filter(x => x.Team === `frc${row.values.TeamNumber}`)
   
     const disp = t.map(x => {
   
@@ -176,7 +185,7 @@ const renderRowSubComponent = ({ row }, apiData, modalFunction, modalDataFunctio
     );
 }
 
-function tableHandler(row, header, visibleColumns, tableData, apiData, modalFunction, setModalData){ //handles which state and inner table should be shown
+function tableHandler(row, header, visibleColumns, tableData, modalFunction, setModalData){ //handles which state and inner table should be shown
 
     if(header === 'Avg Grid Points'){
       return (
@@ -251,7 +260,7 @@ function tableHandler(row, header, visibleColumns, tableData, apiData, modalFunc
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponent ({row}, apiData, modalFunction, setModalData)}
+          {renderRowSubComponent ({row}, modalFunction, setModalData)}
         </td>
       </tr>
       )

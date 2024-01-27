@@ -32,5 +32,13 @@ function ueDebug (){
     })
   }
 
+  async function tableDataForUtils(){
+    return await ueTableData()
+    .then(async data => {
+      let UtilTableData = data
+      return UtilTableData
+    })
+  }
 
-export { ueDebug, ueSetTeamObj, ueTableData };
+
+export { ueDebug, ueSetTeamObj, ueTableData, tableDataForUtils };
