@@ -233,20 +233,30 @@ class Form extends React.Component {
   //------------------------------------------------------------------------------------------------------------------------//
 
   // SET STATE FUNCTION //
-  setGivenState = (i,newState) => {
-    let stateEntries = Object.entries(this.state);
+  setGivenState = (i,newState,savedEntries) => {
+    let stateEntries;
+    if(savedEntries){
+      stateEntries = Object.entries(savedEntries).slice();
+    }
+    else{
+      stateEntries = Object.entries(this.state).slice();
+    }
+
     let stateName = stateEntries[i[0]][0];
     let stateValue = stateEntries[i[0]][1];
+    
+    console.log(stateEntries)
 
-    console.log(stateName +  ": " + stateValue)
-    if(Array.isArray(stateValue)){
+    if(Array.isArray(stateValue) && i[1] !== -1){
        stateValue[i[1]] = newState;
     }
     else{
-      stateValue = newState;
+      const newEntry = [stateName,newState]
+      stateEntries[i[0]] = newEntry;
     }
 
     this.setState(Object.fromEntries(stateEntries));
+    return Object.fromEntries(stateEntries);
   }
 
   changeMatchType = (event) => {
@@ -539,7 +549,7 @@ class Form extends React.Component {
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
 
         {/* CHECK STATE BUTTON */}
-        <button onClick={ () => this.setGivenState([16,3],"WORKS")}> Set Given State! </button>
+        <button onClick={ () => this.setGivenState([16,1],"WORKS")}> Set Given State! </button>
         <button onClick={ () => console.log(this.state) }> Check State </button>
 
         {/* MATCH INITIATION */}

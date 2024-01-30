@@ -5,32 +5,25 @@ class MatchDropDown extends React.Component{
         super(props);
         this.changeMatchType = this.changeMatchType.bind(this);
         this.generateMatchTypeNum = this.generateMatchTypeNum.bind(this);
-        this.state = {
-            matchType: props.matchTypeValue,
-        };
     }
     
     changeMatchType(event){
         let matchType = event.target.value;
+        console.log(matchType)
         if( matchType === 'Qualification' ){
             this.props.setMatchType('q');
-            this.setState({matchType: 'q'});
         } else if(matchType === 'QuarterFinal'){
             this.props.setMatchType('qf');
-            this.setState({matchType: 'qf'});
         } else if(matchType === 'SemiFinal'){
             this.props.setMatchType('sf');
-            this.setState({matchType: 'sf'});
         } else if(matchType === 'Final'){
             this.props.setMatchType('f');
-            this.setState({matchType: 'f'});
         }
-        
     }
 
     generateMatchTypeNum(){
         return(
-            this.props.generateMatchTypeNum(this.state.matchType)
+            this.props.generateMatchTypeNum(this.props.matchTypeValue)
         )
     }
 
@@ -38,7 +31,7 @@ class MatchDropDown extends React.Component{
     render(){
         return(
             <div>
-                <select value={this.matchTypeValue} onChange={this.changeMatchType}>
+                <select onChange={this.changeMatchType}>
                     <option></option>
                     <option> Qualification</option>
                     <option> QuarterFinal </option>
@@ -47,7 +40,7 @@ class MatchDropDown extends React.Component{
                 </select>
                 {this.generateMatchTypeNum()}
                 <label> Match: </label>
-                <input value={this.props.matchNumber} style={{width: '10%'}} onChange={this.props.setMatchNumber}></input>
+                <input value={this.props.matchNumber} onChange={this.props.setMatchNumber}></input>
             </div>
         )
     }

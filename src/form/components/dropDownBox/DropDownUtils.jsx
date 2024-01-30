@@ -23,7 +23,8 @@ export function makeDropDownBox(props, title, option, i) {
         choices={option}
         index={i}
         value={dropDownStates[i]}
-        setState={props.dropDownChanged}
+        changeDropDownState={props.changeState}
+        stateIndex={14}
       />
     </div>
   )
@@ -35,26 +36,37 @@ export function makeDropDownBox(props, title, option, i) {
  * @returns a MatchDropDownBox component
  */
 export function makeMatchDropDown(props) {
-  let matchTypeState = props.matchType
-  let matchState = '';
-  if (matchTypeState === 'q') {
-    matchState = "Qualification";
-  } else if (matchTypeState === 'qf') {
-    matchState = "QuarterFinal";
-  } else if (matchTypeState === 'sf') {
-    matchState = "SemiFinal";
-  } else if (matchTypeState === 'f') {
-    matchState = "Final";
+
+  function makeMatchTypeDropDown(matchType){
+    if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
+      return (
+        <input value={props.elmNum} onChange={props.changeElmNum} />
+      )
+    }
   }
+
+  function changeMatchType(matchType){
+    const savedMatchType = props.changeState([1,0], matchType)
+    const savedResetTeams = props.changeState([6,-1],['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],savedMatchType);
+    const savedResetTeamNumber = props.changeState([5,0],"",savedResetTeams)
+
+    if (matchType === 'q') {
+      props.changeState([2,0],'',savedResetTeamNumber)
+    }
+  }
+
+  function changeMatchNumber(event){
+    props.changeState([3,0], event.target.value)
+  }
+
   return (
     <div>
       <MatchDropDown //makes MatchDropDown via functions in Form component
-        setMatchType={props.changeMatchType}
-        setElmNum={props.changeElmNum} 
-        generateMatchTypeNum={props.makeMatchTypeDropDown} 
-        setMatchNumber={props.changeMatchNumber} 
-        matchTypeValue={matchState} 
+        setMatchType={changeMatchType}
+        generateMatchTypeNum={makeMatchTypeDropDown} 
+        setMatchNumber={changeMatchNumber} 
         matchNumber={props.matchNumber}
+        matchTypeValue={props.matchType}
       />
     </div>
   )
