@@ -37,10 +37,14 @@ export function makeDropDownBox(props, title, option, i) {
  */
 export function makeMatchDropDown(props) {
 
+  function changeElmNum(event){
+    props.changeState([2,0], event.target.value)
+  }
+
   function makeMatchTypeDropDown(matchType){
     if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
       return (
-        <input value={props.elmNum} onChange={props.changeElmNum} />
+        <input value={props.elmNum} onChange={changeElmNum} />
       )
     }
   }

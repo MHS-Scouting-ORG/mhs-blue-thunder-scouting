@@ -19,7 +19,7 @@ class CheckBox extends React.Component{
         return(   
             <div>
                 <label>{this.props.label.substring(0, this.props.label.length - 1) + ': '}</label>
-                <input style={{verticalAlign: 'middle', width: '14.5px', height: '14.5px'}} type="checkbox" checked={this.props.checked} onChange={this.changeCheckBoxState} id={this.props.label}></input>
+                <input type="checkbox" checked={this.props.checked} onChange={this.changeCheckBoxState} id={this.props.label}></input>
             </div>
         )
     }

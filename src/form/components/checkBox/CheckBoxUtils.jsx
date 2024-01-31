@@ -11,24 +11,69 @@ import CheckBox from "./CheckBox";
  * @returns checkbox component
  */
 export function makeWhoWonBox(props, name, i) {
-  let rankingStates = props.rankingState;
-    let checkVal;
-    if (rankingStates[0] === name) {
-      checkVal = true;
-    } else {
-      checkVal = false;
+  let data = props.matchData
+  let rankingStates = props.rankingState
+
+  console.log("runs")
+
+  let savedRankingPts;
+  function whoWonClicked(){
+    if (data === "not found") {
+      window.alert("PICK A TEAM FIRST");
     }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={props.whoWonClicked}
-          index={i}
-          checked={checkVal}
-        />
-      </div>
-    )
+    else {
+      if (rankingStates[0] === name) {
+        savedRankingPts = props.changeState([11,0],0)
+        rankingStates[0] = '';
+      }
+      else if (rankingStates[0] !== name) {
+        rankingStates[0] = name;
+
+        console.log('HELL YEAH')
+        if (name === "Team Won ") {
+          // this.setState({ rankingPts: 2 })\
+          savedRankingPts = props.changeState([11,0],2)
+          console.log("won")
+        }
+        else if (name === "Team Tied ") {
+          // this.setState({ rankingPts: 1 })\
+          savedRankingPts = props.changeState([11,0],1)
+          console.log("tied")
+        }
+        else if (name === "Team Lost ") {
+          // this.setState({ rankingPts: 0 })\
+          savedRankingPts = props.changeState([11,0],0)
+          console.log("lost")
+        }
+        
+      }
+
+      rankingStates[1] = '';
+      rankingStates[2] = '';
+
+      // this.setState({ rankingState: rankingStates })
+      props.changeState([12,-1], rankingStates,savedRankingPts)
+    }
   }
+
+  let checkVal;
+  if (rankingStates[0] === name) {
+    checkVal = true;
+  } else {
+    checkVal = false;
+  }
+
+  return (
+    <div>
+      <CheckBox
+        label={name}
+        changeCheckBoxState={whoWonClicked}
+        index={i}
+        checked={checkVal}
+      />
+    </div>
+  )
+}
 
 /**
  * function for making the strategy box
@@ -67,11 +112,17 @@ export function makeStrategyBox(props, name, i) {
  */
 export function makeBooleanCheckBox(props, name, i) {
   let booleanStates = props.booleans;
+
+  function changeBooleanCheckBox(){
+    booleanStates[i] = !booleanStates[i]
+    props.changeState([17,i],booleanStates[i])
+  }
+
   return (
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.changeBooleanCheckBox}
+        changeCheckBoxState={changeBooleanCheckBox}
         index={i}
         checked={booleanStates[i]}
       />
@@ -116,6 +167,30 @@ export function makePenaltyBox(props, name, i) {
  */
 export function makeBonusBox(props, name, i) {
   let rankingState = props.rankingState;
+  let rankingPts = props.rankingPoints
+
+  function bonusBoxChecked(){
+    let ranking = rankingState.slice();
+    let savedRankingPts;
+    if (ranking[i] === name) {
+      // this.setState({ rankingPts: this.state.rankingPts - 1 });
+      savedRankingPts = props.changeState([11,0], rankingPts - 1)
+    } else {
+      // this.setState({ rankingPts: this.state.rankingPts + 1 });
+      savedRankingPts = props.changeState([11,0], rankingPts + 1)
+    }
+
+    if (ranking[i] === name) {
+      ranking[i] = ' ';
+    } else {
+      ranking[i] = name;
+    }
+
+    // this.setState({ rankingState: ranking })
+    console.log("ranking state" + ranking)
+    props.changeState([12,-1],ranking,savedRankingPts)
+  }
+
   let checkedVal;
   if (rankingState[i] === name) {
     checkedVal = true;
@@ -127,7 +202,7 @@ export function makeBonusBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.bonusBoxChecked}
+        changeCheckBoxState={bonusBoxChecked}
         index={i}
         checked={checkedVal}
       />
@@ -144,11 +219,16 @@ export function makeBonusBox(props, name, i) {
  */
 export function makeOverrideBox(props) {
   let overrideState = props.override;
+
+  function overrideClicked(){
+    props.changeState([7,0],!overrideState)
+  }
+
   return (
     <div>
       <CheckBox
         label={"Overide "}
-        changeCheckBoxState={props.overrideChange}
+        changeCheckBoxState={overrideClicked}
         checked={overrideState}
       />
     </div>
