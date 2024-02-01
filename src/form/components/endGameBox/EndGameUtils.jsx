@@ -9,6 +9,20 @@ import EndGame from './EndGame';
  */
 export function makeEndGameStartEndBox(props) {
   let endGameValues = props.endGameVal;
+
+  function changeEndGameStartBox(event){
+    // let endGame = this.state.endGameVal;
+    // endGame[1] = event.target.value;
+    props.changeState([8,1],event.target.value);
+
+  }
+
+  function changeEndGameEndBox(event){
+    // let endGame = this.state.endGameVal;
+    // endGame[2] = event.target.value;
+    props.changeState([8,2],event.target.value);
+  }
+
   let endGame = endGameValues[0];
   if (endGame !== "None" && endGame !== '') {
     if (endGame === "Attempted") {
@@ -16,7 +30,7 @@ export function makeEndGameStartEndBox(props) {
         <div>
           <p>Match Timer EX:125 (1:25)</p>
           <label> {"End Game Start: "}
-            <input value={props.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={props.changeEndGameStartBox}></input>
+            <input value={props.endGameVal[1]} type="number" onChange={changeEndGameStartBox}></input>
           </label>
         </div>
       )
@@ -26,14 +40,14 @@ export function makeEndGameStartEndBox(props) {
       return (
         <div>
           <div>
-            <p style={{ fontSize: '14px' }}>Match Timer | EX Start: 25 (0:25), EX End: 3 (0:03)</p>
+            <p>Match Timer | EX Start: 25 (0:25), EX End: 3 (0:03)</p>
             <label> {"End Game Start: "}
-              <input value={props.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={props.changeEndGameStartBox}></input>
+              <input value={props.endGameVal[1]} type="number" onChange={changeEndGameStartBox}></input>
             </label>
           </div>
           <div>
             <label> {"End Game End: "}
-              <input value={props.endGameVal[2]} style={{ width: '10%' }} type="number" onChange={props.changeEndGameEndBox}></input>
+              <input value={props.endGameVal[2]} type="number" onChange={changeEndGameEndBox}></input>
             </label>
           </div>
         </div>
@@ -52,10 +66,18 @@ export function makeEndGameStartEndBox(props) {
  */
 export function makeEndGameDropDown(props) {
   let endGameState = props.endGameVal
+  
+  function changeEndGame(event){
+    // let endGame = Array(this.state.endGameVal);
+    // endGame[0] = event.target.value;
+    // this.setState({ endGameVal: endGame })
+    props.changeState([8,0],event.target.value);
+  }
+
   return (
     <div>
       <EndGame
-        changeEndGameUsed={props.changeEndGame}
+        changeEndGameUsed={changeEndGame}
         makeEndGameStartEndBox={makeEndGameStartEndBox}
         value={endGameState[0]}
       />

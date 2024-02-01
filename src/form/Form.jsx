@@ -32,17 +32,17 @@ class Form extends React.Component {
     this.regional = props.regional; // REGIONAL KEY
 
     // STATE SETTING FUNCTIONS //
-    // this.setCommentState = this.setCommentState.bind(this);
-    // this.setMatchTypeState = this.setMatchTypeState.bind(this);
-    // this.setElmNumState = this.setElmNumState.bind(this);
-    // this.setMatchNumberState = this.setMatchNumberState.bind(this);
+    // this.setCommentState = this.setCommentState.bind(this); done
+    // this.setMatchTypeState = this.setMatchTypeState.bind(this); done
+    // this.setElmNumState = this.setElmNumState.bind(this); done
+    // this.setMatchNumberState = this.setMatchNumberState.bind(this); done
     // this.setMatchDataState = this.setMatchDataState.bind(this);
-    // this.setTeamNumberState = this.setTeamNumberState.bind(this);
-    // this.setTeamsState = this.setTeamsState.bind(this);
-    // this.setOverrideState = this.setOverrideState.bind(this);
+    // this.setTeamNumberState = this.setTeamNumberState.bind(this); done
+    // this.setTeamsState = this.setTeamsState.bind(this); done
+    // this.setOverrideState = this.setOverrideState.bind(this); done
     // this.setEndGameValState = this.setEndGameValState.bind(this);
     // this.setChargeStationValAutoState = this.setChargeStationValAutoState.bind(this);
-    // this.setWhoWonState = this.se
+    // this.setWhoWonState = this.setWhoWonState.bind(this); done
 
     this.setGivenState = this.setGivenState.bind(this);
 
@@ -253,7 +253,7 @@ class Form extends React.Component {
     else{
       const newEntry = [stateName,newState]
       stateEntries[i[0]] = newEntry;
-      console.log("runs!: " + stateName + " - " + newState)
+      console.log("runs: " + stateName + " - " + newState)
     }
 
     this.setState(Object.fromEntries(stateEntries));
@@ -341,42 +341,13 @@ class Form extends React.Component {
       </div>
     )
   }
-  
-  //---------------------------------------------------------------------------------------------------------------//
-
-  dropDownChanged = (event, i) => {
-    let dropDownStates = this.state.dropDownVal;
-    dropDownStates[i] = event.target.value;
-  }
 
   //--------------------------------------------------------------------------------------------------------------//
-
-  changeEndGame = (event) => {
-    let endGame = Array(this.state.endGameVal);
-    endGame[0] = event.target.value;
-    this.setState({ endGameVal: endGame });
-  }
-
-  changeEndGameStartBox = (event) => {
-    let endGame = this.state.endGameVal;
-    endGame[1] = event.target.value;
-  }
-
-  changeEndGameEndBox = (event) => {
-    let endGame = this.state.endGameVal;
-    endGame[2] = event.target.value;
-  }
 
   changeChargeStation = (event) => {
     let chargeStation = this.state.chargeStationValAuto;
     chargeStation = event.target.value;
     this.setState({ chargeStationValAuto: chargeStation });
-  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
-  setComment = (event) => {
-    this.setState({ comments: event.target.value });
   }
 
   //-------------------------------------------------------------------------------------------------------------//
@@ -415,7 +386,7 @@ class Form extends React.Component {
         {/* AUTONOMOUS */}
         <h3>AUTONOMOUS:</h3>
         <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
-        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
         <br></br>
         <p>🟪Cubes Scored</p>
         {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", 0)}
@@ -458,15 +429,15 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 22)}
         {makeCounterBox({ changeState: this.setGivenState, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 23)}
         <br></br>
-        {makeEndGameDropDown({ changeState: this.setGivenState, endGameVal: this.state.endGameVal, changeEndGame: this.changeEndGame })}
-        {makeEndGameStartEndBox({ changeState: this.setGivenState, endGameVal: this.state.endGameVal, changeEndGameStartBox: this.changeEndGameStartBox, changeEndGameEndBox: this.changeEndGameEndBox })}
+        {makeEndGameDropDown({ changeState: this.setGivenState, endGameVal: this.state.endGameVal })}
+        {makeEndGameStartEndBox({ changeState: this.setGivenState, endGameVal: this.state.endGameVal })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
         {makeBooleanCheckBox({ changeState: this.setGivenState, booleans: this.state.booleans }, "Smart Placement (creates links) ", 1)}
         <br></br>
-        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal, dropDownChanged: this.dropDownChanged }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
+        {makeDropDownBox({ changeState: this.setGivenState, dropDownVal: this.state.dropDownVal }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
         <br></br>
 
         {/* PENALTIES */}
@@ -505,7 +476,7 @@ class Form extends React.Component {
         <br></br>
 
         {/* COMMENTS */}
-        <TextBox title={"💬Comments: "} commentState={this.setComment} value={this.state.comments}></TextBox>
+        <TextBox title={"💬Comments: "} changeState={this.setGivenState} value={this.state.comments}></TextBox>
 
         {/* SUBMISSION */}
         <div>

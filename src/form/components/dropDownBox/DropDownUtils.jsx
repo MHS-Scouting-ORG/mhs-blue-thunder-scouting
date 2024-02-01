@@ -16,6 +16,11 @@ import MatchDropDown from './MatchDropDown';
  */
 export function makeDropDownBox(props, title, option, i) {
   let dropDownStates = props.dropDownVal;
+
+  function dropDownChanged(event, i){
+    props.changeState([14,i],event.target.value)
+  }
+
   return (
     <div>
       <DropDown
@@ -23,7 +28,7 @@ export function makeDropDownBox(props, title, option, i) {
         choices={option}
         index={i}
         value={dropDownStates[i]}
-        changeDropDownState={props.changeState}
+        changeDropDownState={dropDownChanged}
         stateIndex={14}
       />
     </div>

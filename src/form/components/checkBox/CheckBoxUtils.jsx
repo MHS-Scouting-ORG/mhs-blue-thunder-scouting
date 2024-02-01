@@ -14,8 +14,6 @@ export function makeWhoWonBox(props, name, i) {
   let data = props.matchData
   let rankingStates = props.rankingState
 
-  console.log("runs")
-
   let savedRankingPts;
   function whoWonClicked(){
     if (data === "not found") {
