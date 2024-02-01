@@ -3,7 +3,7 @@ import React from 'react';
 import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
-import { makeDropDownBox, makeMatchDropDown } from './components/dropDownBox/DropDownUtils';
+import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
 import { makeEndGameStartEndBox, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
@@ -284,64 +284,7 @@ class Form extends React.Component {
     console.log(this.matchData)
     teams();
   }
-
-  changeTeam = (event) => {
-    this.setState({ teamNumber: event.target.value });
-    let data = this.state.matchData;
-    let teamColor = 'red';
-    let selectedTeam = event.target.value;
-    data.alliances.blue.team_keys.map((team) => {
-      if (team === selectedTeam) {
-        teamColor = 'blue';
-      }
-    })
-
-    let whoWon = '';
-
-    if (data.alliances.blue.score > data.alliances.red.score) {
-      whoWon = 'blue';
-    } else if (data.alliances.blue.score < data.alliances.red.score) {
-      whoWon = 'red';
-    } else {
-      whoWon = 'Tie';
-    }
-
-    let rankingStates = this.state.rankingState;
-
-    if (teamColor === whoWon) {
-      this.setState({ rankingPts: 2 });
-      rankingStates[0] = "Team Won ";
-    } else if (whoWon === 'Tie') {
-      this.setState({ rankingPts: 1 });
-      rankingStates[0] = "Team Tied ";
-    } else if ((whoWon === 'blue' || whoWon === 'red') && teamColor !== whoWon) {
-      this.setState({ rankingPts: 0 });
-      rankingStates[0] = "Team Lost ";
-    }
-
-    rankingStates[1] = '';
-    rankingStates[2] = '';
-    this.setState({ whoWon: whoWon });
-  }
-
-  makeTeamDropdown = () => {
-    let alliances = this.state.teams;
-    return parseInt(this.state.matchNumber) !== 0 ? (
-      <div>
-        <select onChange={this.changeTeam}>
-          <option value={this.state.teamNumber}> {this.state.teamNumber} </option>
-          {alliances.map((alliances) => <option key={alliances}> {alliances} </option>)}
-        </select>
-      </div>
-    ) : (
-      <div>
-        <label> Team Number
-          <input type='number' onChange={e => { this.setState({ teamNumber: 'frc' + e.target.value }) }}></input>
-        </label>
-      </div>
-    )
-  }
-
+  
   //-------------------------------------------------------------------------------------------------------------//
 
   setPoints = (points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) => {
@@ -370,9 +313,10 @@ class Form extends React.Component {
 
         {/* MATCH INITIATION */}
         {makeMatchDropDown({ changeState: this.setGivenState, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-        <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
+        <button onClick={this.getMatchTeams}>GET MATCH TEAMS</button>
         <br></br>
-        {this.makeTeamDropdown()}
+        {makeTeamDropDown({ changeState: this.setGivenState, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
+
         <br></br>
 
         {/* AUTONOMOUS */}
@@ -446,9 +390,9 @@ class Form extends React.Component {
 
         {/* RANKING POINTS */}
         <h3>RANKING POINTS:</h3>
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData, whoWonClicked: this.whoWonClicked }, "Team Won ", 0)}
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData, whoWonClicked: this.whoWonClicked }, "Team Tied ", 1)}
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData, whoWonClicked: this.whoWonClicked }, "Team Lost ", 2)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Won ", 0)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Tied ", 1)}
+        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Lost ", 2)}
         {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
         {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts}/>

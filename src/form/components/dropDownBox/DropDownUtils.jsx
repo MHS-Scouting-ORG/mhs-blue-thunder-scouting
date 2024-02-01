@@ -5,6 +5,7 @@
 import React from 'react';
 import DropDown from './DropDown';
 import MatchDropDown from './MatchDropDown';
+import TeamDropDown from './TeamDropDown';
 
 /**
  * function for making regular dropdown boxes
@@ -76,6 +77,68 @@ export function makeMatchDropDown(props) {
         setMatchNumber={changeMatchNumber} 
         matchNumber={props.matchNumber}
         matchTypeValue={props.matchType}
+      />
+    </div>
+  )
+
+}
+
+export function makeTeamDropDown(props) {
+  
+  function changeTeam(event){
+    // this.setState({ teamNumber: event.target.value });
+    const savedTeamNumber = props.changeState([5,0],event.target.value)
+    let data = props.matchData;
+    let teamColor = 'red';
+    let selectedTeam = event.target.value;
+    data.alliances.blue.team_keys.map((team) => {
+      if (team === selectedTeam) {
+        teamColor = 'blue';
+      }
+    })
+
+    let whoWon = '';
+
+    if (data.alliances.blue.score > data.alliances.red.score) {
+      whoWon = 'blue';
+    } else if (data.alliances.blue.score < data.alliances.red.score) {
+      whoWon = 'red';
+    } else {
+      whoWon = 'Tie';
+    }
+
+    let rankingStates = props.rankingStates;
+    let savedRankingPoints;
+
+    if (teamColor === whoWon) {
+      // this.setState({ rankingPts: 2 });
+      savedRankingPoints = props.changeState([11,0],2,savedTeamNumber)
+      rankingStates[0] = "Team Won ";
+    } else if (whoWon === 'Tie') {
+      // this.setState({ rankingPts: 1 });
+      savedRankingPoints = props.changeState([11,0],1,savedTeamNumber)
+      rankingStates[0] = "Team Tied ";
+    } else if ((whoWon === 'blue' || whoWon === 'red') && teamColor !== whoWon) {
+      // this.setState({ rankingPts: 0 });
+      savedRankingPoints = props.changeState([11,0],0,savedTeamNumber)
+      rankingStates[0] = "Team Lost ";
+    }
+
+    rankingStates[1] = '';
+    rankingStates[2] = '';
+    // this.setState({ whoWon: whoWon });
+    const savedRankingStates = props.changeState([12,-1],rankingStates,savedRankingPoints)
+    props.changeState([10,0],whoWon,savedRankingStates)
+  }
+
+  return (
+    <div>
+      <TeamDropDown
+        matchNumber = {props.matchNumber}
+        teamNumber = {props.teamNumber}
+        alliances = {props.teams}
+        changeTeam = {changeTeam}
+        changeState = {props.changeState}
       />
     </div>
   )
