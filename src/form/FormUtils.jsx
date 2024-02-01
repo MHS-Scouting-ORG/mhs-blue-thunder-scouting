@@ -1,6 +1,38 @@
 import React from "react";
 import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
+import { getMatchesForRegional } from '../api/bluealliance';
+
+/* GET MATCH TEAMS */
+
+  //CHANGE THE REGIONAL KEY VIA 'main.jsx'
+  /* gets given teams of a match */
+export async function getMatchTeams(props){
+  console.log(props)
+  let matchKey =  /*put this years event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
+  const teams = async () => {
+    getMatchesForRegional(props.regional)
+      .then(data => {
+        data.map((match) => {
+          // console.log(match.key)
+          if (match.key === matchKey) {
+            // this.setState({ matchData: match })
+            // this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+
+            console.log("runs")
+            const savedMatchData = props.setGivenState([4,-1],match)
+            props.setGivenState([6,-1],match.alliances.blue.team_keys.concat(match.alliances.red.team_keys),savedMatchData)
+            console.log({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+          }
+        })
+      })
+      .catch(err => console.log(err))
+  }
+  console.log(matchKey);
+  console.log(props.state.matchData)
+  teams();
+}
+
 
 /* COPY ARRAY */
 
@@ -258,6 +290,15 @@ export async function submitState(props) {
 
   //POINT CALCULATIONS
 
+  function setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts){
+    const savedPoints = props.setGivenState([18,0],points);
+    const savedGridPoints = props.setGivenState([19,0],totalGridPts,savedPoints);
+    const savedCubeAccuracy = props.setGivenState([20,0],cubesTeleAutoAccuracy,savedGridPoints);
+    const savedConesAccuracy = props.setGivenState([21,0],conesTeleAutoAccuracy,savedCubeAccuracy);
+    const savedCubePoints = props.setGivenState([22,0],cubePts,savedConesAccuracy);
+    props.setGivenState([23,0],conePts,savedCubePoints);
+  }
+
   let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
   let midGridPoints = 4 * (midAutoCones + midAutoCubes) + 3 * (midTeleCones + midTeleCubes);
   let lowGridPoints = 3 * (lowAutoCones + lowAutoCubes) + 2 * (lowTeleCones + lowTeleCubes);
@@ -281,7 +322,8 @@ export async function submitState(props) {
   let cubesTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes) / (cubesAttempted + lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes));
   let conesTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones) / (conesAttempted + lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones));
 
-  props.setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts)
+  // props.setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts)
+  setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts);
 
   if (autoPlacement === '') {
     incompleteForm = true;

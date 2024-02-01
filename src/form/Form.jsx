@@ -18,10 +18,8 @@ import TextBox from './components/TextBox';
 import Headers from './components/Header';
 
 // general utility function imports //
-import { submitState, copyArray } from './FormUtils';
+import { getMatchTeams, submitState, copyArray} from './FormUtils';
 
-// api imports //
-import { getMatchesForRegional } from '../api/bluealliance';
 
 class Form extends React.Component {
   constructor(props) {
@@ -244,11 +242,10 @@ class Form extends React.Component {
 
     let stateName = stateEntries[i[0]][0];
     let stateValue = stateEntries[i[0]][1];
-    
-    console.log(stateEntries)
 
     if(Array.isArray(stateValue) && i[1] !== -1){
        stateValue[i[1]] = newState;
+       console.log("hey: " + newState)
     }
     else{
       const newEntry = [stateName,newState]
@@ -259,45 +256,7 @@ class Form extends React.Component {
     this.setState(Object.fromEntries(stateEntries));
     return Object.fromEntries(stateEntries);
   }
-
-  //CHANGE THE REGIONAL KEY VIA 'main.jsx'
-
-  /* gets given teams of a match */
-  getMatchTeams = async () =>  {
-    let matchKey =  /*put this years event*/ this.regional + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
-    const teams = async () => {
-      getMatchesForRegional(this.regional)
-        .then(data => {
-          data.map((match) => {
-            // console.log(match.key)
-            if (match.key === matchKey) {
-              this.setState({ matchData: match })
-              this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-              console.log({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-
-            }
-          })
-        })
-        .catch(err => console.log(err))
-    }
-    console.log(this.matchKey);
-    console.log(this.matchData)
-    teams();
-  }
   
-  //-------------------------------------------------------------------------------------------------------------//
-
-  setPoints = (points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) => {
-    this.setState({
-      totalPoints: points,
-      totalGrid: totalGridPts,
-      cubesAccuracy: cubesTeleAutoAccuracy,
-      conesAccuracy: conesTeleAutoAccuracy,
-      cubesPts: cubePts,
-      conesPts: conePts
-    })
-  }
-
   //-------------------------------------------------------------------------------------------------------------//
 
   // rendering physical and visible website components
@@ -308,12 +267,11 @@ class Form extends React.Component {
         <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
 
         {/* CHECK STATE BUTTON */}
-        <button onClick={ () => this.setGivenState([16,1],"WORKS")}> Set Given State! </button>
         <button onClick={ () => console.log(this.state) }> Check State </button>
 
         {/* MATCH INITIATION */}
         {makeMatchDropDown({ changeState: this.setGivenState, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-        <button onClick={this.getMatchTeams}>GET MATCH TEAMS</button>
+        <button onClick={() => {getMatchTeams(this)} }>GET MATCH TEAMS</button>
         <br></br>
         {makeTeamDropDown({ changeState: this.setGivenState, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
 

@@ -9,7 +9,6 @@ class MatchDropDown extends React.Component{
     
     changeMatchType(event){
         let matchType = event.target.value;
-        console.log(matchType)
         if( matchType === 'Qualification' ){
             this.props.setMatchType('q');
         } else if(matchType === 'QuarterFinal'){
