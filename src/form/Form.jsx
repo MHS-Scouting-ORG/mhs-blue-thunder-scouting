@@ -342,14 +342,6 @@ class Form extends React.Component {
     )
   }
 
-  //--------------------------------------------------------------------------------------------------------------//
-
-  changeChargeStation = (event) => {
-    let chargeStation = this.state.chargeStationValAuto;
-    chargeStation = event.target.value;
-    this.setState({ chargeStationValAuto: chargeStation });
-  }
-
   //-------------------------------------------------------------------------------------------------------------//
 
   setPoints = (points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) => {

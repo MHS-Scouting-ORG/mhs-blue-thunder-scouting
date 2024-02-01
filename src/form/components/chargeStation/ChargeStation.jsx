@@ -3,7 +3,6 @@ import React from "react";
 class ChargeStation extends React.Component{
     constructor(props){
         super(props)
-
         this.changeChargeStation = this.changeChargeStation.bind(this);
 
         this.state ={
