@@ -136,7 +136,7 @@ const renderRowSubComponent = ( row, modalFunction, modalDataFunction, apiData) 
   console.log(getApiData())
   console.log(getMatchesForRegional('2023azva'))
   console.log(apiData)
-    let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)/*async () => {
+  let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)/*async () => {
       return await getApiData()
         .then(
           data => {
@@ -149,7 +149,7 @@ const renderRowSubComponent = ( row, modalFunction, modalDataFunction, apiData) 
       return await t()
       .then(
         data =>
-      data.map(x => {
+        data.map(x => {
 
         const penalties = x.Penalties.Penalties.filter(x => x != 'None') 
         const rankingPts = x.RankingPts.filter(x => x != 'None' || '',)
