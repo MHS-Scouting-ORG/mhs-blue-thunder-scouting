@@ -1,48 +1,57 @@
 import React from "react";
+import { PropTypes } from "prop-types";
 
 class MatchDropDown extends React.Component{
     constructor(props){
         super(props);
-        this.changeMatchType = this.changeMatchType.bind(this);
-        this.generateMatchTypeNum = this.generateMatchTypeNum.bind(this);
+//        this.changeMatchType = this.changeMatchType.bind(this);
+//        this.generateMatchTypeNum = this.generateMatchTypeNum.bind(this);
     }
     
-    changeMatchType(event){
-        let matchType = event.target.value;
-        if( matchType === 'Qualification' ){
-            this.props.setMatchType('q');
-        } else if(matchType === 'QuarterFinal'){
-            this.props.setMatchType('qf');
-        } else if(matchType === 'SemiFinal'){
-            this.props.setMatchType('sf');
-        } else if(matchType === 'Final'){
-            this.props.setMatchType('f');
-        }
-    }
+ //   changeMatchType({ target: { value } }){
+ //       this.props.setMatchType(value);
+ //   }
+//        let matchType = event.target.value;
+//        if( matchType === 'Qualification' ){
+//            this.props.setMatchType('q');
+//        } else if(matchType === 'QuarterFinal'){
+//            this.props.setMatchType('qf');
+//        } else if(matchType === 'SemiFinal'){
+//            this.props.setMatchType('sf');
+//        } else if(matchType === 'Final'){
+//            this.props.setMatchType('f');
+//        }
+    
 
-    generateMatchTypeNum(){
-        return(
-            this.props.generateMatchTypeNum(this.props.matchTypeValue)
-        )
-    }
+//    generateMatchTypeNum(){
+//        return(
+//            this.props.generateMatchTypeNum(this.props.matchTypeValue)
+//        )
+//    }
 
 
     render(){
         return(
             <div>
-                <select onChange={this.changeMatchType}>
-                    <option></option>
-                    <option> Qualification</option>
-                    <option> QuarterFinal </option>
-                    <option> SemiFinal </option>
-                    <option> Final </option>
+                <select onChange={this.props.setMatchType}>
+                    <option value="q"> Qualification</option>
+                    <option value="qf"> QuarterFinal </option>
+                    <option value="sf"> SemiFinal </option>
+                    <option value="f"> Final </option>
                 </select>
-                {this.generateMatchTypeNum()}
+                {this.props.children}
                 <label> Match: </label>
                 <input value={this.props.matchNumber} onChange={this.props.setMatchNumber}></input>
             </div>
         )
     }
+}
+
+MatchDropDown.propTypes = {
+    matchTypeValue: PropTypes.string,
+    matchNumber: PropTypes.number,
+    setMatchType: PropTypes.func,
+    setMatchNumber: PropTypes.func,
 }
 
 export default MatchDropDown;

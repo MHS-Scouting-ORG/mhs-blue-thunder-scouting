@@ -6,7 +6,7 @@ import React from 'react';
 import DropDown from './DropDown';
 import MatchDropDown from './MatchDropDown';
 import TeamDropDown from './TeamDropDown';
-
+import { PropTypes } from 'prop-types';
 /**
  * function for making regular dropdown boxes
  * @param props obj from form component containing matchType, matchNumber, changeMatchType, changeElmNum, makeMatchTypeDropDown, changeMatchNumber
@@ -18,9 +18,9 @@ import TeamDropDown from './TeamDropDown';
 export function makeDropDownBox(props, title, option, i) {
   let dropDownStates = props.dropDownVal;
 
-  function dropDownChanged(event, i){
-    props.changeState([14,i],event.target.value)
-  }
+//  function dropDownChanged(event, i){
+//    props.changeState(i,event.target.value)
+//  }
 
   return (
     <div>
@@ -29,11 +29,16 @@ export function makeDropDownBox(props, title, option, i) {
         choices={option}
         index={i}
         value={dropDownStates[i]}
-        changeDropDownState={dropDownChanged}
+        changeDropDownState={props.changeState}
         stateIndex={14}
       />
     </div>
   )
+}
+
+makeDropDownBox.propTypes = {
+  dropDownVal: PropTypes.array,
+  changeState: PropTypes.func
 }
 
 /**
@@ -43,30 +48,35 @@ export function makeDropDownBox(props, title, option, i) {
  */
 export function makeMatchDropDown(props) {
 
-  function changeElmNum(event){
-    props.changeState([2,0], event.target.value)
-  }
+//  function changeElmNum(event){
+//    props.changeState([2,0], event.target.value)
+//  }
 
   function makeMatchTypeDropDown(matchType){
     if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
       return (
-        <input value={props.elmNum} onChange={changeElmNum} />
+        <input value={props.elmNum} onChange={({target : { value }}) => {
+            props.changeState(value, 'elmNum')
+          }
+        }/>
       )
     }
   }
 
-  function changeMatchType(matchType){
-    const savedMatchType = props.changeState([1,0], matchType)
-    const savedResetTeams = props.changeState([6,-1],['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],savedMatchType);
-    const savedResetTeamNumber = props.changeState([5,0],"",savedResetTeams)
-
-    if (matchType === 'q') {
-      props.changeState([2,0],'',savedResetTeamNumber)
-    }
+  function changeMatchType({ target : { value }}){
+//    const savedMatchType = props.changeState([1,0], matchType)
+//    const savedResetTeams = props.changeState([6,-1],['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],savedMatchType);
+//    const savedResetTeamNumber = props.changeState([5,0],"",savedResetTeams)
+//
+//    if (matchType === 'q') {
+//      props.changeState([2,0],'',savedResetTeamNumber)
+//    }
+    props.changeState(value, 'matchType')
   }
 
-  function changeMatchNumber(event){
-    props.changeState([3,0], event.target.value)
+  function changeMatchNumber({ target : { value } }){
+//    props.changeState([3,0], event.target.value)
+    props.changeState(value, 'matchNumber')
   }
 
   return (
@@ -77,10 +87,19 @@ export function makeMatchDropDown(props) {
         setMatchNumber={changeMatchNumber} 
         matchNumber={props.matchNumber}
         matchTypeValue={props.matchType}
-      />
+      >
+        {makeMatchTypeDropDown(props.matchType)}
+      </MatchDropDown>
     </div>
   )
 
+}
+
+makeMatchDropDown.propTypes = {
+  matchType: PropTypes.string,
+  matchNumber: PropTypes.string,
+  elmNum: PropTypes.string,
+  changeState: PropTypes.func
 }
 
 export function makeTeamDropDown(props) {
@@ -142,4 +161,11 @@ export function makeTeamDropDown(props) {
       />
     </div>
   )
+}
+
+makeTeamDropDown.propTypes = {
+  matchNumber: PropTypes.string,
+  teamNumber: PropTypes.string,
+  teams: PropTypes.object,
+  changeState: PropTypes.func
 }
