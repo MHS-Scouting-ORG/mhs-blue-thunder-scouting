@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { tableHandler } from "../InnerTables/InnerTableUtils";
-import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
-import { ueDebug, ueSetTeamObj, ueTableData, } from "./MTEffectFunc"
+import {calcColumnSort} from "./CalculationUtils"
+import { ueTableData, } from "./MTEffectFunc"
+import { getMatchesForRegional} from "../../api";
 import GlobalFilter from "../GlobalFilter";
 import List from "../List";
 import Modal from "../Modal";
 
-function MainTable(props) {
+function MainTable(props) { 
   const regional = props.regional
 
   const [tableData,setTableData] = useState([]); //data on table
@@ -21,6 +22,16 @@ function MainTable(props) {
   const [modalData, setModalData] = useState();
 
   const [sortBy,setSortBy] = useState([]);
+
+  const [apiData, setApiData] = useState([])
+
+  useEffect(() => {
+    getMatchesForRegional('2023azva')
+      .then(data => {
+        const nApiData = data.data.teamMatchesByRegional.items
+        setApiData(nApiData)
+    })
+  },[])
 
   useEffect(() => {
     ueTableData()
@@ -211,7 +222,7 @@ const data = React.useMemo(
   } = tableInstance
 
   const {globalFilter} = state
-  
+  console.log(rows)
   return (
     <div>
       <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>
@@ -308,13 +319,13 @@ const data = React.useMemo(
               </tr>
 
               {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal): null
-
+                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
+              
 
               }
                   </React.Fragment>
             )
-          })} 
+          })}  
         </tbody>
       </table>
       <br></br>

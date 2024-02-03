@@ -18,7 +18,6 @@ function ueDebug (){
     })
     .catch(console.log.bind(console)),[]
   }
-  //doesn't work ^(attempts)
 
   async function ueTableData(){
      return await getTeams()

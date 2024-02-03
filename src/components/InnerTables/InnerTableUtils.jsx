@@ -5,8 +5,10 @@ import ConePtsTable from "./ConePtsTable"
 import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 import TeamInnerTable from './TeamInnerTable'
+import { getMatchesForRegional} from "../../api";
 
-const renderRowSubComponentGrid = ({row},tableData) => {
+
+const renderRowSubComponentGrid = (row,tableData) => {
 
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber )
     
@@ -33,7 +35,7 @@ const renderRowSubComponentGrid = ({row},tableData) => {
     );
 }
   
-const renderRowSubComponentConeAccTable = ({row},tableData) => {
+const renderRowSubComponentConeAccTable = (row,tableData) => {
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber )
   
     const disp = g.map(x => {
@@ -55,7 +57,7 @@ const renderRowSubComponentConeAccTable = ({row},tableData) => {
     );
 }
   
-const renderRowSubComponentConePtsTable = ({row},tableData) => {
+const renderRowSubComponentConePtsTable = (row,tableData) => {
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
 
     const disp = g.map(x => {
@@ -77,7 +79,7 @@ const renderRowSubComponentConePtsTable = ({row},tableData) => {
     );
 }
   
-const renderRowSubComponentCubeAccTable = ({row},tableData) => {
+const renderRowSubComponentCubeAccTable = (row,tableData) => {
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
         
     const disp = g.map(x => { 
@@ -99,7 +101,7 @@ const renderRowSubComponentCubeAccTable = ({row},tableData) => {
     );
 }
   
-const renderRowSubComponentCubePtsTable = ({row},tableData) => {
+const renderRowSubComponentCubePtsTable = (row,tableData) => {
     const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
           
     const disp = g.map(x => {
@@ -122,59 +124,74 @@ const renderRowSubComponentCubePtsTable = ({row},tableData) => {
     );
 }
 
-const renderRowSubComponent = ({ row }, modalFunction, modalDataFunction) => {
-    
-  const getApiData =  async () => {
-    return await getMatchesForRegional('2023azva')
-      .then(data => {
-        let apiData = data.data.teamMatchesByRegional.items
-          return apiData
-    })
-  }
+const getApiData = async () => {
+  return await getMatchesForRegional('2023azva')
+    .then(async data => {
+      let apiData = data.data.teamMatchesByRegional.items
+        return apiData
+  })
+}
 
-    let t = getApiData().filter(x => x.Team === `frc${row.values.TeamNumber}`)
-  
-    const disp = t.map(x => {
-  
-    const penalties = x.Penalties.Penalties.filter(x => x != 'None') 
-    const rankingPts = x.RankingPts.filter(x => x != 'None' || '',)
-        return {
-            Team: x.Team,
-            Match: x.id.substring(x.id.indexOf('_')+1),
-            Strategy: x.Priorities.filter(val => val != undefined && val.trim() !== '').length !== 0 ? x.Priorities.filter(val => val != undefined && val.trim() !== '').map(val => val.trim()).join(', ') : '',
-            TotalPts: x.Teleop.ScoringTotal.Total !== null  ? x.Teleop.ScoringTotal.Total : '',
-            GridPts: x.Teleop.ScoringTotal.GridPoints !== null ? x.Teleop.ScoringTotal.GridPoints : '',
-            ConeAcc: x.Teleop.ConesAccuracy.Overall !== 0 && x.Teleop.ConesAccuracy.Overall !== null ? (x.Teleop.ConesAccuracy.Overall.toFixed(2)) : '',
-            CubeAcc: x.Teleop.CubesAccuracy.Overall !== 0 && x.Teleop.CubesAccuracy.Overall !== null ? x.Teleop.CubesAccuracy.Overall.toFixed(2) : '',
-            AutoPlacement: x.Autonomous.AutonomousPlacement !== 0 ? x.Autonomous.AutonomousPlacement : '',
-            Mobility: x.Autonomous.LeftCommunity === true ? 'yes' : 'no',
-            AutoUpperConePts: `${x.Autonomous.Scored.Cones.Upper}/${x.Autonomous.Scored.Cones.Upper + x.Autonomous.Attempted.Cones.Upper}`,
-            AutoUpperCubePts: `${x.Autonomous.Scored.Cubes.Upper}/${x.Autonomous.Scored.Cubes.Upper + x.Autonomous.Attempted.Cubes.Upper}`,
-            AutoMidConePts: `${x.Autonomous.Scored.Cones.Mid}/${x.Autonomous.Scored.Cones.Mid + x.Autonomous.Attempted.Cones.Mid}`,
-            AutoMidCubePts: `${x.Autonomous.Scored.Cubes.Mid}/${x.Autonomous.Scored.Cubes.Mid + x.Autonomous.Attempted.Cubes.Mid}`,
-            AutoLowConePts: `${x.Autonomous.Scored.Cones.Lower}/${x.Autonomous.Scored.Cones.Lower + x.Autonomous.Attempted.Cones.Lower}`,
-            AutoLowCubePts: `${x.Autonomous.Scored.Cubes.Lower}/${x.Autonomous.Scored.Cubes.Lower + x.Autonomous.Attempted.Cubes.Lower}`,
-            AutoChargeStationPts: x.Autonomous.ChargeStation,
-            TeleUpperConePts: `${x.Teleop.Scored.Cones.Upper}/${x.Teleop.Scored.Cones.Upper + x.Teleop.Attempted.Cones.Upper}`,
-            TeleUpperCubePts: `${x.Teleop.Scored.Cubes.Upper}/${x.Teleop.Scored.Cubes.Upper + x.Teleop.Attempted.Cubes.Upper}`,
-            TeleMidConePts: `${x.Teleop.Scored.Cones.Mid}/${x.Teleop.Scored.Cones.Mid + x.Teleop.Attempted.Cones.Mid}`,
-            TeleMidCubePts: `${x.Teleop.Scored.Cubes.Mid}/${x.Teleop.Scored.Cubes.Mid + x.Teleop.Attempted.Cubes.Mid}`,
-            TeleLowConePts: `${x.Teleop.Scored.Cones.Lower}/${x.Teleop.Scored.Cones.Lower + x.Teleop.Attempted.Cones.Lower}`,
-            TeleLowCubePts: `${x.Teleop.Scored.Cubes.Lower}/${x.Teleop.Scored.Cubes.Lower + x.Teleop.Attempted.Cubes.Lower}`,
-            TeleEndgame: x.Teleop.EndGame !== undefined ? x.Teleop.EndGame : '',
-            CSStart: x.Teleop.EndGameTally.Start !== 0 ? x.Teleop.EndGameTally.Start : '',
-            CSEnd: x.Teleop.EndGameTally.End !== 0 ? x.Teleop.EndGameTally.End : '',
-            DriveStrength: x.Teleop.DriveStrength !== undefined ? x.Teleop.DriveStrength : '',
-            DriveSpeed: x.Teleop.DriveSpeed !== "0" ? x.Teleop.DriveSpeed : '',
-            SmartPlacement: x.Teleop.SmartPlacement === true ? `yes` : `no`,
-            NumberOfFoulAndTech: x.Penalties.Fouls !== 0 || x.Penalties.Tech !== 0 ? `${x.Penalties.Fouls} | ${x.Penalties.Tech}` : ``,
-            Penalties: penalties.join(', '),
-            NumberOfRankingPoints: rankingPts.join(', '),
-            Comments: x.Comments !== undefined ? x.Comments.trim() : '',
-        };
-    })
-  
-    return disp.length > 0 ?
+const renderRowSubComponent = ( row, modalFunction, modalDataFunction, apiData) => {
+  console.log(getApiData())
+  console.log(getMatchesForRegional('2023azva'))
+  console.log(apiData)
+    let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)/*async () => {
+      return await getApiData()
+        .then(
+          data => {
+            return data.filter(x => x.Team === `frc${row.values.TeamNumber}`)
+      }
+    )} */
+
+  console.log(t)
+    const disp = async () => { 
+      return await t()
+      .then(
+        data =>
+      data.map(x => {
+
+        const penalties = x.Penalties.Penalties.filter(x => x != 'None') 
+        const rankingPts = x.RankingPts.filter(x => x != 'None' || '',)
+          return {
+              Team: x.Team,
+              Match: x.id.substring(x.id.indexOf('_')+1),
+              Strategy: x.Priorities.filter(val => val != undefined && val.trim() !== '').length !== 0 ? x.Priorities.filter(val => val != undefined && val.trim() !== '').map(val => val.trim()).join(', ') : '',
+              TotalPts: x.Teleop.ScoringTotal.Total !== null  ? x.Teleop.ScoringTotal.Total : '',
+              GridPts: x.Teleop.ScoringTotal.GridPoints !== null ? x.Teleop.ScoringTotal.GridPoints : '',
+              ConeAcc: x.Teleop.ConesAccuracy.Overall !== 0 && x.Teleop.ConesAccuracy.Overall !== null ? (x.Teleop.ConesAccuracy.Overall.toFixed(2)) : '',
+              CubeAcc: x.Teleop.CubesAccuracy.Overall !== 0 && x.Teleop.CubesAccuracy.Overall !== null ? x.Teleop.CubesAccuracy.Overall.toFixed(2) : '',
+              AutoPlacement: x.Autonomous.AutonomousPlacement !== 0 ? x.Autonomous.AutonomousPlacement : '',
+              Mobility: x.Autonomous.LeftCommunity === true ? 'yes' : 'no',
+              AutoUpperConePts: `${x.Autonomous.Scored.Cones.Upper}/${x.Autonomous.Scored.Cones.Upper + x.Autonomous.Attempted.Cones.Upper}`,
+              AutoUpperCubePts: `${x.Autonomous.Scored.Cubes.Upper}/${x.Autonomous.Scored.Cubes.Upper + x.Autonomous.Attempted.Cubes.Upper}`,
+              AutoMidConePts: `${x.Autonomous.Scored.Cones.Mid}/${x.Autonomous.Scored.Cones.Mid + x.Autonomous.Attempted.Cones.Mid}`,
+              AutoMidCubePts: `${x.Autonomous.Scored.Cubes.Mid}/${x.Autonomous.Scored.Cubes.Mid + x.Autonomous.Attempted.Cubes.Mid}`,
+              AutoLowConePts: `${x.Autonomous.Scored.Cones.Lower}/${x.Autonomous.Scored.Cones.Lower + x.Autonomous.Attempted.Cones.Lower}`,
+              AutoLowCubePts: `${x.Autonomous.Scored.Cubes.Lower}/${x.Autonomous.Scored.Cubes.Lower + x.Autonomous.Attempted.Cubes.Lower}`,
+              AutoChargeStationPts: x.Autonomous.ChargeStation,
+              TeleUpperConePts: `${x.Teleop.Scored.Cones.Upper}/${x.Teleop.Scored.Cones.Upper + x.Teleop.Attempted.Cones.Upper}`,
+              TeleUpperCubePts: `${x.Teleop.Scored.Cubes.Upper}/${x.Teleop.Scored.Cubes.Upper + x.Teleop.Attempted.Cubes.Upper}`,
+              TeleMidConePts: `${x.Teleop.Scored.Cones.Mid}/${x.Teleop.Scored.Cones.Mid + x.Teleop.Attempted.Cones.Mid}`,
+              TeleMidCubePts: `${x.Teleop.Scored.Cubes.Mid}/${x.Teleop.Scored.Cubes.Mid + x.Teleop.Attempted.Cubes.Mid}`,
+              TeleLowConePts: `${x.Teleop.Scored.Cones.Lower}/${x.Teleop.Scored.Cones.Lower + x.Teleop.Attempted.Cones.Lower}`,
+              TeleLowCubePts: `${x.Teleop.Scored.Cubes.Lower}/${x.Teleop.Scored.Cubes.Lower + x.Teleop.Attempted.Cubes.Lower}`,
+              TeleEndgame: x.Teleop.EndGame !== undefined ? x.Teleop.EndGame : '',
+              CSStart: x.Teleop.EndGameTally.Start !== 0 ? x.Teleop.EndGameTally.Start : '',
+              CSEnd: x.Teleop.EndGameTally.End !== 0 ? x.Teleop.EndGameTally.End : '',
+              DriveStrength: x.Teleop.DriveStrength !== undefined ? x.Teleop.DriveStrength : '',
+              DriveSpeed: x.Teleop.DriveSpeed !== "0" ? x.Teleop.DriveSpeed : '',
+              SmartPlacement: x.Teleop.SmartPlacement === true ? `yes` : `no`,
+              NumberOfFoulAndTech: x.Penalties.Fouls !== 0 || x.Penalties.Tech !== 0 ? `${x.Penalties.Fouls} | ${x.Penalties.Tech}` : ``,
+              Penalties: penalties.join(', '),
+              NumberOfRankingPoints: rankingPts.join(', '),
+              Comments: x.Comments !== undefined ? x.Comments.trim() : '',
+          };
+      }))
+  }
+  const tDisp = async () => {return disp().then(data => {return data.length})}
+  console.log(tDisp())
+    return tDisp > 0 ?
     (<pre>
         <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} /*delete={handleDelete}*/ information = {disp} setModalData={modalDataFunction} />} </div>
     </pre>)
@@ -183,9 +200,10 @@ const renderRowSubComponent = ({ row }, modalFunction, modalDataFunction) => {
             padding: '5px',
         }}> No data collected for Team {row.values.TeamNumber}. </div>
     );
+    
 }
 
-function tableHandler(row, header, visibleColumns, tableData, modalFunction, setModalData){ //handles which state and inner table should be shown
+function tableHandler(row, header, visibleColumns, tableData, modalFunction, setModalData, apiData){ //handles which state and inner table should be shown
 
     if(header === 'Avg Grid Points'){
       return (
@@ -195,7 +213,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "10rem"
         }}
         >
-          {renderRowSubComponentGrid ({row},tableData)} { /*needs tableData from maintable component*/ }
+          {renderRowSubComponentGrid (row,tableData)} { /*needs tableData from maintable component*/ }
         </td>
       </tr>
       )
@@ -208,7 +226,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponentConeAccTable ({row},tableData)}
+          {renderRowSubComponentConeAccTable (row,tableData)}
         </td>
       </tr>
       )
@@ -221,7 +239,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponentConePtsTable ({row},tableData)}
+          {renderRowSubComponentConePtsTable (row,tableData)}
         </td>
       </tr>
       )
@@ -234,7 +252,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponentCubeAccTable ({row},tableData)}
+          {renderRowSubComponentCubeAccTable (row,tableData)}
         </td>
       </tr>
       )
@@ -247,7 +265,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponentCubePtsTable ({row},tableData)}
+          {renderRowSubComponentCubePtsTable (row,tableData)}
         </td>
       </tr>
       )
@@ -260,7 +278,7 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
           maxWidth: "1200px"
         }}
         >
-          {renderRowSubComponent ({row}, modalFunction, setModalData)}
+          {renderRowSubComponent (row, modalFunction, setModalData, apiData)}
         </td>
       </tr>
       )
@@ -268,4 +286,4 @@ function tableHandler(row, header, visibleColumns, tableData, modalFunction, set
     else{console.log('error in tablehandler or nothing shown')}
   } 
 
-export { tableHandler };
+export { tableHandler, };
