@@ -1,6 +1,6 @@
 import React from 'react';
 // checkbox utility function imports //
-import { makeWhoWonBox, makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import {  makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -304,10 +304,40 @@ class Form extends React.Component {
     this.setState({ penaltyVal })
   }
 
-  updateWhoWon() {
+  updateRankingPoints(rankingState) {
+    let rankingPts = 0
+    if (rankingState[0] === "win") {
+      rankingPts = 2
+    }
+    else if (rankingState[0] === "tie") {
+      rankingPts = 1
+    }
+    else if (rankingState[0] === "loss") {
+      rankingPts = 0
+    }
+
+    if (rankingState[1].trim() === "Activation") {
+      rankingPts++
+    }
+    if (rankingState[2].trim() === "Sustainability") {
+      rankingPts++
+    }
+    this.setState({ rankingPts })
   }
 
-  updateBonus() {
+  updateWhoWon({ target : { value }}) {
+    let rankingState = [...this.state.rankingState]
+    rankingState[0] = value
+    this.setState({ rankingState })
+    this.updateRankingPoints(rankingState)
+
+  }
+
+  updateBonus(i, name, checked) {
+    let rankingState = [...this.state.rankingState]
+    rankingState[i] = checked ? name : ''
+    this.setState({ rankingState })
+    this.updateRankingPoints(rankingState)
   }
 
   updateStrategy([_, i], val) {
@@ -402,9 +432,20 @@ class Form extends React.Component {
 
         {/* RANKING POINTS */}
         <h3>RANKING POINTS:</h3>
-        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Won ", 0)}
-        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Tied ", 1)}
-        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Lost ", 2)}
+        <div>
+          <label>
+            <input type="radio" name="whoWon" value="win" onChange={this.updateWhoWon} />
+            Team Won
+          </label>
+          <label>
+            <input type="radio" name="whoWon" value="tie" onChange={this.updateWhoWon} />
+            Team Tied
+          </label>
+          <label>
+            <input type="radio" name="whoWon" value="loss" onChange={this.updateWhoWon} />
+            Team Lost
+          </label>
+        </div>
         {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
         {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts} />

@@ -6,8 +6,8 @@ class CheckBox extends React.Component{
         this.changeCheckBoxState = this.changeCheckBoxState.bind(this);
     }
 
-    changeCheckBoxState(){
-        if(!this.props.checked){
+    changeCheckBoxState({ target: { checked } }){
+        if(checked){
             this.props.changeCheckBoxState([this.props.stateIndex,this.props.index],this.props.label);
         }
         else{

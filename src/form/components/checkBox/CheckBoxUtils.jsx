@@ -1,77 +1,7 @@
 import React from "react";
 import CheckBox from "./CheckBox";
 
-/* WhoWon Box */
 
-/**
- * function for making the whoWon box
- * @param props obj from form component containing rankingState, whoWonClicked method
- * @param name text that displays next to checkbox
- * @param i array position
- * @returns checkbox component
- */
-export function makeWhoWonBox(props, name, i) {
-  let data = props.matchData
-  let rankingStates = props.rankingState
-
-  let savedRankingPts;
-  function whoWonClicked(){
-    if (data === "not found") {
-      window.alert("PICK A TEAM FIRST");
-    }
-    else {
-      if (rankingStates[0] === name) {
-        savedRankingPts = props.changeState([11,0],0)
-        rankingStates[0] = '';
-      }
-      else if (rankingStates[0] !== name) {
-        rankingStates[0] = name;
-
-        console.log('HELL YEAH')
-        if (name === "Team Won ") {
-          // this.setState({ rankingPts: 2 })\
-          savedRankingPts = props.changeState([11,0],2)
-          console.log("won")
-        }
-        else if (name === "Team Tied ") {
-          // this.setState({ rankingPts: 1 })\
-          savedRankingPts = props.changeState([11,0],1)
-          console.log("tied")
-        }
-        else if (name === "Team Lost ") {
-          // this.setState({ rankingPts: 0 })\
-          savedRankingPts = props.changeState([11,0],0)
-          console.log("lost")
-        }
-        
-      }
-
-      rankingStates[1] = '';
-      rankingStates[2] = '';
-
-      // this.setState({ rankingState: rankingStates })
-      props.changeState([12,-1], rankingStates,savedRankingPts)
-    }
-  }
-
-  let checkVal;
-  if (rankingStates[0] === name) {
-    checkVal = true;
-  } else {
-    checkVal = false;
-  }
-
-  return (
-    <div>
-      <CheckBox
-        label={name}
-        changeCheckBoxState={whoWonClicked}
-        index={i}
-        checked={checkVal}
-      />
-    </div>
-  )
-}
 
 /**
  * function for making the strategy box
@@ -155,42 +85,13 @@ export function makeBonusBox(props, name, i) {
   let rankingState = props.rankingState;
   let rankingPts = props.rankingPoints
 
-  function bonusBoxChecked(){
-    let ranking = rankingState.slice();
-    let savedRankingPts;
-    if (ranking[i] === name) {
-      // this.setState({ rankingPts: this.state.rankingPts - 1 });
-      savedRankingPts = props.changeState([11,0], rankingPts - 1)
-    } else {
-      // this.setState({ rankingPts: this.state.rankingPts + 1 });
-      savedRankingPts = props.changeState([11,0], rankingPts + 1)
-    }
-
-    if (ranking[i] === name) {
-      ranking[i] = ' ';
-    } else {
-      ranking[i] = name;
-    }
-
-    // this.setState({ rankingState: ranking })
-    console.log("ranking state" + ranking)
-    props.changeState([12,-1],ranking,savedRankingPts)
-  }
-
-  let checkedVal;
-  if (rankingState[i] === name) {
-    checkedVal = true;
-  }
-  else {
-    checkedVal = false;
-  }
   return (
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={bonusBoxChecked}
+        changeCheckBoxState={(_, label) => props.changeState(i, name, label && label.length > 0)}
         index={i}
-        checked={checkedVal}
+        checked={rankingState[i] === name}
       />
     </div>
   )
