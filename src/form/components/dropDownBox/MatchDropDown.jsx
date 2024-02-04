@@ -49,7 +49,7 @@ class MatchDropDown extends React.Component{
 
 MatchDropDown.propTypes = {
     matchTypeValue: PropTypes.string,
-    matchNumber: PropTypes.number,
+    matchNumber: PropTypes.string,
     setMatchType: PropTypes.func,
     setMatchNumber: PropTypes.func,
 }

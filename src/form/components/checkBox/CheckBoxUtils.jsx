@@ -82,12 +82,6 @@ export function makeWhoWonBox(props, name, i) {
  */
 export function makeStrategyBox(props, name, i) {
   let strategyState = props.strategyVal;
-  let checkedVal;
-  if (strategyState[i] === name) {
-    checkedVal = true;
-  } else {
-    checkedVal = false;
-  }
   return (
     <div>
       <CheckBox
@@ -95,7 +89,7 @@ export function makeStrategyBox(props, name, i) {
         changeCheckBoxState={props.changeState}
         stateIndex={16}
         index={i}
-        checked={checkedVal}
+        checked={strategyState[i] === name}
       />
     </div>
   )
@@ -137,12 +131,6 @@ export function makeBooleanCheckBox(props, name, i) {
  */
 export function makePenaltyBox(props, name, i) {
   let penaltyStates = props.penaltyVal;
-  let checkedVal;
-  if (penaltyStates[i] === name) {
-    checkedVal = true;
-  } else {
-    checkedVal = false
-  }
   return (
     <div>
       <CheckBox
@@ -150,7 +138,7 @@ export function makePenaltyBox(props, name, i) {
         changeCheckBoxState={props.changeState}
         stateIndex={13}
         index={i}
-        checked={checkedVal}
+        checked={penaltyStates[i] === name}
       />
     </div>
   )

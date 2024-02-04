@@ -240,64 +240,68 @@ class Form extends React.Component {
   //------------------------------------------------------------------------------------------------------------------------//
 
   // SET STATE FUNCTION //
-//  setGivenState = (i, newState, savedEntries) => {
-//    let stateEntries;
-//    if (savedEntries) {
-//      stateEntries = Object.entries(savedEntries).slice();
-//    }
-//    else {
-//      stateEntries = Object.entries(this.state).slice();
-//    }
-//
-//    //let stateName = stateEntries[i[0]][0];
-//    let stateValue = stateEntries[i[0]][1];
-//
-//    if (Array.isArray(stateValue) && i[1] !== -1) {
-//      stateValue[i[1]] = newState;
-//      console.log("hey: " + newState)
-//    }
-//    else {
-//      const newEntry = [stateName, newState]
-//      stateEntries[i[0]] = newEntry;
-//      console.log("runs: " + stateName + " - " + newState)
-//    }
-//
-//    this.setState(Object.fromEntries(stateEntries));
-//    return Object.fromEntries(stateEntries);
-//  }
+  //  setGivenState = (i, newState, savedEntries) => {
+  //    let stateEntries;
+  //    if (savedEntries) {
+  //      stateEntries = Object.entries(savedEntries).slice();
+  //    }
+  //    else {
+  //      stateEntries = Object.entries(this.state).slice();
+  //    }
+  //
+  //    //let stateName = stateEntries[i[0]][0];
+  //    let stateValue = stateEntries[i[0]][1];
+  //
+  //    if (Array.isArray(stateValue) && i[1] !== -1) {
+  //      stateValue[i[1]] = newState;
+  //      console.log("hey: " + newState)
+  //    }
+  //    else {
+  //      const newEntry = [stateName, newState]
+  //      stateEntries[i[0]] = newEntry;
+  //      console.log("runs: " + stateName + " - " + newState)
+  //    }
+  //
+  //    this.setState(Object.fromEntries(stateEntries));
+  //    return Object.fromEntries(stateEntries);
+  //  }
 
   //-------------------------------------------------------------------------------------------------------------//
 
   updateCounterBox = (i, newState) => {
     let counterBoxVals = [...this.state.counterBoxVals];
     counterBoxVals[i] = newState;
-    this.setState({ counterBoxVals: counterBoxVals });
+    this.setState({ counterBoxVals });
   }
 
   updateMatchType(value, prop) {
-    this.setState({ [prop] : value})
+    this.setState({ [prop]: value })
   }
 
-  updateTeam() {
-      
+  updateTeam(team) {
+    this.setState({ teamNumber: team })
   }
-  
-  updateDropDown({ target : { value }}, i) {
+
+  updateDropDown({ target: { value } }, i) {
     let dropDownVal = [...this.state.dropDownVal];
     dropDownVal[i] = value;
     this.setState({ dropDownVal });
-      
+
   }
 
   updateBoolean() {
 
   }
 
-  updateChargeStation() {
-      
+  updateChargeStation(_, val) {
+    this.setState({ chargeStationValAuto: val })
+
   }
 
-  updatePenalty() {
+  updatePenalty([_, i], val) {
+    let penaltyVal = [...this.state.penaltyVal]
+    penaltyVal[i] = val
+    this.setState({ penaltyVal })
   }
 
   updateWhoWon() {
@@ -306,7 +310,11 @@ class Form extends React.Component {
   updateBonus() {
   }
 
-  updateStrategy() {
+  updateStrategy([_, i], val) {
+    let strategyVal = [...this.state.strategyVal]
+    strategyVal[i] = val
+    this.setState({ strategyVal })
+
   }
   // rendering physical and visible website components
   render() {
@@ -348,9 +356,9 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 10)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 11)}
         <br></br>
-        {makeBooleanCheckBox({ changeState: () => {}, booleans: this.state.booleans }, "Mobility ", 0)}
+        {makeBooleanCheckBox({ changeState: () => { }, booleans: this.state.booleans }, "Mobility ", 0)}
         <br></br>
-        {makeChargeStationAuto({ changeState: () => {}, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
+        {makeChargeStationAuto({ changeState: () => { }, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
 
         {/* TELEOP */}
@@ -372,50 +380,41 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 22)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 23)}
         <br></br>
-        {makeEndGameDropDown({ changeState: () => {}, endGameVal: this.state.endGameVal })}
-        {makeEndGameStartEndBox({ changeState: () => {}, endGameVal: this.state.endGameVal })}
+        {makeEndGameDropDown({ changeState: () => { }, endGameVal: this.state.endGameVal })}
+        {makeEndGameStartEndBox({ changeState: () => { }, endGameVal: this.state.endGameVal })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
-        {makeBooleanCheckBox({ changeState: () => {}, booleans: this.state.booleans }, "Smart Placement (creates links) ", 1)}
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Smart Placement (creates links) ", 1)}
         <br></br>
-        {makeDropDownBox({ changeState: () => {}, dropDownVal: this.state.dropDownVal }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-        {makeDropDownBox({ changeState: () => {}, dropDownVal: this.state.dropDownVal }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
+        {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
+        {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
         <br></br>
 
         {/* PENALTIES */}
         <h3>PENALTIES:</h3>
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 24)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 25)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "Yellow Card ", 0)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "Red Card ", 1)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "Disable ", 2)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "Disqualifed ", 3)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "Bot Broke ", 4)}
-        {makePenaltyBox({ changeState: this.setGivenState, penaltyVal: this.state.penaltyVal }, "No Show ", 5)}
+        {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
+          map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
+        )()}
         <br></br>
 
         {/* RANKING POINTS */}
         <h3>RANKING POINTS:</h3>
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Won ", 0)}
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Tied ", 1)}
-        {makeWhoWonBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Lost ", 2)}
-        {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
-        {makeBonusBox({ changeState: this.setGivenState, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
+        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Won ", 0)}
+        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Tied ", 1)}
+        {makeWhoWonBox({ changeState: this.updateWhoWon, rankingState: this.state.rankingState, matchData: this.state.matchData }, "Team Lost ", 2)}
+        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
+        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts} />
         <br></br>
 
         {/* STRATEGY & PRIORITIES */}
         <h3>📝STRATEGY & PRIORITIES:</h3>
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Low Node ", 0)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Mid Node ", 1)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "High Node ", 2)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Cubes ", 3)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Cones ", 4)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Charge Station ", 5)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Single Substation ", 6)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Double Substation ", 7)}
-        {makeStrategyBox({ changeState: this.setGivenState, strategyVal: this.state.strategyVal }, "Defense ", 8)}
+        {(_ => [
+          "Low Node", "Mid Node", "High Node", "Cubes", "Cones", "Charge Station", "Single Substation", "Double Substation", "Defense"].
+          map((label, i) => makeStrategyBox({ changeState: this.updateStrategy, strategyVal: this.state.strategyVal }, `${label} `, i)))()}
         <br></br>
 
         {/* COMMENTS */}
