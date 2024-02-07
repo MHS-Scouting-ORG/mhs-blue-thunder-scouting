@@ -5,8 +5,6 @@ import ConePtsTable from "./ConePtsTable"
 import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 import TeamInnerTable from './TeamInnerTable'
-import { getMatchesForRegional} from "../../api";
-
 
 const renderRowSubComponentGrid = (row,tableData) => {
 
@@ -124,74 +122,52 @@ const renderRowSubComponentCubePtsTable = (row,tableData) => {
     );
 }
 
-const getApiData = async () => {
-  return await getMatchesForRegional('2023azva')
-    .then(async data => {
-      let apiData = data.data.teamMatchesByRegional.items
-        return apiData
-  })
-}
-
 const renderRowSubComponent = ( row, modalFunction, modalDataFunction, apiData) => {
-  console.log(getApiData())
-  console.log(getMatchesForRegional('2023azva'))
-  console.log(apiData)
-    let t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`)/*async () => {
-      return await getApiData()
-        .then(
-          data => {
-            return data.filter(x => x.Team === `frc${row.values.TeamNumber}`)
-      }
-    )} */
 
-  console.log(t)
-    const disp = async () => { 
-      return await t()
-      .then(
-        data =>
-      data.map(x => {
+  const t = apiData.filter(x => x.Team === `frc${row.values.TeamNumber}`) 
 
-        const penalties = x.Penalties.Penalties.filter(x => x != 'None') 
-        const rankingPts = x.RankingPts.filter(x => x != 'None' || '',)
-          return {
-              Team: x.Team,
-              Match: x.id.substring(x.id.indexOf('_')+1),
-              Strategy: x.Priorities.filter(val => val != undefined && val.trim() !== '').length !== 0 ? x.Priorities.filter(val => val != undefined && val.trim() !== '').map(val => val.trim()).join(', ') : '',
-              TotalPts: x.Teleop.ScoringTotal.Total !== null  ? x.Teleop.ScoringTotal.Total : '',
-              GridPts: x.Teleop.ScoringTotal.GridPoints !== null ? x.Teleop.ScoringTotal.GridPoints : '',
-              ConeAcc: x.Teleop.ConesAccuracy.Overall !== 0 && x.Teleop.ConesAccuracy.Overall !== null ? (x.Teleop.ConesAccuracy.Overall.toFixed(2)) : '',
-              CubeAcc: x.Teleop.CubesAccuracy.Overall !== 0 && x.Teleop.CubesAccuracy.Overall !== null ? x.Teleop.CubesAccuracy.Overall.toFixed(2) : '',
-              AutoPlacement: x.Autonomous.AutonomousPlacement !== 0 ? x.Autonomous.AutonomousPlacement : '',
-              Mobility: x.Autonomous.LeftCommunity === true ? 'yes' : 'no',
-              AutoUpperConePts: `${x.Autonomous.Scored.Cones.Upper}/${x.Autonomous.Scored.Cones.Upper + x.Autonomous.Attempted.Cones.Upper}`,
-              AutoUpperCubePts: `${x.Autonomous.Scored.Cubes.Upper}/${x.Autonomous.Scored.Cubes.Upper + x.Autonomous.Attempted.Cubes.Upper}`,
-              AutoMidConePts: `${x.Autonomous.Scored.Cones.Mid}/${x.Autonomous.Scored.Cones.Mid + x.Autonomous.Attempted.Cones.Mid}`,
-              AutoMidCubePts: `${x.Autonomous.Scored.Cubes.Mid}/${x.Autonomous.Scored.Cubes.Mid + x.Autonomous.Attempted.Cubes.Mid}`,
-              AutoLowConePts: `${x.Autonomous.Scored.Cones.Lower}/${x.Autonomous.Scored.Cones.Lower + x.Autonomous.Attempted.Cones.Lower}`,
-              AutoLowCubePts: `${x.Autonomous.Scored.Cubes.Lower}/${x.Autonomous.Scored.Cubes.Lower + x.Autonomous.Attempted.Cubes.Lower}`,
-              AutoChargeStationPts: x.Autonomous.ChargeStation,
-              TeleUpperConePts: `${x.Teleop.Scored.Cones.Upper}/${x.Teleop.Scored.Cones.Upper + x.Teleop.Attempted.Cones.Upper}`,
-              TeleUpperCubePts: `${x.Teleop.Scored.Cubes.Upper}/${x.Teleop.Scored.Cubes.Upper + x.Teleop.Attempted.Cubes.Upper}`,
-              TeleMidConePts: `${x.Teleop.Scored.Cones.Mid}/${x.Teleop.Scored.Cones.Mid + x.Teleop.Attempted.Cones.Mid}`,
-              TeleMidCubePts: `${x.Teleop.Scored.Cubes.Mid}/${x.Teleop.Scored.Cubes.Mid + x.Teleop.Attempted.Cubes.Mid}`,
-              TeleLowConePts: `${x.Teleop.Scored.Cones.Lower}/${x.Teleop.Scored.Cones.Lower + x.Teleop.Attempted.Cones.Lower}`,
-              TeleLowCubePts: `${x.Teleop.Scored.Cubes.Lower}/${x.Teleop.Scored.Cubes.Lower + x.Teleop.Attempted.Cubes.Lower}`,
-              TeleEndgame: x.Teleop.EndGame !== undefined ? x.Teleop.EndGame : '',
-              CSStart: x.Teleop.EndGameTally.Start !== 0 ? x.Teleop.EndGameTally.Start : '',
-              CSEnd: x.Teleop.EndGameTally.End !== 0 ? x.Teleop.EndGameTally.End : '',
-              DriveStrength: x.Teleop.DriveStrength !== undefined ? x.Teleop.DriveStrength : '',
-              DriveSpeed: x.Teleop.DriveSpeed !== "0" ? x.Teleop.DriveSpeed : '',
-              SmartPlacement: x.Teleop.SmartPlacement === true ? `yes` : `no`,
-              NumberOfFoulAndTech: x.Penalties.Fouls !== 0 || x.Penalties.Tech !== 0 ? `${x.Penalties.Fouls} | ${x.Penalties.Tech}` : ``,
-              Penalties: penalties.join(', '),
-              NumberOfRankingPoints: rankingPts.join(', '),
-              Comments: x.Comments !== undefined ? x.Comments.trim() : '',
-          };
-      }))
-  }
-  const tDisp = async () => {return disp().then(data => {return data.length})}
-  console.log(tDisp())
-    return tDisp > 0 ?
+  const disp = t.map(x => {
+
+    const penalties = x.Penalties.Penalties.filter(x => x != 'None') 
+    const rankingPts = x.RankingPts.filter(x => x != 'None' || '',)
+
+    return {
+      Team: x.Team,
+      Match: x.id.substring(x.id.indexOf('_')+1),
+      Strategy: x.Priorities.filter(val => val != undefined && val.trim() !== '').length !== 0 ? x.Priorities.filter(val => val != undefined && val.trim() !== '').map(val => val.trim()).join(', ') : '',
+      TotalPts: x.Teleop.ScoringTotal.Total !== null  ? x.Teleop.ScoringTotal.Total : '',
+      GridPts: x.Teleop.ScoringTotal.GridPoints !== null ? x.Teleop.ScoringTotal.GridPoints : '',
+      ConeAcc: x.Teleop.ConesAccuracy.Overall !== 0 && x.Teleop.ConesAccuracy.Overall !== null ? (x.Teleop.ConesAccuracy.Overall.toFixed(2)) : '',
+      CubeAcc: x.Teleop.CubesAccuracy.Overall !== 0 && x.Teleop.CubesAccuracy.Overall !== null ? x.Teleop.CubesAccuracy.Overall.toFixed(2) : '',
+      AutoPlacement: x.Autonomous.AutonomousPlacement !== 0 ? x.Autonomous.AutonomousPlacement : '',
+      Mobility: x.Autonomous.LeftCommunity === true ? 'yes' : 'no',
+      AutoUpperConePts: `${x.Autonomous.Scored.Cones.Upper}/${x.Autonomous.Scored.Cones.Upper + x.Autonomous.Attempted.Cones.Upper}`,
+      AutoUpperCubePts: `${x.Autonomous.Scored.Cubes.Upper}/${x.Autonomous.Scored.Cubes.Upper + x.Autonomous.Attempted.Cubes.Upper}`,
+      AutoMidConePts: `${x.Autonomous.Scored.Cones.Mid}/${x.Autonomous.Scored.Cones.Mid + x.Autonomous.Attempted.Cones.Mid}`,
+      AutoMidCubePts: `${x.Autonomous.Scored.Cubes.Mid}/${x.Autonomous.Scored.Cubes.Mid + x.Autonomous.Attempted.Cubes.Mid}`,
+      AutoLowConePts: `${x.Autonomous.Scored.Cones.Lower}/${x.Autonomous.Scored.Cones.Lower + x.Autonomous.Attempted.Cones.Lower}`,
+      AutoLowCubePts: `${x.Autonomous.Scored.Cubes.Lower}/${x.Autonomous.Scored.Cubes.Lower + x.Autonomous.Attempted.Cubes.Lower}`,
+      AutoChargeStationPts: x.Autonomous.ChargeStation,
+      TeleUpperConePts: `${x.Teleop.Scored.Cones.Upper}/${x.Teleop.Scored.Cones.Upper + x.Teleop.Attempted.Cones.Upper}`,
+      TeleUpperCubePts: `${x.Teleop.Scored.Cubes.Upper}/${x.Teleop.Scored.Cubes.Upper + x.Teleop.Attempted.Cubes.Upper}`,
+      TeleMidConePts: `${x.Teleop.Scored.Cones.Mid}/${x.Teleop.Scored.Cones.Mid + x.Teleop.Attempted.Cones.Mid}`,
+      TeleMidCubePts: `${x.Teleop.Scored.Cubes.Mid}/${x.Teleop.Scored.Cubes.Mid + x.Teleop.Attempted.Cubes.Mid}`,
+      TeleLowConePts: `${x.Teleop.Scored.Cones.Lower}/${x.Teleop.Scored.Cones.Lower + x.Teleop.Attempted.Cones.Lower}`,
+      TeleLowCubePts: `${x.Teleop.Scored.Cubes.Lower}/${x.Teleop.Scored.Cubes.Lower + x.Teleop.Attempted.Cubes.Lower}`,
+      TeleEndgame: x.Teleop.EndGame !== undefined ? x.Teleop.EndGame : '',
+      CSStart: x.Teleop.EndGameTally.Start !== 0 ? x.Teleop.EndGameTally.Start : '',
+      CSEnd: x.Teleop.EndGameTally.End !== 0 ? x.Teleop.EndGameTally.End : '',
+      DriveStrength: x.Teleop.DriveStrength !== undefined ? x.Teleop.DriveStrength : '',
+      DriveSpeed: x.Teleop.DriveSpeed !== "0" ? x.Teleop.DriveSpeed : '',
+      SmartPlacement: x.Teleop.SmartPlacement === true ? `yes` : `no`,
+      NumberOfFoulAndTech: x.Penalties.Fouls !== 0 || x.Penalties.Tech !== 0 ? `${x.Penalties.Fouls} | ${x.Penalties.Tech}` : ``,
+      Penalties: penalties.join(', '),
+      NumberOfRankingPoints: rankingPts.join(', '),
+      Comments: x.Comments !== undefined ? x.Comments.trim() : '',
+  };
+  })
+
+    return disp.length > 0 ?
     (<pre>
         <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} /*delete={handleDelete}*/ information = {disp} setModalData={modalDataFunction} />} </div>
     </pre>)
