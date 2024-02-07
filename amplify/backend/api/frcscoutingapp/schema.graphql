@@ -135,3 +135,4 @@ type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {
   RankingPts: [RankingPtsOpts]
 
 }
+

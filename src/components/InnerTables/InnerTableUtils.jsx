@@ -6,119 +6,119 @@ import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 import TeamInnerTable from './TeamInnerTable'
 
-const renderRowSubComponentGrid = (row,tableData) => {
+const renderRowSubComponentGrid = (row, tableData) => {
 
-    const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber )
-    
-    const disp = g.map(x => {
-        return {
-          AvgUpper: x.AvgUpper !== 0 ? `μ=${x.AvgUpper}` : '',
-          AvgUpperAcc: x.AvgUpperAcc !== 0 ? `μ=${x.AvgUpperAcc}` : '',
-          AvgMid: x.AvgMid !== 0 ? `μ=${x.AvgMid}` : '',
-          AvgMidAcc: x.AvgMidAcc !== 0 ? `μ=${x.AvgMidAcc}` : '',
-          AvgLower: x.AvgLower !== 0 ? `μ=${x.AvgLower}` : '',
-          AvgLowerAcc: x.AvgLowerAcc !== 0 ? `μ=${x.AvgLowerAcc}` : '',
-        };
-     })
-    
-        
-    return disp !== undefined ?
+  const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
+
+  const disp = g.map(x => {
+    return {
+      AvgUpper: x.AvgUpper !== 0 ? `μ=${x.AvgUpper}` : '',
+      AvgUpperAcc: x.AvgUpperAcc !== 0 ? `μ=${x.AvgUpperAcc}` : '',
+      AvgMid: x.AvgMid !== 0 ? `μ=${x.AvgMid}` : '',
+      AvgMidAcc: x.AvgMidAcc !== 0 ? `μ=${x.AvgMidAcc}` : '',
+      AvgLower: x.AvgLower !== 0 ? `μ=${x.AvgLower}` : '',
+      AvgLowerAcc: x.AvgLowerAcc !== 0 ? `μ=${x.AvgLowerAcc}` : '',
+    };
+  })
+
+
+  return disp !== undefined ?
     (<pre>
-      <div>{<GridInnerTable information = {disp}/>} </div>
+      <div>{<GridInnerTable information={disp} />} </div>
     </pre>)
     : (
       <div style={{
         padding: '5px',
-    }}> No data collected. </div>
+      }}> No data collected. </div>
     );
 }
-  
-const renderRowSubComponentConeAccTable = (row,tableData) => {
-    const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber )
-  
-    const disp = g.map(x => {
-        return {
-            AvgUpperConeAcc:  x.AvgUpperConeAcc !== 0 ? `μ=${x.AvgUpperConeAcc}` : '',
-            AvgMidConeAcc: x.AvgMidConeAcc !== 0 ? `μ=${x.AvgMidConeAcc}` : '',
-            AvgLowerConeAcc: x.AvglowerConeAcc !== 0? `μ=${x.AvgLowerConeAcc}` : '',
-        }
-    })
-  
-    return disp !== undefined ?
-    (<pre>
-        <div>{<ConeAccTable information = {disp}/>} </div>
-    </pre>)
-    : (
-        <div style={{
-          padding: '5px',
-        }}> No data collected. </div>
-    );
-}
-  
-const renderRowSubComponentConePtsTable = (row,tableData) => {
-    const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
 
-    const disp = g.map(x => {
-        return {
-            AvgUpperCone: x.AvgUpperConePts !== 0 ? `μ=${x.AvgUpperConePts}` : '',
-            AvgMidCone: x.AvgMidConePts !== 0 ? `μ=${x.AvgMidConePts}` : '',
-            AvgLowCone: x.AvgLowerConePts !== 0 ? `μ=${x.AvgLowerConePts}` : '',
-        }
-    })
-  
-    return disp !== undefined ?
+const renderRowSubComponentConeAccTable = (row, tableData) => {
+  const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
+
+  const disp = g.map(x => {
+    return {
+      AvgUpperConeAcc: x.AvgUpperConeAcc !== 0 ? `μ=${x.AvgUpperConeAcc}` : '',
+      AvgMidConeAcc: x.AvgMidConeAcc !== 0 ? `μ=${x.AvgMidConeAcc}` : '',
+      AvgLowerConeAcc: x.AvglowerConeAcc !== 0 ? `μ=${x.AvgLowerConeAcc}` : '',
+    }
+  })
+
+  return disp !== undefined ?
     (<pre>
-        <div>{<ConePtsTable information = {disp}/>} </div>
+      <div>{<ConeAccTable information={disp} />} </div>
     </pre>)
     : (
       <div style={{
-            padding: '5px',
-        }}> No data collected. </div>
+        padding: '5px',
+      }}> No data collected. </div>
     );
 }
-  
-const renderRowSubComponentCubeAccTable = (row,tableData) => {
-    const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
-        
-    const disp = g.map(x => { 
-        return {
-            UpperCubesAcc: x.AvgUpperCubeAcc !== 0 ? `μ=${x.AvgUpperCubeAcc}` : '',
-            MidCubesAcc: x.AvgMidCubeAcc !== 0 ? `μ=${x.AvgMidCubeAcc}` : '',
-            LowCubesAcc: x.AvgLowerCubeAcc !== 0 ? `μ=${x.AvgLowerCubeAcc}` : '',
-        }
-    })
-        
-    return disp !== undefined ?
+
+const renderRowSubComponentConePtsTable = (row, tableData) => {
+  const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
+
+  const disp = g.map(x => {
+    return {
+      AvgUpperCone: x.AvgUpperConePts !== 0 ? `μ=${x.AvgUpperConePts}` : '',
+      AvgMidCone: x.AvgMidConePts !== 0 ? `μ=${x.AvgMidConePts}` : '',
+      AvgLowCone: x.AvgLowerConePts !== 0 ? `μ=${x.AvgLowerConePts}` : '',
+    }
+  })
+
+  return disp !== undefined ?
     (<pre>
-        <div>{<CubeAccTable information = {disp}/>} </div>
+      <div>{<ConePtsTable information={disp} />} </div>
     </pre>)
     : (
-        <div style={{
-            padding: '5px',
-        }}> No data collected. </div>
+      <div style={{
+        padding: '5px',
+      }}> No data collected. </div>
     );
 }
-  
-const renderRowSubComponentCubePtsTable = (row,tableData) => {
-    const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
-          
-    const disp = g.map(x => {
-        return {
-            AvgUpperCubes: x.AvgUpperCubePts !== 0 ? `μ=${x.AvgUpperCubePts}` : '',
-            AvgMidCubes: x.AvgMidCubePts !== 0 ? `μ=${x.AvgMidCubePts}` : '',
-            AvgLowCubes: x.AvgLowerCubePts !== 0 ? `μ=${x.AvgLowerCubePts}` : '',
-  
-        }
-    })  
-          
-    return disp !== undefined ?
+
+const renderRowSubComponentCubeAccTable = (row, tableData) => {
+  const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
+
+  const disp = g.map(x => {
+    return {
+      UpperCubesAcc: x.AvgUpperCubeAcc !== 0 ? `μ=${x.AvgUpperCubeAcc}` : '',
+      MidCubesAcc: x.AvgMidCubeAcc !== 0 ? `μ=${x.AvgMidCubeAcc}` : '',
+      LowCubesAcc: x.AvgLowerCubeAcc !== 0 ? `μ=${x.AvgLowerCubeAcc}` : '',
+    }
+  })
+
+  return disp !== undefined ?
     (<pre>
-        <div>{<CubePtsTable information = {disp}/>} </div>
+      <div>{<CubeAccTable information={disp} />} </div>
     </pre>)
     : (
-        <div style={{
-            padding: '5px',
-        }}> No data collected. </div>
+      <div style={{
+        padding: '5px',
+      }}> No data collected. </div>
+    );
+}
+
+const renderRowSubComponentCubePtsTable = (row, tableData) => {
+  const g = tableData.filter(x => x.TeamNumber === row.values.TeamNumber)
+
+  const disp = g.map(x => {
+    return {
+      AvgUpperCubes: x.AvgUpperCubePts !== 0 ? `μ=${x.AvgUpperCubePts}` : '',
+      AvgMidCubes: x.AvgMidCubePts !== 0 ? `μ=${x.AvgMidCubePts}` : '',
+      AvgLowCubes: x.AvgLowerCubePts !== 0 ? `μ=${x.AvgLowerCubePts}` : '',
+
+    }
+  })
+
+  return disp !== undefined ?
+    (<pre>
+      <div>{<CubePtsTable information={disp} />} </div>
+    </pre>)
+    : (
+      <div style={{
+        padding: '5px',
+      }}> No data collected. </div>
     );
 }
 
@@ -169,97 +169,97 @@ const renderRowSubComponent = ( row, modalFunction, modalDataFunction, apiData) 
 
     return disp.length > 0 ?
     (<pre>
-        <div style={{maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} /*delete={handleDelete}*/ information = {disp} setModalData={modalDataFunction} />} </div>
+      <div style={{ maxWidth: "100rem", overflowX: "scroll", borderCollapse: "collapse", }}>{<TeamInnerTable modalOn={modalFunction} /*delete={handleDelete}*/ information={disp} setModalData={modalDataFunction} />} </div>
     </pre>)
     : (
-        <div style={{
-            padding: '5px',
-        }}> No data collected for Team {row.values.TeamNumber}. </div>
+      <div style={{
+        padding: '5px',
+      }}> No data collected for Team {row.values.TeamNumber}. </div>
     );
-    
+
 }
 
-function tableHandler(row, header, visibleColumns, tableData, modalFunction, setModalData, apiData){ //handles which state and inner table should be shown
+function tableHandler(row, header, visibleColumns, tableData, modalFunction, setModalData, apiData) { //handles which state and inner table should be shown
 
-    if(header === 'Avg Grid Points'){
-      return (
+  if (header === 'Avg Grid Points') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "10rem"
-        }}
+          style={{
+            maxWidth: "10rem"
+          }}
         >
-          {renderRowSubComponentGrid (row,tableData)} { /*needs tableData from maintable component*/ }
+          {renderRowSubComponentGrid(row, tableData)} { /*needs tableData from maintable component*/}
         </td>
       </tr>
-      )
-    }
-    else if(header === 'Avg Cone Acc'){
-      return (
+    )
+  }
+  else if (header === 'Avg Cone Acc') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
+          style={{
+            maxWidth: "1200px"
+          }}
         >
-          {renderRowSubComponentConeAccTable (row,tableData)}
+          {renderRowSubComponentConeAccTable(row, tableData)}
         </td>
       </tr>
-      )
-    }
-    else if(header === 'Avg Cone Points'){
-      return (
+    )
+  }
+  else if (header === 'Avg Cone Points') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
+          style={{
+            maxWidth: "1200px"
+          }}
         >
-          {renderRowSubComponentConePtsTable (row,tableData)}
+          {renderRowSubComponentConePtsTable(row, tableData)}
         </td>
       </tr>
-      )
-    }
-    else if(header === 'Avg Cube Acc'){
-      return (
+    )
+  }
+  else if (header === 'Avg Cube Acc') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
+          style={{
+            maxWidth: "1200px"
+          }}
         >
-          {renderRowSubComponentCubeAccTable (row,tableData)}
+          {renderRowSubComponentCubeAccTable(row, tableData)}
         </td>
       </tr>
-      )
-    }
-    else if(header === 'Avg Cube Points'){
-      return (
+    )
+  }
+  else if (header === 'Avg Cube Points') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
+          style={{
+            maxWidth: "1200px"
+          }}
         >
-          {renderRowSubComponentCubePtsTable (row,tableData)}
+          {renderRowSubComponentCubePtsTable(row, tableData)}
         </td>
       </tr>
-      )
-    }
-    else if(header === 'Team #'){
-      return (
+    )
+  }
+  else if (header === 'Team #') {
+    return (
       <tr>
         <td colSpan={visibleColumns.length}
-        style = {{
-          maxWidth: "1200px"
-        }}
+          style={{
+            maxWidth: "1200px"
+          }}
         >
-          {renderRowSubComponent (row, modalFunction, setModalData, apiData)}
+          {renderRowSubComponent(row, modalFunction, setModalData, apiData)}
         </td>
       </tr>
-      )
-    }
-    else{console.log('error in tablehandler or nothing shown')}
-  } 
+    )
+  }
+  else { console.log('error in tablehandler or nothing shown') }
+}
 
 export { tableHandler, };
