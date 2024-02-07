@@ -71,7 +71,7 @@ class Form extends React.Component {
       rankingPts: 0, //teams ranking points 11
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability] 12
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show 13
-      dropDownVal: ['', '', ''], //dropdown vals??? 14
+      dropDownVal: ['1', '', ''], //dropdown vals??? 14
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted 15
       strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense) 16
       booleans: [false, false], //mobility, smartplacement 17
