@@ -1,7 +1,7 @@
 import { getMatchesForRegional} from "../../api";
 import { getTeams, getTeamsMatchesAndTableData } from "./MTUtils"
-import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
-import { getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
+
+
   //seperate file which holds functions for the useffect in mt
 function ueDebug (){
     getMatchesForRegional('2023azva')
@@ -19,11 +19,11 @@ function ueDebug (){
     .catch(console.log.bind(console)),[]
   }
 
-  async function ueTableData(oprList, ccwmList, dprList){
+  async function ueTableData(oprList, ccwmList, dprList, mtable){
      return await getTeams()
     .then(async tData => {
         let teamObj = tData
-      return await getTeamsMatchesAndTableData(teamObj, oprList, ccwmList, dprList)
+      return await getTeamsMatchesAndTableData(teamObj, oprList, ccwmList, dprList, mtable)
       .then(data => {
         let tableData = data
         return tableData
@@ -31,13 +31,5 @@ function ueDebug (){
     })
   }
 
-  async function tableDataForUtils(){
-    return await ueTableData()
-    .then(async data => {
-      let UtilTableData = data
-      return UtilTableData
-    })
-  }
 
-
-export { ueDebug, ueSetTeamObj, ueTableData, tableDataForUtils };
+export { ueDebug, ueSetTeamObj, ueTableData, };

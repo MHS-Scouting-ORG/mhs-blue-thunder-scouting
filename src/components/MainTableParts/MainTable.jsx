@@ -52,14 +52,14 @@ function MainTable(props) {
   },[])
 
   useEffect(() => {
-    ueTableData(oprList, ccwmList, dprList)
+    ueTableData(oprList, ccwmList, dprList, tableData)
       .then(data => {
         let holdTableData = data
         console.log(holdTableData)
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [])
+  }, [apiData, sortBy])
 
 const modalClose = () => {
   setModalState(false);

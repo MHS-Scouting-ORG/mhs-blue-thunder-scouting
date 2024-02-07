@@ -1,34 +1,7 @@
 import React, { useEffect } from 'react'
 import { getMatchesForRegional} from "../../api";
 import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
-import { tableDataForUtils } from './MTEffectFunc'
 import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
-//import { buildErrorMessage } from 'vite';
-  //seperate file for when we figure out prior problems(passing function)
-
-// async function getOprList (){
-//   return await getOprs('2023azva')
-//   .then(data => {
-//     const oprDataArr = Object.values(data)
-//     return(oprDataArr[2])
-//   })
-// }
-
-// async function getDprList (){
-//   return await getOprs('2023azva')
-//   .then(data => {
-//     const oprDataArr = Object.values(data)
-//     return(oprDataArr[1])
-//   })
-// }
-
-// async function getCcwmList (){
-//   return await getOprs('2023azva')
-//   .then(data => {
-//     const oprDataArr = Object.values(data)
-//     return oprDataArr[0]
-//   })
-// }
 
 async function getTeams () {
   return await (getTeamsInRegional('2023azva'))
@@ -66,18 +39,12 @@ async function getTeams () {
    .catch(err => console.log(err))
 }
 
-async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList) {
+async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable) {
   return await (getMatchesForRegional('2023azva'))
   .catch(err => console.log(err))
   .then(data => {
-    console.log(dprList)
-    // const oprList = getOprList()
-    // const dprList = getDprList()
-    // const ccwmList = getCcwmList()
-
-    //console.log(Promise.resolve(getDprList()))
-
-    let tableData = []//tableDataForUtils()  //testing 
+    
+    let tableData = mtable//tableDataForUtils()  //testing 
 
     return teamNumbers/*same as teamsData from maintable*/.map(team => { 
       
@@ -148,7 +115,13 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rCubeAcc = mCubeAcc / maxCubeAcc
       const rCSPoints = mCSPoints / maxCSPoints
 
-      let tableDataObj = {
+      console.log(team)
+      //console.log({}, {team})
+      console.log(mGridPoints)
+      console.log(maxGridPoints)
+      console.log(rGridPoints)
+
+      const tableDataObj = {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
@@ -193,9 +166,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         NCubePoints: isNaN(rCubePoints) !== true ? rCubePoints : 0, 
         NCubeAccuracy: isNaN(rCubeAcc) !== true ? rCubeAcc : 0,
         NChargeStation: isNaN(rCSPoints) !== true ? rCSPoints : 0,
-
       }
-      //console.log(tableDataObj)
       return tableDataObj;
     })
   })
