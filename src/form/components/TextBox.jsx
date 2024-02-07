@@ -2,7 +2,7 @@ import React from "react";
 
 function TextBox(props){
     function commentState(event){
-        props.changeState([0,0],event.target.value)
+        props.changeState(event.target.value)
     }
 
     return(

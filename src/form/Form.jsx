@@ -274,37 +274,45 @@ class Form extends React.Component {
     this.setState({ counterBoxVals });
   }
 
-  updateMatchType(value, prop) {
+  updateMatchType = (value, prop) => {
+    console.log(value, " ", prop)
     this.setState({ [prop]: value })
   }
 
-  updateTeam(team) {
+  updateTeam = (team) => {
     this.setState({ teamNumber: team })
   }
 
-  updateDropDown({ target: { value } }, i) {
+  updateDropDown = ({ target: { value } }, i) => {
     let dropDownVal = [...this.state.dropDownVal];
     dropDownVal[i] = value;
     this.setState({ dropDownVal });
 
   }
 
-  updateBoolean() {
-
+  updateBoolean = (i, value) => {
+    let booleans = [...this.state.booleans]
+    booleans[i] = value
+    this.setState({ booleans })
   }
 
-  updateChargeStation(_, val) {
-    this.setState({ chargeStationValAuto: val })
-
+  updateChargeStation = (chargeStationVal) => {
+    this.setState({ chargeStationValAuto: chargeStationVal })
   }
 
-  updatePenalty([_, i], val) {
+  updateEndGameVal = (i, value) => {
+    let endGameVal = [...this.state.endGameVal]
+    endGameVal[i] = value
+    this.setState({ endGameVal })
+  }
+
+  updatePenalty = ([_, i], val) => {
     let penaltyVal = [...this.state.penaltyVal]
     penaltyVal[i] = val
     this.setState({ penaltyVal })
   }
 
-  updateRankingPoints(rankingState) {
+  updateRankingPoints = (rankingState) => {
     let rankingPts = 0
     if (rankingState[0] === "win") {
       rankingPts = 2
@@ -325,7 +333,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon({ target : { value }}) {
+  updateWhoWon = ({ target : { value }}) => {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -333,18 +341,27 @@ class Form extends React.Component {
 
   }
 
-  updateBonus(i, name, checked) {
+  updateBonus = (i, name, checked) => {
     let rankingState = [...this.state.rankingState]
     rankingState[i] = checked ? name : ''
     this.setState({ rankingState })
     this.updateRankingPoints(rankingState)
   }
 
-  updateStrategy([_, i], val) {
+  updateStrategy = ([_, i], val) => {
     let strategyVal = [...this.state.strategyVal]
     strategyVal[i] = val
     this.setState({ strategyVal })
 
+  }
+
+  updateMatchData = (match) => {
+    this.setState({ matchData: match })
+    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+  }
+
+  updateComments = (comment) => {
+    this.setState({ comments: comment })
   }
   // rendering physical and visible website components
   render() {
@@ -358,7 +375,7 @@ class Form extends React.Component {
 
         {/* MATCH INITIATION */}
         {makeMatchDropDown({ changeState: this.updateMatchType, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-        <button onClick={() => { getMatchTeams(this) }}>GET MATCH TEAMS</button>
+        <button onClick={() => { getMatchTeams( {changeState: this.updateMatchData, regional: this.regional, matchType: this.state.matchType, elmNum: this.state.elmNum, matchNumber: this.state.matchNumber, matchData: this.state.matchData} ) }}>GET MATCH TEAMS</button>
         <br></br>
         {makeTeamDropDown({ changeState: this.updateTeam, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
 
@@ -386,9 +403,9 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 10)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 11)}
         <br></br>
-        {makeBooleanCheckBox({ changeState: () => { }, booleans: this.state.booleans }, "Mobility ", 0)}
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
         <br></br>
-        {makeChargeStationAuto({ changeState: () => { }, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
+        {makeChargeStationAuto({ changeState: this.updateChargeStation, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
 
         {/* TELEOP */}
@@ -410,8 +427,8 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 22)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 23)}
         <br></br>
-        {makeEndGameDropDown({ changeState: () => { }, endGameVal: this.state.endGameVal })}
-        {makeEndGameStartEndBox({ changeState: () => { }, endGameVal: this.state.endGameVal })}
+        {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
+        {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
@@ -459,7 +476,7 @@ class Form extends React.Component {
         <br></br>
 
         {/* COMMENTS */}
-        <TextBox title={"💬Comments: "} changeState={this.setGivenState} value={this.state.comments}></TextBox>
+        <TextBox title={"💬Comments: "} changeState={this.updateComments} value={this.state.comments}></TextBox>
 
         {/* SUBMISSION */}
         <div>
