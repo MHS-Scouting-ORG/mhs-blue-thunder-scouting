@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
+import { getOprs } from "../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
 import {calcColumnSort} from "./CalculationUtils"
 import { ueTableData, } from "./MTEffectFunc"
@@ -24,6 +25,9 @@ function MainTable(props) {
   const [sortBy,setSortBy] = useState([]);
 
   const [apiData, setApiData] = useState([])
+  const [oprList,setOprList] = useState([]);
+  const [dprList,setDprList] = useState([]);
+  const [ccwmList,setCcwmList] = useState([]);
 
   useEffect(() => {
     getMatchesForRegional('2023azva')
@@ -33,8 +37,22 @@ function MainTable(props) {
     })
   },[])
 
+  useEffect(() => {    //set opr data
+      getOprs(regional)
+      .then(data => { 
+        const oprDataArr = Object.values(data)
+        const cData = oprDataArr[0] //ccwm 
+        const dData = oprDataArr[1] //dpr
+        const oData = oprDataArr[2] //opr
+  
+        setOprList(oData)
+        setDprList(dData)
+        setCcwmList(cData) 
+      })
+  },[])
+
   useEffect(() => {
-    ueTableData()
+    ueTableData(oprList, ccwmList, dprList)
       .then(data => {
         let holdTableData = data
         console.log(holdTableData)
@@ -222,7 +240,7 @@ const data = React.useMemo(
   } = tableInstance
 
   const {globalFilter} = state
-  console.log(rows)
+  //console.log(rows)
   return (
     <div>
       <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>

@@ -19,11 +19,11 @@ function ueDebug (){
     .catch(console.log.bind(console)),[]
   }
 
-  async function ueTableData(){
+  async function ueTableData(oprList, ccwmList, dprList){
      return await getTeams()
     .then(async tData => {
         let teamObj = tData
-      return await getTeamsMatchesAndTableData(teamObj)
+      return await getTeamsMatchesAndTableData(teamObj, oprList, ccwmList, dprList)
       .then(data => {
         let tableData = data
         return tableData

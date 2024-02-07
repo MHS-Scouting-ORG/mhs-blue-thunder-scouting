@@ -6,29 +6,29 @@ import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc,
 //import { buildErrorMessage } from 'vite';
   //seperate file for when we figure out prior problems(passing function)
 
-async function getOprList (){
-  return await getOprs('2023azva')
-  .then(data => {
-    const oprDataArr = Object.values(data)
-    return(oprDataArr[2])
-  })
-}
+// async function getOprList (){
+//   return await getOprs('2023azva')
+//   .then(data => {
+//     const oprDataArr = Object.values(data)
+//     return(oprDataArr[2])
+//   })
+// }
 
-async function getDprList (){
-  return await getOprs('2023azva')
-  .then(data => {
-    const oprDataArr = Object.values(data)
-    return(oprDataArr[1])
-  })
-}
+// async function getDprList (){
+//   return await getOprs('2023azva')
+//   .then(data => {
+//     const oprDataArr = Object.values(data)
+//     return(oprDataArr[1])
+//   })
+// }
 
-async function getCcwmList (){
-  return await getOprs('2023azva')
-  .then(data => {
-    const oprDataArr = Object.values(data)
-    return oprDataArr[0]
-  })
-}
+// async function getCcwmList (){
+//   return await getOprs('2023azva')
+//   .then(data => {
+//     const oprDataArr = Object.values(data)
+//     return oprDataArr[0]
+//   })
+// }
 
 async function getTeams () {
   return await (getTeamsInRegional('2023azva'))
@@ -66,13 +66,16 @@ async function getTeams () {
    .catch(err => console.log(err))
 }
 
-async function getTeamsMatchesAndTableData(teamNumbers) {
+async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList) {
   return await (getMatchesForRegional('2023azva'))
   .catch(err => console.log(err))
   .then(data => {
-    const oprList = getOprList()
-    const dprList = getDprList()
-    const ccwmList = getCcwmList()
+    console.log(dprList)
+    // const oprList = getOprList()
+    // const dprList = getDprList()
+    // const ccwmList = getCcwmList()
+
+    //console.log(Promise.resolve(getDprList()))
 
     let tableData = []//tableDataForUtils()  //testing 
 
@@ -197,4 +200,4 @@ async function getTeamsMatchesAndTableData(teamNumbers) {
     })
   })
 }
-export { getTeams,getTeamsMatchesAndTableData, getCcwmList } 
+export { getTeams,getTeamsMatchesAndTableData, } 
