@@ -1,23 +1,23 @@
 import React from "react";
 
-class ChargeStation extends React.Component{
-    constructor(props){
+class ChargeStation extends React.Component {
+    constructor(props) {
         super(props)
         this.changeChargeStation = this.changeChargeStation.bind(this);
 
-        this.state ={
+        this.state = {
             changeChargeStationUsed: props.value,
         }
     }
 
-    changeChargeStation(event){
+    changeChargeStation(event) {
         this.props.changeChargeStationUsed(event);
-        this.setState({changeChargeStationUsed: event.value});
+        this.setState({ changeChargeStationUsed: event.value });
     }
 
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <label> {"⚡Charge Station: "}
                     <select onChange={this.changeChargeStation}>

@@ -3,15 +3,6 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 
 class DropDown extends React.Component{
-//    constructor(props){
-//        super(props);
-//        this.dropDownChange = this.dropDownChange.bind(this);
-//    }
-
-//    dropDownChange(event){
-//        this.props.changeDropDownState(event,this.props.index);
-//    }
-
     render(){
         return (
             <div>

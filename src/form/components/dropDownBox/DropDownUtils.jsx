@@ -44,21 +44,21 @@ makeDropDownBox.propTypes = {
  * @returns a MatchDropDownBox component
  */
 export function makeMatchDropDown(props) {
-  function makeMatchTypeDropDown(matchType){
+  function makeMatchTypeDropDown(matchType) {
     if (matchType === '') { //init
       props.changeState('q', 'matchType')
     }
     if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
       return (
-        <input value={props.elmNum} onChange={({target : { value }}) => {
-            props.changeState(value, 'elmNum')
-          }
-        }/>
+        <input value={props.elmNum} onChange={({ target: { value } }) => {
+          props.changeState(value, 'elmNum')
+        }
+        } />
       )
     }
   }
 
-  function setMatchType(matchType){
+  function setMatchType(matchType) {
     if (matchType === "q") {
       props.changeState(matchType, 'matchType')
       props.changeState('', 'elmNum')
@@ -71,9 +71,9 @@ export function makeMatchDropDown(props) {
   return (
     <div>
       <MatchDropDown //makes MatchDropDown via functions in Form component
-        setMatchType={({ target : { value }}) => setMatchType(value)}
+        setMatchType={({ target: { value } }) => setMatchType(value)}
         generateMatchTypeNum={makeMatchTypeDropDown}
-        setMatchNumber={({ target : { value }}) => props.changeState(value, 'matchNumber')}
+        setMatchNumber={({ target: { value } }) => props.changeState(value, 'matchNumber')}
         matchNumber={props.matchNumber}
         matchTypeValue={props.matchType}
       >

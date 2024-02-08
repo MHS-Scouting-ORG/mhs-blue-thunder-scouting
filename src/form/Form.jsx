@@ -1,6 +1,6 @@
 import React from 'react';
 // checkbox utility function imports //
-import {  makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -29,31 +29,6 @@ class Form extends React.Component {
 
     this.regional = props.regional; // REGIONAL KEY
 
-    // STATE SETTING FUNCTIONS //
-    // this.setCommentState = this.setCommentState.bind(this); done
-    // this.setMatchTypeState = this.setMatchTypeState.bind(this); done
-    // this.setElmNumState = this.setElmNumState.bind(this); done
-    // this.setMatchNumberState = this.setMatchNumberState.bind(this); done
-    // this.setMatchDataState = this.setMatchDataState.bind(this);
-    // this.setTeamNumberState = this.setTeamNumberState.bind(this); done
-    // this.setTeamsState = this.setTeamsState.bind(this); done
-    // this.setOverrideState = this.setOverrideState.bind(this); done
-    // this.setEndGameValState = this.setEndGameValState.bind(this);
-    // this.setChargeStationValAutoState = this.setChargeStationValAutoState.bind(this);
-    // this.setWhoWonState = this.setWhoWonState.bind(this); done
-
-    // this.setGivenState = this.setGivenState.bind(this);
-    this.updateCounterBox = this.updateCounterBox.bind(this);
-    this.updateMatchType = this.updateMatchType.bind(this);
-    this.updateTeam = this.updateTeam.bind(this);
-    this.updateDropDown = this.updateDropDown.bind(this);
-    this.updateBoolean = this.updateBoolean.bind(this);
-    this.updateChargeStation = this.updateChargeStation.bind(this);
-    this.updatePenalty = this.updatePenalty.bind(this);
-    this.updateWhoWon = this.updateWhoWon.bind(this);
-    this.updateBonus = this.updateBonus.bind(this);
-    this.updateStrategy = this.updateStrategy.bind(this);
-    // initializing form by making array of data
     console.log(`initializing form`)
     this.state = {
       comments: '', //comments 0
@@ -237,35 +212,6 @@ class Form extends React.Component {
     })
   }
 
-  //------------------------------------------------------------------------------------------------------------------------//
-
-  // SET STATE FUNCTION //
-  //  setGivenState = (i, newState, savedEntries) => {
-  //    let stateEntries;
-  //    if (savedEntries) {
-  //      stateEntries = Object.entries(savedEntries).slice();
-  //    }
-  //    else {
-  //      stateEntries = Object.entries(this.state).slice();
-  //    }
-  //
-  //    //let stateName = stateEntries[i[0]][0];
-  //    let stateValue = stateEntries[i[0]][1];
-  //
-  //    if (Array.isArray(stateValue) && i[1] !== -1) {
-  //      stateValue[i[1]] = newState;
-  //      console.log("hey: " + newState)
-  //    }
-  //    else {
-  //      const newEntry = [stateName, newState]
-  //      stateEntries[i[0]] = newEntry;
-  //      console.log("runs: " + stateName + " - " + newState)
-  //    }
-  //
-  //    this.setState(Object.fromEntries(stateEntries));
-  //    return Object.fromEntries(stateEntries);
-  //  }
-
   //-------------------------------------------------------------------------------------------------------------//
 
   updateCounterBox = (i, newState) => {
@@ -332,7 +278,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon = ({ target : { value }}) => {
+  updateWhoWon = ({ target: { value } }) => {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -374,7 +320,7 @@ class Form extends React.Component {
 
         {/* MATCH INITIATION */}
         {makeMatchDropDown({ changeState: this.updateMatchType, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-        <button onClick={() => { getMatchTeams( {changeState: this.updateMatchData, regional: this.regional, matchType: this.state.matchType, elmNum: this.state.elmNum, matchNumber: this.state.matchNumber, matchData: this.state.matchData} ) }}>GET MATCH TEAMS</button>
+        <button onClick={() => { getMatchTeams({ changeState: this.updateMatchData, regional: this.regional, matchType: this.state.matchType, elmNum: this.state.elmNum, matchNumber: this.state.matchNumber, matchData: this.state.matchData }) }}>GET MATCH TEAMS</button>
         <br></br>
         {makeTeamDropDown({ changeState: this.updateTeam, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
 

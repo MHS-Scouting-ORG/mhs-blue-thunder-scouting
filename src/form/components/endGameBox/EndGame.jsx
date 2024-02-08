@@ -1,7 +1,7 @@
 import React from "react";
 
-class EndGame extends React.Component{
-    constructor(props){
+class EndGame extends React.Component {
+    constructor(props) {
         super(props)
         this.changeEndGame = this.changeEndGame.bind(this);
         this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
@@ -10,19 +10,19 @@ class EndGame extends React.Component{
         }
     }
 
-    changeEndGame(event){
+    changeEndGame(event) {
         this.props.changeEndGameUsed(event);
-        this.setState({changeEndGameUsed: event.value})
+        this.setState({ changeEndGameUsed: event.value })
     }
 
-    makeEndGameStartEndBox(){
-        return(
+    makeEndGameStartEndBox() {
+        return (
             this.props.makeEndGameStartEndBox(this.state.changeEndGameUsed)
         )
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <label> {"⚡End Game: "}
                     <select onChange={this.changeEndGame}>

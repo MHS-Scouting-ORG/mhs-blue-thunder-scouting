@@ -10,17 +10,12 @@ import EndGame from './EndGame';
 export function makeEndGameStartEndBox(props) {
   let endGameValues = props.endGameVal;
 
-  function changeEndGameStartBox(event){
-    // let endGame = this.state.endGameVal;
-    // endGame[1] = event.target.value;
-    props.changeState(1,event.target.value);
-
+  function changeEndGameStartBox(event) {
+    props.changeState(1, event.target.value);
   }
 
-  function changeEndGameEndBox(event){
-    // let endGame = this.state.endGameVal;
-    // endGame[2] = event.target.value;
-    props.changeState(2,event.target.value);
+  function changeEndGameEndBox(event) {
+    props.changeState(2, event.target.value);
   }
 
   let endGame = endGameValues[0];
@@ -66,12 +61,9 @@ export function makeEndGameStartEndBox(props) {
  */
 export function makeEndGameDropDown(props) {
   let endGameState = props.endGameVal
-  
-  function changeEndGame(event){
-    // let endGame = Array(this.state.endGameVal);
-    // endGame[0] = event.target.value;
-    // this.setState({ endGameVal: endGame })
-    props.changeState(0,event.target.value);
+
+  function changeEndGame(event) {
+    props.changeState(0, event.target.value);
   }
 
   return (
@@ -84,13 +76,3 @@ export function makeEndGameDropDown(props) {
     </div>
   )
 }
-
-  // export function changeEndGameStartBox(event, endGame) {
-  //   let endGame = props.endGameVal;
-  //   endGame[1] = event.target.value;
-  // }
-
-  // export function changeEndGameEndBox(event, endGame) {
-  //   let endGame = props.endGameVal;
-  //   endGame[2] = event.target.value;
-  // }

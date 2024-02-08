@@ -1,27 +1,27 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
-class TeamDropDown extends React.Component{
-    constructor(props){
+class TeamDropDown extends React.Component {
+    constructor(props) {
         super(props);
         this.setTeamNumber = this.setTeamNumber.bind(this);
     }
 
-    setTeamNumber({ target : { value } }){
+    setTeamNumber({ target: { value } }) {
         this.props.changeState(`frc${value}`)
     }
 
-    render(){
+    render() {
         return !isNaN(parseInt(this.props.matchNumber)) ? (
             <div>
-            <select onChange={({target:{value}}) => this.props.changeState(value)}>
-                {[<option value=""/>].concat(this.props.teams.map((alliance) => <option key={alliance} value={alliance}> {alliance} </option>))}
-            </select>
+                <select onChange={({ target: { value } }) => this.props.changeState(value)}>
+                    {[<option value="" />].concat(this.props.teams.map((alliance) => <option key={alliance} value={alliance}> {alliance} </option>))}
+                </select>
             </div>
         ) : (
             <div>
-            <label> Team Number
-                <input type='number' onChange={this.setTeamNumber} ></input>
-            </label>
+                <label> Team Number
+                    <input type='number' onChange={this.setTeamNumber} ></input>
+                </label>
             </div>
         )
     }

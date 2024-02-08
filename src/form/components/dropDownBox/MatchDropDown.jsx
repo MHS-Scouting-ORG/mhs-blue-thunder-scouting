@@ -1,37 +1,14 @@
 import React from "react";
 import { PropTypes } from "prop-types";
 
-class MatchDropDown extends React.Component{
-    constructor(props){
+class MatchDropDown extends React.Component {
+    constructor(props) {
         super(props);
-//        this.changeMatchType = this.changeMatchType.bind(this);
-//        this.generateMatchTypeNum = this.generateMatchTypeNum.bind(this);
     }
-    
- //   changeMatchType({ target: { value } }){
- //       this.props.setMatchType(value);
- //   }
-//        let matchType = event.target.value;
-//        if( matchType === 'Qualification' ){
-//            this.props.setMatchType('q');
-//        } else if(matchType === 'QuarterFinal'){
-//            this.props.setMatchType('qf');
-//        } else if(matchType === 'SemiFinal'){
-//            this.props.setMatchType('sf');
-//        } else if(matchType === 'Final'){
-//            this.props.setMatchType('f');
-//        }
-    
-
-//    generateMatchTypeNum(){
-//        return(
-//            this.props.generateMatchTypeNum(this.props.matchTypeValue)
-//        )
-//    }
 
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <select onChange={this.props.setMatchType}>
                     <option value="q"> Qualification</option>

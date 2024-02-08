@@ -35,9 +35,9 @@ export function makeStrategyBox(props, name, i) {
 export function makeBooleanCheckBox(props, name, i) {
   let booleanStates = props.booleans;
 
-  function changeBooleanCheckBox(){
+  function changeBooleanCheckBox() {
     booleanStates[i] = !booleanStates[i]
-    props.changeState(i,booleanStates[i])
+    props.changeState(i, booleanStates[i])
   }
 
   return (
@@ -107,8 +107,8 @@ export function makeBonusBox(props, name, i) {
 export function makeOverrideBox(props) {
   let overrideState = props.override;
 
-  function overrideClicked(){
-    props.changeState([7,0],!overrideState)
+  function overrideClicked() {
+    props.changeState([7, 0], !overrideState)
   }
 
   return (
