@@ -281,13 +281,12 @@ class Form extends React.Component {
 
   updateTeam = (team) => {
     this.setState({ teamNumber: team })
-  }
+  } //
 
   updateDropDown = ({ target: { value } }, i) => {
     let dropDownVal = [...this.state.dropDownVal];
     dropDownVal[i] = value;
     this.setState({ dropDownVal });
-
   }
 
   updateBoolean = (i, value) => {

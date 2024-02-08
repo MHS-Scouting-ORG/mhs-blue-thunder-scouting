@@ -5,9 +5,9 @@ import { getMatchesForRegional } from '../api/bluealliance';
 
 /* GET MATCH TEAMS */
 
-  //CHANGE THE REGIONAL KEY VIA 'main.jsx'
-  /* gets given teams of a match */
-export async function getMatchTeams(props){
+//CHANGE THE REGIONAL KEY VIA 'main.jsx'
+/* gets given teams of a match */
+export async function getMatchTeams(props) {
   console.log(props)
   let matchKey =  /*put this years event*/ props.regional + "_" + props.matchType + props.elmNum + "m" + props.matchNumber;
 
@@ -47,7 +47,7 @@ export function copyArray(Array) {
  */
 export async function submitState(props) {
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-  let matchKey = /*put year event*/ props.regional  + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
+  let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
   let teamNum = props.state.teamNumber;
 
   let comments = props.state.comments;
@@ -285,13 +285,13 @@ export async function submitState(props) {
 
   //POINT CALCULATIONS
 
-  function setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts){
-    const savedPoints = props.setGivenState([18,0],points);
-    const savedGridPoints = props.setGivenState([19,0],totalGridPts,savedPoints);
-    const savedCubeAccuracy = props.setGivenState([20,0],cubesTeleAutoAccuracy,savedGridPoints);
-    const savedConesAccuracy = props.setGivenState([21,0],conesTeleAutoAccuracy,savedCubeAccuracy);
-    const savedCubePoints = props.setGivenState([22,0],cubePts,savedConesAccuracy);
-    props.setGivenState([23,0],conePts,savedCubePoints);
+  function setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) {
+    const savedPoints = props.setGivenState([18, 0], points);
+    const savedGridPoints = props.setGivenState([19, 0], totalGridPts, savedPoints);
+    const savedCubeAccuracy = props.setGivenState([20, 0], cubesTeleAutoAccuracy, savedGridPoints);
+    const savedConesAccuracy = props.setGivenState([21, 0], conesTeleAutoAccuracy, savedCubeAccuracy);
+    const savedCubePoints = props.setGivenState([22, 0], cubePts, savedConesAccuracy);
+    props.setGivenState([23, 0], conePts, savedCubePoints);
   }
 
   let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
