@@ -10,16 +10,12 @@ import { getMatchesForRegional } from '../api/bluealliance';
 export async function getMatchTeams(props){
   console.log(props)
   let matchKey =  /*put this years event*/ props.regional + "_" + props.matchType + props.elmNum + "m" + props.matchNumber;
+
   const teams = async () => {
     getMatchesForRegional(props.regional)
       .then(data => {
         data.map((match) => {
-          console.log(match.key)
-          console.log(matchKey)
           if (match.key === matchKey) {
-            // this.setState({ matchData: match })
-            // this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-
             console.log("runs")
             props.changeState(match)
           }
@@ -27,9 +23,9 @@ export async function getMatchTeams(props){
       })
       .catch(err => console.log(err))
   }
-  console.log(matchKey);
-  console.log(props.matchData)
-  teams();
+  // console.log(matchKey);
+  // console.log(props.matchData)
+  teams()
 }
 
 

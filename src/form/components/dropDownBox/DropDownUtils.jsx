@@ -1,4 +1,4 @@
- 
+
 //  DROP DOWN COMPONENT UTILITY FUNCTIONS
 //  (contains both regular dropdown AND matchdropdown)
 
@@ -72,8 +72,8 @@ export function makeMatchDropDown(props) {
     <div>
       <MatchDropDown //makes MatchDropDown via functions in Form component
         setMatchType={({ target : { value }}) => setMatchType(value)}
-        generateMatchTypeNum={makeMatchTypeDropDown} 
-        setMatchNumber={({ target : { value }}) => props.changeState(value, 'matchNumber')} 
+        generateMatchTypeNum={makeMatchTypeDropDown}
+        setMatchNumber={({ target : { value }}) => props.changeState(value, 'matchNumber')}
         matchNumber={props.matchNumber}
         matchTypeValue={props.matchType}
       >
@@ -92,7 +92,7 @@ makeMatchDropDown.propTypes = {
 }
 
 export function makeTeamDropDown(props) {
-  
+
   return (
     <div>
       <TeamDropDown
