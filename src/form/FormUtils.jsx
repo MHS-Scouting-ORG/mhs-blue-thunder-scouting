@@ -74,64 +74,29 @@ export async function submitState(props) {
 
   let counterVal = props.state.counterBoxVals;
 
-  let fouls = parseInt(counterVal[24]);
-  let techFouls = parseInt(counterVal[25]);
+  let fouls = parseInt(counterVal[5]);
+  let techFouls = parseInt(counterVal[6]);
 
   /*-------------------------------------------------------------SETTING SCORING VARIABLES--------------------------------------------------------------*/
 
 
   //AUTONOMOUS-----------------------------------------
 
-  //Auto Cubes & Cones Scoring
-  let highAutoCubes = parseInt(counterVal[0]);
-  let midAutoCubes = parseInt(counterVal[1]);
-  let lowAutoCubes = parseInt(counterVal[2]);
-  let highAutoCones = parseInt(counterVal[6]);
-  let midAutoCones = parseInt(counterVal[7]);
-  let lowAutoCones = parseInt(counterVal[8]);
-  //Auto Cubes & Cones Attempted
-  let highCubesAutoAttempted = parseInt(counterVal[3]);
-  let midCubesAutoAttempted = parseInt(counterVal[4]);
-  let lowCubesAutoAttempted = parseInt(counterVal[5]);
-  let highConesAutoAttempted = parseInt(counterVal[9]);
-  let midConesAutoAttempted = parseInt(counterVal[10]);
-  let lowConesAutoAttempted = parseInt(counterVal[11]);
-
+  //Auto Speaker & Amp Scoring
+  let autoAmpScored = parseInt(counterVal[0]);
+  let autoSpeakerScored = parseInt(counterVal[1]);
 
   //TELEOP-----------------------------------------------
 
   //Tele Cubes & Cones Scoring
-  let highTeleCubes = parseInt(counterVal[12]);
-  let midTeleCubes = parseInt(counterVal[13]);
-  let lowTeleCubes = parseInt(counterVal[14]);
-  let highTeleCones = parseInt(counterVal[18]);
-  let midTeleCones = parseInt(counterVal[19]);
-  let lowTeleCones = parseInt(counterVal[20]);
-  //Tele Cubes & Cones Attempted
-  let highCubesTeleAttempted = parseInt(counterVal[15]);
-  let midCubesTeleAttempted = parseInt(counterVal[16]);
-  let lowCubesTeleAttempted = parseInt(counterVal[17]);
-  let highConesTeleAttempted = parseInt(counterVal[21]);
-  let midConesTeleAttempted = parseInt(counterVal[22]);
-  let lowConesTeleAttempted = parseInt(counterVal[23]);
-
-
-  //OVERALL ATTEMPTED----------------------------------------------------------------------------------
-  let highCubesAttempted = highCubesAutoAttempted + highCubesTeleAttempted + highTeleCubes + highAutoCubes;
-  let highConesAttempted = highConesAutoAttempted + highConesTeleAttempted + highTeleCones + highAutoCones;
-  let midCubesAttempted = midCubesAutoAttempted + midCubesTeleAttempted + midTeleCubes + midAutoCubes;
-  let midConesAttempted = midConesAutoAttempted + midConesTeleAttempted + midTeleCones + midAutoCones;
-  let lowCubesAttempted = lowCubesAutoAttempted + lowCubesTeleAttempted + lowTeleCubes + lowAutoCubes;
-  let lowConesAttempted = lowConesAutoAttempted + lowConesTeleAttempted + lowTeleCones + lowTeleCones;
-
-  let cubesAttempted = parseInt(counterVal[3]) + parseInt(counterVal[4]) + parseInt(counterVal[5]) + parseInt(counterVal[15]) + parseInt(counterVal[16]) + parseInt(counterVal[17]);
-  let conesAttempted = parseInt(counterVal[9]) + parseInt(counterVal[10]) + parseInt(counterVal[11]) + parseInt(counterVal[21]) + parseInt(counterVal[22]) + parseInt(counterVal[23]);
+  let teleAmpScored = parseInt(counterVal[2]);
+  let teleSpeakerScored = parseInt(counterVal[3]);
+  let teleSpeakerAmplifiedScored = parseInt(counterVal[4]);
 
   // INITIALIZE SCORE--------------------------------------------------------------------------------------------
   let chargeStationPts = 0;
   let endGamePts = 0;
   let mobilityPts = 0;
-
 
   /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
 
@@ -284,41 +249,15 @@ export async function submitState(props) {
 
 
   //POINT CALCULATIONS
+  let cycles = teleAmpScored + teleSpeakerScored + teleSpeakerAmplifiedScored
+  let autoPoints = autoAmpScored * 2 + autoSpeakerScored * 5
+  let telePoints = teleAmpScored + teleSpeakerScored * 2 + teleSpeakerAmplifiedScored * 5
 
-  function setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts) {
-    const savedPoints = props.setGivenState([18, 0], points);
-    const savedGridPoints = props.setGivenState([19, 0], totalGridPts, savedPoints);
-    const savedCubeAccuracy = props.setGivenState([20, 0], cubesTeleAutoAccuracy, savedGridPoints);
-    const savedConesAccuracy = props.setGivenState([21, 0], conesTeleAutoAccuracy, savedCubeAccuracy);
-    const savedCubePoints = props.setGivenState([22, 0], cubePts, savedConesAccuracy);
-    props.setGivenState([23, 0], conePts, savedCubePoints);
-  }
+  let points = chargeStationPts + endGamePts + mobilityPts + autoPoints + telePoints
+  let ampPts = autoAmpScored * 2 + teleAmpScored
+  let speakerPts = autoSpeakerScored * 5 + teleSpeakerScored * 2 + teleSpeakerAmplifiedScored * 5
 
-  let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
-  let midGridPoints = 4 * (midAutoCones + midAutoCubes) + 3 * (midTeleCones + midTeleCubes);
-  let lowGridPoints = 3 * (lowAutoCones + lowAutoCubes) + 2 * (lowTeleCones + lowTeleCubes);
-  let autoPoints = 6 * (highAutoCones + highAutoCubes) + 4 * (midAutoCones + midAutoCubes) + 3 * (lowAutoCones + lowAutoCubes);
-  let telePoints = 5 * (highTeleCones + highTeleCubes) + 3 * (midTeleCones + midTeleCubes) + 2 * (lowTeleCones + lowTeleCubes);
-  let points = chargeStationPts + endGamePts + mobilityPts + autoPoints + telePoints;
-  let cubePts = (highAutoCubes * 6) + (highTeleCubes * 5) + (midAutoCubes * 4) + (midTeleCubes * 3) + (lowAutoCubes * 3) + (lowTeleCubes * 2);
-  let conePts = (highAutoCones * 6) + (highTeleCones * 5) + (midAutoCones * 4) + (midTeleCones * 3) + (lowAutoCones * 3) + (lowTeleCones * 2);
-
-  let cubesHighTeleAutoAccuracy = 100 * ((highAutoCubes + highTeleCubes) / (highCubesAttempted + highAutoCubes + highTeleCubes));
-  let conesHighTeleAutoAccuracy = 100 * ((highAutoCones + highTeleCones) / (highConesAttempted + highAutoCones + highTeleCones));
-
-  let cubesMidTeleAutoAccuracy = 100 * ((midAutoCubes + midTeleCubes) / (midCubesAttempted + midAutoCubes + midTeleCubes));
-  let conesMidTeleAutoAccuracy = 100 * ((midAutoCones + midTeleCones) / (midConesAttempted + midAutoCones + midTeleCones));
-
-  let cubesLowTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes) / (lowCubesAttempted + lowAutoCubes + lowTeleCubes));
-  let conesLowTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones) / (lowConesAttempted + lowAutoCones + lowTeleCones));
-
-  let totalGridPts = highGridPoints + midGridPoints + lowGridPoints;
-
-  let cubesTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes) / (cubesAttempted + lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes));
-  let conesTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones) / (conesAttempted + lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones));
-
-  // props.setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts)
-  setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts);
+  props.updatePoints(points, ampPts, speakerPts);
 
   if (autoPlacement === '') {
     incompleteForm = true;
@@ -374,70 +313,34 @@ export async function submitState(props) {
     //AUTONOMOUS MATCH ENTREES
     matchEntry.Autonomous.AutonomousPlacement = autoPlacement
 
-    matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted
-
-    matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
-    matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
-    matchEntry.Autonomous.Scored.Cones.Lower = lowAutoCones
-    matchEntry.Autonomous.Scored.Cubes.Upper = highAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Mid = midAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Lower = lowAutoCubes
+    matchEntry.Autonomous.Scored.Cones.Upper = autoAmpScored //change to autoAmpScored
+    matchEntry.Autonomous.Scored.Cones.Mid = autoSpeakerScored //change to autoSpeakerScored
 
     matchEntry.Autonomous.LeftCommunity = mobility
     matchEntry.Autonomous.ChargeStation = chargeAutoFinal
 
     //TELEOP MATCH ENTREES
-    matchEntry.Teleop.Scored.Cones.Upper = highTeleCones
-    matchEntry.Teleop.Scored.Cones.Mid = midTeleCones
-    matchEntry.Teleop.Scored.Cones.Lower = lowTeleCones
-    matchEntry.Teleop.Scored.Cubes.Upper = highTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
-
-    matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted
+    matchEntry.Autonomous.Scored.Cones.Lower = teleAmpScored //change to teleAmpScored
+    matchEntry.Autonomous.Scored.Cones.Lower = teleSpeakerScored //change to teleSpeakerScored
+    matchEntry.Autonomous.Scored.Cones.Lower = teleSpeakerAmplifiedScored //change to teleSpeakerAmplifiedScored
 
     matchEntry.Teleop.EndGame = chargeTeleFinal
     matchEntry.Teleop.EndGameTally.Start = endGameStart
     matchEntry.Teleop.EndGameTally.End = endGameEnd
 
     //SCORING TOTAL
+    matchEntry.Teleop.ScoringTotal.GridPoints = cycles //change to cycles
     matchEntry.Teleop.ScoringTotal.Total = points
-    matchEntry.Teleop.ScoringTotal.GridPoints = totalGridPts
+    matchEntry.Teleop.ScoringTotal.GridPoints = ampPts //change to ampPts
+    matchEntry.Teleop.ScoringTotal.GridPoints = speakerPts //change to speakerPts
 
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.High = highGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Mid = midGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Low = lowGridPoints
 
-    matchEntry.Teleop.ScoringTotal.Cones = conePts
-    matchEntry.Teleop.ScoringTotal.Cubes = cubePts
 
     //DRIVE
     matchEntry.Teleop.DriveStrength = driveStrength
     matchEntry.Teleop.DriveSpeed = driveSpeed
 
     matchEntry.Teleop.SmartPlacement = smartPlacement
-
-    //CONE ACCURACIES
-    matchEntry.Teleop.ConesAccuracy.High = conesHighTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Mid = conesMidTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Low = conesLowTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Overall = conesTeleAutoAccuracy
-
-    //CUBE ACCURACIES
-    matchEntry.Teleop.CubesAccuracy.High = cubesHighTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Mid = cubesMidTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Low = cubesLowTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Overall = cubesTeleAutoAccuracy
 
     //MATCH DETAILS
     matchEntry.RankingPts = rankFinal;

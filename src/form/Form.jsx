@@ -50,12 +50,9 @@ class Form extends React.Component {
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted 15
       strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense) 16
       booleans: [false, false], //mobility, smartplacement 17
-      totalPoints: 0, //total points 18
-      totalGrid: 0, //total grid points 19
-      cubesAccuracy: 0, //cube accuracy 20
-      conesAccuracy: 0, //cone accuracy 21
-      cubesPts: 0, //cube pts 22
-      conesPts: 0, //cone pts 23
+      totalPts: 0, //total points 18
+      ampPts: 0, //total amp pts 19
+      speakerPts: 0 //total speaker pts 20
     }
   }
 
@@ -81,12 +78,12 @@ class Form extends React.Component {
       rankingPoints = 0;
     }
 
-    if (rankingStates[1] === "ActivationBonus") {
-      rankingStates[1] = "Activation ";
+    if (rankingStates[1] === "MelodyBonus") {
+      rankingStates[1] = "Melody ";
       rankingPoints++;
     }
-    if (rankingStates[2] === "SustainabilityBonus") {
-      rankingStates[2] = "Sustainability ";
+    if (rankingStates[2] === "EnsembleBonus") {
+      rankingStates[2] = "Ensemble ";
       rankingPoints++;
     }
 
@@ -220,6 +217,11 @@ class Form extends React.Component {
     this.setState({ counterBoxVals });
   }
 
+  updateMatchData = (match) => {
+    this.setState({ matchData: match })
+    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+  }
+
   updateMatchType = (value, prop) => {
     console.log(value, " ", prop)
     this.setState({ [prop]: value })
@@ -269,10 +271,10 @@ class Form extends React.Component {
       rankingPts = 0
     }
 
-    if (rankingState[1].trim() === "Activation") {
+    if (rankingState[1].trim() === "Melody") {
       rankingPts++
     }
-    if (rankingState[2].trim() === "Sustainability") {
+    if (rankingState[2].trim() === "Ensemble") {
       rankingPts++
     }
     this.setState({ rankingPts })
@@ -300,20 +302,25 @@ class Form extends React.Component {
 
   }
 
-  updateMatchData = (match) => {
-    this.setState({ matchData: match })
-    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-  }
-
   updateComments = (comment) => {
     this.setState({ comments: comment })
+  }
+
+  updateOverride = (overrideStatus) => {
+    this.setState( {override: overrideStatus} )
+  }
+
+  updatePoints = (totalPts, ampPts, speakerPts) => {
+    this.setState( {totalPts} )
+    this.setState( {ampPts} )
+    this.setState( {speakerPts} )
   }
   // rendering physical and visible website components
   render() {
     return (
       <div className="form-contain">
         {/* TITLE */}
-        <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
+        <h2> CRESCENDO FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} style={{width: "50px", height: "50px"}}></img> </h2>
 
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
@@ -332,25 +339,12 @@ class Form extends React.Component {
         <div className="auto-contain">
 
           <h3>AUTONOMOUS:</h3>
-          <img alt="" src={'./images/auto placement.png'} width="25%" height="auto"></img>
-          {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+          <img alt="" src={'./images/auto placement.png'}></img>
+          {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4], 0)}
           <br></br>
-          <p>🟪Cubes Scored</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", 0)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made:  ", 1)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made:  ", 2)}
-          <p>🟪Cubes Attempted</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", 3)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", 4)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", 5)}
-          <p>🔺Cones Scored</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", 6)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", 7)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", 8)}
-          <p>🔺Cones Attempted</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", 9)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 10)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 11)}
+          <p></p>
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡ Amp Scored: ", 0)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "🔊 Speaker Scored: ", 1)}
           <br></br>
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
           <br></br>
@@ -364,22 +358,9 @@ class Form extends React.Component {
         <div className="teleop-contain">
 
           <h3>TELE-OP:</h3>
-          <p>🟪Cubes Scored</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", 12)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", 13)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", 14)}
-          <p>🟪Cubes Attempted</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", 15)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", 16)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", 17)}
-          <p>🔺Cones Scored</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", 18)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", 19)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", 20)}
-          <p>🔺Cones Attempted</p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", 21)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 22)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 23)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡ Amp Scored: ", 2)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "🔊 Speaker Scored: ", 3)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡🔊 Amplified Speaker Scored: ", 4)}
           <br></br>
           {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
           {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
@@ -389,7 +370,7 @@ class Form extends React.Component {
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
-        <div className="robotInfo-contain">
+        <div className="robot-info-contain">
 
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Smart Placement (creates links) ", 1)}
           <br></br>
@@ -430,8 +411,8 @@ class Form extends React.Component {
               Team Lost
             </label>
           </div>
-          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
-          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
+          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Melody ", 1)}
+          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Ensemble ", 2)}
           <Headers display={this.state.rankingPts} />
 
         </div>
@@ -479,7 +460,7 @@ class Form extends React.Component {
             }}>SUBMIT</button>
           </div>
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-          {makeOverrideBox({ changeState: this.setGivenState, override: this.state.override })}
+          {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
         </div>
 
         <br></br>

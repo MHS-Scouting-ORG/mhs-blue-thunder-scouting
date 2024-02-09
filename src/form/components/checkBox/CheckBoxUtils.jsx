@@ -83,7 +83,6 @@ export function makePenaltyBox(props, name, i) {
  */
 export function makeBonusBox(props, name, i) {
   let rankingState = props.rankingState;
-  let rankingPts = props.rankingPoints
 
   return (
     <div>
@@ -108,7 +107,7 @@ export function makeOverrideBox(props) {
   let overrideState = props.override;
 
   function overrideClicked() {
-    props.changeState([7, 0], !overrideState)
+    props.changeState(!overrideState)
   }
 
   return (
