@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { getMatchesForRegional} from "../../api";
-import { getTeamsInRegional, getOprs } from "../../api/bluealliance";
+import { getTeamsInRegional, } from "../../api/bluealliance";
 import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 
 async function getTeams () {
-  return await (getTeamsInRegional('2023azva'))
-   .catch(err => console.log(err))
-   .then(data => {
+  try {
+  const data = await getTeamsInRegional('2023azva')
+
      return data.map(obj => {
        const teamNumObj = {
          TeamNumber: obj.team_number,
@@ -35,15 +35,19 @@ async function getTeams () {
 
        return teamNumObj
      })
-   })
-   .catch(err => console.log(err))
+  }
+  catch(err){
+   console.log(err) 
+  }
 }
 
 async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable) {
-  return await (getMatchesForRegional('2023azva'))
-  .catch(err => console.log(err))
-  .then(data => {
-    
+  //return await (getMatchesForRegional('2023azva'))
+  ///.catch(err => console.log(err))
+  //.then(data => {
+    try {
+    const data = await getMatchesForRegional('2023azva')
+
     let tableData = mtable//tableDataForUtils()  //testing 
 
     return teamNumbers/*same as teamsData from maintable*/.map(team => { 
@@ -115,12 +119,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rCubeAcc = mCubeAcc / maxCubeAcc
       const rCSPoints = mCSPoints / maxCSPoints
 
-      console.log(team)
-      //console.log({}, {team})
-      console.log(mGridPoints)
-      console.log(maxGridPoints)
-      console.log(rGridPoints)
-
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
@@ -169,6 +167,10 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       }
       return tableDataObj;
     })
-  })
-}
+  }
+  catch(err) {
+    console.log(err)
+  }
+  }
+
 export { getTeams,getTeamsMatchesAndTableData, } 
