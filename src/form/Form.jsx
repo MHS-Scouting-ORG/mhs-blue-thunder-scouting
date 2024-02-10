@@ -51,6 +51,22 @@ class Form extends React.Component {
       ampPts: 0, //total amp pts 19
       speakerPts: 0 //total speaker pts 20
     }
+
+    this.updateCounterBox = this.updateCounterBox.bind(this);
+    this.updateMatchData = this.updateMatchData.bind(this);
+    this.updateMatchType = this.updateMatchType.bind(this);
+    this.updateTeam = this.updateTeam.bind(this);
+    this.updateDropDown = this.updateDropDown.bind(this);
+    this.updateBoolean = this.updateBoolean.bind(this);
+    this.updateEndGameVal = this.updateEndGameVal.bind(this);
+    this.updatePenalty = this.updatePenalty.bind(this);
+    this.updateRankingPoints = this.updateRankingPoints.bind(this);
+    this.updateWhoWon = this.updateWhoWon.bind(this);
+    this.updateBonus = this.updateBonus.bind(this);
+    this.updateStrategy = this.updateStrategy.bind(this);
+    this.makeBoxCounters = this.makeBoxCounters.bind(this);
+    this.updateComments = this.updateComments.bind(this);
+    this.updateOverride = this.updateOverride.bind(this);
   }
 
   //upon component init
@@ -137,6 +153,7 @@ class Form extends React.Component {
       }
     }
 
+    //INIT
     this.setState({
       comments: m.Comments,
       matchType: matchType,
@@ -205,51 +222,51 @@ class Form extends React.Component {
     })
   }
 
-  updateCounterBox = (i, newState) => {
+  updateCounterBox(i, newState) {
     let counterBoxVals = [...this.state.counterBoxVals];
     counterBoxVals[i] = newState;
     this.setState({ counterBoxVals });
   }
 
-  updateMatchData = (match) => {
+  updateMatchData(match) {
     this.setState({ matchData: match })
     this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
-  updateMatchType = (value, prop) => {
+  updateMatchType(value, prop) {
     console.log(value, " ", prop)
     this.setState({ [prop]: value })
   }
 
-  updateTeam = (team) => {
+  updateTeam(team) {
     this.setState({ teamNumber: team })
-  } //
+  }
 
-  updateDropDown = ({ target: { value } }, i) => {
+  updateDropDown({ target: { value } }, i) {
     let dropDownVal = [...this.state.dropDownVal];
     dropDownVal[i] = value;
     this.setState({ dropDownVal });
   }
 
-  updateBoolean = (i, value) => {
+  updateBoolean(i, value) {
     let booleans = [...this.state.booleans]
     booleans[i] = value
     this.setState({ booleans })
   }
 
-  updateEndGameVal = (i, value) => {
+  updateEndGameVal(i, value) {
     let endGameVal = [...this.state.endGameVal]
     endGameVal[i] = value
     this.setState({ endGameVal })
   }
 
-  updatePenalty = ([_, i], val) => {
+  updatePenalty([_, i], val) {
     let penaltyVal = [...this.state.penaltyVal]
     penaltyVal[i] = val
     this.setState({ penaltyVal })
   }
 
-  updateRankingPoints = (rankingState) => {
+  updateRankingPoints(rankingState) {
     let rankingPts = 0
     if (rankingState[0] === "win") {
       rankingPts = 2
@@ -270,21 +287,21 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon = ({ target: { value } }) => {
+  updateWhoWon({ target: { value } }) {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
     this.updateRankingPoints(rankingState)
   }
 
-  updateBonus = (i, name, checked) => {
+  updateBonus(i, name, checked) {
     let rankingState = [...this.state.rankingState]
     rankingState[i] = checked ? name : ''
     this.setState({ rankingState })
     this.updateRankingPoints(rankingState)
   }
 
-  updateStrategy = ([_, i], val) => {
+  updateStrategy([_, i], val) {
     let strategyVal = [...this.state.strategyVal]
     strategyVal[i] = val
     this.setState({ strategyVal })
@@ -313,20 +330,16 @@ class Form extends React.Component {
       </>
     )
   }
-  updateMatchData = (match) => {
-    this.setState({ matchData: match })
-    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-  }
 
-  updateComments = (comment) => {
+  updateComments(comment) {
     this.setState({ comments: comment })
   }
 
-  updateOverride = (overrideStatus) => {
+  updateOverride(overrideStatus) {
     this.setState({ override: overrideStatus })
   }
 
-  // updatePoints = (totalPts, ampPts, speakerPts) => {
+  // updatePoints(totalPts, ampPts, speakerPts) {
   //   this.setState( {totalPts} )
   //   this.setState( {ampPts} )
   //   this.setState( {speakerPts} )

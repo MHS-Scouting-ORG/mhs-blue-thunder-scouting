@@ -290,7 +290,7 @@ export async function submitState(props) {
   //   props.setGivenState([23,0],conePts,savedCubePoints);
   // }
 
-  props.setPoints()
+  props.updatePoints()
 
   let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
   let midGridPoints = 4 * (midAutoCones + midAutoCubes) + 3 * (midTeleCones + midTeleCubes);
