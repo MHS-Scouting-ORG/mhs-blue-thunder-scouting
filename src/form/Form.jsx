@@ -301,7 +301,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon = ({ target : { value }}) => {
+  updateWhoWon = ({ target: { value } }) => {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -364,10 +364,10 @@ class Form extends React.Component {
         <button onClick={() => console.log(this.state)}> Check State </button>
 
         {/* MATCH INITIATION */}
-        {makeMatchDropDown({ changeState: this.updateMatchType, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-        <button onClick={() => { getMatchTeams( {changeState: this.updateMatchData, regional: this.regional, matchType: this.state.matchType, elmNum: this.state.elmNum, matchNumber: this.state.matchNumber, matchData: this.state.matchData} ) }}>GET MATCH TEAMS</button>
+        {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
+        <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }}>GET MATCH TEAMS</button>
         <br></br>
-        {makeTeamDropDown({ changeState: this.updateTeam, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
+        {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, rankingStates: this.state.rankingState })}
 
         <br></br>
 
@@ -378,7 +378,7 @@ class Form extends React.Component {
         <br></br>
         {this.makeBoxCounters(0)}
         <br></br>
-        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Mobility ", 0)}
         <br></br>
         {makeChargeStationAuto({ changeState: this.updateChargeStation, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
@@ -386,14 +386,14 @@ class Form extends React.Component {
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
         {this.makeBoxCounters(12)}
-        
+
         <br></br>
         {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
         {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}
-        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Smart Placement (creates links) ", 1)}
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Smart Placement (creates links) ", 1)}
         <br></br>
         {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
         {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
@@ -402,7 +402,7 @@ class Form extends React.Component {
         {/* PENALTIES */}
         <h3>PENALTIES:</h3>
 
-        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, changeState: this.updateCounterBox}, "Fouls: ", 24)}
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, changeState: this.updateCounterBox }, "Fouls: ", 24)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 25)}
         {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
           map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
@@ -425,8 +425,8 @@ class Form extends React.Component {
             Team Lost
           </label>
         </div>
-        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Activation ", 1)}
-        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Sustainability ", 2)}
+        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState }, "Activation ", 1)}
+        {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState }, "Sustainability ", 2)}
         <Headers display={this.state.rankingPts} />
         <br></br>
 

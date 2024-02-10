@@ -83,7 +83,6 @@ export function makePenaltyBox(props, name, i) {
  */
 export function makeBonusBox(props, name, i) {
   let rankingState = props.rankingState;
-  let rankingPts = props.rankingPoints
 
   return (
     <div>
