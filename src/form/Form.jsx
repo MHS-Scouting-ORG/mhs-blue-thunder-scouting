@@ -1,7 +1,6 @@
 import React from 'react';
 // checkbox utility function imports //
 import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
-import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -152,7 +151,6 @@ class Form extends React.Component {
           /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
-      // chargeStationValAuto: m.Autonomous.ChargeStation,
       whoWon: '',
       checkedWhoWon: ['', ''],
       rankingPts: rankingPoints,
@@ -325,7 +323,7 @@ class Form extends React.Component {
   }
 
   updateOverride = (overrideStatus) => {
-    this.setState( {override: overrideStatus} )
+    this.setState({ override: overrideStatus })
   }
 
   // updatePoints = (totalPts, ampPts, speakerPts) => {
@@ -339,7 +337,7 @@ class Form extends React.Component {
     return (
       <div className="form-contain">
         {/* TITLE */}
-        <h2> CRESCENDO FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} style={{width: "50px", height: "50px"}}></img> </h2>
+        <h2> CRESCENDO FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} style={{ width: "50px", height: "50px" }}></img> </h2>
 
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
@@ -356,20 +354,18 @@ class Form extends React.Component {
 
         {/* AUTONOMOUS */}
         <h3>AUTONOMOUS:</h3>
-        <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
-        {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+        <img alt="" src={'./images/auto placement.png'}></img>
+        {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4], 0)}
         <br></br>
         {this.makeBoxCounters(0)}
         <br></br>
         {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
         <br></br>
-        {makeChargeStationAuto({ changeState: this.updateChargeStation, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
-        <br></br>
 
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
         {this.makeBoxCounters(12)}
-        
+
         <br></br>
         {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
         {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}

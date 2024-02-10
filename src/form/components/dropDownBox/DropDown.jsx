@@ -2,8 +2,6 @@ import React from 'react';
 
 import { PropTypes } from 'prop-types';
 
-class DropDown extends React.Component{
-    render(){
 class DropDown extends React.Component {
     //    constructor(props){
     //        super(props);
