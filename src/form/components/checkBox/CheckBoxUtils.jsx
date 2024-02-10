@@ -37,7 +37,7 @@ export function makeBooleanCheckBox(props, name, i) {
 
   function changeBooleanCheckBox(){
     booleanStates[i] = !booleanStates[i]
-    props.changeState([17,i],booleanStates[i])
+    props.changeState(i,booleanStates[i])
   }
 
   return (
