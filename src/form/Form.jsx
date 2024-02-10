@@ -240,7 +240,7 @@ class Form extends React.Component {
   }
 
   updateAutonomousPlacement(value) {
-    this.setState({ autoPlacement: value})
+    this.setState({ autoPlacement: value })
   }
 
   updateBoolean(i, value) {
