@@ -225,13 +225,7 @@ class Form extends React.Component {
     this.setState({ counterBoxVals });
   }
 
-  updateMatchData(match) {
-    this.setState({ matchData: match })
-    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-  }
-
-  updateMatchType(value, prop) {
-    console.log(value, " ", prop)
+  updateMatchType (value, prop) {
     this.setState({ [prop]: value })
   }
 
@@ -282,7 +276,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon({ target: { value } }) {
+  updateWhoWon ({ target: { value } }) {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -351,12 +345,11 @@ class Form extends React.Component {
         <div className="match-contain">
           <button onClick={() => console.log(this.state)}> Check State </button>
 
-          {/* MATCH INITIATION */}
-          {makeMatchDropDown({ changeState: this.updateMatchType, matchType: this.state.matchType, matchNumber: this.state.matchNumber })}
-          <button onClick={() => { getMatchTeams({ changeState: this.updateMatchData, regional: this.regional, matchType: this.state.matchType, elmNum: this.state.elmNum, matchNumber: this.state.matchNumber, matchData: this.state.matchData }) }}>GET MATCH TEAMS</button>
-          <br></br>
-          {makeTeamDropDown({ changeState: this.updateTeam, matchData: this.state.matchData, rankingStates: this.state.rankingState, matchNumber: this.state.matchNumber, teamNumber: this.state.teamNumber, teams: this.state.teams })}
-        </div>
+        {/* MATCH INITIATION */}
+        {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
+        <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }}>GET MATCH TEAMS</button>
+        <br></br>
+        {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, rankingStates: this.state.rankingState })}
 
         <br></br>
 
@@ -368,11 +361,13 @@ class Form extends React.Component {
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amp Scored: ", 0)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 1)}
         <br></br>
-        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Mobility ", 0)}
         <br></br>
 
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
+        {this.makeBoxCounters(12)}
+
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amp Scored: ", 2)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 3)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}

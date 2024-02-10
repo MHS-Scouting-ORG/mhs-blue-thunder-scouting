@@ -4,7 +4,7 @@ import { PropTypes } from "prop-types";
 // let counterStates
 
 export function makeCounterBox(props, title, i) {
-
+    
     function buttonMinus(i) {
         props.changeState(i, props.counterBoxVals[i] - 1)
     }
