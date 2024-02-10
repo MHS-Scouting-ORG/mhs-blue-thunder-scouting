@@ -15,8 +15,8 @@ import { PropTypes } from 'prop-types';
  * @param i position in state array
  * @returns a MatchDropDownBox component
  */
-export function makeDropDownBox(props, title, option, i) {
-  let dropDownStates = props.dropDownVal;
+export function makeAutoPlacementDropDownBox(props, title, option) {
+  let placement = props.autoPlacementVal;
 
 //
   return (
@@ -24,15 +24,14 @@ export function makeDropDownBox(props, title, option, i) {
       <DropDown
         title={title}
         choices={option}
-        index={i}
-        value={dropDownStates[i]}
+        value={placement}
         changeDropDownState={props.changeState}
       />
     </div>
   )
 }
 
-makeDropDownBox.propTypes = {
+makeAutoPlacementDropDownBox.propTypes = {
   dropDownVal: PropTypes.array,
   changeState: PropTypes.func
 }

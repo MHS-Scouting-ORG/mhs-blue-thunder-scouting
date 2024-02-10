@@ -26,7 +26,7 @@ export function makeStrategyBox(props, name, i) {
 }
 
 /**
- * function for making boolean boxes (mobility, smartindexment)
+ * function for making boolean boxes (mobility, isFaster, clearsStage)
  * @param props obj from form component containing booleans, changeBooleanCheckBox method
  * @param name text that displays next to checkbox
  * @param i array position

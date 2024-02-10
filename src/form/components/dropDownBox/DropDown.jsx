@@ -19,7 +19,7 @@ class DropDown extends React.Component {
             <div>
                 <label>{this.props.title}</label>
                 <select onChange={(event) => {
-                    this.props.changeDropDownState(event, this.props.index);
+                    this.props.changeDropDownState(event.target.value);
                 }} value={this.props.value}>
                     {choices.map((choice) => <option key={choice}>{choice}</option>)}
                 </select>
