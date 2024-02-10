@@ -1,6 +1,7 @@
 import React from 'react';
 // checkbox utility function imports //
 import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -43,7 +44,7 @@ class Form extends React.Component {
       rankingPts: 0, //teams ranking points 11
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability] 12
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show 13
-      dropDownVal: ['1', '', ''], //dropdown vals 14
+      dropDownVal: ['', '', ''], //dropdown vals??? 14
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted 15
       strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense) 16
       booleans: [false, false], //mobility, smartplacement 17
@@ -206,8 +207,6 @@ class Form extends React.Component {
     })
   }
 
-  //-------------------------------------------------------------------------------------------------------------//
-
   updateCounterBox = (i, newState) => {
     let counterBoxVals = [...this.state.counterBoxVals];
     counterBoxVals[i] = newState;
@@ -291,6 +290,34 @@ class Form extends React.Component {
     let strategyVal = [...this.state.strategyVal]
     strategyVal[i] = val
     this.setState({ strategyVal })
+
+  }
+
+  makeBoxCounters(startIndex) {
+    return (
+      <>
+        <p>🟪Cubes Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", startIndex)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", startIndex + 1)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", startIndex + 2)}
+        <p>🟪Cubes Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", startIndex + 3)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", startIndex + 4)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", startIndex + 5)}
+        <p>🔺Cones Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", startIndex + 6)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", startIndex + 7)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", startIndex + 8)}
+        <p>🔺Cones Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", startIndex + 9)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", startIndex + 10)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", startIndex + 11)}
+      </>
+    )
+  }
+  updateMatchData = (match) => {
+    this.setState({ matchData: match })
+    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
   updateComments = (comment) => {
@@ -328,34 +355,24 @@ class Form extends React.Component {
         <br></br>
 
         {/* AUTONOMOUS */}
-        <div className="auto-contain">
-
-          <h3>AUTONOMOUS:</h3>
-          <img alt="" src={'./images/auto placement.png'}></img>
-          {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4], 0)}
-          <br></br>
-          <p></p>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡ Amp Scored: ", 0)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "🔊 Speaker Scored: ", 1)}
-          <br></br>
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
-        </div>
-
+        <h3>AUTONOMOUS:</h3>
+        <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
+        {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
+        <br></br>
+        {this.makeBoxCounters(0)}
+        <br></br>
+        {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
+        <br></br>
+        {makeChargeStationAuto({ changeState: this.updateChargeStation, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
         <br></br>
 
         {/* TELEOP */}
-        <div className="teleop-contain">
-
-          <h3>TELE-OP:</h3>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡ Amp Scored: ", 2)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "🔊 Speaker Scored: ", 3)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "⚡🔊 Amplified Speaker Scored: ", 4)}
-          <br></br>
-          {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-          {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-
-        </div>
-
+        <h3>TELE-OP:</h3>
+        {this.makeBoxCounters(12)}
+        
+        <br></br>
+        {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
+        {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
         <br></br>
 
         {/* ROBOT/TEAM INFO */}

@@ -4,13 +4,26 @@ import { PropTypes } from 'prop-types';
 
 class DropDown extends React.Component{
     render(){
+class DropDown extends React.Component {
+    //    constructor(props){
+    //        super(props);
+    //        this.dropDownChange = this.dropDownChange.bind(this);
+    //    }
+
+    //    dropDownChange(event){
+    //        this.props.changeDropDownState(event,this.props.index);
+    //    }
+    render() {
+        let choices = [...this.props.choices]
+        choices = [''].concat(choices)
+
         return (
             <div>
                 <label>{this.props.title}</label>
                 <select onChange={(event) => {
                     this.props.changeDropDownState(event, this.props.index);
                 }} value={this.props.value}>
-                    {this.props.choices.map((choice) => <option key={choice}>{choice}</option>)}
+                    {choices.map((choice) => <option key={choice}>{choice}</option>)}
                 </select>
             </div>
         )
