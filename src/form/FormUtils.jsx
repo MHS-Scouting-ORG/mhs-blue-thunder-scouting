@@ -5,27 +5,17 @@ import { getMatchesForRegional } from '../api/bluealliance';
 
 /* GET MATCH TEAMS */
 
-  //CHANGE THE REGIONAL KEY VIA 'main.jsx'
-  /* gets given teams of a match */
-export async function getMatchTeams(props){
-  console.log(props)
+//CHANGE THE REGIONAL KEY VIA 'main.jsx'
+/* gets given teams of a match */
+export async function getMatchTeams(props) {
   let matchKey =  /*put this years event*/ props.regional + "_" + props.matchType + props.elmNum + "m" + props.matchNumber;
 
-  const teams = async () => {
-    getMatchesForRegional(props.regional)
-      .then(data => {
-        data.map((match) => {
-          if (match.key === matchKey) {
-            console.log("runs")
-            props.changeState(match)
-          }
-        })
-      })
-      .catch(err => console.log(err))
-  }
-  // console.log(matchKey);
-  // console.log(props.matchData)
-  teams()
+  const data = await getMatchesForRegional(props.regional)
+  data.map((match) => {
+    if (match.key === matchKey) {
+      props.changeState(match)
+    }
+  })
 }
 
 
@@ -43,7 +33,7 @@ export function copyArray(Array) {
  */
 export async function submitState(props) {
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-  let matchKey = /*put year event*/ props.regional  + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
+  let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
   let teamNum = props.state.teamNumber;
 
   let comments = props.state.comments;

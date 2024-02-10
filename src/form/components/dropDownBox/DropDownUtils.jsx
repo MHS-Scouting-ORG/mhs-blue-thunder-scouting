@@ -33,7 +33,10 @@ export function makeAutoPlacementDropDownBox(props, title, option) {
 
 makeAutoPlacementDropDownBox.propTypes = {
   dropDownVal: PropTypes.array,
-  changeState: PropTypes.func
+  changeState: PropTypes.func,
+  title: PropTypes.string,
+  option: PropTypes.array,
+  i: PropTypes.number
 }
 
 /**
