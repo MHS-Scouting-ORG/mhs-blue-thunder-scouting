@@ -4,25 +4,12 @@ import { PropTypes } from "prop-types";
 // let counterStates
 
 export function makeCounterBox(props, title, i) {
-    //let counterStates = props.counterBoxVals;
     
     function buttonMinus(i) {
-    //    if (counterStates[i] > 0) {
-    //        counterStates[i] = parseInt(counterStates[i] - 1)
-    //    }
-    //    else if (counterStates[i] <= 0) {
-    //      counterStates[i] = 0
-    //    }
         props.changeState(i, props.counterBoxVals[i] - 1)
     }
 
     function buttonPlus(i) {
-    //    if (counterStates[i] >= 0) {
-    //        counterStates[i] = parseInt(counterStates[i] + 1)
-    //    }
-    //    else if (counterStates[i] < 0) {
-    //        counterStates[i] = 0
-    //    }
         props.changeState(i, props.counterBoxVals[i] + 1)
     }
 

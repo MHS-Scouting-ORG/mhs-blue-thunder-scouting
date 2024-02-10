@@ -244,7 +244,6 @@ class Form extends React.Component {
   }
 
   updateMatchType = (value, prop) => {
-    console.log(value, " ", prop)
     this.setState({ [prop]: value })
   }
 
@@ -402,7 +401,8 @@ class Form extends React.Component {
 
         {/* PENALTIES */}
         <h3>PENALTIES:</h3>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 24)}
+
+        {makeCounterBox({ counterBoxVals: this.state.counterBoxVals, changeState: this.updateCounterBox}, "Fouls: ", 24)}
         {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 25)}
         {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
           map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
