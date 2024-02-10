@@ -37,11 +37,7 @@ export async function getMatchTeams(props){
 /* COPY ARRAY */
 
 export function copyArray(Array) {
-  let arrayCopy = [];
-  for (let i = 0; i < Array.length; i++) {
-    arrayCopy.push(Array[i]);
-  }
-  return arrayCopy
+  return [...Array]
 }
 
 /* SUBMISSION */

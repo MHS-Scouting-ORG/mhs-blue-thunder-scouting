@@ -1,6 +1,6 @@
 import React from 'react';
 // checkbox utility function imports //
-import {  makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import { makeStrategyBox, makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -237,37 +237,6 @@ class Form extends React.Component {
     })
   }
 
-  //------------------------------------------------------------------------------------------------------------------------//
-
-  // SET STATE FUNCTION //
-  //  setGivenState = (i, newState, savedEntries) => {
-  //    let stateEntries;
-  //    if (savedEntries) {
-  //      stateEntries = Object.entries(savedEntries).slice();
-  //    }
-  //    else {
-  //      stateEntries = Object.entries(this.state).slice();
-  //    }
-  //
-  //    //let stateName = stateEntries[i[0]][0];
-  //    let stateValue = stateEntries[i[0]][1];
-  //
-  //    if (Array.isArray(stateValue) && i[1] !== -1) {
-  //      stateValue[i[1]] = newState;
-  //      console.log("hey: " + newState)
-  //    }
-  //    else {
-  //      const newEntry = [stateName, newState]
-  //      stateEntries[i[0]] = newEntry;
-  //      console.log("runs: " + stateName + " - " + newState)
-  //    }
-  //
-  //    this.setState(Object.fromEntries(stateEntries));
-  //    return Object.fromEntries(stateEntries);
-  //  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
   updateCounterBox = (i, newState) => {
     let counterBoxVals = [...this.state.counterBoxVals];
     counterBoxVals[i] = newState;
@@ -325,7 +294,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon({ target : { value }}) {
+  updateWhoWon({ target: { value } }) {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -344,6 +313,30 @@ class Form extends React.Component {
     let strategyVal = [...this.state.strategyVal]
     strategyVal[i] = val
     this.setState({ strategyVal })
+
+  }
+
+  makeBoxCounters(startIndex) {
+    return (
+      <>
+        <p>🟪Cubes Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", startIndex)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", startIndex + 1)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", startIndex + 2)}
+        <p>🟪Cubes Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", startIndex + 3)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", startIndex + 4)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", startIndex + 5)}
+        <p>🔺Cones Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", startIndex + 6)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", startIndex + 7)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", startIndex + 8)}
+        <p>🔺Cones Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", startIndex + 9)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", startIndex + 10)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", startIndex + 11)}
+      </>
+    )
 
   }
   // rendering physical and visible website components
@@ -369,22 +362,7 @@ class Form extends React.Component {
         <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
         {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
         <br></br>
-        <p>🟪Cubes Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", 0)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made:  ", 1)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made:  ", 2)}
-        <p>🟪Cubes Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", 3)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", 4)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", 5)}
-        <p>🔺Cones Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", 6)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", 7)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", 8)}
-        <p>🔺Cones Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", 9)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 10)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 11)}
+        {this.makeBoxCounters(0)}
         <br></br>
         {makeBooleanCheckBox({ changeState: () => { }, booleans: this.state.booleans }, "Mobility ", 0)}
         <br></br>
@@ -393,22 +371,8 @@ class Form extends React.Component {
 
         {/* TELEOP */}
         <h3>TELE-OP:</h3>
-        <p>🟪Cubes Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", 12)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", 13)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", 14)}
-        <p>🟪Cubes Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", 15)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", 16)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", 17)}
-        <p>🔺Cones Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", 18)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", 19)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", 20)}
-        <p>🔺Cones Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", 21)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", 22)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", 23)}
+        {this.makeBoxCounters(12)}
+        
         <br></br>
         {makeEndGameDropDown({ changeState: () => { }, endGameVal: this.state.endGameVal })}
         {makeEndGameStartEndBox({ changeState: () => { }, endGameVal: this.state.endGameVal })}
