@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs } from "../../api/bluealliance";
+import { getOprs } from "../../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
 import {calcColumnSort} from "./CalculationUtils"
 import { ueTableData, } from "./MTEffectFunc"
-import { getMatchesForRegional} from "../../api";
+import { getMatchesForRegional} from "../../../api";
 import GlobalFilter from "../GlobalFilter";
 import List from "../List";
 import Modal from "../Modal";

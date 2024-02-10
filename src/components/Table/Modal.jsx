@@ -1,5 +1,5 @@
 import React from 'react';
-import Form from '../form/Form';
+import Form from '../../form/Form';
 
 class Modal extends React.Component {
     constructor(props) {

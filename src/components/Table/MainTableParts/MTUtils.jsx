@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import { getMatchesForRegional} from "../../api";
-import { getTeamsInRegional, } from "../../api/bluealliance";
+import { getMatchesForRegional} from "../../../api";
+import { getTeamsInRegional, } from "../../../api/bluealliance";
 import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 
 async function getTeams () {
