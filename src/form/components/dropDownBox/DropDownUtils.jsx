@@ -18,7 +18,7 @@ import { PropTypes } from 'prop-types';
 export function makeDropDownBox(props, title, option, i) {
   let dropDownStates = props.dropDownVal;
 
-
+//
   return (
     <div>
       <DropDown
@@ -27,7 +27,6 @@ export function makeDropDownBox(props, title, option, i) {
         index={i}
         value={dropDownStates[i]}
         changeDropDownState={props.changeState}
-        stateIndex={14}
       />
     </div>
   )

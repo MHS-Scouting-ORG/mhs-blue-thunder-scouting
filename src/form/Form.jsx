@@ -8,9 +8,6 @@ import { makeDropDownBox, makeMatchDropDown, makeTeamDropDown } from './componen
 // endgame utility function imports //
 import { makeEndGameStartEndBox, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
-// chargestation utility function imports //
-import { makeChargeStationAuto } from './components/chargeStation/ChargeStationUtils';
-
 // counterbox utility function imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
 
@@ -18,7 +15,7 @@ import TextBox from './components/TextBox';
 import Headers from './components/Header';
 
 // general utility function imports //
-import { getMatchTeams, submitState, copyArray } from './FormUtils';
+import { getMatchTeams, submitState } from './FormUtils';
 
 
 class Form extends React.Component {
@@ -39,14 +36,14 @@ class Form extends React.Component {
       teamNumber: ' ', //team num 5
       teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match 6
       override: false, //override bool 7
+
+
       endGameVal: ['', '', ''], // 8
-      chargeStationValAuto: '', //charge station status during auto 9
       whoWon: '', //whichever team won 10
-      //checkedWhoWon: [' ', ' '], /* UNUSED */
       rankingPts: 0, //teams ranking points 11
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability] 12
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show 13
-      dropDownVal: ['1', '', ''], //dropdown vals??? 14
+      dropDownVal: ['1', '', ''], //dropdown vals 14
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //game objects scored/attempted 15
       strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense) 16
       booleans: [false, false], //mobility, smartplacement 17
@@ -154,7 +151,7 @@ class Form extends React.Component {
           /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
-      chargeStationValAuto: m.Autonomous.ChargeStation,
+      // chargeStationValAuto: m.Autonomous.ChargeStation,
       whoWon: '',
       checkedWhoWon: ['', ''],
       rankingPts: rankingPoints,
@@ -243,10 +240,6 @@ class Form extends React.Component {
     this.setState({ booleans })
   }
 
-  updateChargeStation = (chargeStationVal) => {
-    this.setState({ chargeStationValAuto: chargeStationVal })
-  }
-
   updateEndGameVal = (i, value) => {
     let endGameVal = [...this.state.endGameVal]
     endGameVal[i] = value
@@ -285,7 +278,6 @@ class Form extends React.Component {
     rankingState[0] = value
     this.setState({ rankingState })
     this.updateRankingPoints(rankingState)
-
   }
 
   updateBonus = (i, name, checked) => {
@@ -299,7 +291,6 @@ class Form extends React.Component {
     let strategyVal = [...this.state.strategyVal]
     strategyVal[i] = val
     this.setState({ strategyVal })
-
   }
 
   updateComments = (comment) => {
@@ -310,11 +301,12 @@ class Form extends React.Component {
     this.setState( {override: overrideStatus} )
   }
 
-  updatePoints = (totalPts, ampPts, speakerPts) => {
-    this.setState( {totalPts} )
-    this.setState( {ampPts} )
-    this.setState( {speakerPts} )
-  }
+  // updatePoints = (totalPts, ampPts, speakerPts) => {
+  //   this.setState( {totalPts} )
+  //   this.setState( {ampPts} )
+  //   this.setState( {speakerPts} )
+  // }
+
   // rendering physical and visible website components
   render() {
     return (
@@ -347,9 +339,6 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "🔊 Speaker Scored: ", 1)}
           <br></br>
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Mobility ", 0)}
-          <br></br>
-          {makeChargeStationAuto({ changeState: this.updateChargeStation, chargeStationValAuto: this.state.chargeStationValAuto, changeChargeStation: this.changeChargeStation })}
-
         </div>
 
         <br></br>
