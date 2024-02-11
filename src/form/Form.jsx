@@ -46,7 +46,7 @@ class Form extends React.Component {
       autoPlacement: '', //robots starting position (1,2,3,4)
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, fouls, techFouls]
       // strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
-      booleans: [false, false, false], //booleans (mobility, isFaster, clearsStage)
+      booleans: [false, false, false, false], //booleans (mobility, autoWillCollide, isFaster, clearsStage)
       totalPts: 0, //total points
       ampPts: 0, //total amp pts
       speakerPts: 0 //total speaker pts
@@ -64,8 +64,6 @@ class Form extends React.Component {
     this.updateRankingPoints = this.updateRankingPoints.bind(this);
     this.updateWhoWon = this.updateWhoWon.bind(this);
     this.updateBonus = this.updateBonus.bind(this);
-    // this.updateStrategy = this.updateStrategy.bind(this);
-    // this.makeBoxCounters = this.makeBoxCounters.bind(this);
     this.updateComments = this.updateComments.bind(this);
     this.updateOverride = this.updateOverride.bind(this);
   }
@@ -100,37 +98,6 @@ class Form extends React.Component {
       rankingStates[2] = "Ensemble ";
       rankingPoints++;
     }
-
-    // let priorityStates = [...m.Priorities];
-    // for (let i = 0; i < priorityStates.length; i++) {
-    //   if (priorityStates[i] === "Low") {
-    //     priorityStates[0] = "Low Node ";
-    //   }
-    //   if (priorityStates[i] === "Mid") {
-    //     priorityStates[1] = "Mid Node ";
-    //   }
-    //   if (priorityStates[i] === "Upper") {
-    //     priorityStates[2] = "High Node ";
-    //   }
-    //   if (priorityStates[i] === "Cubes") {
-    //     priorityStates[3] = "Cubes ";
-    //   }
-    //   if (priorityStates[i] === "Cones") {
-    //     priorityStates[4] = "Cones ";
-    //   }
-    //   if (priorityStates[i] === "ChargeStation") {
-    //     priorityStates[5] = "Charge Station ";
-    //   }
-    //   if (priorityStates[i] === "SingleSubstation") {
-    //     priorityStates[6] = "Single Substation ";
-    //   }
-    //   if (priorityStates[i] === "DoubleStation") {
-    //     priorityStates[7] = "Double Substation ";
-    //   }
-    //   if (priorityStates[i] === "Defense") {
-    //     priorityStates[8] = "Defense ";
-    //   }
-    // }
 
     let penaltyStates = [...m.Penalties.Penalties];
     for (let i = 0; i < penaltyStates.length; i++) {
@@ -290,37 +257,7 @@ class Form extends React.Component {
     this.updateRankingPoints(rankingState)
   }
 
-  // updateStrategy([_, i], val) {
-  //   let strategyVal = [...this.state.strategyVal]
-  //   strategyVal[i] = val
-  //   this.setState({ strategyVal })
-
-  // }
-
-  // makeBoxCounters(startIndex) {
-  //   return (
-  //     <>
-  //       <p>🟪Cubes Scored</p>
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", startIndex)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", startIndex + 1)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", startIndex + 2)}
-  //       <p>🟪Cubes Attempted</p>
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", startIndex + 3)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", startIndex + 4)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", startIndex + 5)}
-  //       <p>🔺Cones Scored</p>
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", startIndex + 6)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", startIndex + 7)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", startIndex + 8)}
-  //       <p>🔺Cones Attempted</p>
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", startIndex + 9)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", startIndex + 10)}
-  //       {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", startIndex + 11)}
-  //     </>
-  //   )
-  // }
-
-  updateMatchData(match){
+  updateMatchData(match) {
     this.setState({ matchData: match })
     this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
@@ -355,10 +292,12 @@ class Form extends React.Component {
           <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }}>GET MATCH TEAMS</button>
           <br></br>
           {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, rankingStates: this.state.rankingState })}
+        </div>
 
-          <br></br>
+        <br></br>
 
-          {/* AUTONOMOUS */}
+        {/* AUTONOMOUS */}
+        <div className="auto-contain">
           <h3>AUTONOMOUS:</h3>
           <img alt="" src={'./images/auto placement.png'}></img>
           {makeAutoPlacementDropDownBox({ changeState: this.updateAutonomousPlacement, dropDownVal: this.state.autoPlacement }, "Auto Placement: ", [1, 2, 3, 4], 0)}
@@ -367,121 +306,100 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 1)}
           <br></br>
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Mobility ", 0)}
-          <br></br>
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Potential Auto Collision ", 1)}
+          <img alt="" src={''/*INSERT AUTO IMAGE */}></img>
+        </div>
 
-          {/* TELEOP */}
+        <br></br>
+
+        {/* TELEOP */}
+        <div className='tele-contain'>
           <h3>TELE-OP:</h3>
-          {this.makeBoxCounters(12)}
-
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amp Scored: ", 2)}
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 3)}
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}
-
           <br></br>
           {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
           {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
           <br></br>
-
-          {/* ROBOT/TEAM INFO */}
-          <div className="robot-info-contain">
-
-            {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Is this robot faster than ours? ", 1)}
-            {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: this.state.booleans }, "Can this robot go under the stage? ", 2)}
-
-            {/* <br></br>
-          {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-          {makeDropDownBox({ changeState: this.updateDropDown, dropDownVal: this.state.dropDownVal }, "Drive Speed: ", ["Slow", "Normal", "Fast"], 2)} */}
-          </div>
-
-          <br></br>
-
-          {/* PENALTIES */}
-          <div className="penalty-contain">
-
-            <h3>PENALTIES:</h3>
-            {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 5)}
-            {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 6)}
-            {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
-              map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
-            )()}
-          </div>
-
-          <br></br>
-
-          {/* RANKING POINTS */}
-          <div className="ranking-contain">
-
-            <h3>RANKING POINTS:</h3>
-            <div>
-              <label>
-                <input type="radio" name="whoWon" value="win" onChange={this.updateWhoWon} />
-                Team Won
-              </label>
-              <label>
-                <input type="radio" name="whoWon" value="tie" onChange={this.updateWhoWon} />
-                Team Tied
-              </label>
-              <label>
-                <input type="radio" name="whoWon" value="loss" onChange={this.updateWhoWon} />
-                Team Lost
-              </label>
-            </div>
-            {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Melody ", 1)}
-            {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Ensemble ", 2)}
-            <Headers display={this.state.rankingPts} />
-
-          </div>
-
-          <br></br>
-
-          {/* STRATEGY & PRIORITIES
-        <div className="strat-contain">
-
-          <h3>📝STRATEGY & PRIORITIES:</h3>
-          {(_ => [
-            "Low Node", "Mid Node", "High Node", "Cubes", "Cones", "Charge Station", "Single Substation", "Double Substation", "Defense"].
-            map((label, i) => makeStrategyBox({ changeState: this.updateStrategy, strategyVal: this.state.strategyVal }, `${label} `, i)))()}
         </div>
 
-        <br></br> */}
-
-          {/* COMMENTS */}
-          <div className="comment-contain">
-
-            <TextBox title={"💬Comments: "} changeState={this.updateComments} value={this.state.comments}></TextBox>
-
-          </div>
-
-          <br></br>
-
-          {/* SUBMISSION */}
-          <div className="submit-contain">
-            <div>
-              <button onClick={(evt) => {
-                evt.preventDefault()
-                submitState(this)
-                  .then(() => {
-                    alert("Data successfully submitted")
-                  })
-                  .catch(err => {
-                    console.log(err)
-                    try {
-                      alert(`Error occurred when submitting data ${err?.message}`)
-                    }
-                    catch (e) {
-
-                    }
-                  })
-              }}>SUBMIT</button>
-            </div>
-            <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-            {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
-          </div>
-
-          <br></br>
-
+        {/* ROBOT/TEAM INFO */}
+        <div className="robot-info-contain">
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Is this robot faster than ours? ", 2)}
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Can this robot go under the stage? ", 3)}
         </div>
-        )
+
+        <br></br>
+
+        {/* PENALTIES */}
+        <div className="penalty-contain">
+          <h3>PENALTIES:</h3>
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 5)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 6)}
+          {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
+            map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
+          )()}
+        </div>
+
+        <br></br>
+
+        {/* RANKING POINTS */}
+        <div className="ranking-contain">
+          <h3>RANKING POINTS:</h3>
+          <div>
+            <label>
+              <input type="radio" name="whoWon" value="win" onChange={this.updateWhoWon} />
+              Team Won
+            </label>
+            <label>
+              <input type="radio" name="whoWon" value="tie" onChange={this.updateWhoWon} />
+              Team Tied
+            </label>
+            <label>
+              <input type="radio" name="whoWon" value="loss" onChange={this.updateWhoWon} />
+              Team Lost
+            </label>
+          </div>
+          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Melody ", 1)}
+          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Ensemble ", 2)}
+          <Headers display={this.state.rankingPts} />
+        </div>
+
+        <br></br>
+
+        {/* COMMENTS */}
+        <div className="comment-contain">
+          <TextBox title={"💬Comments: "} changeState={this.updateComments} value={this.state.comments}></TextBox>
+        </div>
+
+        <br></br>
+
+        {/* SUBMISSION */}
+        <div className="submit-contain">
+          <div>
+            <button onClick={(evt) => {
+              evt.preventDefault()
+              submitState(this)
+                .then(() => {
+                  alert("Data successfully submitted")
+                })
+                .catch(err => {
+                  console.log(err)
+                  try {
+                    alert(`Error occurred when submitting data ${err?.message}`)
+                  }
+                  catch (e) {
+
+                  }
+                })
+            }}>SUBMIT</button>
+          </div>
+          <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
+          {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
+        </div>
+      </div>
+    )
   }
 }
 

@@ -3,7 +3,7 @@ import React from 'react';
 function CheckBox(props) {
 
     const changeCheckBoxState = function ({ target: { checked } }) {
-        this.props.changeCheckBoxState([props.stateIndex, props.index], checked ? props.label : null);
+        props.changeCheckBoxState([props.stateIndex, props.index], checked ? props.label : null);
     }
 
     return (

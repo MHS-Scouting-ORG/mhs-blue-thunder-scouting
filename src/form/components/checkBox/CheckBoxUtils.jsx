@@ -1,30 +1,6 @@
 import React from "react";
 import CheckBox from "./CheckBox";
 
-
-
-/**
- * function for making the strategy box
- * @param props obj from form component containing strategyVal, strategyBoxChanged method
- * @param name text that displays next to checkbox
- * @param i array position
- * @returns checkbox component
- */
-export function makeStrategyBox(props, name, i) {
-  let strategyState = props.strategyVal;
-  return (
-    <div>
-      <CheckBox
-        label={name}
-        changeCheckBoxState={props.changeState}
-        stateIndex={16}
-        index={i}
-        checked={strategyState[i] === name}
-      />
-    </div>
-  )
-}
-
 /**
  * function for making boolean boxes (mobility, isFaster, clearsStage)
  * @param props obj from form component containing booleans, changeBooleanCheckBox method
