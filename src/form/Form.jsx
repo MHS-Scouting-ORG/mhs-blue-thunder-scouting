@@ -307,7 +307,7 @@ class Form extends React.Component {
           <br></br>
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Mobility ", 0)}
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Potential Auto Collision ", 1)}
-          <img alt="" src={''/*INSERT AUTO IMAGE */}></img>
+          <img alt="" src={''/*INSER AUTO IMAGE */}></img>
         </div>
 
         <br></br>
