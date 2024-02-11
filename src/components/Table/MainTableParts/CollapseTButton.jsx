@@ -7,7 +7,7 @@ class CollapseTButton extends React.Component {
     render() {
         return (
             <div className = "collapseTButton">
-                <button onClick={() => this.props.toggleFunction()}>^</button>
+                <button onClick={() => this.props.toggleFunction()}> {this.props.label} </button>
             </div>
         )
     }

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../../api/bluealliance";
@@ -11,6 +10,13 @@ import List from "../List";
 import Modal from "../Modal";
 import CollapseTButton from "./CollapseTButton";
 import CenterTable from "./CenterTable";
+import StatsTable from "./StatsTable";
+import RobotPerformance from "./RobotPerformance";
+import RobotCapabilities from "./RobotCapabilities";
+import RobotAuto from "./RobotAuto";
+import CustomRanking from "./CustomRanking";
+import FieldInfo from "./FieldInfo";
+import Penalties from "./Penalties";
 
 function MainTable(props) { 
   const regional = props.regional
@@ -160,80 +166,7 @@ const data = React.useMemo(
           </div>
         ) 
       },
-      // {
-      //   Header: "OPR",
-      //   accessor: "OPR",
-      // },
-      // {
-      //   Header: "CCWM",
-      //   accessor: "CCWM",
-      // },
-      // {
-      //   Header: "Avg Points",
-      //   accessor: "AvgPoints",
-      // },
-      // {
-      //   Header: "Avg CS Points",
-      //   accessor: "AvgCSPoints"
-      // },
-      // {
-      //   Header: "Avg Grid Points",
-      //   accessor: "AvgGridPoints",
-      //   Cell: ({ row }) => (
-      //     <span {...row.getToggleRowExpandedProps()}>
-      //         {row.values.AvgGridPoints}
-      //     </span>) 
-      // },
-      // {
-      //   Header: "Avg Cone Points",
-      //   accessor: "AvgConePts",
-      //   Cell: ({ row }) => (
-      //     <span {...row.getToggleRowExpandedProps()}>
-      //         {row.values.AvgConePts}
-      //     </span>) 
-      // },
-      // {
-      //   Header: "Avg Cone Acc",
-      //   accessor: "AvgConeAcc",
-      //   Cell: ({ row }) => (
-      //     <span {...row.getToggleRowExpandedProps()}>
-      //         {row.values.AvgConeAcc}
-      //     </span>) 
-      // },
-      // {
-      //   Header: "Avg Cube Points",
-      //   accessor: "AvgCubePts",
-      //   Cell: ({ row }) => (
-      //     <span {...row.getToggleRowExpandedProps()}>
-      //         {row.values.AvgCubePts}
-      //     </span>) 
-      // },
-      // {
-      //   Header: "Avg Cube Acc",
-      //   accessor: "AvgCubeAcc",
-      //   Cell: ({ row }) => (
-      //     <span {...row.getToggleRowExpandedProps()}>
-      //         {row.values.AvgCubeAcc}
-      //     </span>) 
-      // },
-      // {
-      //   Header: "DPR",
-      //   accessor: "DPR",
-      // },
-      // {
-      //   Header: "Penalties",
-      //   accessor: "Penalties",
-      //   Cell: ({ row }) => (
-      //     <div
-      //         style = {{
-      //           //minWidth:'100px',
-      //           whiteSpace: 'normal',
-      //         }}
-      //     >
-      //       {row.original.Penalties}
-      //     </div>
-      //   )
-      // },
+      
       {
         Header: "Grade",
         accessor: "SumPriorities",
@@ -304,192 +237,55 @@ const data = React.useMemo(
       <GlobalFilter filter={globalFilter} set={setGlobalFilter}/>
       <br></br>
       <br></br>
-      {/* container */}
-      <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
 
-        {/*left*/}
       <div>
-      <table style = {{width: '250px', borderCollapse: 'collapse', overflowX: 'scroll'}}{...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  style={{
-                    padding: '8px',
-                    textAlign: 'center',
-                    background: '#78797A',
-                  }}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-        
-          {rows.map(row => {
-            prepareRow(row)
-            return ( <React.Fragment>
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return (   
-                    <td 
-                      onClick = {() => {
-                        setHeaderState(cell.column.Header)
-                      }}
-                   
-                      {...cell.getCellProps()}
-                      style={{
-                        padding: '8px',
-                        borderBlock: 'solid 2px #78797A',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
+        {/* topRow */}
+        <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
+          {/*left*/}
+          <div>
+          <RobotPerformance information = {tableData}></RobotPerformance>
+          </div>
 
-              {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-              }
-                  </React.Fragment>
-            )
-          })}  
-        </tbody>
-      </table>
+          {/*right*/}
+          <div>
+          <StatsTable information = {tableData}></StatsTable>
+          </div>
+        </div>
+        <br></br>
+
+        {/* secondRow*/}
+        <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
+          <div>
+          {/* left */}
+          <RobotCapabilities information = {tableData}></RobotCapabilities>
+          </div>
+
+          <div>
+          {/* middle */}
+          <CustomRanking information = {tableData}></CustomRanking>
+          </div>
+          
+          <div>
+          {/* right */}
+          <RobotAuto information = {tableData}></RobotAuto>
+          </div>
+        </div>
+
+        {/* thirdRow */}
+        <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
+          <div>
+          {/* left */}
+          <FieldInfo information = {tableData}></FieldInfo>
+          </div>
+
+          <div>
+          {/* right */}
+          <Penalties information = {tableData}></Penalties>
+          </div>
+        </div>
       </div>
 
-      {/*center*/}
-      
-      <div>
-      <header>Robot Center Table -'temp. title'</header>
-      
-      <div style={{display: tableState, maxHeight: '10rem', overflowY: 'scroll'}}>
-      
-      <table style={{width: '250px', borderCollapse: 'collapse', overflowX: 'scroll'}}{...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                
-                
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  style={{
-                    padding: '8px',
-                    textAlign: 'center',
-                    background: '#78797A',
-                  }}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-        
-          {rows.map(row => {
-            prepareRow(row)
-            return ( <React.Fragment>
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return (   
-                    <td 
-                      onClick = {() => {
-                        setHeaderState(cell.column.Header)
-                      }}
-                   
-                      {...cell.getCellProps()}
-                      style={{
-                        padding: '8px',
-                        borderBlock: 'solid 2px #78797A',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
 
-              {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-              }
-                  </React.Fragment>
-            )
-          })}  
-        </tbody>
-      </table>
-      </div>
-      <CollapseTButton toggleFunction={toggleTable}></CollapseTButton>
-
-      </div>
-
-      {/*right*/}
-      <div> 
-      <table style={{width: '250px', borderCollapse: 'collapse', overflowX: 'scroll'}}{...getTableProps()}>
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(column => (
-                
-                
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  style={{
-                    padding: '8px',
-                    textAlign: 'center',
-                    background: '#78797A',
-                  }}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-        
-          {rows.map(row => {
-            prepareRow(row)
-            return ( <React.Fragment>
-              <tr {...row.getRowProps()}>
-                {row.cells.map(cell => {
-                  return (   
-                    <td 
-                      onClick = {() => {
-                        setHeaderState(cell.column.Header)
-                      }}
-                   
-                      {...cell.getCellProps()}
-                      style={{
-                        padding: '8px',
-                        borderBlock: 'solid 2px #78797A',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
-
-              {
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-              }
-                  </React.Fragment>
-            )
-          })}  
-        </tbody>
-      </table>
-      </div>
-    </div>
     </div>
   )
 }
