@@ -1,10 +1,15 @@
-import React, {useState} from 'react'
-import { useTable, useSortBy } from 'react-table'
+import React, { useEffect, useState } from 'react'
+import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "./CollapseTButton";
  
 
 function FieldInfo(props) {
-    const [tableState, setTableState] = useState(' ')
+  const filter = props.gFilter
+  const [tableState, setTableState] = useState(' ')
+
+   useEffect(() => {
+     setGlobalFilter(filter)
+   }, [filter])
 
     const toggleTable = () => {
         //console.log("    ")
@@ -45,15 +50,16 @@ function FieldInfo(props) {
               },
         ], []
     )
-    const tableInstance = useTable({columns, data}, useSortBy)
+    const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 
     const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-      } = tableInstance
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      setGlobalFilter,
+      prepareRow,
+    } = tableInstance
 
     return (
         <div> 

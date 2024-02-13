@@ -70,7 +70,7 @@ function MainTable(props) {
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, oprList, sortBy, tableState])
+  }, [apiData, oprList, sortBy,])
 
 const modalClose = () => {
   setModalState(false);
@@ -188,7 +188,10 @@ const data = React.useMemo(
   } = tableInstance
 
   const {globalFilter} = state
-  //console.log(rows)
+  console.log(globalFilter)
+  console.log(state)
+
+  //setGFilterState(globalFilter),[]
   return (
     <div>
       <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>
@@ -243,31 +246,29 @@ const data = React.useMemo(
         <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
           {/*left*/}
           <div>
-          <RobotPerformance information = {tableData}></RobotPerformance>
+          <RobotPerformance information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotPerformance>
           </div>
 
           {/*right*/}
           <div>
-          <StatsTable information = {tableData}></StatsTable>
+          <StatsTable information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></StatsTable>
           </div>
         </div>
-        <br></br>
-
         {/* secondRow*/}
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
           <div>
           {/* left */}
-          <RobotCapabilities information = {tableData}></RobotCapabilities>
+          <RobotCapabilities information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotCapabilities>
           </div>
 
           <div>
           {/* middle */}
-          <CustomRanking information = {tableData}></CustomRanking>
+          <CustomRanking information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></CustomRanking>
           </div>
           
           <div>
           {/* right */}
-          <RobotAuto information = {tableData}></RobotAuto>
+          <RobotAuto information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotAuto>
           </div>
         </div>
 
@@ -275,12 +276,12 @@ const data = React.useMemo(
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
           <div>
           {/* left */}
-          <FieldInfo information = {tableData}></FieldInfo>
+          <FieldInfo information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></FieldInfo>
           </div>
 
           <div>
           {/* right */}
-          <Penalties information = {tableData}></Penalties>
+          <Penalties information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Penalties>
           </div>
         </div>
       </div>
