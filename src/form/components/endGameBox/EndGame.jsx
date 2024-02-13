@@ -4,7 +4,7 @@ class EndGame extends React.Component {
     constructor(props) {
         super(props)
         this.changeEndGame = this.changeEndGame.bind(this);
-        this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
+        this.makeEndGameMiscElements = this.makeEndGameMiscElements.bind(this);
         this.state = {
             changeEndGameUsed: props.value,
         }
@@ -15,9 +15,9 @@ class EndGame extends React.Component {
         this.setState({ changeEndGameUsed: event.value })
     }
 
-    makeEndGameStartEndBox() {
+    makeEndGameMiscElements() {
         return (
-            this.props.makeEndGameStartEndBox(this.state.changeEndGameUsed)
+            this.props.makeEndGameMiscElements(this.state.changeEndGameUsed)
         )
     }
 
@@ -27,11 +27,9 @@ class EndGame extends React.Component {
                 <label> {"⛓️End Game: "}
                     <select onChange={this.changeEndGame}>
                         <option value={this.props.value}> {this.props.value} </option>
-                        <option value='None'>None</option>
-                        <option value='DockedEngaged'>Docked & Engaged</option>
-                        <option value='Docked'>Docked & Not Enaged</option>
-                        <option value='Parked'>Parked</option>
+                        <option value='Onstage'>Onstage</option>
                         <option value='Attempted'>Attempted</option>
+                        <option value='None'>None</option>
                     </select>
                 </label>
             </div>

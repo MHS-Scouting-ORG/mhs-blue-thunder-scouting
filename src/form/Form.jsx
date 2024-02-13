@@ -6,7 +6,7 @@ import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } fr
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
-import { makeEndGameStartEndBox, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+import { makeEndGameMiscElements, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
@@ -38,7 +38,7 @@ class Form extends React.Component {
       override: false, //override bool
 
 
-      endGameVal: ['', '', ''], // endgame val [endgameStatus, timeStart, timeEnd]
+      endGameVal: '', // endgame val [endgameStatus, timeStart, timeEnd]
       whoWon: '', //whichever team won
       rankingPts: 0, //teams ranking points
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
@@ -210,10 +210,8 @@ class Form extends React.Component {
     this.setState({ booleans })
   }
 
-  updateEndGameVal(i, value) {
-    let endGameVal = [...this.state.endGameVal]
-    endGameVal[i] = value
-    this.setState({ endGameVal })
+  updateEndGameVal(value) {
+    this.setState({ endGameVal: value })
   }
 
   updatePenalty([_, i], val) {
@@ -320,7 +318,9 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}
           <br></br>
           {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-          {makeEndGameStartEndBox({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
+          {makeEndGameMiscElements({endGameVal: this.state.endGameVal})}
+          {/* harmony */}
+          {/* note in trap */}
           <br></br>
         </div>
 
@@ -369,11 +369,11 @@ class Form extends React.Component {
         <br></br>
 
         {/* COMMENTS */}
-        <div className="comment-contain">
+        {/* <div className="comment-contain">
           <TextBox title={"💬Comments: "} changeState={this.updateComments} value={this.state.comments}></TextBox>
         </div>
 
-        <br></br>
+        <br></br> */}
 
         {/* SUBMISSION */}
         <div className="submit-contain">
