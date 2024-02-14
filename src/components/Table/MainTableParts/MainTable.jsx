@@ -17,6 +17,7 @@ import RobotAuto from "./RobotAuto";
 import CustomRanking from "./CustomRanking";
 import FieldInfo from "./FieldInfo";
 import Penalties from "./Penalties";
+import TeamMatches from "./TeamMatches";
 
 function MainTable(props) { 
   const regional = props.regional
@@ -44,6 +45,7 @@ function MainTable(props) {
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
         setApiData(nApiData)
+        console.log(nApiData)
     })
   }, []
 )
@@ -282,6 +284,11 @@ const data = React.useMemo(
           <div>
           {/* right */}
           <Penalties information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Penalties>
+          </div>
+
+          <div>
+          {/* right */}
+          <TeamMatches information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
           </div>
         </div>
       </div>
