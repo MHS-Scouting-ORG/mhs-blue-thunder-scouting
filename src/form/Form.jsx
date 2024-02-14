@@ -6,10 +6,10 @@ import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } fr
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
-import { makeEndGameMiscElements, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+import { makeEndGameMisc, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
-import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
+import { makeFoulCounterBox, makeCounterBox } from './components/counterBox/CounterBoxUtils';
 
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
@@ -45,8 +45,7 @@ class Form extends React.Component {
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       autoPlacement: '', //robots starting position (1,2,3,4)
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, fouls, techFouls]
-      // strategyVal: [null, null, null, null, null, null, null, null, null], // strategies/priorities (lownode, midnode, highnode, cubes, cones, chargestation, singlesubstation, doublesubstation, defense)
-      booleans: [false, false, false, false], //booleans (mobility, autoWillCollide, isFaster, clearsStage)
+      booleans: [false, false, false, false, false], //booleans (mobility, autoWillCollide, hangsFaster, isFaster, clearsStage)
       totalPts: 0, //total points
       ampPts: 0, //total amp pts
       speakerPts: 0 //total speaker pts
@@ -318,7 +317,7 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}
           <br></br>
           {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-          {makeEndGameMiscElements({endGameVal: this.state.endGameVal})}
+          {makeEndGameMisc({changeState: this.updateBoolean, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Do they hang faster than us? ", 2)}
           {/* harmony */}
           {/* note in trap */}
           <br></br>
@@ -326,8 +325,8 @@ class Form extends React.Component {
 
         {/* ROBOT/TEAM INFO */}
         <div className="robot-info-contain">
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Is this robot faster than ours? ", 2)}
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Can this robot go under the stage? ", 3)}
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Is this robot faster than ours? ", 3)}
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Can this robot go under the stage? ", 4)}
         </div>
 
         <br></br>

@@ -1,20 +1,14 @@
 import React from "react";
 
-class RatingSlider extends React.Component {
-    constructor(props) {
-        super(props)
-        this.sliderChanged = this.sliderChanged.bind(this)
+function RatingSlider(props) {
+
+    const changeRatingSlider = () => {
+
     }
 
-    sliderChanged() {
-        this.props.sliderChanged()
-    }
+    // return(
 
-    render() {
-        return(
-
-        )
-    }
+    // )
 }
 
 export default RatingSlider

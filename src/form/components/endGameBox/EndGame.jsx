@@ -4,7 +4,7 @@ class EndGame extends React.Component {
     constructor(props) {
         super(props)
         this.changeEndGame = this.changeEndGame.bind(this);
-        this.makeEndGameMiscElements = this.makeEndGameMiscElements.bind(this);
+        this.makeEndGameMisc = this.makeEndGameMisc.bind(this);
         this.state = {
             changeEndGameUsed: props.value,
         }
@@ -15,9 +15,9 @@ class EndGame extends React.Component {
         this.setState({ changeEndGameUsed: event.value })
     }
 
-    makeEndGameMiscElements() {
+    makeEndGameMisc() {
         return (
-            this.props.makeEndGameMiscElements(this.state.changeEndGameUsed)
+            this.props.makeEndGameMisc(this.state.changeEndGameUsed)
         )
     }
 

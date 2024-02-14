@@ -7,15 +7,18 @@ import EndGame from './EndGame';
  * @returns if endgame is not nil or none, returns a time tracker
  * @returns else, returns an empty div
  */
-export function makeEndGameMiscElements(props) {
+export function makeEndGameMisc(props, title, i) {
   let endGameVal = props.endGameVal;
+
+  function changeBool(e) {
+    props.changeState(i, e.target.checked)
+  }
 
   if (endGameVal === "Onstage") {
     return(
       <div>
-        <label> {"Did robot kill itself"}
-          <input type="checkbox"/>
-          {/* make thing that makes a checkbox for if they hang faster than us */}
+        <label> {title}
+          <input type="checkbox" onChange={e => changeBool(e)}></input>
         </label>
       </div>
     )
@@ -42,7 +45,7 @@ export function makeEndGameDropDown(props) {
     <div>
       <EndGame
         changeEndGameUsed={changeEndGame}
-        makeEndGameMiscElements={makeEndGameMiscElements}
+        makeEndGameMisc={makeEndGameMisc}
         value={endGameState}
       />
     </div>
