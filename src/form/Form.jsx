@@ -11,6 +11,9 @@ import { makeEndGameMisc, makeEndGameDropDown } from './components/endGameBox/En
 // counterbox utility function imports //
 import { makeFoulCounterBox, makeCounterBox } from './components/counterBox/CounterBoxUtils';
 
+// rating slider utility function imports //
+import { makeRatingSlider } from './components/ratingSlider/RatingSliderUtils';
+
 import TextBox from './components/TextBox';
 import Headers from './components/Header';
 
@@ -46,6 +49,7 @@ class Form extends React.Component {
       autoPlacement: '', //robots starting position (1,2,3,4)
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, fouls, techFouls]
       booleans: [false, false, false, false, false], //booleans (mobility, autoWillCollide, hangsFaster, isFaster, clearsStage)
+      ratingSliderVals: [0,0],
       totalPts: 0, //total points
       ampPts: 0, //total amp pts
       speakerPts: 0 //total speaker pts
@@ -63,6 +67,7 @@ class Form extends React.Component {
     this.updateRankingPoints = this.updateRankingPoints.bind(this);
     this.updateWhoWon = this.updateWhoWon.bind(this);
     this.updateBonus = this.updateBonus.bind(this);
+    this.updateRatingSlider = this.updateRatingSlider.bind(this);
     this.updateComments = this.updateComments.bind(this);
     this.updateOverride = this.updateOverride.bind(this);
   }
@@ -259,6 +264,12 @@ class Form extends React.Component {
     this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
+  updateRatingSlider(i, value) {
+    let ratingSliderVals = [...this.state.ratingSliderVals]
+    ratingSliderVals[i] = value
+    this.setState({ ratingSliderVals })
+  }
+
   updateComments(comment) {
     this.setState({ comments: comment })
   }
@@ -397,6 +408,8 @@ class Form extends React.Component {
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
           {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
         </div>
+
+        {makeRatingSlider({changeState: this.updateRatingSlider}, "Apples", 0)}
       </div>
     )
   }
