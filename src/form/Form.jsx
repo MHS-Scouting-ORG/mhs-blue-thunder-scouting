@@ -9,7 +9,7 @@ import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } fro
 import { makeEndGameMisc, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
-import { makeFoulCounterBox, makeCounterBox } from './components/counterBox/CounterBoxUtils';
+import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
 
 // rating slider utility function imports //
 import { makeRatingSlider } from './components/ratingSlider/RatingSliderUtils';
@@ -31,7 +31,6 @@ class Form extends React.Component {
 
     console.log(`initializing form`)
     this.state = {
-      comments: '', //comments
       matchType: '', //match type
       elmNum: '', //elimination
       matchNumber: '', //match number
@@ -40,16 +39,15 @@ class Form extends React.Component {
       teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
       override: false, //override bool
 
-
-      endGameVal: '', // endgame val [endgameStatus, timeStart, timeEnd]
-      whoWon: '', //whichever team won
+      endGameVal: '', // endgame val [endgameStatus (onstage, attempted, none)]
+      // whoWon: '', //whichever team won
       rankingPts: 0, //teams ranking points
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       autoPlacement: '', //robots starting position (1,2,3,4)
-      counterBoxVals: [0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, fouls, techFouls]
-      booleans: [false, false, false, false, false], //booleans (mobility, autoWillCollide, hangsFaster, isFaster, clearsStage)
-      ratingSliderVals: [0,0],
+      counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
+      booleans: [false, false, false, false, false], //mobility, hangsFaster, noteInTrap isFaster, clearsStage
+      ratingSliderVals: ["", ""], //lineup speed, intake rating
       totalPts: 0, //total points
       ampPts: 0, //total amp pts
       speakerPts: 0 //total speaker pts
@@ -140,7 +138,7 @@ class Form extends React.Component {
           /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
-      whoWon: '',
+      // whoWon: '',
       checkedWhoWon: ['', ''],
       rankingPts: rankingPoints,
       rankingState: rankingStates, //RANKING PTS STATES
@@ -314,8 +312,6 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 1)}
           <br></br>
           {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Mobility ", 0)}
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Potential Auto Collision ", 1)}
-          <img alt="" src={''/*INSER AUTO IMAGE */}></img>
         </div>
 
         <br></br>
@@ -328,16 +324,22 @@ class Form extends React.Component {
           {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}
           <br></br>
           {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-          {makeEndGameMisc({changeState: this.updateBoolean, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Do they hang faster than us? ", 2)}
-          {/* harmony */}
-          {/* note in trap */}
+          {makeEndGameMisc({changeState: this.updateBoolean, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Hangs Faster Than Us", 1)}
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Trap Scored ", 2)}
+          <br></br>
+          <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Notes Made: ", 5)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Notes Missed: ", 6)}
           <br></br>
         </div>
 
         {/* ROBOT/TEAM INFO */}
         <div className="robot-info-contain">
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Is this robot faster than ours? ", 3)}
-          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Can this robot go under the stage? ", 4)}
+          <h3>ROBOT INFO</h3>
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Faster Than Us ", 3)}
+          {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Passes Under Stage ", 4)}
+          {makeRatingSlider({changeState: this.updateRatingSlider}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
+          {makeRatingSlider({changeState: this.updateRatingSlider}, "Intake Rating: ", ["None", "Bad", "Average", "Good", "Amazing"], 1)}
         </div>
 
         <br></br>
@@ -345,8 +347,8 @@ class Form extends React.Component {
         {/* PENALTIES */}
         <div className="penalty-contain">
           <h3>PENALTIES:</h3>
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 5)}
-          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 6)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 7)}
+          {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 8)}
           {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
             map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
           )()}
@@ -378,13 +380,6 @@ class Form extends React.Component {
 
         <br></br>
 
-        {/* COMMENTS */}
-        {/* <div className="comment-contain">
-          <TextBox title={"💬Comments: "} changeState={this.updateComments} value={this.state.comments}></TextBox>
-        </div>
-
-        <br></br> */}
-
         {/* SUBMISSION */}
         <div className="submit-contain">
           <div>
@@ -408,8 +403,6 @@ class Form extends React.Component {
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
           {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
         </div>
-
-        {makeRatingSlider({changeState: this.updateRatingSlider}, "Apples", 0)}
       </div>
     )
   }

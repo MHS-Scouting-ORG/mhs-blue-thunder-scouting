@@ -1,21 +1,33 @@
 import React from "react";
-// import * as sliderOne from '../../../../public/images/sliders/sliderOne.png'
-// import * as sliderTwo from '../../../../public/images/sliders/sliderTwo.png'
-// import * as sliderThree from '../../../../public/images/sliders/sliderThree.png'
-
-const textStyle = {
-    width: '10px',
-    height: '10px',
-}
+// import * as sliderOne from '../../../
+import { PropTypes } from 'prop-types';
 
 function RatingSlider(props) {
 
+    function makeMarkers() {
+        return props.markerNames.map((marker, i) => <option value={i} label={marker}></option>)
+    }
+
     return(
         <div>
+            <datalist id="markers">
+                {makeMarkers()}
+            </datalist>
+
             <label>{props.label}</label>
-            <input type="range" min="1" max="5" onChange={(e) => props.changeRatingSlider(e)}></input>
+            <input type="range" min="0" max={props.markerNames.length - 1} defaultValue="0" list="markers" style={{
+                width: '100px',
+                margin: '0'
+            }} onChange={(e) => props.changeRatingSlider(e)}></input>
         </div>
     )
+}
+
+RatingSlider.propTypes = {
+    label: PropTypes.string,
+    index: PropTypes.number,
+    markerNames: PropTypes.array,
+    changeRatingSlider: PropTypes.func,
 }
 
 export default RatingSlider

@@ -11,7 +11,7 @@ function CounterBox({ minusButton, plusButton, index, state, label }) {
         </div>
     );
 }
-//
+
 CounterBox.propTypes = {
     label: PropTypes.string,
     index: PropTypes.number,

@@ -17,7 +17,7 @@ export function makeEndGameMisc(props, title, i) {
   if (endGameVal === "Onstage") {
     return(
       <div>
-        <label> {title}
+        <label> {title}:
           <input type="checkbox" onChange={e => changeBool(e)}></input>
         </label>
       </div>
