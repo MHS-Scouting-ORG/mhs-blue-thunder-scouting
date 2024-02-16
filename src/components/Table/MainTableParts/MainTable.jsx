@@ -18,6 +18,7 @@ import CustomRanking from "./CustomRanking";
 import FieldInfo from "./FieldInfo";
 import Penalties from "./Penalties";
 import TeamMatches from "./TeamMatches";
+import TeamInnerTable from "../InnerTables/TeamInnerTable";
 
 function MainTable(props) { 
   const regional = props.regional
@@ -47,8 +48,7 @@ function MainTable(props) {
         setApiData(nApiData)
         console.log(nApiData)
     })
-  }, []
-)
+  }, [])
   
   useEffect(() => {    //set opr data
       getOprs(regional)
@@ -290,6 +290,10 @@ const data = React.useMemo(
           {/* right */}
           <TeamMatches information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
           </div>
+        </div>
+
+        <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
+            {/*<TeamInnerTable></TeamInnerTable>*/}
         </div>
       </div>
 

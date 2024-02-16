@@ -19,15 +19,15 @@ const TeamInnerTable = (props) => {
                     {
                         Header: 'Priorities/Strategies',
                         accessor: 'Strategy',
-                        Cell: ({row}) => {
-                          return <div
-                            style={{
-                              minWidth:'200px',
-                              //overflowWrap: 'normal',
-                              whiteSpace: 'normal',
-                            }}
-                          >{row.original.Strategy}</div>
-                        }
+                        // Cell: ({row}) => {
+                        //   return <div
+                        //     style={{
+                        //       minWidth:'200px',
+                        //       //overflowWrap: 'normal',
+                        //       whiteSpace: 'normal',
+                        //     }}
+                        //   >{row.original.Strategy}</div>
+                        // }
                     },
                     {
                         Header: 'Total Pts',

@@ -1,53 +1,26 @@
 import React, {useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
- 
+import CollapseTButton from "./CollapseTButton"; 
 
-function TeamMatches(props) {
+function Test(props) {
   const filter = props.gFilter
   const teamData = props.teamMatches;
   const teams = teamData.map((data) => {return (data.Team)});
 
   const [tableState, setTableState] = useState(' ');
   const [teamNumber, setTeamNumber] = useState("");
-  const [allTeamMatches, setAllTeamMatches] = useState([])
-  const [lastThree, setLastThree] = useState([]);
-
-  const [toggle, setToggle] = useState(true)
-
-  const [tableDisp, setTableDisp] = useState([])
+  const [teamMatches, setTeamMatches] = useState([]);
 
   useEffect(() => {
     const indivTeamMatches = teamData.filter((data) => data.Team === teamNumber);
-    console.log(indivTeamMatches)
-    setAllTeamMatches(indivTeamMatches);
-
-    const matchNumbers = indivTeamMatches.map(
-      (teamMatch) => {
-        return parseInt((teamMatch.id).substring((teamMatch.id).indexOf("_") + 1))
-      }
-    ).sort();
-    
-    const lastThreeMatches = indivTeamMatches.map((teamMatch,i) => {
-      if(i === matchNumbers[matchNumbers.length - 1]){
-        return teamMatch;
-      }
-      if(i === matchNumbers[matchNumbers.length - 2]){
-        return teamMatch;
-      }
-      if(i === matchNumbers[matchNumbers.length - 3]){
-        return teamMatch;
-      }
-    })
-    
-
-    setLastThree(lastThreeMatches)
+    const lastThreeMatches = indivTeamMatches.slice((indivTeamMatches.length >= 3 ? -3 : 0))
+    setTeamMatches(lastThreeMatches)
     console.log(lastThreeMatches)
+    console.log(teams)
   }, [teamNumber])
 
    useEffect(() => {
      setGlobalFilter(filter)
-     console.log(teamData)
    }, [filter])
 
   const toggleTable = () => {
@@ -58,21 +31,56 @@ function TeamMatches(props) {
       setTableState(' ')
     }
   }
-  
 
   const data = React.useMemo(
-    () => ( toggle ? allTeamMatches : lastThree ).map(team => {
-        return {
-          Match: team.id.substring(team.id.indexOf("_") + 1),
-        }
-      }), [teamNumber,allTeamMatches,teamData,toggle]
-  )
+  () => teamMatches.map(team => {
+    //const grade = calcColumnSort(sortBy, team.NGridPoints, team.NConePoints, team.NConeAccuracy, team.NCubePoints, team.NCubeAccuracy, team.NChargeStation)
+    
+    return {
+      // TeamNumber: team.TeamNumber,
+      // Matches: team.Matches,
+      // OPR: team.OPR,
+      // Priorities: team.Priorities,
+      // CCWM: team.CCWM, 
+      // AvgPoints: team.AvgPoints,
+      // AvgCSPoints: team.AvgCSPoints,
+      // AvgGridPoints: team.AvgGridPoints,
+      // AvgConePts: team.AvgConePts,
+      // AvgConeAcc: team.AvgConeAcc,
+      // AvgCubePts: team.AvgCubePts,
+      // AvgCubeAcc: team.AvgCubeAcc,
+      // DPR: team.DPR,
+      // Penalties: team.Penalties,
+      // SumPriorities: grade !== 0.000 ? grade : "",
+
+      // NGridPoints: team.NGridPoints,
+      // NConePoints: team.NConePoints, 
+      // NConeAccuracy: team.NConeAccuracy, 
+      // NCubePoints: team.NCubePoints, 
+      // NCubeAccuracy: team.NCubeAccuracy, 
+      // NChargeStation: team.NChargeStation,
+
+      TeamNumber: team.Team.substring(3),
+      TotalPts: team.Teleop.ScoringTotal.Total
+
+
+    }
+  }) , [teamMatches,teamNumber] 
+)
+
 
     const columns = React.useMemo(
         () => [
-              {
-                Header: "Match Type",
-                accessor: "Match",
+            {
+                Header: "Team #",
+                accessor: "TeamNumber",
+                Cell: ({ row }) => (
+                  //<span{...row.getToggleRowExpandedProps()}>
+                    <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
+                      {row.values.TeamNumber}
+                    </div>
+                  //</span>
+                  )
               },
               {
                 Header: 'TotalPts',
@@ -116,16 +124,15 @@ function TeamMatches(props) {
     return (
         <div> 
             <div>
-      <CollapseTButton label="Team Matches" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Last Three Matches" toggleFunction={toggleTable}></CollapseTButton>
 
-      <select style={{width: '100%'}} onChange={(event) => {setTeamNumber(event.target.value), console.log(event.target.value)}} name="teamSelect" id="0">
+      <select style={{width: '100%'}}onChange={(event) => {setTeamNumber(event.target.value), console.log(event.target.value)}} name="teamSelect" id="0">
         {teams.map((team) => {
           return (
             <option value={team}> {team.substring(3)} </option>
           )
         })}
       </select>
-      <button style={{width: '100%'}} onClick={() => setToggle(!toggle)}> {toggle ? "All Matches" : "Last Three Matches"} </button>
 
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -192,5 +199,5 @@ function TeamMatches(props) {
     )
 }
 
-export default TeamMatches
+export default Test
 
