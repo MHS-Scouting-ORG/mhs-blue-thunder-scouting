@@ -4,7 +4,7 @@ import CheckBox from "./CheckBox";
 
 function factFunction(props, name, stateIndex, index) {
   return function( { target : { checked } }) {
-    props.changeCheckBoxState([stateIndex, index], checked ? name : null);
+    props.changeState([stateIndex, index], checked ? name : null);
   }
 }
 
