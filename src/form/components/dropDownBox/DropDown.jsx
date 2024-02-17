@@ -9,8 +9,8 @@ function DropDown(props) {
     return (
         <div>
             <label>{props.title}</label>
-            <select onChange={(event) => {
-                props.changeDropDownState(event.target.value);
+            <select onChange={({ target : { value } }) => {
+                props.changeDropDownState(value);
             }} value={props.value}>
                 {choices.map((choice) => <option key={choice}>{choice}</option>)}
             </select>
@@ -21,7 +21,6 @@ function DropDown(props) {
 DropDown.propTypes = {
     title: PropTypes.string,
     choices: PropTypes.array,
-    index: PropTypes.number,
     value: PropTypes.string,
     changeDropDownState: PropTypes.func
 }
