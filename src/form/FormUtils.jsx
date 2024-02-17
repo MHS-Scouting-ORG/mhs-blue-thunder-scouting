@@ -13,6 +13,7 @@ export async function getMatchTeams(props) {
   const data = await getMatchesForRegional(props.regional)
   data.map((match) => {
     if (match.key === matchKey) {
+      console.log("match: ", match)
       props.changeState(match)
     }
   })

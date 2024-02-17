@@ -10,8 +10,8 @@ function TeamDropDown(props) {
     return !isNaN(parseInt(props.matchNumber)) ? (
         <div>
             <DropDown
-                title="Alliance"
-                choices={props.alliances}
+                title="Team: "
+                choices={props.teams}
                 value={props.teamNumber}
                 changeDropDownState={props.changeState}
             />
