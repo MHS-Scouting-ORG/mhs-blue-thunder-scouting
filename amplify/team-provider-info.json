@@ -46,5 +46,29 @@
         "customResource5b71fb59": {}
       }
     }
+  },
+  "crescendo": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-frcscoutingapp-crescendo-101107-authRole",
+      "UnauthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-crescendo-101107-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::187619627858:role/amplify-frcscoutingapp-crescendo-101107-authRole",
+      "Region": "us-west-1",
+      "DeploymentBucketName": "amplify-frcscoutingapp-crescendo-101107-deployment",
+      "UnauthRoleName": "amplify-frcscoutingapp-crescendo-101107-unauthRole",
+      "StackName": "amplify-frcscoutingapp-crescendo-101107",
+      "StackId": "arn:aws:cloudformation:us-west-1:187619627858:stack/amplify-frcscoutingapp-crescendo-101107/b08df8d0-cdd0-11ee-8a9d-06b1a0d7da17",
+      "AmplifyAppId": "d3v7vx1s6l2bad"
+    },
+    "categories": {
+      "auth": {
+        "frcscoutingapp49f69a47": {}
+      },
+      "api": {
+        "frcscoutingapp": {}
+      },
+      "custom": {
+        "customResource5b71fb59": {}
+      }
+    }
   }
 }
