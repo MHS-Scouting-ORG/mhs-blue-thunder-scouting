@@ -31,30 +31,70 @@ class Form extends React.Component {
 
     console.log(`initializing form`)
     this.state = {
+      // MATCH INFO //
       matchType: '', //match type
       elmNum: '', //elimination
       matchNumber: '', //match number
       matchData: 'not found', //data for a given match
       teamNumber: ' ', //team num
       teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
+
+      // OVERRIDE //
       override: false, //override bool
-      endGameVal: '', // endgame val [endgameStatus (onstage, attempted, none)]
-      rankingPts: 0, //teams ranking points
-      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
-      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
-      autoPlacement: '', //robots starting position (1,2,3,4)
+
+      // AUTO SPECIFIC //
+      autoPlacement: '', //1,2,3,4
+      mobility: false,
+
+      // SCORING //
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
-      booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
-      ratingSliderVals: ["", ""], //lineup speed, intake rating
-      foulComments: "", //comments describing fouls
+      autoAmpScored: 0,
+      autoSpeakerScored: 0,
+      teleAmpScored: 0,
+      teleSpeakerScored: 0,
+      teleAmplifiedSpeakerScored: 0,
+      highNotesMade: 0,
+      highNotesMissed: 0,
+
+      endGameVal: '', //onstage, attempted, parked, none
+      noteInTrap: false,
+
+      totalPts: 0,
+      endgamePts: 0,
+      ampPts: 0,
+      speakerPts: 0,
+
+      // RANKING PTS //
+      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
+      rankingPts: 0,
+      matchResult: '', //win, tie, loss
+      activation: false,
+      sustainability: false,
+
+      // PENALTIES //
+      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
+      yellowCard: false,
+      redCard: false,
+      disqualified: false,
+      botBroke: false,
+      noShow: false,
+      fouls: 0,
+      techFouls: 0,
+      foulComments: "",
       robotBrokenComments: "",
-      totalPts: 0, //total points
-      endgamePts: 0, //total endGamePoints
-      ampPts: 0, //total amp pts
-      speakerPts: 0 //total speaker pts
+
+      // ROBOT INFO //
+      booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
+      hangsFaster: false,
+      isFaster: false,
+      clearsStage: false,
+      countersDefense: false,
+      ratingSliderVals: ["", ""], //lineup speed, intake rating
+      lineUpSpeed: "",
+      intakeRating: "",
     }
 
-    //FUNCTION BINDING
+    // FUNCTION BINDING //
     this.updateCounterBox = this.updateCounterBox.bind(this);
     this.updateMatchData = this.updateMatchData.bind(this);
     this.updateMatchType = this.updateMatchType.bind(this);
@@ -173,7 +213,6 @@ class Form extends React.Component {
           /*24*/m.Penalties.Fouls,
           /*25*/m.Penalties.Tech
       ],
-      // strategyVal: priorityStates,//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       booleans: [
           /*0 - MobilityVal*/m.Autonomous.LeftCommunity,
           /*1 - SmartPlacement*/m.Teleop.SmartPlacement
