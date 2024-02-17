@@ -38,7 +38,8 @@ type AutonomousType {
 enum StageOpts {
   Onstage
   Attempted
-  ParkedNone
+  Parked
+  None
 }
 
 enum RankingPtsOpts {
