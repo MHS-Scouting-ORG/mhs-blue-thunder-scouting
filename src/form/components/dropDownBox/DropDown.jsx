@@ -3,8 +3,10 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 
 function DropDown(props) {
-    let choices = [...props.choices]
-    choices = [''].concat(choices)
+    let choices = []
+    if(Array.isArray(props.choices)) {
+        choices = choices.concat([...props.choices]);
+    }
 
     return (
         <div>
