@@ -323,6 +323,10 @@ class Form extends React.Component {
 
   }
 
+  setOverride = (_, val) => {
+    this.setState({ override: val })
+  }
+
   makeBoxCounters(startIndex) {
     return (
       <>
@@ -461,7 +465,7 @@ class Form extends React.Component {
           }}>SUBMIT</button>
         </div>
         <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-        {makeOverrideBox({ changeState: this.setGivenState, override: this.state.override })}
+        {makeOverrideBox({ changeState: this.setOverride, override: this.state.override })}
         <br></br>
       </div>
     )

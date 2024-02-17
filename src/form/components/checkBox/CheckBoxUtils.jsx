@@ -2,6 +2,11 @@ import React from "react";
 import CheckBox from "./CheckBox";
 
 
+function factFunction(props, name, stateIndex, index) {
+  return function( { target : { checked } }) {
+    props.changeCheckBoxState([stateIndex, index], checked ? name : null);
+  }
+}
 
 /**
  * function for making the strategy box
@@ -16,9 +21,7 @@ export function makeStrategyBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.changeState}
-        stateIndex={16}
-        index={i}
+        changeState={factFunction(props, name, 16, i)}
         checked={strategyState[i] === name}
       />
     </div>
@@ -35,17 +38,15 @@ export function makeStrategyBox(props, name, i) {
 export function makeBooleanCheckBox(props, name, i) {
   let booleanStates = props.booleans;
 
-  function changeBooleanCheckBox(){
-    booleanStates[i] = !booleanStates[i]
-    props.changeState(i,booleanStates[i])
+  function changeBooleanCheckBox({ target : { checked } }){
+    props.changeState(i,checked)
   }
 
   return (
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={changeBooleanCheckBox}
-        index={i}
+        changeState={changeBooleanCheckBox}
         checked={booleanStates[i]}
       />
     </div>
@@ -65,9 +66,7 @@ export function makePenaltyBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={props.changeState}
-        stateIndex={13}
-        index={i}
+        changeState={factFunction(props, name, 13, i)}
         checked={penaltyStates[i] === name}
       />
     </div>
@@ -88,8 +87,7 @@ export function makeBonusBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeCheckBoxState={(_, label) => props.changeState(i, name, label && label.length > 0)}
-        index={i}
+        changeState={({ target: { checked }}) => props.changeState(i, name, checked)}
         checked={rankingState[i] === name}
       />
     </div>
@@ -104,18 +102,17 @@ export function makeBonusBox(props, name, i) {
  * @returns checkbox component
  */
 export function makeOverrideBox(props) {
-  let overrideState = props.override;
 
-  function overrideClicked(){
-    props.changeState([7,0],!overrideState)
+  function overrideClicked({ target : { checked } }){
+    props.changeState([7,0], checked)
   }
 
   return (
     <div>
       <CheckBox
         label={"Overide "}
-        changeCheckBoxState={overrideClicked}
-        checked={overrideState}
+        changeState={overrideClicked}
+        checked={props.override}
       />
     </div>
   )
