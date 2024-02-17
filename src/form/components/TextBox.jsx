@@ -8,7 +8,7 @@ function TextBox(props) {
     return (
         <div>
             <p>{props.title}</p>
-            <p style={{ fontSize: 13 }}>Specifics on defense, charge station, intake system, penalty reasons, etc.</p>
+            <p style={{ fontSize: 13 }}>{props.description}</p>
             <textarea onChange={commentState} row="4" cols='50'
                 style={{
                     width: '60%',

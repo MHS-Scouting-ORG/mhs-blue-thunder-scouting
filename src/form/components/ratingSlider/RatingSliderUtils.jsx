@@ -3,16 +3,19 @@ import RatingSlider from "./RatingSlider";
 
 export function makeRatingSlider(props, label, markerNames, i) {
 
-    function ratingSliderChanged(e) {
-        props.changeState(i, markerNames[parseInt(e.target.value)])
+    function ratingSliderChanged(sliderVal) {
+        props.changeState(i, markerNames[parseInt(sliderVal)])
     }
 
     return (
-        <RatingSlider
-            label = {label}
-            index = {i}
-            markerNames={markerNames}
-            changeRatingSlider = {ratingSliderChanged}
-        />
+        <div>
+            <RatingSlider
+                label={label}
+                index={i}
+                state={props.ratingSliderVals}
+                markerNames={markerNames}
+                changeRatingSlider={ratingSliderChanged}
+            />
+        </div>
     )
 }

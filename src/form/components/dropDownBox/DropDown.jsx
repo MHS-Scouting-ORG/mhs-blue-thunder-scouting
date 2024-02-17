@@ -2,22 +2,20 @@ import React from 'react';
 
 import { PropTypes } from 'prop-types';
 
-class DropDown extends React.Component {
-    render() {
-        let choices = [...this.props.choices]
-        choices = [''].concat(choices)
+function DropDown(props) {
+    let choices = [...props.choices]
+    choices = [''].concat(choices)
 
-        return (
-            <div>
-                <label>{this.props.title}</label>
-                <select onChange={(event) => {
-                    this.props.changeDropDownState(event.target.value);
-                }} value={this.props.value}>
-                    {choices.map((choice) => <option key={choice}>{choice}</option>)}
-                </select>
-            </div>
-        )
-    }
+    return (
+        <div>
+            <label>{props.title}</label>
+            <select onChange={(event) => {
+                props.changeDropDownState(event.target.value);
+            }} value={props.value}>
+                {choices.map((choice) => <option key={choice}>{choice}</option>)}
+            </select>
+        </div>
+    )
 }
 
 DropDown.propTypes = {
