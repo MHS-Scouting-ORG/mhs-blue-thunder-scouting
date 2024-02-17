@@ -295,7 +295,40 @@ class Form extends React.Component {
     this.updateRankingPoints(rankingState)
   }
 
-  updateMatchData(match) {
+  updateStrategy = ([_, i], val) => {
+    let strategyVal = [...this.state.strategyVal]
+    strategyVal[i] = val
+    this.setState({ strategyVal })
+
+  }
+
+  setOverride = (_, val) => {
+    this.setState({ override: val })
+  }
+
+  makeBoxCounters(startIndex) {
+    return (
+      <>
+        <p>🟪Cubes Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", startIndex)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", startIndex + 1)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", startIndex + 2)}
+        <p>🟪Cubes Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", startIndex + 3)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", startIndex + 4)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", startIndex + 5)}
+        <p>🔺Cones Scored</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", startIndex + 6)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", startIndex + 7)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", startIndex + 8)}
+        <p>🔺Cones Attempted</p>
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", startIndex + 9)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", startIndex + 10)}
+        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", startIndex + 11)}
+      </>
+    )
+  }
+  updateMatchData = (match) => {
     this.setState({ matchData: match })
     this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
@@ -448,6 +481,9 @@ class Form extends React.Component {
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
           {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
         </div>
+        <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
+        {makeOverrideBox({ changeState: this.setOverride, override: this.state.override })}
+        <br></br>
       </div>
     )
   }
