@@ -139,8 +139,6 @@ class Form extends React.Component {
           /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
           /*2 - Engame End Time*/m.Teleop.EndGameTally.End
       ],
-      // whoWon: '',
-      checkedWhoWon: ['', ''],
       rankingPts: rankingPoints,
       rankingState: rankingStates, //RANKING PTS STATES
       penaltyVal: penaltyStates,
