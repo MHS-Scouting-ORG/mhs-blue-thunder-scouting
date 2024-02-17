@@ -18,6 +18,7 @@ import CustomRanking from "./CustomRanking";
 import FieldInfo from "./FieldInfo";
 import Penalties from "./Penalties";
 import TeamMatches from "./TeamMatches";
+import Bookmarks from "./Bookmarks";
 import TeamInnerTable from "../InnerTables/TeamInnerTable";
 
 function MainTable(props) { 
@@ -45,8 +46,14 @@ function MainTable(props) {
     getMatchesForRegional('2023azva')
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
-        setApiData(nApiData)
-        console.log(nApiData)
+
+        const matchEntries = nApiData.map((matchEntry) => {
+          matchEntry.bookMark = false;
+          return matchEntry
+        })
+
+        setApiData(matchEntries)
+        console.log(matchEntries)
     })
   }, [])
   
@@ -98,16 +105,37 @@ const setDataModal = (row) => {
     setModalData(setModal)
 }
 
-const toggleTable = () => {
+
+//=========================================================//
+
+const handleBookmark = (row) => {
+  console.log(row)
+  const teamNumber = row.cells[0].value;
+  const matchNumber = row.cells[1].value;
+  console.log(teamNumber)
+  console.log(matchNumber)
+
+  console.log(apiData)
+  const newMatchEntries = apiData.map((matchEntry) => {
+    // if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 3)){
+    //   matchEntry.bookMark = !matchEntry.bookMark
+    // }
+    console.log(matchEntry)
+    return matchEntry
+  })
+
   
-  console.log("    ")
-  if(tableState === ' '){
-  setTableState('none')
-  }
-  else {
-    setTableState(' ')
-  }
+  // const matchEntries = nApiData.map((matchEntry) => {
+  //   matchEntry.bookMark = false;
+  //   return matchEntry
+  // })
+
+
+  console.log(newMatchEntries)
+  setApiData(newMatchEntries)
 }
+
+
 
 const data = React.useMemo(
   () => tableData.map(team => {
@@ -197,7 +225,6 @@ const data = React.useMemo(
   return (
     <div>
       <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>
-
       <h1>CHARGED UP STATISTICS  <img src={"./images/bluethundalogo.png"} width="75px" height= "75px"></img>
       </h1>
             <table style={{ width:'1250px'}} >
@@ -288,12 +315,16 @@ const data = React.useMemo(
 
           <div>
           {/* right */}
-          <TeamMatches information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
+          <TeamMatches handleBookmark = {handleBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
           </div>
+
+        
         </div>
 
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
-            {/*<TeamInnerTable></TeamInnerTable>*/}
+          <div>
+            <Bookmarks handleBookmark = {handleBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Bookmarks>
+          </div>
         </div>
       </div>
 

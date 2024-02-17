@@ -24,7 +24,7 @@ async function getTeams () {
          DPR: "",
          Penalties: "",
          TeamNum: `frc${obj.team_number}`,
-
+        
          NGridPoints: 0,
          NConePoints: 0, 
          NConeAccuracy: 0, 
