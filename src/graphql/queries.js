@@ -43,135 +43,62 @@ export const listTeams = /* GraphQL */ `
     }
   }
 `;
-export const getTeamMatch = /* GraphQL */ `
-  query GetTeamMatch($id: ID!, $Regional: String!, $Team: ID!) {
-    getTeamMatch(id: $id, Regional: $Regional, Team: $Team) {
+export const getTeamInfo = /* GraphQL */ `
+  query GetTeamInfo($id: ID!, $Regional: String!, $Team: ID!) {
+    getTeamInfo(id: $id, Regional: $Regional, Team: $Team) {
       id
       name
       description
       Team
       Regional
       Autonomous {
-        AutonomousPlacement
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        StartingPosition
+        Scoring {
+          Points
+          EndgamePoints
+          SpeakerPoints
+          AmpPoints
+          Cycles
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          __typename
-        }
-        LeftCommunity
-        ChargeStation
+        Left
         __typename
       }
       Teleop {
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        Scoring {
+          Points
+          EndgamePoints
+          SpeakerPoints
+          AmpPoints
+          Cycles
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        StageResult
+        HumPlrScoring {
+          Made
+          Missed
           __typename
         }
-        Accuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        ChargeStation
-        EndGame
-        EndGameTally {
-          Start
-          End
-          __typename
-        }
-        ScoringTotal {
-          Total
-          GridPoints
-          GridScoringByPlacement {
-            High
-            Mid
-            Low
-            __typename
-          }
-          Cones
-          Cubes
-          __typename
-        }
-        DriveStrength
-        DriveSpeed
-        ConesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        CubesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        SmartPlacement
         __typename
       }
       Comments
+      RobotInfo {
+        FasterThanUs
+        PassesUnderStage
+        HangsFaster
+        CountersDefense
+        LineupSpeed
+        IntakeRating
+        WhatBrokeDesc
+        __typename
+      }
       Penalties {
         Fouls
         Tech
         Penalties
+        FoulDesc
         __typename
       }
-      Priorities
       RankingPts
       createdAt
       updatedAt
@@ -179,16 +106,16 @@ export const getTeamMatch = /* GraphQL */ `
     }
   }
 `;
-export const listTeamMatches = /* GraphQL */ `
-  query ListTeamMatches(
+export const listTeamInfos = /* GraphQL */ `
+  query ListTeamInfos(
     $id: ID
-    $regionalTeam: ModelTeamMatchPrimaryCompositeKeyConditionInput
-    $filter: ModelTeamMatchFilterInput
+    $regionalTeam: ModelTeamInfoPrimaryCompositeKeyConditionInput
+    $filter: ModelTeamInfoFilterInput
     $limit: Int
     $nextToken: String
     $sortDirection: ModelSortDirection
   ) {
-    listTeamMatches(
+    listTeamInfos(
       id: $id
       regionalTeam: $regionalTeam
       filter: $filter
@@ -203,126 +130,53 @@ export const listTeamMatches = /* GraphQL */ `
         Team
         Regional
         Autonomous {
-          AutonomousPlacement
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StartingPosition
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            __typename
-          }
-          LeftCommunity
-          ChargeStation
+          Left
           __typename
         }
         Teleop {
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StageResult
+          HumPlrScoring {
+            Made
+            Missed
             __typename
           }
-          Accuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          ChargeStation
-          EndGame
-          EndGameTally {
-            Start
-            End
-            __typename
-          }
-          ScoringTotal {
-            Total
-            GridPoints
-            GridScoringByPlacement {
-              High
-              Mid
-              Low
-              __typename
-            }
-            Cones
-            Cubes
-            __typename
-          }
-          DriveStrength
-          DriveSpeed
-          ConesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          CubesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          SmartPlacement
           __typename
         }
         Comments
+        RobotInfo {
+          FasterThanUs
+          PassesUnderStage
+          HangsFaster
+          CountersDefense
+          LineupSpeed
+          IntakeRating
+          WhatBrokeDesc
+          __typename
+        }
         Penalties {
           Fouls
           Tech
           Penalties
+          FoulDesc
           __typename
         }
-        Priorities
         RankingPts
         createdAt
         updatedAt
@@ -333,15 +187,15 @@ export const listTeamMatches = /* GraphQL */ `
     }
   }
 `;
-export const teamMatchesByTeam = /* GraphQL */ `
-  query TeamMatchesByTeam(
+export const teamInfosByTeam = /* GraphQL */ `
+  query TeamInfosByTeam(
     $Team: ID!
     $sortDirection: ModelSortDirection
-    $filter: ModelTeamMatchFilterInput
+    $filter: ModelTeamInfoFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    teamMatchesByTeam(
+    teamInfosByTeam(
       Team: $Team
       sortDirection: $sortDirection
       filter: $filter
@@ -355,126 +209,53 @@ export const teamMatchesByTeam = /* GraphQL */ `
         Team
         Regional
         Autonomous {
-          AutonomousPlacement
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StartingPosition
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            __typename
-          }
-          LeftCommunity
-          ChargeStation
+          Left
           __typename
         }
         Teleop {
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StageResult
+          HumPlrScoring {
+            Made
+            Missed
             __typename
           }
-          Accuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          ChargeStation
-          EndGame
-          EndGameTally {
-            Start
-            End
-            __typename
-          }
-          ScoringTotal {
-            Total
-            GridPoints
-            GridScoringByPlacement {
-              High
-              Mid
-              Low
-              __typename
-            }
-            Cones
-            Cubes
-            __typename
-          }
-          DriveStrength
-          DriveSpeed
-          ConesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          CubesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          SmartPlacement
           __typename
         }
         Comments
+        RobotInfo {
+          FasterThanUs
+          PassesUnderStage
+          HangsFaster
+          CountersDefense
+          LineupSpeed
+          IntakeRating
+          WhatBrokeDesc
+          __typename
+        }
         Penalties {
           Fouls
           Tech
           Penalties
+          FoulDesc
           __typename
         }
-        Priorities
         RankingPts
         createdAt
         updatedAt
@@ -485,15 +266,15 @@ export const teamMatchesByTeam = /* GraphQL */ `
     }
   }
 `;
-export const teamMatchesByRegional = /* GraphQL */ `
-  query TeamMatchesByRegional(
+export const teamInfosByRegional = /* GraphQL */ `
+  query TeamInfosByRegional(
     $Regional: String!
     $sortDirection: ModelSortDirection
-    $filter: ModelTeamMatchFilterInput
+    $filter: ModelTeamInfoFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    teamMatchesByRegional(
+    teamInfosByRegional(
       Regional: $Regional
       sortDirection: $sortDirection
       filter: $filter
@@ -507,126 +288,53 @@ export const teamMatchesByRegional = /* GraphQL */ `
         Team
         Regional
         Autonomous {
-          AutonomousPlacement
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StartingPosition
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            __typename
-          }
-          LeftCommunity
-          ChargeStation
+          Left
           __typename
         }
         Teleop {
-          Scored {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          Scoring {
+            Points
+            EndgamePoints
+            SpeakerPoints
+            AmpPoints
+            Cycles
             __typename
           }
-          Attempted {
-            Cones {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
-            Cubes {
-              Upper
-              Mid
-              Lower
-              __typename
-            }
+          StageResult
+          HumPlrScoring {
+            Made
+            Missed
             __typename
           }
-          Accuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          ChargeStation
-          EndGame
-          EndGameTally {
-            Start
-            End
-            __typename
-          }
-          ScoringTotal {
-            Total
-            GridPoints
-            GridScoringByPlacement {
-              High
-              Mid
-              Low
-              __typename
-            }
-            Cones
-            Cubes
-            __typename
-          }
-          DriveStrength
-          DriveSpeed
-          ConesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          CubesAccuracy {
-            High
-            Mid
-            Low
-            Overall
-            __typename
-          }
-          SmartPlacement
           __typename
         }
         Comments
+        RobotInfo {
+          FasterThanUs
+          PassesUnderStage
+          HangsFaster
+          CountersDefense
+          LineupSpeed
+          IntakeRating
+          WhatBrokeDesc
+          __typename
+        }
         Penalties {
           Fouls
           Tech
           Penalties
+          FoulDesc
           __typename
         }
-        Priorities
         RankingPts
         createdAt
         updatedAt
