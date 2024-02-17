@@ -15,7 +15,7 @@ function DropDown(props) {
                 props.changeDropDownState(value);
             }} value={props.value}>
                 {choices.map((choice) => 
-                    typeof(choice) === 'string' ? <option key={choice}>{choice}</option> : <option value={choice.value} key={choice.value}>{choice.label}</option> )}
+                    typeof(choice) !== 'object' ? <option key={choice}>{choice}</option> : <option value={choice.value} key={choice.value}>{choice.label}</option> )}
             </select>
         </div>
     )
