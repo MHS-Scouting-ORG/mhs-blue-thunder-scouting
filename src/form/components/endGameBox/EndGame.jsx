@@ -9,6 +9,7 @@ function Endgame(props) {
                 <select onChange={e => props.changeEndGameUsed(e)}>
                     <option value={props.value}> {props.value} </option>
                     <option value='Onstage'>Onstage</option>
+                    <option value='Parked'>Parked</option>
                     <option value='Attempted'>Attempted</option>
                     <option value='None'>None</option>
                 </select>

@@ -49,6 +49,7 @@ class Form extends React.Component {
       foulComments: "", //comments describing fouls
       robotBrokenComments: "",
       totalPts: 0, //total points
+      endgamePts: 0, //total endGamePoints
       ampPts: 0, //total amp pts
       speakerPts: 0 //total speaker pts
     }
