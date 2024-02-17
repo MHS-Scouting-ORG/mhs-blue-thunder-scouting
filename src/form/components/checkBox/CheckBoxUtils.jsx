@@ -104,7 +104,7 @@ export function makeBonusBox(props, name, i) {
 export function makeOverrideBox(props) {
 
   function overrideClicked({ target : { checked } }){
-    props.changeState([7,0], checked)
+    props.changeState(checked)
   }
 
   return (

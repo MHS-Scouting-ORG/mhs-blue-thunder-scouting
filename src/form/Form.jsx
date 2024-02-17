@@ -39,9 +39,6 @@ class Form extends React.Component {
       teamNumber: ' ', //team num
       teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
 
-      // OVERRIDE //
-      override: false, //override bool
-
       // AUTO SPECIFIC //
       autoPlacement: '', //1,2,3,4
       mobility: false,
@@ -92,6 +89,9 @@ class Form extends React.Component {
       ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
+
+      // OVERRIDE //
+      override: false, //override bool
     }
 
     // FUNCTION BINDING //
@@ -226,40 +226,37 @@ class Form extends React.Component {
     })
   }
 
-  updateCounterBox(i, newState) {
-    let counterBoxVals = [...this.state.counterBoxVals];
-    counterBoxVals[i] = newState;
-    this.setState({ counterBoxVals });
-  }
-
+  // MATCH INFO //
   updateMatchType(value, prop) {
     this.setState({ [prop]: value })
+  }
+
+  updateMatchData (match) {
+    this.setState({ matchData: match })
+    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
   updateTeam(team) {
     this.setState({ teamNumber: team })
   }
 
+  // AUTO SPECIFIC //
   updateAutonomousPlacement(value) {
     this.setState({ autoPlacement: value })
   }
 
-  updateBoolean(i, value) {
-    let booleans = [...this.state.booleans]
-    booleans[i] = value
-    this.setState({ booleans })
+  // SCORING //
+  updateCounterBox(i, newState) {
+    let counterBoxVals = [...this.state.counterBoxVals];
+    counterBoxVals[i] = newState;
+    this.setState({ counterBoxVals });
   }
 
   updateEndGameVal(value) {
     this.setState({ endGameVal: value })
   }
 
-  updatePenalty([_, i], val) {
-    let penaltyVal = [...this.state.penaltyVal]
-    penaltyVal[i] = val
-    this.setState({ penaltyVal })
-  }
-
+  // RANKING PTS //
   updateRankingPoints(rankingState) {
     let rankingPts = 0
     if (rankingState[0] === "win") {
@@ -295,48 +292,11 @@ class Form extends React.Component {
     this.updateRankingPoints(rankingState)
   }
 
-  updateStrategy = ([_, i], val) => {
-    let strategyVal = [...this.state.strategyVal]
-    strategyVal[i] = val
-    this.setState({ strategyVal })
-
-  }
-
-  setOverride = (_, val) => {
-    this.setState({ override: val })
-  }
-
-  makeBoxCounters(startIndex) {
-    return (
-      <>
-        <p>🟪Cubes Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Made: ", startIndex)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Made: ", startIndex + 1)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Made: ", startIndex + 2)}
-        <p>🟪Cubes Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cubes Attempted: ", startIndex + 3)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cubes Attempted: ", startIndex + 4)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cubes Attempted: ", startIndex + 5)}
-        <p>🔺Cones Scored</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Made: ", startIndex + 6)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Made: ", startIndex + 7)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Made: ", startIndex + 8)}
-        <p>🔺Cones Attempted</p>
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Cones Attempted: ", startIndex + 9)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Mid Cones Attempted: ", startIndex + 10)}
-        {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Low Cones Attempted: ", startIndex + 11)}
-      </>
-    )
-  }
-  updateMatchData = (match) => {
-    this.setState({ matchData: match })
-    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
-  }
-
-  updateRatingSlider(i, value) {
-    let ratingSliderVals = [...this.state.ratingSliderVals]
-    ratingSliderVals[i] = value
-    this.setState({ ratingSliderVals })
+  // PENALTIES //
+  updatePenalty([_, i], val) {
+    let penaltyVal = [...this.state.penaltyVal]
+    penaltyVal[i] = val
+    this.setState({ penaltyVal })
   }
 
   updateFoulComments(comment) {
@@ -347,8 +307,22 @@ class Form extends React.Component {
     this.setState({ robotBrokenComments: comment})
   }
 
-  updateOverride(overrideStatus) {
-    this.setState({ override: overrideStatus })
+  // ROBOT INFO //
+  updateBoolean(i, value) {
+    let booleans = [...this.state.booleans]
+    booleans[i] = value
+    this.setState({ booleans })
+  }
+
+  updateRatingSlider(i, value) {
+    let ratingSliderVals = [...this.state.ratingSliderVals]
+    ratingSliderVals[i] = value
+    this.setState({ ratingSliderVals })
+  }
+
+  // OVERRIDE //
+  updateOverride (val) {
+    this.setState({ override: val })
   }
 
   // updatePoints(totalPts, ampPts, speakerPts) {
@@ -479,10 +453,8 @@ class Form extends React.Component {
             }}>SUBMIT</button>
           </div>
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-          {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
+          {makeOverrideBox({ changeState: this.setOverride, override: this.state.override })}
         </div>
-        <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-        {makeOverrideBox({ changeState: this.setOverride, override: this.state.override })}
         <br></br>
       </div>
     )
