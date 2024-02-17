@@ -71,7 +71,7 @@ export function makeMatchDropDown(props) {
   return (
     <div>
       <MatchDropDown //makes MatchDropDown via functions in Form component
-        setMatchType={({ target: { value } }) => setMatchType(value)}
+        setMatchType={setMatchType}
         generateMatchTypeNum={makeMatchTypeDropDown}
         setMatchNumber={({ target: { value } }) => props.changeState(value, 'matchNumber')}
         matchNumber={props.matchNumber}

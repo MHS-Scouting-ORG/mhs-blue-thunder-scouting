@@ -1,5 +1,6 @@
 import React from 'react';
-import EndGame from './EndGame';
+//import EndGame from './EndGame';
+import DropDown from '../dropDownBox/DropDown';
 
 /**
  * function for making the endgamebox
@@ -37,17 +38,30 @@ export function makeEndGameMisc(props, title, i) {
 export function makeEndGameDropDown(props) {
   let endGameState = props.endGameVal
 
-  function changeEndGame(event) {
-    props.changeState(event.target.value);
+  function changeEndGame(value) {
+    props.changeState(value);
   }
 
   return (
     <div>
-      <EndGame
-        changeEndGameUsed={changeEndGame}
-        makeEndGameMisc={makeEndGameMisc}
+      <DropDown
+        title="⛓️End Game"
+        choices={["Onstage", "Parked", "Attempted", "None"]}
+
         value={endGameState}
+
+        changeDropDownState={changeEndGame}
       />
     </div>
   )
+
+//  return (
+//    <div>
+//      <EndGame
+//        changeEndGameUsed={changeEndGame}
+//        makeEndGameMisc={makeEndGameMisc}
+//        value={endGameState}
+//      />
+//    </div>
+//  )
 }

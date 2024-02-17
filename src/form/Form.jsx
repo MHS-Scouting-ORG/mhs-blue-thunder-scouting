@@ -20,6 +20,8 @@ import Headers from './components/Header';
 // general utility function imports //
 import { getMatchTeams, submitState } from './FormUtils';
 
+import RadioButton from './components/radiobuttons/RadioButton';
+
 
 class Form extends React.Component {
   constructor(props) {
@@ -278,7 +280,7 @@ class Form extends React.Component {
     this.setState({ rankingPts })
   }
 
-  updateWhoWon({ target: { value } }) {
+  updateWhoWon(value) {
     let rankingState = [...this.state.rankingState]
     rankingState[0] = value
     this.setState({ rankingState })
@@ -411,20 +413,17 @@ class Form extends React.Component {
         {/* RANKING POINTS */}
         <div className="ranking-contain">
           <h3>RANKING POINTS:</h3>
-          <div>
-            <label>
-              <input type="radio" name="whoWon" value="win" onChange={this.updateWhoWon} />
-              Team Won
-            </label>
-            <label>
-              <input type="radio" name="whoWon" value="tie" onChange={this.updateWhoWon} />
-              Team Tied
-            </label>
-            <label>
-              <input type="radio" name="whoWon" value="loss" onChange={this.updateWhoWon} />
-              Team Lost
-            </label>
-          </div>
+          <RadioButton
+            label="whoWon"
+            options={[
+              { value: "win", label: "Team Won" },
+              { value: "tie", label: "Team Tied" },
+              { value: "loss", label: "Team Lost" }
+            ]}
+            changeState={this.updateWhoWon}
+            selected={this.state.rankingState[0]}
+
+          />
           {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Melody ", 1)}
           {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Ensemble ", 2)}
           <Headers display={this.state.rankingPts} />

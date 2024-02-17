@@ -1,5 +1,6 @@
 import React from 'react';
 import { PropTypes } from 'prop-types';
+import DropDown from './DropDown';
 function TeamDropDown(props) {
 
     const setTeamNumber = function ({ target: { value } }) {
@@ -8,9 +9,12 @@ function TeamDropDown(props) {
 
     return !isNaN(parseInt(props.matchNumber)) ? (
         <div>
-            <select onChange={({ target: { value } }) => props.changeState(value)}>
-                {[<option value="" />].concat(props.teams.map((alliance) => <option key={alliance} value={alliance}> {alliance} </option>))}
-            </select>
+            <DropDown
+                title="Alliance"
+                choices={props.alliances}
+                value={props.teamNumber}
+                changeDropDownState={props.changeState}
+            />
         </div>
     ) : (
         <div>
