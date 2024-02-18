@@ -35,34 +35,43 @@ export function copyArray(Array) {
 export async function submitState(props) {
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
+
+  let counterBoxVals = props.state.counterBoxVals
+  let booleans = props.state.booleans
+
+  // TEAM INFO //
   let teamNum = props.state.teamNumber;
 
-  let comments = props.state.comments;
+  // AUTO SPECIFIC //
+  let autoPlacement = props.state.autoPlacement;
+  let left = booleans[0]
 
-  let dropVal = props.state.dropDownVal;
-  let autoPlacement = dropVal[0];
-  let driveStrength = dropVal[1];
-  let driveSpeed = dropVal[2];
+  // SCORING //
+  let autoAmpScored = counterBoxVals[0]
+  let autoSpeakerScored = counterBoxVals[1]
+  let teleAmpScored = counterBoxVals[2]
+  let teleSpeakerScored = counterBoxVals[3]
+  let teleAmplifiedSpeakerScored = counterBoxVals[4]
+  let highNotesMade = counterBoxVals[5]
+  let highNotesMissed = counterBoxVals[6]
 
-  let rankingState = props.state.rankingState;
+  let endGameVal = props.state.endGameVal
+  let noteInTrap = booleans[3]
 
-  let endGame = props.state.endGameVal;
-  let endGameUsed = endGame[0];
-  let endGameStart = endGame[1];
-  let endGameEnd = endGame[2];
+  // RANKING PTS //
+  let rankingState = props.state.rankingState
+  let matchResult = rankingState[0]
+  let activation = rankingState[1]
+  let sustainability = rankingState[2]
 
-  let chargeStationAuto = props.state.chargeStationValAuto;
-  let booleans = props.state.booleans;
 
-  let strats = props.state.strategyVal.slice();
-  let strategies = props.state.strategyVal;
+  // PENALTIES //
   let penalties = props.state.penaltyVal;
-  let smartPlacement = booleans[1];
+  let fouls = parseInt(counterBoxVals[7]);
+  let techFouls = parseInt(counterBoxVals[8]);
 
-  let counterVal = props.state.counterBoxVals;
 
-  let fouls = parseInt(counterVal[24]);
-  let techFouls = parseInt(counterVal[25]);
+  // ROBOT INFO //
 
   /*-------------------------------------------------------------SETTING SCORING VARIABLES--------------------------------------------------------------*/
 
