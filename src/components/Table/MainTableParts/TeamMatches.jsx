@@ -75,8 +75,8 @@ function TeamMatches(props) {
   const data = React.useMemo(
     () => ( toggle ? allTeamMatches : lastThree ).map(team => {
         return {
+          Team: team.Team.substring(4),
           Match: team.id.substring(team.id.indexOf("_") + 1),
-
         }
       }), [teamNumber,allTeamMatches,teamData,toggle]
   )
@@ -115,7 +115,7 @@ function TeamMatches(props) {
                 Header: 'Add Bookmark?',
                 Cell: ({row}) => {
                   return <div>
-                    <button onClick={() => props.handleBookmark(row)}> ADD </button>
+                    <button onClick={(event) => props.handleBookmark(event,row)}> ADD </button>
                   </div>
                 }
               }
@@ -139,7 +139,7 @@ function TeamMatches(props) {
             <div>
       <CollapseTButton label="Team Matches" toggleFunction={toggleTable}></CollapseTButton>
 
-      <select style={{width: '100%'}} onChange={(event) => {setTeamNumber(event.target.value), console.log(event.target.value)}} name="teamSelect" id="0">
+      <select style={{width: '100%', display: tableState}} onChange={(event) => {setTeamNumber(event.target.value), console.log(event.target.value)}} name="teamSelect" id="0">
         <option value = {null}>Select Team Number Below</option>
         {teams.map((team) => {
           return (
@@ -147,7 +147,7 @@ function TeamMatches(props) {
           )
         })}
       </select>
-      <button style={{width: '100%'}} onClick={() => setToggle(!toggle)}> {toggle ? "All Matches" : "Last Three Matches"} </button>
+      <button style={{width: '100%', display: tableState}} onClick={() => setToggle(!toggle)}> {toggle ? "All Matches" : "Last Three Matches"} </button>
 
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -181,9 +181,6 @@ function TeamMatches(props) {
                 {row.cells.map(cell => {
                   return (   
                     <td 
-                      onClick = {() => {
-                        setHeaderState(cell.column.Header)
-                      }}
                    
                       {...cell.getCellProps()}
                       style={{

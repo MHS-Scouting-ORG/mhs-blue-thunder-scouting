@@ -51,11 +51,11 @@ function RobotCapabilities(props) {
               },
               {
                 Header: 'Can Trap?',
-                accessor: 'CanTrap?'
+                accessor: 'CanTrap'
               },
               {
                 Header: 'Can UnderStage?',
-                acessor: 'CanUnderStage'
+                accessor: 'CanUnderStage'
               },
               {
                 Header: 'Can Defend?',

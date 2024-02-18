@@ -54,7 +54,7 @@ function RobotPerformance(props) {
               },
               {
                 Header: 'Speaker Performance',
-                acessor: 'RobotSpeaker'
+                accessor: 'RobotSpeaker'
               },
               {
                 Header: 'Amp Performance',
@@ -114,9 +114,6 @@ function RobotPerformance(props) {
                 {row.cells.map(cell => {
                   return (   
                     <td 
-                      onClick = {() => {
-                        setHeaderState(cell.column.Header)
-                      }}
                    
                       {...cell.getCellProps()}
                       style={{

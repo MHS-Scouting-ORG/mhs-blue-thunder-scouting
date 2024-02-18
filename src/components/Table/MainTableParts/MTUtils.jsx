@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { getMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
+import { arrMode, getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 
 async function getTeams () {
   try {
@@ -9,28 +9,61 @@ async function getTeams () {
 
      return data.map(obj => {
        const teamNumObj = {
-         TeamNumber: obj.team_number,
-         Matches: '',
-         OPR: "", 
-         Priorities: '',
-         CCWM: "", 
-         AvgPoints: 0,
-         AvgGridPoints: 0,
-         AvgConePts: 0,
-         AvgConeAcc: 0,
-         AvgCubePts: 0,
-         AvgCubeAcc: 0,
-         AvgCSPoints: 0,
-         DPR: "",
-         Penalties: "",
-         TeamNum: `frc${obj.team_number}`,
+        TeamNumber: obj.team_number,
+        Matches: '',
+        OPR: "", 
+        Priorities: '',
+        CCWM: "", 
+        AvgPoints: 0,
+        AvgGridPoints: 0,
+        AvgConePts: 0,
+        AvgConeAcc: 0,
+        AvgCubePts: 0,
+        AvgCubeAcc: 0,
+        AvgCSPoints: 0,
+        DPR: "",
+        Penalties: "",
+        TeamNum: `frc${obj.team_number}`,
         
-         NGridPoints: 0,
-         NConePoints: 0, 
-         NConeAccuracy: 0, 
-         NCubePoints: 0, 
-         NCubeAccuracy: 0, 
-         NChargeStation: 0,
+        NGridPoints: 0,
+        NConePoints: 0, 
+        NConeAccuracy: 0, 
+        NCubePoints: 0, 
+        NCubeAccuracy: 0, 
+        NChargeStation: 0,
+
+        //=======ROBOT PERFORMANCE PROPS=========//
+        RobotSpeed: 'Faster/Same/Slower',
+        RobotStrength: 'Stronger/Same/Weaker',
+        RobotSize: 'Biggger/Same/Smaller',
+        //custom for each year, scoring elements
+        RobotHang: 'Better/Same/Worse',
+        RobotSpeaker: 'Better/Same/Worse',
+        RobotAmp: 'Better/Same/Worse',
+        RobotTrap: 'Better/Same/Worse',
+        //=======Stats=========//
+        AvgPoints: 0,
+        AvgAutoPts: 0,
+        //custom//
+        AvgCycles: 0,
+        AvgSpeaker: 0,
+        AvgAmp: 0, 
+        //======Capabilities======//
+        CanDefend: 'TBD',
+        //custom
+        CanUnderStage: 'Yes/No',
+        //determined internally not from form dependent on presence of points
+        CanHang: 'Yes/No',
+        CanSpeaker: 'Yes/No',
+        CanAmp: 'Yes/No',
+        CanTrap: 'Yes/No',
+        //======Auto====//
+        //ln46 auto pts
+        AutoStart: '1',
+        AutoCollide: 'Yes/No',
+        MostCommonScoring: 'Amp/Speaker',
+        //==field information==//
+
        }
 
        return teamNumObj
@@ -42,18 +75,15 @@ async function getTeams () {
 }
 
 async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable) {
-  //return await (getMatchesForRegional('2023azva'))
-  ///.catch(err => console.log(err))
-  //.then(data => {
     try {
     const data = await getMatchesForRegional('2023azva')
 
-    let tableData = mtable//tableDataForUtils()  //testing 
+    const tableData = mtable
 
     return teamNumbers/*same as teamsData from maintable*/.map(team => { 
       
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum) ///same as teamstats
+      const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum) 
       //console.log(teamStats)
       //console.log(teamMatchData)
 
@@ -70,7 +100,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const mCubePoints = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCubePts.substring(2,8))
       const mCubeAcc = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCubeAcc.substring(2,8))
       const mCSPoints = tableData.filter(x => x.TeamNumber === team.TeamNumber).map(x => x.AvgCSPoints)
-
+      
       const avgPoints = calcAvgPoints(teamStats)
       const avgGridPoints = calcAvgGrid(teamStats)
       const avgConePoints = calcAvgConePts(teamStats)
@@ -119,6 +149,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rCubeAcc = mCubeAcc / maxCubeAcc
       const rCSPoints = mCSPoints / maxCSPoints
 
+      //const mcSpeed = modeSpeed(teamStats)
+
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
@@ -164,6 +196,39 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         NCubePoints: isNaN(rCubePoints) !== true ? rCubePoints : 0, 
         NCubeAccuracy: isNaN(rCubeAcc) !== true ? rCubeAcc : 0,
         NChargeStation: isNaN(rCSPoints) !== true ? rCSPoints : 0,
+
+        //accessing same/initalized data for now//
+
+        //==Robot Performance==/
+        RobotSpeed: team.RobotSpeed,
+        RobotStrength: team.RobotStrength,
+        RobotSize: team.RobotSize,
+        //custom//
+        RobotHang: team.RobotHang,
+        RobotSpeaker: team.RobotSpeaker,
+        RobotAmp: team.RobotAmp,
+        RobotTrap: team.RobotTrap,
+        //===Stats==/ 
+        AvgPoints: team.AvgPoints,
+        AvgAutoPts: team.AvgAutoPts,
+        //custom//
+        AvgCycles: team.AvgCycles,
+        AvgSpeaker: team.AvgSpeaker,
+        AvgAmp: team.AvgAmp, 
+        //======Capabilities======//
+        CanDefend: team.CanDefend, //TBD
+        //custom
+        CanUnderStage: team.CanUnderStage,
+        //determined interanally not from form dependent on presence of points
+        CanHang: team.CanHang,
+        CanSpeaker: team.CanSpeaker,
+        CanAmp: team.CanAmp,
+        CanTrap: team.CanTrap,
+        //===auto==//
+        AutoStart: team.AutoStart,
+        AutoCollide: team.AutoCollide,
+        MostCommonScoring: team.MostCommonScoring,
+
       }
       return tableDataObj;
     })

@@ -37,8 +37,8 @@ function RobotAuto(props) {
                   )
               },
               {
-                Header: 'Auto Pts',
-                acessor: 'AutoPoints'
+                Header: 'Avg Auto',
+                accessor: 'AvgAutoPts'
               },
               {
                 Header: 'Auto Start',
@@ -50,7 +50,7 @@ function RobotAuto(props) {
               },
               {
                 Header: 'Most Common Scored',
-                accessor: 'CommonScored'
+                accessor: 'MostCommonScoring'
               },
         ], []
     )

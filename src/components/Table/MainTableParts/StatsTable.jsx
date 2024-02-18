@@ -39,12 +39,12 @@ function StatsTable(props) {
         accessor: 'AvgPoints'
       },
       {
-        Header: 'Avg Cycs',
-        accessor: 'AvgCycles'
-      },
-      {
         Header: 'Avg Auto',
         accessor: 'AvgAutoPts'
+      },
+      {
+        Header: 'Avg Cycs',
+        accessor: 'AvgCycles'
       },
       {
         Header: 'Avg Made Speaker',
@@ -52,7 +52,7 @@ function StatsTable(props) {
       },
       {
         Header: 'Avg Made Amp',
-        acessor: 'AvgAmp'
+        accessor: 'AvgAmp'
       },
       {
         Header: 'OPR',

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../../api/bluealliance";
 import { tableHandler } from "../InnerTables/InnerTableUtils";
-import {calcColumnSort} from "./CalculationUtils"
+import {calcColumnSort, arrMode} from "./CalculationUtils"
 import { ueTableData, } from "./MTEffectFunc"
 import { getMatchesForRegional} from "../../../api";
 import GlobalFilter from "../GlobalFilter";
@@ -41,6 +41,8 @@ function MainTable(props) {
   const [oprList,setOprList] = useState([]);
   const [dprList,setDprList] = useState([]);
   const [ccwmList,setCcwmList] = useState([]);
+
+  const [bookmark,setBookmark] = useState([]);
 
   useEffect(() => {
     getMatchesForRegional('2023azva')
@@ -106,33 +108,43 @@ const setDataModal = (row) => {
 }
 
 
+useEffect(() => {
+  arrMode(["apple","apple","orange","pear"])
+},[])
+
+
 //=========================================================//
 
-const handleBookmark = (row) => {
-  console.log(row)
-  const teamNumber = row.cells[0].value;
-  const matchNumber = row.cells[1].value;
+const addBookmark = (event,row) => {
+  console.log(event)
+  const teamNumber = null
+  const matchNumber = row.cells[0].value;
   console.log(teamNumber)
   console.log(matchNumber)
-
-  console.log(apiData)
-  const newMatchEntries = apiData.map((matchEntry) => {
-    // if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 3)){
-    //   matchEntry.bookMark = !matchEntry.bookMark
-    // }
-    console.log(matchEntry)
-    return matchEntry
-  })
-
   
-  // const matchEntries = nApiData.map((matchEntry) => {
-  //   matchEntry.bookMark = false;
-  //   return matchEntry
-  // })
+  const changeApiData = async () => {
+    try{
+      const allData = await getMatchesForRegional('2023azva')
+      const newApiData = allData.data.teamMatchesByRegional.items
+      const newMatchEntries = newApiData.forEach((matchEntry) => {
+        if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)){
+          bookmark[bookmark.length] = matchEntry
+          console.log(bookmark)
+          setBookmark(bookmark)
+          // matchEntry.bookMark = !matchEntry.bookMark
+        }
+      })
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
 
+  changeApiData();
+}
 
-  console.log(newMatchEntries)
-  setApiData(newMatchEntries)
+const removeBookmark = () => {
+  return null;
 }
 
 
@@ -315,7 +327,7 @@ const data = React.useMemo(
 
           <div>
           {/* right */}
-          <TeamMatches handleBookmark = {handleBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
+          <TeamMatches handleBookmark = {addBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
           </div>
 
         
@@ -323,7 +335,7 @@ const data = React.useMemo(
 
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
           <div>
-            <Bookmarks handleBookmark = {handleBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Bookmarks>
+            <Bookmarks bookmark = {bookmark} handleBookmark = {removeBookmark} information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Bookmarks>
           </div>
         </div>
       </div>
