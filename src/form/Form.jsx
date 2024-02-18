@@ -43,7 +43,7 @@ class Form extends React.Component {
 
       // AUTO SPECIFIC //
       autoPlacement: '', //1,2,3,4
-      mobility: false,
+      left: false,
 
       // SCORING //
       counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
