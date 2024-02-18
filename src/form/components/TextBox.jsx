@@ -5,7 +5,8 @@ function TextBox(props) {
         props.changeState(event.target.value)
     }
 
-    return (
+    return props.displayOn ? 
+    (
         <div>
             <p>{props.title}</p>
             <p style={{ fontSize: 13 }}>{props.description}</p>
@@ -16,7 +17,10 @@ function TextBox(props) {
                 }} value={props.value}
             />
         </div>
+    ) : (
+        <div></div>
     )
+
 }
 
 export default TextBox;
