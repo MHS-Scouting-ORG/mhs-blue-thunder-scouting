@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder';
+import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -44,149 +44,74 @@ export async function submitState(props) {
 
   // AUTO SPECIFIC //
   let autoPlacement = props.state.autoPlacement;
-  let left = booleans[0]
+  let left = props.state.left //booleans[0]
 
   // SCORING //
-  let autoAmpScored = counterBoxVals[0]
-  let autoSpeakerScored = counterBoxVals[1]
-  let teleAmpScored = counterBoxVals[2]
-  let teleSpeakerScored = counterBoxVals[3]
-  let teleAmplifiedSpeakerScored = counterBoxVals[4]
-  let highNotesMade = counterBoxVals[5]
-  let highNotesMissed = counterBoxVals[6]
+  let autoAmpScored = props.state.autoAmpScored; //counterBoxVals[0]
+  let autoSpeakerScored = props.state.autoSpeakerScored; //counterBoxVals[1]
+  let teleAmpScored = props.state.teleAmpScored //counterBoxVals[2]
+  let teleSpeakerScored = props.state.teleSpeakerScored //counterBoxVals[3]
+  let teleAmplifiedSpeakerScored = props.state.teleAmplifiedSpeakerScored //counterBoxVals[4]
+  let highNotesMade = props.state.highNotesMade //counterBoxVals[5]
+  let highNotesMissed = props.state.highNotesMissed //counterBoxVals[6]
 
   let endGameVal = props.state.endGameVal
-  let noteInTrap = booleans[3]
+  let noteInTrap = props.state.noteInTrap //booleans[3]
 
   // RANKING PTS //
-  let rankingState = props.state.rankingState
-  let matchResult = rankingState[0]
-  let activation = rankingState[1]
-  let sustainability = rankingState[2]
+  //let rankingState = props.state.rankingState
+  let rankingPts = props.state.rankingPts
+  let matchResult = props.state.matchResult //rankingState[0]
+  let melody = props.state.melody //rankingState[1]
+  let ensemble = props.state.ensemble //rankingState[2]
 
 
   // PENALTIES //
-  let penalties = props.state.penaltyVal;
-  let fouls = parseInt(counterBoxVals[7]);
-  let techFouls = parseInt(counterBoxVals[8]);
+  // let penalties = props.state.penaltyVal;
+  let yellowCard = props.state.yellowCard; //penalties[0]
+  let redCard = props.state.redCard; //penalties[1]
+  let dq = props.state.dq; //penalties[2]
+  let botBroke = props.state.botBroke; //penalties[3]
+  let noShow = props.state.noShow; //penalties[4]
+  let fouls = props.state.fouls; //counterBoxVals[7]
+  let techFouls = props.state.techFouls; //counterBoxVals[8]
+  let foulComments = props.state.foulComments;
+  let robotBrokenComments = props.state.robotBrokenComments
 
 
   // ROBOT INFO //
-
-  /*-------------------------------------------------------------SETTING SCORING VARIABLES--------------------------------------------------------------*/
-
-
-  //AUTONOMOUS-----------------------------------------
-
-  //Auto Cubes & Cones Scoring
-  let highAutoCubes = parseInt(counterVal[0]);
-  let midAutoCubes = parseInt(counterVal[1]);
-  let lowAutoCubes = parseInt(counterVal[2]);
-  let highAutoCones = parseInt(counterVal[6]);
-  let midAutoCones = parseInt(counterVal[7]);
-  let lowAutoCones = parseInt(counterVal[8]);
-  //Auto Cubes & Cones Attempted
-  let highCubesAutoAttempted = parseInt(counterVal[3]);
-  let midCubesAutoAttempted = parseInt(counterVal[4]);
-  let lowCubesAutoAttempted = parseInt(counterVal[5]);
-  let highConesAutoAttempted = parseInt(counterVal[9]);
-  let midConesAutoAttempted = parseInt(counterVal[10]);
-  let lowConesAutoAttempted = parseInt(counterVal[11]);
-
-
-  //TELEOP-----------------------------------------------
-
-  //Tele Cubes & Cones Scoring
-  let highTeleCubes = parseInt(counterVal[12]);
-  let midTeleCubes = parseInt(counterVal[13]);
-  let lowTeleCubes = parseInt(counterVal[14]);
-  let highTeleCones = parseInt(counterVal[18]);
-  let midTeleCones = parseInt(counterVal[19]);
-  let lowTeleCones = parseInt(counterVal[20]);
-  //Tele Cubes & Cones Attempted
-  let highCubesTeleAttempted = parseInt(counterVal[15]);
-  let midCubesTeleAttempted = parseInt(counterVal[16]);
-  let lowCubesTeleAttempted = parseInt(counterVal[17]);
-  let highConesTeleAttempted = parseInt(counterVal[21]);
-  let midConesTeleAttempted = parseInt(counterVal[22]);
-  let lowConesTeleAttempted = parseInt(counterVal[23]);
-
-
-  //OVERALL ATTEMPTED----------------------------------------------------------------------------------
-  let highCubesAttempted = highCubesAutoAttempted + highCubesTeleAttempted + highTeleCubes + highAutoCubes;
-  let highConesAttempted = highConesAutoAttempted + highConesTeleAttempted + highTeleCones + highAutoCones;
-  let midCubesAttempted = midCubesAutoAttempted + midCubesTeleAttempted + midTeleCubes + midAutoCubes;
-  let midConesAttempted = midConesAutoAttempted + midConesTeleAttempted + midTeleCones + midAutoCones;
-  let lowCubesAttempted = lowCubesAutoAttempted + lowCubesTeleAttempted + lowTeleCubes + lowAutoCubes;
-  let lowConesAttempted = lowConesAutoAttempted + lowConesTeleAttempted + lowTeleCones + lowTeleCones;
-
-  let cubesAttempted = parseInt(counterVal[3]) + parseInt(counterVal[4]) + parseInt(counterVal[5]) + parseInt(counterVal[15]) + parseInt(counterVal[16]) + parseInt(counterVal[17]);
-  let conesAttempted = parseInt(counterVal[9]) + parseInt(counterVal[10]) + parseInt(counterVal[11]) + parseInt(counterVal[21]) + parseInt(counterVal[22]) + parseInt(counterVal[23]);
+  let hangsFaster = props.state.hangsFaster
+  let isFaster = props.state.isFaster
+  let clearsStage = props.state.clearsStage
+  let countersDefense = props.state.countersDefense
+  let lineUpSpeed = props.state.lineUpSpeed
+  let intakeRating = props.state.intakeRating
 
   // INITIALIZE SCORE--------------------------------------------------------------------------------------------
-  let chargeStationPts = 0;
+  let autoPts = 0;
+  let telePts = 0;
   let endGamePts = 0;
-  let mobilityPts = 0;
-
+  let ampPts = 0;
+  let speakerPts = 0;
 
   /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
-
-  let mobility = booleans[0];
-
   let incompleteForm = false;
-  let incompletePriorities = true;
 
   let override = props.state.override;
 
-  if (endGameUsed === 'DockedEngaged') {
-    endGamePts = 10;
-  } else if (endGameUsed === "Docked") {
-    endGamePts = 6;
-  } else if (endGameUsed === 'Parked') {
-    endGamePts = 2;
-  } else {
+  if (endGameVal === 'Onstage') {
+    endGamePts = 3;
+  } else if (endGameVal === "Parked") {
+    endGamePts = 1;
+  } else if (endGameVal === 'Attempted' || endGameVal === 'None') {
     endGamePts = 0;
-  }
-
-  if (endGameUsed === '') {
+  } else {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat charge station the robot did"
-  } else {
-    if (endGameUsed !== 'None') {
-      if (endGameUsed === 'Attemped') {
-        if (endGameStart === '') {
-          incompleteForm = true;
-          windowAlertMsg = windowAlertMsg + "\nWhat time the robot started charge station"
-        }
-      } else {
-        if (endGameStart === '') {
-          incompleteForm = true;
-          windowAlertMsg = windowAlertMsg + "\nWhat time the robot started charge station"
-        } if (endGameEnd === '') {
-          incompleteForm = true;
-          windowAlertMsg = windowAlertMsg + "\nWhat time the robot ended charge station"
-        }
-      }
-    }
+    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
   }
 
-  if (chargeStationAuto === 'DockedEngaged') {
-    chargeStationPts = 12;
-  } else if (chargeStationAuto === "Docked") {
-    chargeStationPts = 8;
-  } else {
-    chargeStationPts = 0;
-  }
-
-  if (chargeStationAuto === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat charge station the robot did"
-  }
-
-  if (mobility === false) {
-    mobilityPts = 0;
-  } else {
-    mobilityPts = 3;
+  if (left) {
+    autoPts += 3;
   }
 
   let penFinal = [];
@@ -206,38 +131,6 @@ export async function submitState(props) {
       penFinal[i] = PenaltyKinds.NO_SHOW
     } else {
       penFinal[i] = PenaltyKinds.NONE;
-    }
-  }
-
-  let stratFinal = [];
-  for (let i = 0; i < strategies.length; i++) {
-    let strategy = strategies[i];
-    if (strategy === "Low Node ") {
-      stratFinal.push(PriorityOpts.LOW);
-    }
-    else if (strategy === "Mid Node ") {
-      stratFinal.push(PriorityOpts.MID);
-    }
-    else if (strategy === "High Node ") {
-      stratFinal.push("Upper");
-    }
-    else if (strategy === "Cubes ") {
-      stratFinal.push(PriorityOpts.CUBES);
-    }
-    else if (strategy === "Cones ") {
-      stratFinal.push(PriorityOpts.CONES);
-    }
-    else if (strategy === "Charge Station ") {
-      stratFinal.push(PriorityOpts.CHARGESTATION);
-    }
-    else if (strategy === "Single Substation ") {
-      stratFinal.push(PriorityOpts.SINGLE_SUBSTATION);
-    }
-    else if (strategy === "Double Substation ") {
-      stratFinal.push(PriorityOpts.DOUBLE_STATION);
-    }
-    else if (strategy === "Defense ") {
-      stratFinal.push(PriorityOpts.DEFENSE);
     }
   }
 
@@ -275,61 +168,25 @@ export async function submitState(props) {
     }
   }
 
-  let chargeTeleFinal = findChargeStationType(endGameUsed);
+  let chargeTeleFinal = findChargeStationType(endGameVal);
   let chargeAutoFinal = findChargeStationType(chargeStationAuto);
 
 
   //POINT CALCULATIONS
 
-  // function setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts){
-  //   const savedPoints = props.setGivenState([18,0],points);
-  //   const savedGridPoints = props.setGivenState([19,0],totalGridPts,savedPoints);
-  //   const savedCubeAccuracy = props.setGivenState([20,0],cubesTeleAutoAccuracy,savedGridPoints);
-  //   const savedConesAccuracy = props.setGivenState([21,0],conesTeleAutoAccuracy,savedCubeAccuracy);
-  //   const savedCubePoints = props.setGivenState([22,0],cubePts,savedConesAccuracy);
-  //   props.setGivenState([23,0],conePts,savedCubePoints);
-  // }
+  autoPts =  5 * autoSpeakerScored + 2 * autoAmpScored
+  telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
+  speakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
+  ampPts = 2 * autoAmpScored + teleAmpScored
 
+  let totalPts = autoPts + telePts + endGamePts
 
-  let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
-  let midGridPoints = 4 * (midAutoCones + midAutoCubes) + 3 * (midTeleCones + midTeleCubes);
-  let lowGridPoints = 3 * (lowAutoCones + lowAutoCubes) + 2 * (lowTeleCones + lowTeleCubes);
-  let autoPoints = 6 * (highAutoCones + highAutoCubes) + 4 * (midAutoCones + midAutoCubes) + 3 * (lowAutoCones + lowAutoCubes);
-  let telePoints = 5 * (highTeleCones + highTeleCubes) + 3 * (midTeleCones + midTeleCubes) + 2 * (lowTeleCones + lowTeleCubes);
-  let points = chargeStationPts + endGamePts + mobilityPts + autoPoints + telePoints;
-  let cubePts = (highAutoCubes * 6) + (highTeleCubes * 5) + (midAutoCubes * 4) + (midTeleCubes * 3) + (lowAutoCubes * 3) + (lowTeleCubes * 2);
-  let conePts = (highAutoCones * 6) + (highTeleCones * 5) + (midAutoCones * 4) + (midTeleCones * 3) + (lowAutoCones * 3) + (lowTeleCones * 2);
-
-  let cubesHighTeleAutoAccuracy = 100 * ((highAutoCubes + highTeleCubes) / (highCubesAttempted + highAutoCubes + highTeleCubes));
-  let conesHighTeleAutoAccuracy = 100 * ((highAutoCones + highTeleCones) / (highConesAttempted + highAutoCones + highTeleCones));
-
-  let cubesMidTeleAutoAccuracy = 100 * ((midAutoCubes + midTeleCubes) / (midCubesAttempted + midAutoCubes + midTeleCubes));
-  let conesMidTeleAutoAccuracy = 100 * ((midAutoCones + midTeleCones) / (midConesAttempted + midAutoCones + midTeleCones));
-
-  let cubesLowTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes) / (lowCubesAttempted + lowAutoCubes + lowTeleCubes));
-  let conesLowTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones) / (lowConesAttempted + lowAutoCones + lowTeleCones));
-
-  let totalGridPts = highGridPoints + midGridPoints + lowGridPoints;
-
-  let cubesTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes) / (cubesAttempted + lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes));
-  let conesTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones) / (conesAttempted + lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones));
-
-  props.updatePoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts)
+  props.setState(totalPts, ampPts, speakerPts)
   // setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts);
 
   if (autoPlacement === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nPosition of robot during Auto"
-  }
-
-  if (driveStrength === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat strength is the robot drive"
-  }
-
-  if (driveSpeed === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nHow fast is the robot drive"
   }
 
   if (props.state.matchType === 'qf' || props.state.matchType === 'sf' || props.state.matchType === 'f') {
@@ -350,17 +207,6 @@ export async function submitState(props) {
   if (props.state.teamNumber === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
-  }
-
-  strats.filter(strat => {
-    if (strat !== ' ') {
-      incompletePriorities = false;
-    }
-  })
-
-  if (incompletePriorities) {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nRobot priorities/strategies";
   }
 
   if (incompleteForm && !override) {

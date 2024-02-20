@@ -59,7 +59,6 @@ class Form extends React.Component {
       noteInTrap: false,
 
       totalPts: 0,
-      endgamePts: 0,
       ampPts: 0,
       speakerPts: 0,
 
@@ -67,14 +66,14 @@ class Form extends React.Component {
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
-      activation: false,
-      sustainability: false,
+      melody: false,
+      ensemble: false,
 
       // PENALTIES //
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: false,
       redCard: false,
-      disqualified: false,
+      dq: false,
       botBroke: false,
       noShow: false,
       fouls: 0,
@@ -94,12 +93,6 @@ class Form extends React.Component {
 
       // OVERRIDE //
       override: false, //override bool
-
-      // FORM COMPONENT DISPLAY ON/OFF //
-      autoOn: true, //autonomous
-      teleOn: false, //tele-op
-      robotOn: false, //robot info
-      penaltiesOn: false, //penalties
     }
 
     // FUNCTION BINDING //
@@ -337,19 +330,25 @@ class Form extends React.Component {
     this.setState({ override: val })
   }
 
+  // updatePoints(totalPts, ampPts, speakerPts) {
+  //   this.setState( {totalPts} )
+  //   this.setState( {ampPts} )
+  //   this.setState( {speakerPts} )
+  // }
+
   // FORM COMPONENT DISPLAY ON/OFF //
   updateAutoDisplay () {
     this.setState({ autoOn: !this.state.autoOn})
   }
-  
+
   updateTeleDisplay () {
     this.setState({ teleOn: !this.state.teleOn})
   }
-  
+
   updateRobotDisplay () {
     this.setState({ robotOn: !this.state.robotOn})
   }
-  
+
   updatePenaltyDisplay () {
     this.setState({ penaltiesOn: !this.state.penaltiesOn})
   }
