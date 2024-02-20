@@ -108,16 +108,11 @@ const setDataModal = (row) => {
 }
 
 
-useEffect(() => {
-  arrMode(["apple","apple","orange","pear"])
-},[])
-
-
 //=========================================================//
 
-const addBookmark = (event,row) => {
-  console.log(event)
-  const teamNumber = null
+const addBookmark = (row) => {
+  console.log(row)
+  const teamNumber = row.original.Team
   const matchNumber = row.cells[0].value;
   console.log(teamNumber)
   console.log(matchNumber)
@@ -126,26 +121,44 @@ const addBookmark = (event,row) => {
     try{
       const allData = await getMatchesForRegional('2023azva')
       const newApiData = allData.data.teamMatchesByRegional.items
-      const newMatchEntries = newApiData.forEach((matchEntry) => {
-        if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)){
-          bookmark[bookmark.length] = matchEntry
-          console.log(bookmark)
-          setBookmark(bookmark)
-          // matchEntry.bookMark = !matchEntry.bookMark
-        }
-      })
+
+      const arrNewBookmark = newApiData.filter((matchEntry) => (teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)))
+      const newBookmarkEntry = arrNewBookmark[0]
+      console.log(newBookmarkEntry)
+
+      let tempBookmark = bookmark
+      tempBookmark.push(newBookmarkEntry)
+
+
+      console.log(tempBookmark)
+      setBookmark(tempBookmark)
     }
     catch(err){
       console.log(err)
     }
   }
-
+  console.log(bookmark)
   changeApiData();
 }
 
-const removeBookmark = () => {
-  return null;
+const removeBookmark = (row) => {
+  const teamNumber = row.cells[0].value
+  const matchNumber = row.cells[1].value
+
+  const newBookmarkEntries = bookmark.filter((bookmarkedEntry) => !(teamNumber === bookmarkedEntry.Team.substring(3) && matchNumber === bookmarkedEntry.id.substring((bookmarkedEntry.id).indexOf("_") + 1))).splice(0)
+
+  console.log(newBookmarkEntries)
+  setBookmark(newBookmarkEntries)
 }
+//   const newMatchEntries = newApiData.forEach((matchEntry) => {
+//     if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)){
+//       //bookmark[bookmark.length] = matchEntry
+//       console.log(bookmark)
+//       setBookmark(bookmark.push(matchEntry))
+//       console.log(bookmark)
+//       // matchEntry.bookMark = !matchEntry.bookMark
+//     })
+// }
 
 
 
@@ -230,10 +243,7 @@ const data = React.useMemo(
   } = tableInstance
 
   const {globalFilter} = state
-  console.log(globalFilter)
-  console.log(state)
-
-  //setGFilterState(globalFilter),[]
+  
   return (
     <div>
       <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>
@@ -251,6 +261,22 @@ const data = React.useMemo(
                             <p style={{fontSize: '18px'}}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
                             {<List setList={setSortBy}/>}
                             <br/>
+                            <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
+                              <div>
+                              <CustomRanking information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></CustomRanking>
+                            </div>
+                            <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
+                                <Bookmarks bookmarkData = {bookmark} handleBookmark = {removeBookmark} information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Bookmarks>
+                              </div> 
+                            </div>
+                            
+                              
+                              <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
+                              <TeamMatches handleBookmark = {addBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
+                              </div>    
+                              <br></br>  
+                              <br></br>     
+   
                         </td>
                         <td>
                         <p style={{
@@ -302,11 +328,7 @@ const data = React.useMemo(
           <RobotCapabilities information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotCapabilities>
           </div>
 
-          <div>
-          {/* middle */}
-          <CustomRanking information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></CustomRanking>
-          </div>
-          
+         
           <div>
           {/* right */}
           <RobotAuto information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotAuto>
@@ -325,18 +347,11 @@ const data = React.useMemo(
           <Penalties information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Penalties>
           </div>
 
-          <div>
-          {/* right */}
-          <TeamMatches handleBookmark = {addBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
-          </div>
-
-        
+  
         </div>
 
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
-          <div>
-            <Bookmarks bookmark = {bookmark} handleBookmark = {removeBookmark} information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Bookmarks>
-          </div>
+          
         </div>
       </div>
 

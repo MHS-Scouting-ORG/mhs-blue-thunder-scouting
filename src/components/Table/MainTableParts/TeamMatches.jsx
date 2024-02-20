@@ -7,6 +7,9 @@ import { uniqueArr } from './CalculationUtils'
 function TeamMatches(props) {
   const filter = props.gFilter
   const teamData = props.teamMatches;
+  const bookMarkFunc = props.handleBookmark
+  const apiData = props.teamMatches;
+
   const allTeamEntries = teamData.map((data) => {return (data.Team)});
   const teams = uniqueArr(allTeamEntries);
 
@@ -28,11 +31,6 @@ function TeamMatches(props) {
         return parseInt((teamMatch.id).substring((teamMatch.id).indexOf("_") + 3))
       }
     ).sort((a,b) => a - b)
-    
-    
-
-    
-    console.log(matchNumbers)
 
     const sortLastThree = indivTeamMatches.map((teamMatch) => {
       const matchNumber = parseInt(teamMatch.id.substring((teamMatch.id).indexOf("_") + 3))
@@ -75,10 +73,10 @@ function TeamMatches(props) {
   const data = React.useMemo(
     () => ( toggle ? allTeamMatches : lastThree ).map(team => {
         return {
-          Team: team.Team.substring(4),
+          Team: team.Team.substring(3),
           Match: team.id.substring(team.id.indexOf("_") + 1),
         }
-      }), [teamNumber,allTeamMatches,teamData,toggle]
+      }), [apiData,teamNumber,allTeamMatches,teamData,toggle]
   )
 
     const columns = React.useMemo(
@@ -115,11 +113,11 @@ function TeamMatches(props) {
                 Header: 'Add Bookmark?',
                 Cell: ({row}) => {
                   return <div>
-                    <button onClick={(event) => props.handleBookmark(event,row)}> ADD </button>
+                    <button onClick={() => bookMarkFunc(row,apiData)}> ADD </button>
                   </div>
                 }
               }
-        ], []
+        ], [apiData]
     )
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 

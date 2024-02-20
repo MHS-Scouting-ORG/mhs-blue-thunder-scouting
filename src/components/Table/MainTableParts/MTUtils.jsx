@@ -62,8 +62,16 @@ async function getTeams () {
         AutoStart: '1',
         AutoCollide: 'Yes/No',
         MostCommonScoring: 'Amp/Speaker',
-        //==field information==//
-
+        //===Field Info==//
+        MostCommonScoredElement: "Amp/Speaker",
+        AutoStart: '1',
+        StagePosition: 'Center',
+        //===Penalties===//
+        Fouls: '1',
+        Tech: '1',
+        YellowCard: '1',
+        RedCard: '1',
+        BrokenRobot: '1'
        }
 
        return teamNumObj
@@ -228,7 +236,16 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         AutoStart: team.AutoStart,
         AutoCollide: team.AutoCollide,
         MostCommonScoring: team.MostCommonScoring,
-
+        //===Field Info==//
+        MostCommonScoredElement: team.MostCommonScoredElement,
+        AutoStart: team.AutoStart,
+        StagePosition: team.StagePosition,
+        //===Penalties===//
+        Fouls: team.Fouls, 
+        Tech: team.Tech,
+        YellowCard: team.YellowCard,
+        RedCard: team.RedCard,
+        BrokenRobot: team.BrokenRobot
       }
       return tableDataObj;
     })

@@ -6,7 +6,8 @@ import { uniqueArr } from './CalculationUtils'
 
 function Bookmarks(props) {
   const filter = props.gFilter
-  const teamData = props.bookmark
+  const bookmarkedMatches = props.bookmarkData
+  const bookMarkFunc = props.handleBookmark
   
   // const bookmarkData = teamData.filter((matchEntry) => {
   //   const currentTeamNumber = matchEntry.Team.substring(3)
@@ -39,12 +40,12 @@ function Bookmarks(props) {
 
 
   const data = React.useMemo(
-    () => teamData.map(team => {
+    () => bookmarkedMatches.map(team => {
         return {
           TeamNumber: team.Team.substring(3),
           Match: team.id.substring(team.id.indexOf("_") + 1),
         }
-      }), [teamData]
+      }),[bookmarkedMatches]
   )
 
     const columns = React.useMemo(
@@ -85,11 +86,11 @@ function Bookmarks(props) {
                 Header: 'Remove Bookmark?',
                 Cell: ({row}) => {
                   return <div>
-                    <button onClick={() => props.handleBookmark(row)}> DELETE </button>
+                    <button onClick={() => bookMarkFunc(row,bookmarkedMatches)}> DELETE </button>
                   </div>
                 }
               }
-        ], []
+        ], [bookmarkedMatches, data]
     )
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 

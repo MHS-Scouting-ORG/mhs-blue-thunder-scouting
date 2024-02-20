@@ -50,11 +50,11 @@ function Penalties(props) {
               },
               {
                 Header: 'Red',
-                accessor: 'RedCard?'
+                accessor: 'RedCard'
               },
               {
                 Header: 'Broken',
-                acessor: 'BrokenRobot'
+                accessor: 'BrokenRobot'
               },
         ], []
     )
