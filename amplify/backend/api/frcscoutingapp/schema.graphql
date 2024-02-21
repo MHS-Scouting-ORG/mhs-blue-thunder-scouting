@@ -9,12 +9,18 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 # enums
 
 # types
-type Scored {
+type TeleScoring {
+  Amp: Int
+  Speaker: Int
+  AmplifiedSpeaker: Int
+  Cycles: Int
+}
+
+type TelePointsScoring {
   Points: Int
   EndgamePoints: Int
   SpeakerPoints: Int
   AmpPoints: Int
-  Cycles: Int
 }
 
 ##################
@@ -22,11 +28,22 @@ type Scored {
 ##################
 
 # enums
+type AutoScoring {
+  Amp: Int
+  Speaker: Int
+}
+
+type AutoPointsScoring {
+  Points: Int
+  SpeakerPoints: Int
+  AmpPoints: Int
+}
 
 # types
 type AutonomousType {
   StartingPosition: Int!
-  Scoring: Scored
+  AmountScored: AutoScoring
+  PointsScored: AutoPointsScoring
   Left: Boolean
 }
 
@@ -67,7 +84,8 @@ type HumPlrScoringType {
 }
 
 type TeleopType {
-  Scoring: Scored
+  AmountScored: TeleScoring
+  PointsScored: TelePointsScoring
   StageResult: [StageOpts]
   HumPlrScoring: HumPlrScoringType
 }

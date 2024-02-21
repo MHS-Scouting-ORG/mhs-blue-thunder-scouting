@@ -62,24 +62,33 @@ export const createTeamInfo = /* GraphQL */ `
       Regional
       Autonomous {
         StartingPosition
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          __typename
+        }
+        PointsScored {
           Points
-          EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         Left
         __typename
       }
       Teleop {
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
+          __typename
+        }
+        PointsScored {
           Points
           EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         StageResult
@@ -128,24 +137,33 @@ export const updateTeamInfo = /* GraphQL */ `
       Regional
       Autonomous {
         StartingPosition
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          __typename
+        }
+        PointsScored {
           Points
-          EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         Left
         __typename
       }
       Teleop {
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
+          __typename
+        }
+        PointsScored {
           Points
           EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         StageResult
@@ -194,24 +212,33 @@ export const deleteTeamInfo = /* GraphQL */ `
       Regional
       Autonomous {
         StartingPosition
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          __typename
+        }
+        PointsScored {
           Points
-          EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         Left
         __typename
       }
       Teleop {
-        Scoring {
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
+          __typename
+        }
+        PointsScored {
           Points
           EndgamePoints
           SpeakerPoints
           AmpPoints
-          Cycles
           __typename
         }
         StageResult
