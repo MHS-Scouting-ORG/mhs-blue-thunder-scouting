@@ -59,12 +59,10 @@ enum StageOpts {
   None
 }
 
-enum RankingPtsOpts {
+enum MatchResultOpts {
   Win
   Tie
   Loss
-  Melody
-  Ensemble
 }
 
 enum PenaltyOpts {
@@ -81,6 +79,12 @@ enum PenaltyOpts {
 type HumPlrScoringType {
   Made: Int
   Missed: Int
+}
+
+type EndgameType {
+  MatchResult: [MatchResultOpts]
+  Harmony: Boolean
+  Ensemble: Boolean
 }
 
 type TeleopType {
@@ -154,5 +158,5 @@ type TeamInfo @model @auth(rules : [{ allow: private, provider: iam}]) {
   Comments: String
   RobotInfo: RobotInfoType!
   Penalties: PenaltyType
-  RankingPts: [RankingPtsOpts]!
+  RankingPts: EndgameType!
 }

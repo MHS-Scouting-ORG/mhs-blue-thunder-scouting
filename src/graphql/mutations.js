@@ -117,7 +117,12 @@ export const createTeamInfo = /* GraphQL */ `
         FoulDesc
         __typename
       }
-      RankingPts
+      RankingPts {
+        MatchResult
+        Harmony
+        Ensemble
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -192,7 +197,12 @@ export const updateTeamInfo = /* GraphQL */ `
         FoulDesc
         __typename
       }
-      RankingPts
+      RankingPts {
+        MatchResult
+        Harmony
+        Ensemble
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -267,7 +277,12 @@ export const deleteTeamInfo = /* GraphQL */ `
         FoulDesc
         __typename
       }
-      RankingPts
+      RankingPts {
+        MatchResult
+        Harmony
+        Ensemble
+        __typename
+      }
       createdAt
       updatedAt
       __typename
