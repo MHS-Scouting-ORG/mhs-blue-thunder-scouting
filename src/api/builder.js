@@ -1,18 +1,37 @@
-const initScoring = _ => {
+const initAutoAmountScored = _ => {
   return {
-    Cones: {
-      Upper: 0,
-      Mid: 0,
-      Lower: 0
-    },
-    Cubes: {
-      Upper: 0,
-      Mid: 0,
-      Lower: 0
-    }
+    Amp: 0,
+    Speaker: 0,
   }
 
 }
+
+const initAutoPointsScored = _ => {
+  return {
+    Points: 0,
+    SpeakerPoints: 0,
+    AmpPoints: 0,
+  }
+}
+
+const initTeleAmountScored = _ => {
+  return {
+    Amp: 0,
+    Speaker: 0,
+    AmplifiedSpeaker: 0,
+    Cycles: 0,
+  }
+}
+
+const initTelePointsScored = _ => {
+  return {
+    Points: 0,
+    EndgamePoints: 0,
+    SpeakerPoints: 0,
+    AmpPoints: 0
+  }
+}
+
 
 const generateRandomScoring = function (cap) {
   if (!cap) {
@@ -71,7 +90,20 @@ const RankingPtsOpts = {
   LOSS: "Loss",
   MELODY_BONUS: "MelodyBonus",
   ENSEMBLE_BONUS: "EnsembleBonus",
+}
 
+const LineupSpeedOpts = {
+  NONE: "None",
+  SLOW: "Slow",
+  AVERAGE: "Average",
+  FAST: "Fast"
+}
+
+const IntakeRatingOpts = {
+  NONE: "None",
+  BAD: "Bad",
+  AVERAGE: "Average",
+  GOOD: "Good",
 }
 
 const selectPropsFromEnum = function (enumVals) {
@@ -118,51 +150,39 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Team: teamId,
     Regional: regionalId,
     Autonomous: {
-      AutonomousPlacement: 0,
-      Scored: initScoring(),
-      Attempted: initScoring(),
-      LeftCommunity: false,
-      ChargeStation: ChargeStationType.NONE,
+      StartingPosition: 0,
+      AmountScored: initAutoAmountScored(),
+      PointsScored: initAutoPointsScored(),
+      Left: false,
     },
     Teleop: {
-      Scored: initScoring(),
-      Attempted: initScoring(),
-      ChargeStation: ChargeStationType.NONE,
-      EndGame: ChargeStationType.NONE,
-      EndGameTally: {
-        Start: 0,
-        End: 0
-      },
-
-      ScoringTotal: {
-        Total: 0,
-        GridPoints: 0,
-        GridScoringByPlacement: {
-          High: 0,
-          Mid: 0,
-          Low: 0
-        },
-        Cones: 0,
-        Cubes: 0,
-      },
-      DriveStrength: "",
-      DriveSpeed: 0,
-      ConesAccuracy: zeroAccuracy(),
-      CubesAccuracy: zeroAccuracy(),
-      SmartPlacement: false,
-
+      AmountScoring: initTeleAmountScored(),
+      PointsScored: initTelePointsScored(),
+      StageResult: StageOpts.NONE,
+      EndGame: StageOpts.NONE,
     },
     RankingPts: [],
     Comments: "",
+    RobotInfo: {
+      FasterThanUs: false,
+      PassesUnderStage: false,
+      HangsFaster: false,
+      CountersDefense: false,
+      LineupSpeed: LineupSpeedOpts.NONE,
+      IntakeRating: IntakeRatingOpts.NONE,
+      WhatBrokeDesc: "",
+    },
     Penalties: {
       Fouls: 0,
       Tech: 0,
-      Penalties: []
+      Penalties: [],
+      FoulDesc: ""
     },
-    Priorities: [],
-
-
-
+    RankingPts: {
+      MatchResult: "",
+      Melody: false,
+      Ensemble: false,
+    },
   }
 
 }
@@ -221,7 +241,5 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
 /*
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
- * ChargeStationType - enum of valid charge stations types
- * IntakeType - enum of valid intake types
  */
-export { StageOpts, PenaltyOpts, RankingPtsOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, PenaltyOpts, RankingPtsOpts, LineupSpeedOpts, IntakeRatingOpts, generateRandomEntry, buildMatchEntry as default }
