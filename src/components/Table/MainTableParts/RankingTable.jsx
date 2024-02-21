@@ -2,24 +2,24 @@ import React, {useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "./CollapseTButton";
 import { uniqueArr } from './CalculationUtils'
+import { getRankingsForRegional } from "../../../api/bluealliance";
  
 
-function Bookmarks(props) {
+function RankingTable(props) {
   const filter = props.gFilter
-  const bookmarkedMatches = props.bookmarkData
-  const bookMarkFunc = props.handleBookmark
+  // const bookmarkedMatches = props.bookmarkData
+  // const bookMarkFunc = props.handleBookmark
+
+  const [rankingState,setRankingState] = useState([])
   
-  // const bookmarkData = teamData.filter((matchEntry) => {
-  //   const currentTeamNumber = matchEntry.Team.substring(3)
-  //   const currentMatchNumber = matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)
-  //   bookmarks.map((bookmarkedEntry) => {
-  //     const bookmarkedTeam = bookmarkedEntry.Team.substring(3)
-  //     const bookmarkedMatch = bookmarkedEntry.id.substring((matchEntry.id).indexOf("_") + 1)
-  //     if(currentTeamNumber === bookmarkedTeam && currentMatchNumber === bookmarkedMatch)
-  //       return true
-  //     return false
-  //   })
-  // })
+  useEffect(() => {
+    getRankingsForRegional('2023azva')
+      .then(data => {
+        console.log(data)
+        setRankingState(data)
+      })
+      .catch(err => console.log(err))
+  }, [])
 
   const [tableState, setTableState] = useState('none')
 
@@ -40,12 +40,11 @@ function Bookmarks(props) {
 
 
   const data = React.useMemo(
-    () => bookmarkedMatches.map(team => {
+    () => rankingState.map(team => {
         return {
-          TeamNumber: team.Team.substring(3),
-          Match: team.id.substring(team.id.indexOf("_") + 1),
+          TeamNumber: team.rankings.team_key,
         }
-      }),[tableState]
+      }),[]
   )
 
     const columns = React.useMemo(
@@ -90,7 +89,7 @@ function Bookmarks(props) {
                   </div>
                 }
               }
-        ], [tableState]
+        ], [data]
     )
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 
@@ -172,5 +171,5 @@ function Bookmarks(props) {
     )
 }
 
-export default Bookmarks
+export default RankingTable
 

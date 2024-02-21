@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../../api/bluealliance";
-import { tableHandler } from "../InnerTables/InnerTableUtils";
 import {calcColumnSort, arrMode} from "./CalculationUtils"
 import { ueTableData, } from "./MTEffectFunc"
 import { getMatchesForRegional} from "../../../api";
@@ -19,7 +18,7 @@ import FieldInfo from "./FieldInfo";
 import Penalties from "./Penalties";
 import TeamMatches from "./TeamMatches";
 import Bookmarks from "./Bookmarks";
-import TeamInnerTable from "../InnerTables/TeamInnerTable";
+import RankingTable from "./RankingTable"
 
 function MainTable(props) { 
   const regional = props.regional
@@ -58,6 +57,7 @@ function MainTable(props) {
         console.log(matchEntries)
     })
   }, [])
+    
   
   useEffect(() => {    //set opr data
       getOprs(regional)
@@ -111,6 +111,7 @@ const setDataModal = (row) => {
 //=========================================================//
 
 const addBookmark = (row) => {
+  console.log(bookmark)
   console.log(row)
   const teamNumber = row.original.Team
   const matchNumber = row.cells[0].value;
@@ -127,7 +128,7 @@ const addBookmark = (row) => {
       console.log(newBookmarkEntry)
 
       let tempBookmark = bookmark
-      tempBookmark.push(newBookmarkEntry)
+      tempBookmark.find(x => teamNumber === x.Team.substring(3) && matchNumber === x.id.substring((x.id).indexOf("_") + 1)) ? null : tempBookmark.push(newBookmarkEntry)
 
 
       console.log(tempBookmark)
@@ -274,6 +275,11 @@ const data = React.useMemo(
                               <div style={{display:'flex', justifyContent: 'left', columnGap: '100px'}}>
                               <TeamMatches handleBookmark = {addBookmark} information = {tableData} teamMatches = {apiData} gFilter = {globalFilter != undefined ? globalFilter : ''}></TeamMatches>
                               </div>    
+
+                              <div>
+                                <RankingTable></RankingTable>
+                              </div>
+
                               <br></br>  
                               <br></br>     
    
@@ -327,8 +333,6 @@ const data = React.useMemo(
           {/* left */}
           <RobotCapabilities information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotCapabilities>
           </div>
-
-         
           <div>
           {/* right */}
           <RobotAuto information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></RobotAuto>
@@ -341,16 +345,13 @@ const data = React.useMemo(
           {/* left */}
           <FieldInfo information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></FieldInfo>
           </div>
-
           <div>
           {/* right */}
           <Penalties information = {tableData} gFilter = {globalFilter != undefined ? globalFilter : ''}></Penalties>
           </div>
-
-  
         </div>
-
         <div style={{display: 'flex', justifyContent: 'left', columnGap:"100px"}}>
+          <RankingTable></RankingTable>
           
         </div>
       </div>
