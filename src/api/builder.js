@@ -47,7 +47,7 @@ const generateRandomScoring = function (cap) {
   }
 
 }
-const PenaltyKinds = {
+const PenaltyOpts = {
   YELLOW_CARD: "YellowCard",
   RED_CARD: "RedCard",
   DISABLED: "Disabled",
@@ -58,40 +58,20 @@ const PenaltyKinds = {
 
 }
 
-const ChargeStationType = {
-    DOCKED_ENGAGED: "DockedEngaged",
-    DOCKED: "Docked",
-    ATTEMPTED: "Attempted",
-    NONE: "None"
-}
-
-const IntakeType = {
-  SINGLE_SUBSTATION: "SingleSubStation",
-  DOUBLE_STATION: "DoubleStation",
-  PORTALS: "Portals",
-  SLIDING_SHELVES: "SlidingShelves",
-  GROUND: "Ground"
+const StageOpts = {
+  ONSTAGE: "Onstage",
+  ATTEMPTED: "Attempted",
+  PARKED: "Parked",
+  NONE: "None"
 }
 
 const RankingPtsOpts = {
   WIN: "Win",
   TIE: "Tie",
   LOSS: "Loss",
-  SUSTAINABILITY_BONUS: "SustainabilityBonus",
-  ACTIVATION_BONUS: "ActivationBonus",
+  MELODY_BONUS: "MelodyBonus",
+  ENSEMBLE_BONUS: "EnsembleBonus",
 
-}
-
-const PriorityOpts = {
-    HIGH: "High",
-    MID: "Mid",
-    LOW: "Low",
-    CONES: "Cones",
-    CUBES: "Cubes",
-    CHARGESTATION: "ChargeStation",
-    DEFENSE: "Defense",
-    SINGLE_SUBSTATION: "SingleSubstation",
-    DOUBLE_STATION: "DoubleStation",
 }
 
 const selectPropsFromEnum = function (enumVals) {
@@ -244,4 +224,4 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
  * ChargeStationType - enum of valid charge stations types
  * IntakeType - enum of valid intake types
  */
-export { ChargeStationType, IntakeType, PenaltyKinds, RankingPtsOpts, PriorityOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, PenaltyOpts, RankingPtsOpts, generateRandomEntry, buildMatchEntry as default }

@@ -46,7 +46,7 @@ export function makeEndGameDropDown(props) {
     <div>
       <DropDown
         title="⛓️End Game"
-        choices={["Onstage", "Parked", "Attempted", "None"]}
+        choices={["Onstage", "Attempted", "Parked", "None"]}
 
         value={endGameState}
 

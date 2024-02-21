@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts } from '../api/builder';
+import buildMatchEntry, { StageOpts, PenaltyOpts, RankingPtsOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
