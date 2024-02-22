@@ -3,22 +3,21 @@ import { useState } from "react";
 import CounterBox from "./CounterBox";
 import { PropTypes } from "prop-types";
 
-export function makeCounterBox(props, title, i) {
+export function makeCounterBox(props, title) {
 
-    function buttonMinus(i) {
-        props.changeState(i, props.counterBoxVals[i] - 1)
+    function buttonMinus() {
+        props.changeState(props.counterBoxVals - 1)
     }
 
-    function buttonPlus(i) {
-        props.changeState(i, props.counterBoxVals[i] + 1)
+    function buttonPlus() {
+        props.changeState(props.counterBoxVals + 1)
     }
 
     return (
         <div>
             <CounterBox
                 label={title}
-                index={i}
-                state={props.counterBoxVals[i]}
+                state={props.counterBoxVals}
                 minusButton={buttonMinus}
                 plusButton={buttonPlus}
             />
@@ -27,7 +26,7 @@ export function makeCounterBox(props, title, i) {
 }
 
 makeCounterBox.propTypes = {
-    counterBoxVals: PropTypes.array,
+    counterBoxVals: PropTypes.number,
     changeState: PropTypes.func
 
 }

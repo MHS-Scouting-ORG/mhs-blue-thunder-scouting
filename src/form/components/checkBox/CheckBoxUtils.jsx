@@ -87,8 +87,8 @@ export function makeBonusBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeState={({ target: { checked }}) => props.changeState(i, name, checked)}
-        checked={rankingState[i] === name}
+        changeState={({ target: { checked }}) => props.changeState(i, checked, name)}
+        checked={rankingState}
       />
     </div>
   )

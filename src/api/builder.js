@@ -46,7 +46,6 @@ const generateRandomScoring = function (cap) {
         Mid: 10,
         Lower: 10
       }
-
     }
   }
   return {
@@ -198,10 +197,9 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
   matchEntry.Penalties = {
     Fouls: Math.floor(Math.random() * 4),
     Tech: Math.floor(Math.random() * 4),
-    Penalties: selectPropsFromEnum(PenaltyKinds)
+    Penalties: selectPropsFromEnum(PenaltyOpts)
 
   }
-  matchEntry.Priorities = selectPropsFromEnum(PriorityOpts)
   matchEntry.RankingPts = selectPropsFromEnum(RankingPtsOpts)
   const Attempted = generateRandomScoring()
   const Scored = generateRandomScoring(Attempted)

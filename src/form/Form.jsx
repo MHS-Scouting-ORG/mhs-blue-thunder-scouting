@@ -66,8 +66,7 @@ class Form extends React.Component {
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
-      melody: false,
-      ensemble: false,
+      bonusStatus: ['', ''],
 
       // PENALTIES //
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
@@ -96,24 +95,59 @@ class Form extends React.Component {
     }
 
     // FUNCTION BINDING //
-    this.updateCounterBox = this.updateCounterBox.bind(this);
-    this.updateMatchData = this.updateMatchData.bind(this);
-    this.updateMatchType = this.updateMatchType.bind(this);
-    this.updateTeam = this.updateTeam.bind(this);
-    this.updateAutonomousPlacement = this.updateAutonomousPlacement.bind(this);
-    this.updateBoolean = this.updateBoolean.bind(this);
-    this.updateEndGameVal = this.updateEndGameVal.bind(this);
-    this.updatePenalty = this.updatePenalty.bind(this);
-    this.updateRankingPoints = this.updateRankingPoints.bind(this);
-    this.updateWhoWon = this.updateWhoWon.bind(this);
-    this.updateBonus = this.updateBonus.bind(this);
-    this.updateRatingSlider = this.updateRatingSlider.bind(this);
-    this.updateFoulComments = this.updateFoulComments.bind(this);
-    this.updateOverride = this.updateOverride.bind(this);
-    this.updateAutoDisplay = this.updateAutoDisplay.bind(this);
-    this.updateTeleDisplay = this.updateTeleDisplay.bind(this);
-    this.updateRobotDisplay = this.updateRobotDisplay.bind(this);
-    this.updatePenaltyDisplay = this.updatePenaltyDisplay.bind(this);
+
+    //match info
+    this.updateMatchType = this.updateMatchType.bind(this)
+    this.updateMatchData = this.updateMatchData.bind(this)
+    this.updateTeam = this.updateTeam.bind(this)
+
+    //auto specific
+    this.updateAutonomousPlacement = this.updateAutonomousPlacement.bind(this)
+    this.updateLeftStatus = this.updateLeftStatus.bind(this)
+
+    //scoring
+    this.updateAutoAmpScored = this.updateAutoAmpScored.bind(this)
+    this.updateAutoSpeakerScored = this.updateAutoSpeakerScored.bind(this)
+    this.updateTeleAmpScored = this.updateTeleAmpScored.bind(this)
+    this.updateTeleSpeakerScored = this.updateTeleSpeakerScored.bind(this)
+    this.updateTeleAmplifiedSpeakerScored = this.updateTeleAmplifiedSpeakerScored.bind(this)
+    this.updateEndGameVal = this.updateEndGameVal.bind(this)
+    this.updateNoteInTrap = this.updateNoteInTrap.bind(this)
+    this.updateHighNotesMade = this.updateHighNotesMade.bind(this)
+    this.updateHighNotesMissed = this.updateHighNotesMissed.bind(this)
+
+    //ranking pts
+    this.updateRankingPoints = this.updateRankingPoints.bind(this)
+    this.updateMatchResult = this.updateMatchResult.bind(this)
+    this.updateBonus = this.updateBonus.bind(this)
+
+    //penalties
+    this.updateYellowCard = this.updateYellowCard.bind(this)
+    this.updateRedCard = this.updateRedCard.bind(this)
+    this.updateDQ = this.updateDQ.bind(this)
+    this.updateBotBroke = this.updateBotBroke.bind(this)
+    this.updateNoShow = this.updateNoShow.bind(this)
+    this.updateFoulCount = this.updateFoulCount.bind(this)
+    this.updateTechFoulCount = this.updateTechFoulCount.bind(this)
+    this.updateFoulComments = this.updateFoulComments.bind(this)
+    this.updateRobotBrokenComments = this.updateRobotBrokenComments.bind(this)
+
+    //robot info
+    this.updateHangsFaster = this.updateHangsFaster.bind(this)
+    this.updateIsFaster = this.updateIsFaster.bind(this)
+    this.updateClearsStage = this.updateClearsStage.bind(this)
+    this.updateCountersDefense = this.updateCountersDefense.bind(this)
+    this.updateLineUpSpeed = this.updateLineUpSpeed.bind(this)
+    this.updateIntakeRating = this.updateIntakeRating.bind(this)
+
+    //override
+    this.updateOverride = this.updateOverride.bind(this)
+
+    //form component display on/off
+    this.updateAutoDisplay = this.updateAutoDisplay.bind(this)
+    this.updateTeleDisplay = this.updateTeleDisplay.bind(this)
+    this.updateRobotDisplay = this.updateRobotDisplay.bind(this)
+    this.updatePenaltyDisplay = this.updatePenaltyDisplay.bind(this)
   }
 
   //upon component init
@@ -171,7 +205,6 @@ class Form extends React.Component {
 
     //INIT
     this.setState({
-      comments: m.Comments,
       matchType: matchType,
       elmNum: (((m.id.substring(8)).indexOf("f") >= 0) ? (m.id.substring(m.id.length())) : ''), //MATCH ELM NUMBER
       matchNumber: matchNumber,
@@ -232,8 +265,8 @@ class Form extends React.Component {
   }
 
   // MATCH INFO //
-  updateMatchType(value, prop) {
-    this.setState({ [prop]: value })
+  updateMatchType(val, prop) {
+    this.setState({ [prop]: val })
   }
 
   updateMatchData (match) {
@@ -246,8 +279,12 @@ class Form extends React.Component {
   }
 
   // AUTO SPECIFIC //
-  updateAutonomousPlacement(value) {
-    this.setState({ autoPlacement: value })
+  updateAutonomousPlacement(val) {
+    this.setState({ autoPlacement: val })
+  }
+
+  updateLeftStatus(value) {
+    this.setState( {left: value} )
   }
 
   // SCORING //
@@ -257,44 +294,75 @@ class Form extends React.Component {
     this.setState({ counterBoxVals });
   }
 
-  updateEndGameVal(value) {
-    this.setState({ endGameVal: value })
+  updateAutoAmpScored(val) {
+    this.setState({ autoAmpScored: val })
+  }
+
+  updateAutoSpeakerScored(val) {
+    this.setState({ autoSpeakerScored: val })
+  }
+
+  updateTeleAmpScored(val) {
+    this.setState({ teleAmpScored: val })
+  }
+
+  updateTeleSpeakerScored(val) {
+    this.setState({ teleSpeakerScored: val })
+  }
+
+  updateTeleAmplifiedSpeakerScored(val) {
+    this.setState({ teleAmplifiedSpeakerScored: val })
+  }
+
+  updateHighNotesMade(val) {
+    this.setState({highNotesMade: val})
+  }
+
+  updateHighNotesMissed(val) {
+    this.setState({highNotesMissed: val})
+  }
+
+  updateEndGameVal(val) {
+    this.setState({ endGameVal: val })
+  }
+
+  updateNoteInTrap(val) {
+    this.setState({noteInTrap: val})
   }
 
   // RANKING PTS //
   updateRankingPoints(rankingState) {
-    let rankingPts = 0
-    if (rankingState[0] === "win") {
+    console.log(rankingState)
+    let rankingPts = this.state.rankingPts
+    if (rankingState === "win") {
       rankingPts = 2
     }
-    else if (rankingState[0] === "tie") {
+    else if (rankingState === "tie") {
       rankingPts = 1
     }
-    else if (rankingState[0] === "loss") {
+    else if (rankingState === "loss") {
       rankingPts = 0
     }
 
-    if (rankingState[1].trim() === "Melody") {
+    if (rankingState.trim() === "Melody") { //check if they have bonus (melody, ensemble)
       rankingPts++
     }
-    if (rankingState[2].trim() === "Ensemble") {
+    else if (rankingState.trim() === "Ensemble") {
       rankingPts++
     }
     this.setState({ rankingPts })
   }
 
-  updateWhoWon(value) {
-    let rankingState = [...this.state.rankingState]
-    rankingState[0] = value
-    this.setState({ rankingState })
-    this.updateRankingPoints(rankingState)
+  updateMatchResult(val) {
+    this.setState({matchResult: val})
+    this.updateRankingPoints(val)
   }
 
-  updateBonus(i, name, checked) {
-    let rankingState = [...this.state.rankingState]
-    rankingState[i] = checked ? name : ''
-    this.setState({ rankingState })
-    this.updateRankingPoints(rankingState)
+  updateBonus(i, val, name) {
+    let bonusStatus = [...this.state.bonusStatus]
+    bonusStatus[i] = val ? name : ''
+    this.setState({ bonusStatus })
+    this.updateRankingPoints(bonusStatus[i])
   }
 
   // PENALTIES //
@@ -302,6 +370,34 @@ class Form extends React.Component {
     let penaltyVal = [...this.state.penaltyVal]
     penaltyVal[i] = val
     this.setState({ penaltyVal })
+  }
+
+  updateYellowCard(val) {
+    this.setState({yellowCard: val})
+  }
+
+  updateRedCard(val) {
+    this.setState({redCard: val})
+  }
+
+  updateDQ(val) {
+    this.setState({dq: val})
+  }
+
+  updateBotBroke(val) {
+    this.setState({botBroke: val})
+  }
+
+  updateNoShow(val) {
+    this.setState({noShow: val})
+  }
+
+  updateFoulCount(val) {
+    this.setState({fouls: val})
+  }
+
+  updateTechFoulCount(val) {
+    this.setState({techFouls: val})
   }
 
   updateFoulComments(comment) {
@@ -313,16 +409,40 @@ class Form extends React.Component {
   }
 
   // ROBOT INFO //
-  updateBoolean(i, value) {
+  updateBoolean(i, val) {
     let booleans = [...this.state.booleans]
-    booleans[i] = value
+    booleans[i] = val
     this.setState({ booleans })
+  }
+
+  updateHangsFaster(val) {
+    this.setState({hangsFaster: val})
+  }
+
+  updateIsFaster(val) {
+    this.setState({isFaster: val})
+  }
+
+  updateClearsStage(val) {
+    this.setState({clearsStage: val})
+  }
+
+  updateCountersDefense(val) {
+    this.setState({countersDefense: val})
   }
 
   updateRatingSlider(i, value) {
     let ratingSliderVals = [...this.state.ratingSliderVals]
     ratingSliderVals[i] = value
     this.setState({ ratingSliderVals })
+  }
+
+  updateLineUpSpeed(val) {
+    this.setState({lineUpSpeed: val})
+  }
+
+  updateIntakeRating(val) {
+    this.setState({intakeRating: val})
   }
 
   // OVERRIDE //
@@ -334,7 +454,7 @@ class Form extends React.Component {
   //   this.setState( {totalPts} )
   //   this.setState( {ampPts} )
   //   this.setState( {speakerPts} )
-  // }97e3
+  // }
 
   // FORM COMPONENT DISPLAY ON/OFF //
   updateAutoDisplay () {
@@ -389,10 +509,10 @@ class Form extends React.Component {
                   <img alt="" src={'./images/auto placement.png'}></img>
                   {makeAutoPlacementDropDownBox({ changeState: this.updateAutonomousPlacement, dropDownVal: this.state.autoPlacement }, "Auto Placement: ", [1, 2, 3, 4])}
                   <br></br>
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amp Scored: ", 0)}
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 1)}
+                  {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Amp Scored: ")}
+                  {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Speaker Scored: ")}
                   <br></br>
-                  {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Leave ", 0)}
+                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: [...this.state.booleans] }, "Leave ", 0)}
                   <br></br>
                 </div>
               ) : (
@@ -409,17 +529,17 @@ class Form extends React.Component {
             return (this.state.teleOn ?
               (
                 <div>
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amp Scored: ", 2)}
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Speaker Scored: ", 3)}
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Amplified Speaker Scored: ", 4)}
+                  {makeCounterBox({ changeState: this.updateTeleAmpScored, counterBoxVals: this.state.teleAmpScored }, "Amp Scored: ")}
+                  {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
+                  {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMisc({changeState: this.updateBoolean, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Hangs Faster Than Us", 1)}
-                  {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Trap Scored ", 2)}
+                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Hangs Faster Than Us", 1)}
+                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: [...this.state.booleans] }, "Trap Scored ", 2)}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Notes Made: ", 5)}
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "High Notes Missed: ", 6)}
+                  {makeCounterBox({ changeState: this.updateHighNotesMade, counterBoxVals: this.state.highNotesMade }, "High Notes Made: ", 5)}
+                  {makeCounterBox({ changeState: this.updateHighNotesMissed, counterBoxVals: this.state.highNotesMissed }, "High Notes Missed: ", 6)}
                   <br></br>
                 </div>
               ) : (
@@ -435,11 +555,11 @@ class Form extends React.Component {
             return (this.state.robotOn ?
               (
                 <div>
-                  {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Faster Than Us ", 3)}
-                  {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Passes Under Stage ", 4)}
-                  {makeBooleanCheckBox({ changeState: this.updateBoolean, booleans: [...this.state.booleans] }, "Counters Defense ", 5)}
-                  {makeRatingSlider({changeState: this.updateRatingSlider, ratingSliderVals: [...this.state.ratingSliderVals]}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
-                  {makeRatingSlider({changeState: this.updateRatingSlider, ratingSliderVals: [...this.state.ratingSliderVals]}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
+                  {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: [...this.state.booleans] }, "Faster Than Us ", 3)}
+                  {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: [...this.state.booleans] }, "Passes Under Stage ", 4)}
+                  {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: [...this.state.booleans] }, "Counters Defense ", 5)}
+                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: [...this.state.ratingSliderVals]}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
+                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: [...this.state.ratingSliderVals]}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
                   <br></br>
                 </div>
               ) : (
@@ -455,8 +575,8 @@ class Form extends React.Component {
             return (this.state.penaltiesOn ?
               (
                 <div>
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Fouls: ", 7)}
-                  {makeCounterBox({ changeState: this.updateCounterBox, counterBoxVals: this.state.counterBoxVals }, "Tech Fouls: ", 8)}
+                  {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ", 7)}
+                  {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ", 8)}
                   <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.counterBoxVals[7] || this.state.counterBoxVals[8]}/>
                   {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
                     map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
@@ -481,12 +601,12 @@ class Form extends React.Component {
               { value: "tie", label: "Team Tied" },
               { value: "loss", label: "Team Lost" }
             ]}
-            changeState={this.updateWhoWon}
-            selected={this.state.rankingState[0]}
+            changeState={this.updateMatchResult}
+            selected={this.state.matchResult}
 
           />
-          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Melody ", 1)}
-          {makeBonusBox({ changeState: this.updateBonus, rankingState: this.state.rankingState, rankingPoints: this.state.rankingPts }, "Ensemble ", 2)}
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Melody ", 0)}
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Ensemble ", 1)}
           <Headers display={this.state.rankingPts} />
         </div>
 

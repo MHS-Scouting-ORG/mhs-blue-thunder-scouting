@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function RadioButton({label, options, changeState, selected }) {
+function RadioButton({ label, options, changeState, selected }) {
     return (
         <div>
             {(() => {
