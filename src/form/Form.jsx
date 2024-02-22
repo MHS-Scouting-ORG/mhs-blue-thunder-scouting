@@ -569,8 +569,8 @@ class Form extends React.Component {
                   {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: [...this.state.booleans] }, "Faster Than Us ", 3)}
                   {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: [...this.state.booleans] }, "Passes Under Stage ", 4)}
                   {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: [...this.state.booleans] }, "Counters Defense ", 5)}
-                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: [...this.state.ratingSliderVals]}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
-                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: [...this.state.ratingSliderVals]}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
+                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
+                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
                   <br></br>
                 </div>
               ) : (
