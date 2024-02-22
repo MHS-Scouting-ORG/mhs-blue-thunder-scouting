@@ -106,6 +106,13 @@ const IntakeRatingOpts = {
   GOOD: "Good",
 }
 
+const MatchResultOpts = {
+  WIN: "Win",
+  TIE: "Tie",
+  LOSS: "Loss",
+  NONE: "None"
+}
+
 const selectPropsFromEnum = function (enumVals) {
   const vals = []
   for (let i in enumVals) {
@@ -179,7 +186,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       FoulDesc: ""
     },
     RankingPts: {
-      MatchResult: "",
+      MatchResult: MatchResultOpts.NONE,
       Melody: false,
       Ensemble: false,
     },
