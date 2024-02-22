@@ -17,7 +17,7 @@ function RatingSlider(props) {
                 width: '100px',
                 margin: '0'
             }} onChange={(e) => { props.changeRatingSlider(e.target.value) }}></input>
-            <p>{props.state[props.index] === '' ? props.markerNames[0] : props.state[props.index]}</p>
+            <p>{props.state === '' ? props.markerNames[0] : props.state}</p>
         </div>
     )
 }
@@ -25,6 +25,7 @@ function RatingSlider(props) {
 RatingSlider.propTypes = {
     label: PropTypes.string,
     index: PropTypes.number,
+    state: PropTypes.number,
     markerNames: PropTypes.array,
     changeRatingSlider: PropTypes.func,
 }
