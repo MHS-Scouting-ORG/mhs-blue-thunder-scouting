@@ -344,12 +344,6 @@ class Form extends React.Component {
       rankingPts = 0
     }
 
-    // if (rankingState.trim() === "Melody") { //check if they have bonus (melody, ensemble)
-    //   rankingPts++
-    // }
-    // else if (rankingState.trim() === "Ensemble") {
-    //   rankingPts++
-    // }
     this.setState({ rankingPts })
     this.setState({ bonusStatus: [false,false]})
   }
@@ -419,9 +413,17 @@ class Form extends React.Component {
     this.setState({ robotBrokenComments: comment})
   }
 
+  // renderPenaltyBoxes() {
+  //   return(
+  //     <>
+  //       {makePenaltyBox({changestate: this.updateYellowCard, })}
+  //     </>
+  //   )
+  // }
+
   // ROBOT INFO //
   updateBoolean(i, val) {
-    let booleans = [...this.state.booleans]
+    let booleans = this.state.isFaster
     booleans[i] = val
     this.setState({ booleans })
   }
@@ -523,7 +525,7 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Amp Scored: ")}
                   {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Speaker Scored: ")}
                   <br></br>
-                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: [...this.state.booleans] }, "Leave ", 0)}
+                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: this.state.left }, "Leave ", 0)}
                   <br></br>
                 </div>
               ) : (
@@ -545,8 +547,8 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: [...this.state.booleans]}, "Hangs Faster Than Us", 1)}
-                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: [...this.state.booleans] }, "Trap Scored ", 2)}
+                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us", 1)}
+                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ", 2)}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
                   {makeCounterBox({ changeState: this.updateHighNotesMade, counterBoxVals: this.state.highNotesMade }, "High Notes Made: ", 5)}
@@ -566,9 +568,9 @@ class Form extends React.Component {
             return (this.state.robotOn ?
               (
                 <div>
-                  {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: [...this.state.booleans] }, "Faster Than Us ", 3)}
-                  {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: [...this.state.booleans] }, "Passes Under Stage ", 4)}
-                  {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: [...this.state.booleans] }, "Counters Defense ", 5)}
+                  {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ", 3)}
+                  {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Passes Under Stage ", 4)}
+                  {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters Defense ", 5)}
                   {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
                   {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
                   <br></br>

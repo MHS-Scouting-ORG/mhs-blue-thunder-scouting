@@ -114,26 +114,6 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let penFinal = [];
-  for (let i = 0; i < penalties.length; i++) {
-    let arr = penalties[i];
-    if (arr === 'Yellow Card ') {
-      penFinal[i] = PenaltyKinds.YELLOW_CARD;
-    } else if (arr === 'Red Card ') {
-      penFinal[i] = PenaltyKinds.RED_CARD;
-    } else if (arr === 'Disable ') {
-      penFinal[i] = PenaltyKinds.DISABLED
-    } else if (arr === 'Disqualifed ') {
-      penFinal[i] = PenaltyKinds.DQ
-    } else if (arr === 'Bot Broke ') {
-      penFinal[i] = PenaltyKinds.BROKEN_BOT
-    } else if (arr === 'No Show ') {
-      penFinal[i] = PenaltyKinds.NO_SHOW
-    } else {
-      penFinal[i] = PenaltyKinds.NONE;
-    }
-  }
-
   let rankFinal = [];
   for (let i = 0; i < rankingState.length; i++) {
     let rankOp = rankingState[i];
@@ -214,40 +194,28 @@ export async function submitState(props) {
   } else if (!incompleteForm || override) {
     const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
 
-    //AUTONOMOUS MATCH ENTREES
-    matchEntry.Autonomous.AutonomousPlacement = autoPlacement
+    // AUTO SPECIFIC //
+    matchEntry.Autonomous.StartingPosition = autoPlacement
 
-    matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted
+    matchEntry.Autonomous.AmountScored.Amp = autoAmpScored
+    matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
 
-    matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
-    matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
-    matchEntry.Autonomous.Scored.Cones.Lower = lowAutoCones
-    matchEntry.Autonomous.Scored.Cubes.Upper = highAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Mid = midAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Lower = lowAutoCubes
+    matchEntry.Autonomous.PointsScored.Points = undefined
+    matchEntry.Autonomous.PointsScored.SpeakerPoints = undefined
+    matchEntry.Autonomous.PointsScored.AmpPoints = undefined
 
-    matchEntry.Autonomous.LeftCommunity = mobility
-    matchEntry.Autonomous.ChargeStation = chargeAutoFinal
+    matchEntry.Autonomous.Left = left
 
     //TELEOP MATCH ENTREES
-    matchEntry.Teleop.Scored.Cones.Upper = highTeleCones
-    matchEntry.Teleop.Scored.Cones.Mid = midTeleCones
-    matchEntry.Teleop.Scored.Cones.Lower = lowTeleCones
-    matchEntry.Teleop.Scored.Cubes.Upper = highTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
+    matchEntry.Teleop.AmountScored.Amp = teleAmpScored
+    matchEntry.Teleop.AmountScored.Speaker = teleSpeakerScored
+    matchEntry.Teleop.AmountScored.AmplifiedSpeaker = teleAmplifiedSpeakerScored
+    matchEntry.Teleop.AmountScored.Cycles = undefined
 
-    matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted
+    matchEntry.Teleop.PointsScored.Points = undefined
+    matchEntry.Teleop.PointsScored.EndgamePoints = undefined
+    matchEntry.Teleop.PointsScored.SpeakerPoints = undefined
+    matchEntry.Teleop.PointsScored.AmpPoints = undefined
 
     matchEntry.Teleop.EndGame = chargeTeleFinal
     matchEntry.Teleop.EndGameTally.Start = endGameStart

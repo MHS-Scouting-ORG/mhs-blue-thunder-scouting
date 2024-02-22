@@ -161,12 +161,14 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       Left: false,
     },
     Teleop: {
-      AmountScoring: initTeleAmountScored(),
+      AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
       StageResult: StageOpts.NONE,
-      EndGame: StageOpts.NONE,
+      HumPlrScored: {
+        Made: 0,
+        Missed: 0
+      }
     },
-    RankingPts: [],
     Comments: "",
     RobotInfo: {
       FasterThanUs: false,
