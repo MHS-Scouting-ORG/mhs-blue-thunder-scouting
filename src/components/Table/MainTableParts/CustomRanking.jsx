@@ -5,19 +5,18 @@ import CollapseTButton from "./CollapseTButton";
 
 function CustomRanking(props) {
   const filter = props.gFilter
-  const [tableState, setTableState] = useState(' ')
+  const [tableState, setTableState] = useState('none')
 
    useEffect(() => {
      setGlobalFilter(filter)
    }, [filter])
 
     const toggleTable = () => {
-        //console.log("    ")
-        if(tableState === ' '){
-        setTableState('none')
+        if(tableState === 'none'){
+        setTableState(' ')
         }
         else {
-          setTableState(' ')
+          setTableState('none')
         }
       }
 
@@ -29,11 +28,9 @@ function CustomRanking(props) {
                 Header: "Team #",
                 accessor: "TeamNumber",
                 Cell: ({ row }) => (
-                  //<span{...row.getToggleRowExpandedProps()}>
                     <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
                       {row.values.TeamNumber}
                     </div>
-                  //</span>
                   )
               },
               {
@@ -106,10 +103,6 @@ function CustomRanking(props) {
                   )
                 })}
               </tr>
-
-              {/*
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-            */}
                   </React.Fragment>
             )
           })}  
@@ -123,5 +116,3 @@ function CustomRanking(props) {
 }
 
 export default CustomRanking
-
-//stats table holds avgs, team oprs, epa, numerical vals

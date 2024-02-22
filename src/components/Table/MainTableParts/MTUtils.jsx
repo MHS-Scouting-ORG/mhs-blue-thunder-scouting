@@ -3,9 +3,9 @@ import { getMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
 import { arrMode, getMax, calcDeviation, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities } from "./CalculationUtils"
 
-async function getTeams () {
+async function getTeams (regional) {
   try {
-  const data = await getTeamsInRegional('2023azva')
+  const data = await getTeamsInRegional(regional)
 
      return data.map(obj => {
        const teamNumObj = {
@@ -33,14 +33,14 @@ async function getTeams () {
         NChargeStation: 0,
 
         //=======ROBOT PERFORMANCE PROPS=========//
-        RobotSpeed: 'Faster/Same/Slower',
-        RobotStrength: 'Stronger/Same/Weaker',
-        RobotSize: 'Biggger/Same/Smaller',
+        RobotSpeed: 'Faster',
+        RobotStrength: 'Stronger',
+        RobotSize: 'Biggger',
         //custom for each year, scoring elements
-        RobotHang: 'Better/Same/Worse',
-        RobotSpeaker: 'Better/Same/Worse',
-        RobotAmp: 'Better/Same/Worse',
-        RobotTrap: 'Better/Same/Worse',
+        RobotHang: 'Better',
+        RobotSpeaker: 'Better',
+        RobotAmp: 'Better',
+        RobotTrap: 'Better',
         //=======Stats=========//
         AvgPoints: 0,
         AvgAutoPts: 0,
@@ -51,19 +51,19 @@ async function getTeams () {
         //======Capabilities======//
         CanDefend: 'TBD',
         //custom
-        CanUnderStage: 'Yes/No',
+        CanUnderStage: 'Yes',
         //determined internally not from form dependent on presence of points
-        CanHang: 'Yes/No',
-        CanSpeaker: 'Yes/No',
-        CanAmp: 'Yes/No',
-        CanTrap: 'Yes/No',
+        CanHang: 'Yes',
+        CanSpeaker: 'Yes',
+        CanAmp: 'Yes',
+        CanTrap: 'Yes',
         //======Auto====//
         //ln46 auto pts
         AutoStart: '1',
-        AutoCollide: 'Yes/No',
-        MostCommonScoring: 'Amp/Speaker',
+        AutoCollide: 'Yes',
+        MostCommonScoring: 'Amp',
         //===Field Info==//
-        MostCommonScoredElement: "Amp/Speaker",
+        MostCommonScoredElement: "Amp",
         AutoStart: '1',
         StagePosition: 'Center',
         //===Penalties===//
@@ -82,13 +82,13 @@ async function getTeams () {
   }
 }
 
-async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable) {
+async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable, regional) {
     try {
-    const data = await getMatchesForRegional('2023azva')
+    const data = await getMatchesForRegional(regional)
 
     const tableData = mtable
 
-    return teamNumbers/*same as teamsData from maintable*/.map(team => { 
+    return teamNumbers.map(team => { 
       
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum) 

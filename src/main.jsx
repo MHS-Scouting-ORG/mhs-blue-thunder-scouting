@@ -5,7 +5,7 @@ import App from './App.jsx'
 import './index.css'
 import MainTable from './components/Table/MainTableParts/MainTable.jsx'
 import Form from './form/Form.jsx'
-const regional = "2023azva"
+const regional = "2023hiho"
 const router = createBrowserRouter([
   {
     path: "/",

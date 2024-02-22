@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "./CollapseTButton";
-import { uniqueArr } from './CalculationUtils'
  
 
 function Bookmarks(props) {
@@ -29,7 +28,6 @@ function Bookmarks(props) {
 
 
     const toggleTable = () => {
-        //console.log("    ")
         if(tableState === 'none'){
         setTableState(' ')
         }
@@ -155,11 +153,6 @@ function Bookmarks(props) {
                   )
                 })}
               </tr>
-
-              {/*
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-            */}
-
                   </React.Fragment>
             )
           })}  

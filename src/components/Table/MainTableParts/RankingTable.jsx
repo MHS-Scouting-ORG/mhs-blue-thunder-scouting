@@ -1,28 +1,27 @@
 import React, {useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "./CollapseTButton";
-import { uniqueArr } from './CalculationUtils'
 import { getRankingsForRegional } from "../../../api/bluealliance";
  
 
 function RankingTable(props) {
   const filter = props.gFilter
-  // const bookmarkedMatches = props.bookmarkData
-  // const bookMarkFunc = props.handleBookmark
+  const regional = props.regionalEvent
 
   const [rankingState,setRankingState] = useState([])
-  
-  useEffect(() => {
-    getRankingsForRegional('2023azva')
-      .then(data => {
-        console.log(data)
-        setRankingState(data)
-      })
-      .catch(err => console.log(err))
-  }, [])
-
   const [tableState, setTableState] = useState('none')
 
+  
+  useEffect(() => {
+    getRankingsForRegional(regional)
+      .then(data => {
+        console.log(data)
+        setRankingState(Object.values(data)[1])
+      })
+      .catch(err => console.log(err))
+  }, [tableState])
+
+  
    useEffect(() => {
      setGlobalFilter(filter)
    }, [filter])
@@ -38,13 +37,23 @@ function RankingTable(props) {
         }
       }
 
+  const removeTeam = (row) => {
+    console.log(row.original.TeamNumber)
+    const clickedTeam = rankingState.find(x => x.rank === row.original.Rank)
+    const removedTeam = rankingState.toSpliced(rankingState.indexOf(clickedTeam), 1)
+    setRankingState(removedTeam)
+    console.log(removedTeam)
+  }
+
 
   const data = React.useMemo(
     () => rankingState.map(team => {
-        return {
-          TeamNumber: team.rankings.team_key,
-        }
-      }),[]
+      return team !== null ? 
+        {
+          TeamNumber: team.team_key.substring(3),
+          Rank: team.rank
+        } : null
+      }),[rankingState]
   )
 
     const columns = React.useMemo(
@@ -52,44 +61,25 @@ function RankingTable(props) {
             {
               Header: "Team Number",
               accessor: "TeamNumber",
+              Cell: ({ row }) => (
+                <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
+                  {row.values.TeamNumber}
+                </div>
+              )
             },
             {
-              Header: "Match Type",
-              accessor: "Match",
+              Header: "Rank",
+              accessor: "Rank",
             },
-              {
-                Header: 'TotalPts',
-                acessor: 'TotalPts'
-              },
-              {
-                Header: 'AutoPts',
-                accessor: 'AutoPts'
-              },
-              {
-                Header: 'Speaker',
-                accessor: 'SpeakerPts'
-              },
-              {
-                Header: 'Amp',
-                accessor: 'AmpPts'
-              },
-              {
-                Header: 'Endgame',
-                accessor: 'EndgamePts'
-              },
-              {
-                Header: 'Fouls',
-                accessor: 'Fouls'
-              },
-              {
-                Header: 'Remove Bookmark?',
-                Cell: ({row}) => {
-                  return <div>
-                    <button onClick={() => {bookMarkFunc(row,bookmarkedMatches)}}> DELETE </button>
-                  </div>
-                }
+            {
+              Header: 'Remove?',
+              Cell: ({row}) => {
+                return <div>
+                  <button onClick={() => {removeTeam(row)}}> X </button>
+                </div>
               }
-        ], [data]
+            }
+        ], [rankingState, data]
     )
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 
@@ -107,7 +97,7 @@ function RankingTable(props) {
     return (
         <div> 
             <div>
-      <CollapseTButton label="Bookmarked Matches" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Team List" toggleFunction={toggleTable}></CollapseTButton>
 
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -154,11 +144,6 @@ function RankingTable(props) {
                   )
                 })}
               </tr>
-
-              {/*
-                row.isExpanded ? tableHandler(row, headerState, visibleColumns, tableData, modalOpen, setDataModal, apiData): null
-            */}
-
                   </React.Fragment>
             )
           })}  
