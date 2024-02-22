@@ -81,14 +81,14 @@ export function makePenaltyBox(props, name, i) {
  * @returns checkbox component
  */
 export function makeBonusBox(props, name, i) {
-  let rankingState = props.rankingState;
+  let bonusChecked = props.bonusStatus[i];
 
   return (
     <div>
       <CheckBox
         label={name}
         changeState={({ target: { checked }}) => props.changeState(i, checked, name)}
-        checked={rankingState}
+        checked={bonusChecked}
       />
     </div>
   )

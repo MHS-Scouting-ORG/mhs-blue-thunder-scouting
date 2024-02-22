@@ -66,7 +66,7 @@ class Form extends React.Component {
       rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
-      bonusStatus: ['', ''],
+      bonusStatus: [false, false],
 
       // PENALTIES //
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
@@ -344,13 +344,14 @@ class Form extends React.Component {
       rankingPts = 0
     }
 
-    if (rankingState.trim() === "Melody") { //check if they have bonus (melody, ensemble)
-      rankingPts++
-    }
-    else if (rankingState.trim() === "Ensemble") {
-      rankingPts++
-    }
+    // if (rankingState.trim() === "Melody") { //check if they have bonus (melody, ensemble)
+    //   rankingPts++
+    // }
+    // else if (rankingState.trim() === "Ensemble") {
+    //   rankingPts++
+    // }
     this.setState({ rankingPts })
+    this.setState({ bonusStatus: [false,false]})
   }
 
   updateMatchResult(val) {
@@ -360,9 +361,19 @@ class Form extends React.Component {
 
   updateBonus(i, val, name) {
     let bonusStatus = [...this.state.bonusStatus]
-    bonusStatus[i] = val ? name : ''
+    // bonusStatus[i] = val ? name : ''
+    bonusStatus[i] = !bonusStatus[i]
     this.setState({ bonusStatus })
-    this.updateRankingPoints(bonusStatus[i])
+    
+    let rankingPts = this.state.rankingPts
+    if(!bonusStatus[i]){
+      rankingPts--;
+    }
+    else{
+      rankingPts++;
+    }
+    this.setState({ rankingPts })
+    // this.updateRankingPoints(bonusStatus[i])
   }
 
   // PENALTIES //
