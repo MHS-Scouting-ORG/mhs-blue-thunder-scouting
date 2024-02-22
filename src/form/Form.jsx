@@ -72,6 +72,7 @@ class Form extends React.Component {
       penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: false,
       redCard: false,
+      disable: false,
       dq: false,
       botBroke: false,
       noShow: false,
@@ -124,6 +125,7 @@ class Form extends React.Component {
     //penalties
     this.updateYellowCard = this.updateYellowCard.bind(this)
     this.updateRedCard = this.updateRedCard.bind(this)
+    this.updateDisable = this.updateDisable.bind(this)
     this.updateDQ = this.updateDQ.bind(this)
     this.updateBotBroke = this.updateBotBroke.bind(this)
     this.updateNoShow = this.updateNoShow.bind(this)
@@ -383,24 +385,34 @@ class Form extends React.Component {
     this.setState({ penaltyVal })
   }
 
-  updateYellowCard(val) {
-    this.setState({yellowCard: val})
+  updateYellowCard(event) {
+    let checked = event.target.checked
+    this.setState({yellowCard: checked ? "Yellow Card " : " "})
   }
 
-  updateRedCard(val) {
-    this.setState({redCard: val})
+  updateRedCard(event) {
+    let checked = event.target.checked
+    this.setState({redCard: checked ? "Red Card " : " "})
   }
 
-  updateDQ(val) {
-    this.setState({dq: val})
+  updateDisable(event) {
+    let checked = event.target.checked
+    this.setState({disable: checked ? "Disable " : " "})
   }
 
-  updateBotBroke(val) {
-    this.setState({botBroke: val})
+  updateDQ(event) {
+    let checked = event.target.checked
+    this.setState({dq: checked ? "Disqualified " : " "})
   }
 
-  updateNoShow(val) {
-    this.setState({noShow: val})
+  updateBotBroke(event) {
+    let checked = event.target.checked
+    this.setState({botBroke: checked ? "Bot Broke " : " "})
+  }
+
+  updateNoShow(event) {
+    let checked = event.target.checked
+    this.setState({noShow: checked ? "No Show " : ""})
   }
 
   updateFoulCount(val) {
@@ -588,11 +600,12 @@ class Form extends React.Component {
                 <div>
                   {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ", 7)}
                   {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ", 8)}
-                  <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.counterBoxVals[7] || this.state.counterBoxVals[8]}/>
-                  {(_ => ["Yellow Card", "Red Card", "Disable", "Disqualified", "Bot Broke", "No Show"].
-                    map((label, i) => makePenaltyBox({ changeState: this.updatePenalty, penaltyVal: this.state.penaltyVal }, `${label} `, i))
+                  <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls}/>
+                  {(_ => [{label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard}, {label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard}, {label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable}, {label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq}, {label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke}, {label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow},].
+                    map((obj, i) =>
+                      makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `, i))
                   )()}
-                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.penaltyVal[4] === "Bot Broke "}/>
+                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke === "Bot Broke "}/>
                 </div>
               ) : (
                 <div></div>

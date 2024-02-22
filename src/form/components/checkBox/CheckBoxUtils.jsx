@@ -61,13 +61,14 @@ export function makeBooleanCheckBox(props, name, i) {
  * @returns checkbox component
  */
 export function makePenaltyBox(props, name, i) {
-  let penaltyStates = props.penaltyVal;
+  let penaltyState = props.penaltyVal;
+
   return (
     <div>
       <CheckBox
         label={name}
-        changeState={factFunction(props, name, 13, i)}
-        checked={penaltyStates[i] === name}
+        changeState={props.changeState}
+        checked={penaltyState === name}
       />
     </div>
   )
