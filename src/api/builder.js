@@ -83,14 +83,6 @@ const StageOpts = {
   NONE: "None"
 }
 
-const RankingPtsOpts = {
-  WIN: "Win",
-  TIE: "Tie",
-  LOSS: "Loss",
-  MELODY_BONUS: "MelodyBonus",
-  ENSEMBLE_BONUS: "EnsembleBonus",
-}
-
 const LineupSpeedOpts = {
   NONE: "None",
   SLOW: "Slow",
@@ -154,6 +146,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     description: "",
     Team: teamId,
     Regional: regionalId,
+    TotalPoints: 0,
     Autonomous: {
       StartingPosition: 0,
       AmountScored: initAutoAmountScored(),
@@ -166,6 +159,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       EndGame: {
         MatchResult: MatchResultOpts.WIN,
         StageResult: StageOpts.NONE,
+        TrapScored: false,
         Melody: false,
         Ensemble: false
       },
@@ -248,4 +242,4 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { StageOpts, PenaltyOpts, RankingPtsOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }

@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { StageOpts, PenaltyOpts, RankingPtsOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -114,42 +114,28 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let rankFinal = [];
-  for (let i = 0; i < rankingState.length; i++) {
-    let rankOp = rankingState[i];
-    if (rankOp === "Team Won ") {
-      rankFinal.push(RankingPtsOpts.WIN);
-    }
-    else if (rankOp === "Team Tied ") {
-      rankFinal.push(RankingPtsOpts.TIE);
-    }
-    else if (rankOp === "Team Lost ") {
-      rankFinal.push(RankingPtsOpts.LOSS);
-    }
-    else if (rankOp === "Sustainability ") {
-      rankFinal.push(RankingPtsOpts.SUSTAINABILITY_BONUS);
-    }
-    else if (rankOp === "Activation ") {
-      rankFinal.push(RankingPtsOpts.ACTIVATION_BONUS);
-    }
-  }
+  let penaltyArr = [];
 
-  function findChargeStationType(chargeStation) {
-    if (chargeStation === 'None') {
-      return ChargeStationType.NONE;
-    } else if (chargeStation === 'DockedEngaged') {
-      return ChargeStationType.DOCKED_ENGAGED;
-    } else if (chargeStation === 'Docked') {
-      return ChargeStationType.DOCKED;
-    } else if (chargeStation === 'Parked') {
-      return ChargeStationType.Parked;
-    } else if (chargeStation === 'Attempted') {
-      return ChargeStationType.ATTEMPTED;
-    }
-  }
 
-  let chargeTeleFinal = findChargeStationType(endGameVal);
-  let chargeAutoFinal = findChargeStationType(chargeStationAuto);
+  // update matchResult to enum
+  MatchResultOpts.find(opt => {
+    matchResult = (MatchResultOpts[opt] === matchResult)
+  });
+
+  // update stageResult to enum
+  StageOpts.find(opt => {
+    endGameVal = (StageOpts[opt] === endGameVal)
+  });
+
+  // update lineUpSpeed to enum
+  LineupSpeedOpts.find(opt => {
+    lineUpSpeed = (LineupSpeedOpts[opt] === lineUpSpeed)
+  });
+
+  // update intakeRating to enum
+  IntakeRatingOpts.find(opt => {
+    intakeRating = (IntakeRatingOpts[opt] === intakeRating)
+  });
 
 
   //POINT CALCULATIONS
@@ -195,15 +181,18 @@ export async function submitState(props) {
   } else if (!incompleteForm || override) {
     const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
 
+    // POINTS //
+    matchEntry.TotalPoints = totalPts
+
     // AUTO SPECIFIC //
     matchEntry.Autonomous.StartingPosition = autoPlacement
 
     matchEntry.Autonomous.AmountScored.Amp = autoAmpScored
     matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
 
-    matchEntry.Autonomous.PointsScored.Points = undefined
-    matchEntry.Autonomous.PointsScored.SpeakerPoints = undefined
-    matchEntry.Autonomous.PointsScored.AmpPoints = undefined
+    matchEntry.Autonomous.PointsScored.Points = autoPts
+    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerScored
+    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpScored
 
     matchEntry.Autonomous.Left = left
 
@@ -213,13 +202,14 @@ export async function submitState(props) {
     matchEntry.Teleop.AmountScored.AmplifiedSpeaker = teleAmplifiedSpeakerScored
     matchEntry.Teleop.AmountScored.Cycles = cycles
 
-    matchEntry.Teleop.PointsScored.Points = undefined
-    matchEntry.Teleop.PointsScored.EndgamePoints = undefined
-    matchEntry.Teleop.PointsScored.SpeakerPoints = undefined
-    matchEntry.Teleop.PointsScored.AmpPoints = undefined
+    matchEntry.Teleop.PointsScored.Points = telePts
+    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePts
+    matchEntry.Teleop.PointsScored.SpeakerPoints = speakerPts
+    matchEntry.Teleop.PointsScored.AmpPoints = ampPts
 
     matchEntry.Teleop.EndGame.MatchResult = matchResult
     matchEntry.Teleop.EndGame.StageResult = endGameVal
+    matchEntry.Teleop.EndGame.TrapScored = noteInTrap
     matchEntry.Teleop.EndGame.Melody = melody
     matchEntry.Teleop.EndGame.Ensemble = ensemble
 
@@ -231,8 +221,8 @@ export async function submitState(props) {
     matchEntry.RobotInfo.PassesUnderStage = clearsStage
     matchEntry.RobotInfo.HangsFaster = hangsFaster
     matchEntry.RobotInfo.CountersDefense = countersDefense
-    matchEntry.RobotInfo.LineupSpeed = undefined
-    matchEntry.RobotInfo.IntakeRating = undefined
+    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
+    matchEntry.RobotInfo.IntakeRating = intakeRating
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
 
     // PENALTIES //
