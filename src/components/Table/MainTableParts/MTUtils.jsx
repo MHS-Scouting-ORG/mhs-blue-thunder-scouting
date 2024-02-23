@@ -157,6 +157,36 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rCubeAcc = mCubeAcc / maxCubeAcc
       const rCSPoints = mCSPoints / maxCSPoints
 
+      //Robot Performance
+      const mcRobotSpeed = getMCRobotSpeed(teamStats)
+      const mcRobotStrength = getMCRobotStrength(teamStats)
+      const mcRobotSize = getMCRobotSpeed(teamStats)
+
+      const mcRobotHang = getMCRobotHang(teamStats)
+      const mcRobotSpeaker = getMCRobotSpeaker(teamStats)
+      const mcRobotAmp = getMCRobotAmp(teamStats)
+      const mcRobotTrap = getMCRobotTrap(teamStats)
+      //custom robot stats
+      const avgCycles = calcAvgCycles(teamStats)
+      const avgSpeaker = calcAvgSpeaker(teamStats)
+      const avgAmp = calcAvgAmp(teamStats)
+      //robot capabilities 
+      const mcDefend = getMCDefend(teamStats)
+      //custom robot capabilities
+      const mcUnderStage = getMCUnderStage(teamStats)
+      //internal calc
+      const canHang = getHang(teamStats)
+      const canSpeaker = getSpeaker(teamStats)
+      const canAmp = getAmp(teamStats)
+      const canTrap = getTrap(teamStats)
+      //Auto
+      const autoStart = getAutoStart(teamStats)
+      const mcScoring = getmcScoring(teamStats)
+      //field info
+      
+    
+      console.log(mcRobotSpeed)
+
       //const mcSpeed = modeSpeed(teamStats)
 
       const tableDataObj = {
@@ -234,7 +264,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         CanTrap: team.CanTrap,
         //===auto==//
         AutoStart: team.AutoStart,
-        AutoCollide: team.AutoCollide,
+        //AutoCollide: team.AutoCollide,
         MostCommonScoring: team.MostCommonScoring,
         //===Field Info==//
         MostCommonScoredElement: team.MostCommonScoredElement,
