@@ -84,7 +84,7 @@ type HumPlrScoringType {
 type EndgameType {
   MatchResult: [MatchResultOpts]
   StageResult: [StageOpts]
-  Harmony: Boolean
+  Melody: Boolean
   Ensemble: Boolean
 }
 

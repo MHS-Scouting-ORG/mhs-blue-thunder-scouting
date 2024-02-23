@@ -85,7 +85,7 @@ export const getTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          Harmony
+          Melody
           Ensemble
           __typename
         }
@@ -177,7 +177,7 @@ export const listTeamInfos = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
-            Harmony
+            Melody
             Ensemble
             __typename
           }
@@ -270,7 +270,7 @@ export const teamInfosByTeam = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
-            Harmony
+            Melody
             Ensemble
             __typename
           }
@@ -363,7 +363,7 @@ export const teamInfosByRegional = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
-            Harmony
+            Melody
             Ensemble
             __typename
           }

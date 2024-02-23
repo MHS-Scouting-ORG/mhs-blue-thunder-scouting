@@ -94,7 +94,7 @@ export const createTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          Harmony
+          Melody
           Ensemble
           __typename
         }
@@ -174,7 +174,7 @@ export const updateTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          Harmony
+          Melody
           Ensemble
           __typename
         }
@@ -254,7 +254,7 @@ export const deleteTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          Harmony
+          Melody
           Ensemble
           __typename
         }
