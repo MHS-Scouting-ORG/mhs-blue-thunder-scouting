@@ -83,6 +83,7 @@ export const onCreateTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
+          TrapScored
           Melody
           Ensemble
           __typename
@@ -161,6 +162,7 @@ export const onUpdateTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
+          TrapScored
           Melody
           Ensemble
           __typename
@@ -239,6 +241,7 @@ export const onDeleteTeamInfo = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
+          TrapScored
           Melody
           Ensemble
           __typename
