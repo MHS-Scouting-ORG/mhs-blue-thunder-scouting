@@ -324,62 +324,228 @@ const getMax = (arr) => {
   return arr.sort((a, b) => b - a).shift();
 }
 
-const getMCRobotSpeed = (arr) => {
-  let indiv = arr.map(val => val.Info.RobotSpeed !== null ? val.Info.RobotSpeed : 0)
-  if (indiv.length == 0)
-    return null;
-  for(var i = 0; i < indiv.length; i++){
-    var el = indiv[i]
-    if (modeMap[el] == null)
-    modeMap[el] = 1;
-  else
-    modeMap[el]++;
-  if (modeMap[el] > maxCount) {
-    maxEl = el;
-    maxCount = modeMap[el];
-  }
-}
-console.log(maxEl)
-return maxEl;
-  }
+// const getMCRobotSpeed = (arr) => {
+//   let indiv = arr.map(val => val.Info.RobotSpeed !== null ? val.Info.RobotSpeed : 0)
+//   if (indiv.length == 0)
+//     return null;
+//   for(var i = 0; i < indiv.length; i++){
+//     var el = indiv[i]
+//     if (modeMap[el] == null)
+//     modeMap[el] = 1;
+//   else
+//     modeMap[el]++;
+//   if (modeMap[el] > maxCount) {
+//     maxEl = el;
+//     maxCount = modeMap[el];
+//   }
+// }
+// console.log(maxEl)
+// return maxEl;
+ // }
 
-  const getMCRobotStrength = (arr) => {
-    let indiv = arr.map(val => val.Info.RobotStrength !== null ? val.Info.RobotStrength : 0)
-    if (indiv.length == 0)
-      return null;
-    for(var i = 0; i < indiv.length; i++){
-      var el = indiv[i]
-      if (modeMap[el] == null)
-      modeMap[el] = 1;
-    else
-      modeMap[el]++;
-    if (modeMap[el] > maxCount) {
-      maxEl = el;
-      maxCount = modeMap[el];
-    }
-  }
-  console.log(maxEl)
-  return maxEl;
-    }
+  // const getMCRobotStrength = (arr) => {
+  //   let indiv = arr.map(val => val.Info.RobotStrength !== null ? val.Info.RobotStrength : 0)
+  //   if (indiv.length == 0)
+  //     return null;
+  //   for(var i = 0; i < indiv.length; i++){
+  //     var el = indiv[i]
+  //     if (modeMap[el] == null)
+  //     modeMap[el] = 1;
+  //   else
+  //     modeMap[el]++;
+  //   if (modeMap[el] > maxCount) {
+  //     maxEl = el;
+  //     maxCount = modeMap[el];
+  //   }
+  // }
+  // console.log(maxEl)
+  // return maxEl;
+  //   }
 
-    const getMCRobotSize = (arr) => {
-      let indiv = arr.map(val => val.Info.RobotSize !== null ? val.Info.RobotSize : 0)
-      if (indiv.length == 0)
-        return null;
-      for(var i = 0; i < indiv.length; i++){
-        var el = indiv[i]
-        if (modeMap[el] == null)
-        modeMap[el] = 1;
-      else
-        modeMap[el]++;
-      if (modeMap[el] > maxCount) {
-        maxEl = el;
-        maxCount = modeMap[el];
+  //   const getMCRobotSize = (arr) => {
+  //     let indiv = arr.map(val => val.Info.RobotSize !== null ? val.Info.RobotSize : 0)
+  //     if (indiv.length == 0)
+  //       return null;
+  //     for(var i = 0; i < indiv.length; i++){
+  //       var el = indiv[i]
+  //       if (modeMap[el] == null)
+  //       modeMap[el] = 1;
+  //     else
+  //       modeMap[el]++;
+  //     if (modeMap[el] > maxCount) {
+  //       maxEl = el;
+  //       maxCount = modeMap[el];
+  //     }
+  //   }
+  //   console.log(maxEl)
+  //   return maxEl;
+  //     }
+
+
+    const getCan = (arr) => {
+      let can = 'no'
+      for(let i = 0; i < arr.length; i++) {
+        if(arr[i] > 0){
+          can = 'yes'
+        }
       }
+      return can
     }
-    console.log(maxEl)
-    return maxEl;
+    
+    const getAutoStart = (arr) => {
+        let indiv = arr.map(val => val.Auto.AutoStart !== null ? val.Auto.AutoStart : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
       }
+      console.log(maxEl)
+      return maxEl;
+        }
+        
+  const getMCScoring = (arr) => {
+        let indiv = arr.map(val => val.Info.ScoringElement !== null ? val.Info.ScoringElement : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+const getMCStagePosition = (arr) => {
+        let indiv = arr.map(val => val.Teleop.Stage !== null ? val.Teleop.Stage : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+  const getFouls = (arr) => {
+        let indiv = arr.map(val => val.Penalties.Fouls !== null ? val.Penalties.Fouls : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+  const getTechs = (arr) => {
+        let indiv = arr.map(val => val.Penalties.Techs !== null ? val.Penalties.Techs : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+  const getYellowCards = (arr) => {
+        let indiv = arr.map(val => val.Penalties.YellowCard !== null ? val.Penalties.YellowCard : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+  const getRedCards = (arr) => {
+        let indiv = arr.map(val => val.Penalties.RedCards !== null ? val.Penalties.RedCards : 0)
+        if (indiv.length == 0)
+          return null;
+        for(var i = 0; i < indiv.length; i++){
+          var el = indiv[i]
+          if (modeMap[el] == null)
+          modeMap[el] = 1;
+        else
+          modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+          maxEl = el;
+          maxCount = modeMap[el];
+        }
+      }
+      console.log(maxEl)
+      return maxEl;
+        }
+
+      const getBrokenRobots = (arr) => {
+          let indiv = arr.map(val => val.Penalties.BrokenRobots !== null ? val.Penalties.BrokenRobots : 0)
+          if (indiv.length == 0)
+            return null;
+          for(var i = 0; i < indiv.length; i++){
+            var el = indiv[i]
+            if (modeMap[el] == null)
+            modeMap[el] = 1;
+          else
+            modeMap[el]++;
+          if (modeMap[el] > maxCount) {
+            maxEl = el;
+            maxCount = modeMap[el];
+          }
+        }
+        console.log(maxEl)
+        return maxEl;
+          }
+  
+
+
 
 //model mode function
 const arrMode = (array) => {
@@ -416,4 +582,4 @@ const calcAvg = (arr) => {
 
 
 
-export { arrMode, uniqueArr, getMax, calcDeviation, calcColumnSort, calcLowCubeAcc, calcLowCubeGrid, calcLowConeAcc, calcLowConeGrid, calcLowAcc, calcLowGrid, calcMidCubeAcc, calcMidCubeGrid, calcMidConeAcc, calcMidConeGrid, calcMidGridAcc, calcMidGrid, calcUpperCubeAcc, calcUpperCubeGrid, calcUpperConeAcc, calcUpperConeGrid, calcUpperGridAcc, calcUpperGrid, calcAvgCS, calcAvgCubeAcc, calcAvgCubePts, calcAvgConeAcc, calcAvgConePts, calcAvgGrid, calcAvgPoints, getPenalties, getPriorities };
+export {uniqueArr, getMCRobotSpeed,};
