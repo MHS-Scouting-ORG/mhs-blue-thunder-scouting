@@ -217,9 +217,10 @@ export async function submitState(props) {
     matchEntry.Teleop.PointsScored.SpeakerPoints = undefined
     matchEntry.Teleop.PointsScored.AmpPoints = undefined
 
-    matchEntry.Teleop.EndGame = chargeTeleFinal
-    matchEntry.Teleop.EndGameTally.Start = endGameStart
-    matchEntry.Teleop.EndGameTally.End = endGameEnd
+    matchEntry.Teleop.EndGame.MatchResult = matchResult
+    matchEntry.Teleop.EndGame.StageResult = endGameVal
+    matchEntry.Teleop.EndGame.Melody = melody
+    matchEntry.Teleop.EndGame.Ensemble = ensemble
 
     //SCORING TOTAL
     matchEntry.Teleop.ScoringTotal.Total = points

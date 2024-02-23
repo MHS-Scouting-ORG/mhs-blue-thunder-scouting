@@ -163,7 +163,12 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Teleop: {
       AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
-      StageResult: StageOpts.NONE,
+      EndGame: {
+        MatchResult: MatchResultOpts.WIN,
+        StageResult: StageOpts.NONE,
+        Melody: false,
+        Ensemble: false
+      },
       HumPlrScored: {
         Made: 0,
         Missed: 0
@@ -184,11 +189,6 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       Tech: 0,
       Penalties: [],
       FoulDesc: ""
-    },
-    RankingPts: {
-      MatchResult: "",
-      Melody: false,
-      Ensemble: false,
     },
   }
 
