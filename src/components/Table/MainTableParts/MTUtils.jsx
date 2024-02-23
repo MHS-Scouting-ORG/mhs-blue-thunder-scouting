@@ -158,9 +158,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       // const rCSPoints = mCSPoints / maxCSPoints
 
       //Robot Performance
-      const mcRobotSpeed = getMCRobotSpeed(teamStats)
-      const mcRobotStrength = getMCRobotStrength(teamStats)
-      const mcRobotSize = getMCRobotSpeed(teamStats)
+      const mcRobotSpeed = arrMode((team => team.Info.RobotSpeed !== null ? team.Info.RobotSpeed : 0 ))
+      const mcRobotStrength = arrMode((team => team.Info.RobotStrength !== null ? team.Info.RobotStrength : 0 ))
+      const mcRobotSize = arrMode((team => team.Info.RobotSize !== null ? team.Info.RobotSize : 0 ))
 
       const mcRobotHang = arrMode((team) => team.Performance.RobotHang !== null ? team.Performance.RobotHang : 0)
       const mcRobotSpeaker = arrMode((team) => team.Performance.RobotSpeaker !== null ? team.Performance.RobotSpeaker : 0)
@@ -175,7 +175,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       //custom robot capabilities
       const mcUnderStage = arrMode(teamStats.map(val => val.Info.UnderStage !== null ? val.Info.UnderStage : 0))
       //internal calc
-      const canHang = getCan(teamStats.map((x) => x.val !== null ? x.val : 0))
+      const canHang = getCan((team) => team.Teleop.Hang !== null ? team.Teleop.Hang : 0)
       const canSpeaker = getSpeaker(teamStats)
       const canAmp = getAmp(teamStats)
       const canTrap = getTrap(teamStats)
