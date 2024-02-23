@@ -46,7 +46,7 @@ class Form extends React.Component {
       left: false,
 
       // SCORING //
-      counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
+      // counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
       autoAmpScored: 0,
       autoSpeakerScored: 0,
       teleAmpScored: 0,
@@ -59,17 +59,19 @@ class Form extends React.Component {
       noteInTrap: false,
 
       totalPts: 0,
+      autoPts: 0,
+      telePts: 0,
       ampPts: 0,
       speakerPts: 0,
 
       // RANKING PTS //
-      rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
+      // rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
       bonusStatus: [false, false],
 
       // PENALTIES //
-      penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
+      // penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: false,
       redCard: false,
       disable: false,
@@ -82,12 +84,12 @@ class Form extends React.Component {
       robotBrokenComments: "",
 
       // ROBOT INFO //
-      booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
+      // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
       hangsFaster: false,
       isFaster: false,
       clearsStage: false,
       countersDefense: false,
-      ratingSliderVals: ["", ""], //lineup speed, intake rating
+      // ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
 
@@ -159,52 +161,6 @@ class Form extends React.Component {
       return
     let m = this.props.matchData;
 
-    let rankingStates = [...m.RankingPts];
-    let rankingPoints = 0;
-    if (rankingStates[0] === "Win") {
-      rankingStates[0] = "Team Won ";
-      rankingPoints = 2;
-    }
-    else if (rankingStates[0] === "Tie") {
-      rankingStates[0] = "Team Tied ";
-      rankingPoints = 1;
-    }
-    else if (rankingStates[0] === "Loss") {
-      rankingStates[0] = "Team Lost ";
-      rankingPoints = 0;
-    }
-
-    if (rankingStates[1] === "MelodyBonus") {
-      rankingStates[1] = "Melody ";
-      rankingPoints++;
-    }
-    if (rankingStates[2] === "EnsembleBonus") {
-      rankingStates[2] = "Ensemble ";
-      rankingPoints++;
-    }
-
-    let penaltyStates = [...m.Penalties.Penalties];
-    for (let i = 0; i < penaltyStates.length; i++) {
-      if (penaltyStates[i] === "YellowCard") {
-        penaltyStates[0] = "Yellow Card ";
-      }
-      if (penaltyStates[i] === "RedCard") {
-        penaltyStates[1] = "Red Card ";
-      }
-      if (penaltyStates[i] === "Disabled") {
-        penaltyStates[2] = "Disable ";
-      }
-      if (penaltyStates[i] === "DQ") {
-        penaltyStates[3] = "Disqualified ";
-      }
-      if (penaltyStates[i] === "BrokenBot") {
-        penaltyStates[4] = "Bot Broke ";
-      }
-      if (penaltyStates[i] === "NoShow") {
-        penaltyStates[5] = "No Show ";
-      }
-    }
-
     //INIT
     this.setState({
       matchType: matchType,
@@ -213,56 +169,60 @@ class Form extends React.Component {
       matchData: [],
       teamNumber: m.Team,
       teams: [],
-      override: true, //OVERRIDE
-      endGameVal: [
-          /*0 - Tele Charge Station*/m.Teleop.EndGame,
-          /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
-          /*2 - Engame End Time*/m.Teleop.EndGameTally.End
+
+      // AUTO SPECIFIC //
+      autoPlacement: m.Autonomous.StartingPosition,
+      left: m.Autonomous.Left,
+
+      // SCORING //
+      autoAmpScored: m.Autonomous.AmountScored.Amp,
+      autoSpeakerScored: m.Autonomous.AmountScored.Speaker,
+      teleAmpScored: m.Teleop.AmountScored.Amp,
+      teleSpeakerScored: m.Teleop.AmountScored.Speaker,
+      teleAmplifiedSpeakerScored: m.Teleop.AmountScored.AmplifiedSpeaker,
+      highNotesMade: m.Teleop.HumPlrScored.Made,
+      highNotesMissed: m.Teleop.HumPlrScored.Missed,
+
+      endGameVal: m.Teleop.EndGame.StageResult, //onstage, attempted, parked, none
+      noteInTrap: m.Teleop.EndGame.TrapScored,
+
+      totalPts: m.TotalPoints,
+      autoPts: m.Autonomous.PointsScored.Points,
+      telePts: m.Teleop.PointsScored.Points,
+
+      // RANKING PTS //
+      // rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
+      rankingPts: 0,
+      matchResult: m.Teleop.Endgame.MatchResult, //win, tie, loss
+      bonusStatus: [
+        m.Teleop.EndGame.Melody,
+        m.Teleop.EndGame.Ensemble
       ],
-      rankingPts: rankingPoints,
-      rankingState: rankingStates, //RANKING PTS STATES
-      penaltyVal: penaltyStates,
-      autoPlacement: m.Autonomous.AutonomousPlacement,
-      counterBoxVals: [ // number corresponds to their spot within the counterbox array
-          //AUTONOMOUS SCORING
-          /*0*/m.Autonomous.Scored.Cubes.Upper,
-          /*1*/m.Autonomous.Scored.Cubes.Mid,
-          /*2*/m.Autonomous.Scored.Cubes.Lower,
-          /*3*/m.Autonomous.Attempted.Cubes.Upper,
-          /*4*/m.Autonomous.Attempted.Cubes.Mid,
-          /*5*/m.Autonomous.Attempted.Cubes.Lower,
-          /*6*/m.Autonomous.Scored.Cones.Upper,
-          /*7*/m.Autonomous.Scored.Cones.Mid,
-          /*8*/m.Autonomous.Scored.Cones.Lower,
-          /*9*/m.Autonomous.Attempted.Cones.Upper,
-          /*10*/m.Autonomous.Attempted.Cones.Mid,
-          /*11*/m.Autonomous.Attempted.Cones.Lower,
-          //TELEOP SCORING
-          /*12*/m.Teleop.Scored.Cubes.Upper,
-          /*13*/m.Teleop.Scored.Cubes.Mid,
-          /*14*/m.Teleop.Scored.Cubes.Lower,
-          /*15*/m.Teleop.Attempted.Cubes.Upper,
-          /*16*/m.Teleop.Attempted.Cubes.Mid,
-          /*17*/m.Teleop.Attempted.Cubes.Lower,
-          /*18*/m.Teleop.Scored.Cones.Upper,
-          /*19*/m.Teleop.Scored.Cones.Mid,
-          /*20*/m.Teleop.Scored.Cones.Lower,
-          /*21*/m.Teleop.Attempted.Cones.Upper,
-          /*22*/m.Teleop.Attempted.Cones.Mid,
-          /*23*/m.Teleop.Attempted.Cones.Lower,
-          /*24*/m.Penalties.Fouls,
-          /*25*/m.Penalties.Tech
-      ],
-      booleans: [
-          /*0 - MobilityVal*/m.Autonomous.LeftCommunity,
-          /*1 - SmartPlacement*/m.Teleop.SmartPlacement
-      ],
-      totalPoints: m.Teleop.ScoringTotal.Total,
-      totalGrid: m.Teleop.ScoringTotal.GridPoints,
-      cubesAccuracy: m.Teleop.CubesAccuracy.Overall,
-      conesAccuracy: m.Teleop.ConesAccuracy.Overall,
-      cubesPts: m.Teleop.ScoringTotal.Cubes,
-      conesPts: m.Teleop.ScoringTotal.Cones,
+
+      // PENALTIES //
+      // penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
+      yellowCard: m.Penalties.PenaltiesCommited.YellowCard,
+      redCard: m.Penalties.PenaltiesCommited.RedCard,
+      disable: m.Penalties.PenaltiesCommited.Disabled,
+      dq: m.Penalties.PenaltiesCommited.DQ,
+      botBroke: m.Penalties.PenaltiesCommited.Broken,
+      noShow: m.Penalties.PenaltiesCommited.NoShow,
+      fouls: m.Penalties.Fouls,
+      techFouls: m.Penalties.Tech,
+      foulComments: m.Penalties.FoulDesc,
+      robotBrokenComments: m.RobotInfo.WhatBrokeDesc,
+
+      // ROBOT INFO //
+      // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
+      hangsFaster: m.RobotInfo.HangsFaster,
+      isFaster: m.RobotInfo.FasterThanUs,
+      clearsStage: m.RobotInfo.PassesUnderStage,
+      countersDefense: m.RobotInfo.CountersDefense,
+      lineUpSpeed: m.RobotInfo.LineupSpeed,
+      intakeRating: m.RobotInfo.IntakeRating,
+
+      // OVERRIDE //
+      override: false, //override bool
     })
   }
 
@@ -381,32 +341,32 @@ class Form extends React.Component {
 
   updateYellowCard(event) {
     let checked = event.target.checked
-    this.setState({yellowCard: checked ? "Yellow Card " : " "})
+    this.setState({yellowCard: checked})
   }
 
   updateRedCard(event) {
     let checked = event.target.checked
-    this.setState({redCard: checked ? "Red Card " : " "})
+    this.setState({redCard: checked})
   }
 
   updateDisable(event) {
     let checked = event.target.checked
-    this.setState({disable: checked ? "Disable " : " "})
+    this.setState({disable: checked})
   }
 
   updateDQ(event) {
     let checked = event.target.checked
-    this.setState({dq: checked ? "Disqualified " : " "})
+    this.setState({dq: checked})
   }
 
   updateBotBroke(event) {
     let checked = event.target.checked
-    this.setState({botBroke: checked ? "Bot Broke " : " "})
+    this.setState({botBroke: checked})
   }
 
   updateNoShow(event) {
     let checked = event.target.checked
-    this.setState({noShow: checked ? "No Show " : ""})
+    this.setState({noShow: checked})
   }
 
   updateFoulCount(val) {
@@ -424,14 +384,6 @@ class Form extends React.Component {
   updateRobotBrokenComments(comment) {
     this.setState({ robotBrokenComments: comment})
   }
-
-  // renderPenaltyBoxes() {
-  //   return(
-  //     <>
-  //       {makePenaltyBox({changestate: this.updateYellowCard, })}
-  //     </>
-  //   )
-  // }
 
   // ROBOT INFO //
   updateBoolean(i, val) {
@@ -475,12 +427,6 @@ class Form extends React.Component {
     this.setState({ override: val })
   }
 
-  // updatePoints(totalPts, ampPts, speakerPts) {
-  //   this.setState( {totalPts} )
-  //   this.setState( {ampPts} )
-  //   this.setState( {speakerPts} )
-  // }
-
   // FORM COMPONENT DISPLAY ON/OFF //
   updateAutoDisplay () {
     this.setState({ autoOn: !this.state.autoOn})
@@ -498,11 +444,11 @@ class Form extends React.Component {
     this.setState({ penaltiesOn: !this.state.penaltiesOn})
   }
 
-  // updatePoints(totalPts, ampPts, speakerPts) {
-  //   this.setState( {totalPts} )
-  //   this.setState( {ampPts} )
-  //   this.setState( {speakerPts} )
-  // }
+  updatePoints(totalPts, autoPts, telePts) {
+    this.setState( {totalPts} )
+    this.setState( {autoPts} )
+    this.setState ( {telePts} )
+  }
 
   // rendering physical and visible website components
   render() {
@@ -519,7 +465,7 @@ class Form extends React.Component {
           {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
           <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }}>GET MATCH TEAMS</button>
           <br></br>
-          {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, rankingStates: this.state.rankingState })}
+          {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, teams: this.state.teams })}
         </div>
 
         <br></br>
@@ -605,7 +551,7 @@ class Form extends React.Component {
                   <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls}/>
                   {(_ => [{label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard}, {label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard}, {label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable}, {label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq}, {label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke}, {label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow},].
                     map((obj, i) =>
-                      makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `, i))
+                      makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `))
                   )()}
                   <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke === "Bot Broke "}/>
                 </div>
