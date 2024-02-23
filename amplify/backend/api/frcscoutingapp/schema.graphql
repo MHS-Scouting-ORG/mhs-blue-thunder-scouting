@@ -82,8 +82,8 @@ type HumPlrScoringType {
 }
 
 type EndgameType {
-  MatchResult: [MatchResultOpts]
-  StageResult: [StageOpts]
+  MatchResult: MatchResultOpts
+  StageResult: StageOpts
   TrapScored: Boolean
   Melody: Boolean
   Ensemble: Boolean
