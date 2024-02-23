@@ -294,7 +294,6 @@ class Form extends React.Component {
 
   // RANKING PTS //
   updateRankingPoints(rankingState) {
-    console.log(rankingState)
     let rankingPts = this.state.rankingPts
     if (rankingState === "win") {
       rankingPts = 2
@@ -320,7 +319,7 @@ class Form extends React.Component {
     // bonusStatus[i] = val ? name : ''
     bonusStatus[i] = !bonusStatus[i]
     this.setState({ bonusStatus })
-    
+
     let rankingPts = this.state.rankingPts
     if(!bonusStatus[i]){
       rankingPts--;
