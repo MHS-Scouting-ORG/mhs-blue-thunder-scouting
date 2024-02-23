@@ -83,6 +83,7 @@ type HumPlrScoringType {
 
 type EndgameType {
   MatchResult: [MatchResultOpts]
+  StageResult: [StageOpts]
   Harmony: Boolean
   Ensemble: Boolean
 }
@@ -90,7 +91,7 @@ type EndgameType {
 type TeleopType {
   AmountScored: TeleScoring
   PointsScored: TelePointsScoring
-  StageResult: [StageOpts]
+  Endgame: EndgameType
   HumPlrScoring: HumPlrScoringType
 }
 
@@ -158,5 +159,4 @@ type TeamInfo @model @auth(rules : [{ allow: private, provider: iam}]) {
   Comments: String
   RobotInfo: RobotInfoType!
   Penalties: PenaltyType
-  RankingPts: EndgameType!
 }

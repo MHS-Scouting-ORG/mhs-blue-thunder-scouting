@@ -91,7 +91,13 @@ export const createTeamInfo = /* GraphQL */ `
           AmpPoints
           __typename
         }
-        StageResult
+        Endgame {
+          MatchResult
+          StageResult
+          Harmony
+          Ensemble
+          __typename
+        }
         HumPlrScoring {
           Made
           Missed
@@ -115,12 +121,6 @@ export const createTeamInfo = /* GraphQL */ `
         Tech
         Penalties
         FoulDesc
-        __typename
-      }
-      RankingPts {
-        MatchResult
-        Harmony
-        Ensemble
         __typename
       }
       createdAt
@@ -171,7 +171,13 @@ export const updateTeamInfo = /* GraphQL */ `
           AmpPoints
           __typename
         }
-        StageResult
+        Endgame {
+          MatchResult
+          StageResult
+          Harmony
+          Ensemble
+          __typename
+        }
         HumPlrScoring {
           Made
           Missed
@@ -195,12 +201,6 @@ export const updateTeamInfo = /* GraphQL */ `
         Tech
         Penalties
         FoulDesc
-        __typename
-      }
-      RankingPts {
-        MatchResult
-        Harmony
-        Ensemble
         __typename
       }
       createdAt
@@ -251,7 +251,13 @@ export const deleteTeamInfo = /* GraphQL */ `
           AmpPoints
           __typename
         }
-        StageResult
+        Endgame {
+          MatchResult
+          StageResult
+          Harmony
+          Ensemble
+          __typename
+        }
         HumPlrScoring {
           Made
           Missed
@@ -275,12 +281,6 @@ export const deleteTeamInfo = /* GraphQL */ `
         Tech
         Penalties
         FoulDesc
-        __typename
-      }
-      RankingPts {
-        MatchResult
-        Harmony
-        Ensemble
         __typename
       }
       createdAt

@@ -82,7 +82,13 @@ export const getTeamInfo = /* GraphQL */ `
           AmpPoints
           __typename
         }
-        StageResult
+        Endgame {
+          MatchResult
+          StageResult
+          Harmony
+          Ensemble
+          __typename
+        }
         HumPlrScoring {
           Made
           Missed
@@ -106,12 +112,6 @@ export const getTeamInfo = /* GraphQL */ `
         Tech
         Penalties
         FoulDesc
-        __typename
-      }
-      RankingPts {
-        MatchResult
-        Harmony
-        Ensemble
         __typename
       }
       createdAt
@@ -174,7 +174,13 @@ export const listTeamInfos = /* GraphQL */ `
             AmpPoints
             __typename
           }
-          StageResult
+          Endgame {
+            MatchResult
+            StageResult
+            Harmony
+            Ensemble
+            __typename
+          }
           HumPlrScoring {
             Made
             Missed
@@ -198,12 +204,6 @@ export const listTeamInfos = /* GraphQL */ `
           Tech
           Penalties
           FoulDesc
-          __typename
-        }
-        RankingPts {
-          MatchResult
-          Harmony
-          Ensemble
           __typename
         }
         createdAt
@@ -267,7 +267,13 @@ export const teamInfosByTeam = /* GraphQL */ `
             AmpPoints
             __typename
           }
-          StageResult
+          Endgame {
+            MatchResult
+            StageResult
+            Harmony
+            Ensemble
+            __typename
+          }
           HumPlrScoring {
             Made
             Missed
@@ -291,12 +297,6 @@ export const teamInfosByTeam = /* GraphQL */ `
           Tech
           Penalties
           FoulDesc
-          __typename
-        }
-        RankingPts {
-          MatchResult
-          Harmony
-          Ensemble
           __typename
         }
         createdAt
@@ -360,7 +360,13 @@ export const teamInfosByRegional = /* GraphQL */ `
             AmpPoints
             __typename
           }
-          StageResult
+          Endgame {
+            MatchResult
+            StageResult
+            Harmony
+            Ensemble
+            __typename
+          }
           HumPlrScoring {
             Made
             Missed
@@ -384,12 +390,6 @@ export const teamInfosByRegional = /* GraphQL */ `
           Tech
           Penalties
           FoulDesc
-          __typename
-        }
-        RankingPts {
-          MatchResult
-          Harmony
-          Ensemble
           __typename
         }
         createdAt
