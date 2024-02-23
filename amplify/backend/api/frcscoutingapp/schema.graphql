@@ -154,6 +154,7 @@ type TeamInfo @model @auth(rules : [{ allow: private, provider: iam}]) {
   description: String
   Team: ID! @index
   Regional: String! @index
+  TotalPoints: Int
   Autonomous: AutonomousType!
   Teleop: TeleopType!
   Comments: String

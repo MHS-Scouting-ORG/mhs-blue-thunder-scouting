@@ -51,6 +51,7 @@ export const getTeamInfo = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
         StartingPosition
         AmountScored {
@@ -143,6 +144,7 @@ export const listTeamInfos = /* GraphQL */ `
         description
         Team
         Regional
+        TotalPoints
         Autonomous {
           StartingPosition
           AmountScored {
@@ -236,6 +238,7 @@ export const teamInfosByTeam = /* GraphQL */ `
         description
         Team
         Regional
+        TotalPoints
         Autonomous {
           StartingPosition
           AmountScored {
@@ -329,6 +332,7 @@ export const teamInfosByRegional = /* GraphQL */ `
         description
         Team
         Regional
+        TotalPoints
         Autonomous {
           StartingPosition
           AmountScored {

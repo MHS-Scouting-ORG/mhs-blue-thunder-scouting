@@ -48,6 +48,7 @@ export const onCreateTeamInfo = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
         StartingPosition
         AmountScored {
@@ -125,6 +126,7 @@ export const onUpdateTeamInfo = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
         StartingPosition
         AmountScored {
@@ -202,6 +204,7 @@ export const onDeleteTeamInfo = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
         StartingPosition
         AmountScored {
