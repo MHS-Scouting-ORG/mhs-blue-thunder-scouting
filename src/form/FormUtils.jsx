@@ -62,8 +62,8 @@ export async function submitState(props) {
   //let rankingState = props.state.rankingState
   let rankingPts = props.state.rankingPts
   let matchResult = props.state.matchResult //rankingState[0]
-  let melody = props.state.melody //rankingState[1]
-  let ensemble = props.state.ensemble //rankingState[2]
+  let melody = props.state.bonusStatus[0] //rankingState[1]
+  let ensemble = props.state.bonusStatus[1] //rankingState[2]
 
 
   // PENALTIES //
@@ -71,6 +71,7 @@ export async function submitState(props) {
   let yellowCard = props.state.yellowCard; //penalties[0]
   let redCard = props.state.redCard; //penalties[1]
   let dq = props.state.dq; //penalties[2]
+  let disable = props.state.disable
   let botBroke = props.state.botBroke; //penalties[3]
   let noShow = props.state.noShow; //penalties[4]
   let fouls = props.state.fouls; //counterBoxVals[7]
@@ -114,8 +115,6 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let penaltyArr = [];
-
 
   // update matchResult to enum
   MatchResultOpts.find(opt => {
@@ -148,8 +147,7 @@ export async function submitState(props) {
   let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
 
-  props.setState(totalPts, ampPts, speakerPts)
-  // setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts);
+  props.setState(totalPts, autoPts, telePts)
 
   if (autoPlacement === '') {
     incompleteForm = true;
@@ -228,7 +226,12 @@ export async function submitState(props) {
     // PENALTIES //
     matchEntry.Penalties.Fouls = fouls
     matchEntry.Penalties.Tech = techFouls
-    matchEntry.Penalties.Penalties = undefined
+    matchEntry.Penalties.PenaltiesCommited.YellowCard = yellowCard
+    matchEntry.Penalties.PenaltiesCommited.RedCard = redCard
+    matchEntry.Penalties.PenaltiesCommited.Disabled = disable
+    matchEntry.Penalties.PenaltiesCommited.DQ = dq
+    matchEntry.Penalties.PenaltiesCommited.Broken = botBroke
+    matchEntry.Penalties.PenaltiesCommited.NoShow = noShow
     matchEntry.Penalties.FoulDesc = foulComments
 
     if (props.matchData === undefined) {

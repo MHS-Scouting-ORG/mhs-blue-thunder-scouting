@@ -60,15 +60,16 @@ export function makeBooleanCheckBox(props, name) {
  * @param i array position
  * @returns checkbox component
  */
-export function makePenaltyBox(props, name, i) {
+export function makePenaltyBox(props, name) {
   let penaltyState = props.penaltyVal;
+  // console.log("name: ", name)
 
   return (
     <div>
       <CheckBox
         label={name}
         changeState={props.changeState}
-        checked={penaltyState === name}
+        checked={penaltyState}
       />
     </div>
   )

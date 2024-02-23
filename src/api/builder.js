@@ -73,7 +73,6 @@ const PenaltyOpts = {
   BROKEN_BOT: "BrokenBot",
   NO_SHOW: "NoShow",
   NONE: "None"
-
 }
 
 const StageOpts = {
@@ -181,7 +180,14 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Penalties: {
       Fouls: 0,
       Tech: 0,
-      Penalties: [],
+      PenaltiesCommited: {
+        YellowCard: false,
+        RedCard: false,
+        Disabled: false,
+        DQ: false,
+        Broken: false,
+        NoShow: false,
+      },
       FoulDesc: ""
     },
   }
