@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { StageOpts, PenaltyOpts, RankingPtsOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -114,62 +114,28 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let penFinal = [];
-  for (let i = 0; i < penalties.length; i++) {
-    let arr = penalties[i];
-    if (arr === 'Yellow Card ') {
-      penFinal[i] = PenaltyKinds.YELLOW_CARD;
-    } else if (arr === 'Red Card ') {
-      penFinal[i] = PenaltyKinds.RED_CARD;
-    } else if (arr === 'Disable ') {
-      penFinal[i] = PenaltyKinds.DISABLED
-    } else if (arr === 'Disqualifed ') {
-      penFinal[i] = PenaltyKinds.DQ
-    } else if (arr === 'Bot Broke ') {
-      penFinal[i] = PenaltyKinds.BROKEN_BOT
-    } else if (arr === 'No Show ') {
-      penFinal[i] = PenaltyKinds.NO_SHOW
-    } else {
-      penFinal[i] = PenaltyKinds.NONE;
-    }
-  }
+  let penaltyArr = [];
 
-  let rankFinal = [];
-  for (let i = 0; i < rankingState.length; i++) {
-    let rankOp = rankingState[i];
-    if (rankOp === "Team Won ") {
-      rankFinal.push(RankingPtsOpts.WIN);
-    }
-    else if (rankOp === "Team Tied ") {
-      rankFinal.push(RankingPtsOpts.TIE);
-    }
-    else if (rankOp === "Team Lost ") {
-      rankFinal.push(RankingPtsOpts.LOSS);
-    }
-    else if (rankOp === "Sustainability ") {
-      rankFinal.push(RankingPtsOpts.SUSTAINABILITY_BONUS);
-    }
-    else if (rankOp === "Activation ") {
-      rankFinal.push(RankingPtsOpts.ACTIVATION_BONUS);
-    }
-  }
 
-  function findChargeStationType(chargeStation) {
-    if (chargeStation === 'None') {
-      return ChargeStationType.NONE;
-    } else if (chargeStation === 'DockedEngaged') {
-      return ChargeStationType.DOCKED_ENGAGED;
-    } else if (chargeStation === 'Docked') {
-      return ChargeStationType.DOCKED;
-    } else if (chargeStation === 'Parked') {
-      return ChargeStationType.Parked;
-    } else if (chargeStation === 'Attempted') {
-      return ChargeStationType.ATTEMPTED;
-    }
-  }
+  // update matchResult to enum
+  MatchResultOpts.find(opt => {
+    matchResult = (MatchResultOpts[opt] === matchResult)
+  });
 
-  let chargeTeleFinal = findChargeStationType(endGameVal);
-  let chargeAutoFinal = findChargeStationType(chargeStationAuto);
+  // update stageResult to enum
+  StageOpts.find(opt => {
+    endGameVal = (StageOpts[opt] === endGameVal)
+  });
+
+  // update lineUpSpeed to enum
+  LineupSpeedOpts.find(opt => {
+    lineUpSpeed = (LineupSpeedOpts[opt] === lineUpSpeed)
+  });
+
+  // update intakeRating to enum
+  IntakeRatingOpts.find(opt => {
+    intakeRating = (IntakeRatingOpts[opt] === intakeRating)
+  });
 
 
   //POINT CALCULATIONS
@@ -179,6 +145,7 @@ export async function submitState(props) {
   speakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
   ampPts = 2 * autoAmpScored + teleAmpScored
 
+  let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
 
   props.setState(totalPts, ampPts, speakerPts)
@@ -214,84 +181,55 @@ export async function submitState(props) {
   } else if (!incompleteForm || override) {
     const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
 
-    //AUTONOMOUS MATCH ENTREES
-    matchEntry.Autonomous.AutonomousPlacement = autoPlacement
+    // POINTS //
+    matchEntry.TotalPoints = totalPts
 
-    matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted
-    matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted
+    // AUTO SPECIFIC //
+    matchEntry.Autonomous.StartingPosition = autoPlacement
 
-    matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
-    matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
-    matchEntry.Autonomous.Scored.Cones.Lower = lowAutoCones
-    matchEntry.Autonomous.Scored.Cubes.Upper = highAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Mid = midAutoCubes
-    matchEntry.Autonomous.Scored.Cubes.Lower = lowAutoCubes
+    matchEntry.Autonomous.AmountScored.Amp = autoAmpScored
+    matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
 
-    matchEntry.Autonomous.LeftCommunity = mobility
-    matchEntry.Autonomous.ChargeStation = chargeAutoFinal
+    matchEntry.Autonomous.PointsScored.Points = autoPts
+    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerScored
+    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpScored
 
-    //TELEOP MATCH ENTREES
-    matchEntry.Teleop.Scored.Cones.Upper = highTeleCones
-    matchEntry.Teleop.Scored.Cones.Mid = midTeleCones
-    matchEntry.Teleop.Scored.Cones.Lower = lowTeleCones
-    matchEntry.Teleop.Scored.Cubes.Upper = highTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
-    matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
+    matchEntry.Autonomous.Left = left
 
-    matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted
-    matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted
+    // TELEOP //
+    matchEntry.Teleop.AmountScored.Amp = teleAmpScored
+    matchEntry.Teleop.AmountScored.Speaker = teleSpeakerScored
+    matchEntry.Teleop.AmountScored.AmplifiedSpeaker = teleAmplifiedSpeakerScored
+    matchEntry.Teleop.AmountScored.Cycles = cycles
 
-    matchEntry.Teleop.EndGame = chargeTeleFinal
-    matchEntry.Teleop.EndGameTally.Start = endGameStart
-    matchEntry.Teleop.EndGameTally.End = endGameEnd
+    matchEntry.Teleop.PointsScored.Points = telePts
+    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePts
+    matchEntry.Teleop.PointsScored.SpeakerPoints = speakerPts
+    matchEntry.Teleop.PointsScored.AmpPoints = ampPts
 
-    //SCORING TOTAL
-    matchEntry.Teleop.ScoringTotal.Total = points
-    matchEntry.Teleop.ScoringTotal.GridPoints = totalGridPts
+    matchEntry.Teleop.EndGame.MatchResult = matchResult
+    matchEntry.Teleop.EndGame.StageResult = endGameVal
+    matchEntry.Teleop.EndGame.TrapScored = noteInTrap
+    matchEntry.Teleop.EndGame.Melody = melody
+    matchEntry.Teleop.EndGame.Ensemble = ensemble
 
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.High = highGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Mid = midGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Low = lowGridPoints
+    matchEntry.HumPlrScored.Made = highNotesMade
+    matchEntry.HumPlrScored.Missed = highNotesMissed
 
-    matchEntry.Teleop.ScoringTotal.Cones = conePts
-    matchEntry.Teleop.ScoringTotal.Cubes = cubePts
+    // ROBOT INFO //
+    matchEntry.RobotInfo.FasterThanUs = isFaster
+    matchEntry.RobotInfo.PassesUnderStage = clearsStage
+    matchEntry.RobotInfo.HangsFaster = hangsFaster
+    matchEntry.RobotInfo.CountersDefense = countersDefense
+    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
+    matchEntry.RobotInfo.IntakeRating = intakeRating
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
 
-    //DRIVE
-    matchEntry.Teleop.DriveStrength = driveStrength
-    matchEntry.Teleop.DriveSpeed = driveSpeed
-
-    matchEntry.Teleop.SmartPlacement = smartPlacement
-
-    //CONE ACCURACIES
-    matchEntry.Teleop.ConesAccuracy.High = conesHighTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Mid = conesMidTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Low = conesLowTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Overall = conesTeleAutoAccuracy
-
-    //CUBE ACCURACIES
-    matchEntry.Teleop.CubesAccuracy.High = cubesHighTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Mid = cubesMidTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Low = cubesLowTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Overall = cubesTeleAutoAccuracy
-
-    //MATCH DETAILS
-    matchEntry.RankingPts = rankFinal;
-
-    matchEntry.Comments = comments
-
+    // PENALTIES //
     matchEntry.Penalties.Fouls = fouls
     matchEntry.Penalties.Tech = techFouls
-    matchEntry.Penalties.Penalties = penFinal;
-
-    matchEntry.Priorities = stratFinal;
+    matchEntry.Penalties.Penalties = undefined
+    matchEntry.Penalties.FoulDesc = foulComments
 
     if (props.matchData === undefined) {
 

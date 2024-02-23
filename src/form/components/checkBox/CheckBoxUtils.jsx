@@ -35,11 +35,11 @@ export function makeStrategyBox(props, name, i) {
  * @param i array position
  * @returns checkbox component
  */
-export function makeBooleanCheckBox(props, name, i) {
-  let booleanStates = props.booleans;
+export function makeBooleanCheckBox(props, name) {
+  let bool = props.booleans;
 
   function changeBooleanCheckBox({ target : { checked } }){
-    props.changeState(i,checked)
+    props.changeState(checked)
   }
 
   return (
@@ -47,7 +47,7 @@ export function makeBooleanCheckBox(props, name, i) {
       <CheckBox
         label={name}
         changeState={changeBooleanCheckBox}
-        checked={booleanStates[i]}
+        checked={bool}
       />
     </div>
   )
