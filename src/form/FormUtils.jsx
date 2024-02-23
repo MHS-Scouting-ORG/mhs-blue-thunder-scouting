@@ -159,6 +159,7 @@ export async function submitState(props) {
   speakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
   ampPts = 2 * autoAmpScored + teleAmpScored
 
+  let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
 
   props.setState(totalPts, ampPts, speakerPts)
@@ -206,11 +207,11 @@ export async function submitState(props) {
 
     matchEntry.Autonomous.Left = left
 
-    //TELEOP MATCH ENTREES
+    // TELEOP //
     matchEntry.Teleop.AmountScored.Amp = teleAmpScored
     matchEntry.Teleop.AmountScored.Speaker = teleSpeakerScored
     matchEntry.Teleop.AmountScored.AmplifiedSpeaker = teleAmplifiedSpeakerScored
-    matchEntry.Teleop.AmountScored.Cycles = undefined
+    matchEntry.Teleop.AmountScored.Cycles = cycles
 
     matchEntry.Teleop.PointsScored.Points = undefined
     matchEntry.Teleop.PointsScored.EndgamePoints = undefined
@@ -222,45 +223,23 @@ export async function submitState(props) {
     matchEntry.Teleop.EndGame.Melody = melody
     matchEntry.Teleop.EndGame.Ensemble = ensemble
 
-    //SCORING TOTAL
-    matchEntry.Teleop.ScoringTotal.Total = points
-    matchEntry.Teleop.ScoringTotal.GridPoints = totalGridPts
+    matchEntry.HumPlrScored.Made = highNotesMade
+    matchEntry.HumPlrScored.Missed = highNotesMissed
 
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.High = highGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Mid = midGridPoints
-    matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Low = lowGridPoints
+    // ROBOT INFO //
+    matchEntry.RobotInfo.FasterThanUs = isFaster
+    matchEntry.RobotInfo.PassesUnderStage = clearsStage
+    matchEntry.RobotInfo.HangsFaster = hangsFaster
+    matchEntry.RobotInfo.CountersDefense = countersDefense
+    matchEntry.RobotInfo.LineupSpeed = undefined
+    matchEntry.RobotInfo.IntakeRating = undefined
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
 
-    matchEntry.Teleop.ScoringTotal.Cones = conePts
-    matchEntry.Teleop.ScoringTotal.Cubes = cubePts
-
-    //DRIVE
-    matchEntry.Teleop.DriveStrength = driveStrength
-    matchEntry.Teleop.DriveSpeed = driveSpeed
-
-    matchEntry.Teleop.SmartPlacement = smartPlacement
-
-    //CONE ACCURACIES
-    matchEntry.Teleop.ConesAccuracy.High = conesHighTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Mid = conesMidTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Low = conesLowTeleAutoAccuracy
-    matchEntry.Teleop.ConesAccuracy.Overall = conesTeleAutoAccuracy
-
-    //CUBE ACCURACIES
-    matchEntry.Teleop.CubesAccuracy.High = cubesHighTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Mid = cubesMidTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Low = cubesLowTeleAutoAccuracy
-    matchEntry.Teleop.CubesAccuracy.Overall = cubesTeleAutoAccuracy
-
-    //MATCH DETAILS
-    matchEntry.RankingPts = rankFinal;
-
-    matchEntry.Comments = comments
-
+    // PENALTIES //
     matchEntry.Penalties.Fouls = fouls
     matchEntry.Penalties.Tech = techFouls
-    matchEntry.Penalties.Penalties = penFinal;
-
-    matchEntry.Priorities = stratFinal;
+    matchEntry.Penalties.Penalties = undefined
+    matchEntry.Penalties.FoulDesc = foulComments
 
     if (props.matchData === undefined) {
 
