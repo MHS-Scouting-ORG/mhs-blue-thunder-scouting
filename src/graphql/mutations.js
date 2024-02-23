@@ -121,7 +121,15 @@ export const createTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommited {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
         FoulDesc
         __typename
       }
@@ -203,7 +211,15 @@ export const updateTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommited {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
         FoulDesc
         __typename
       }
@@ -285,7 +301,15 @@ export const deleteTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommited {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
         FoulDesc
         __typename
       }

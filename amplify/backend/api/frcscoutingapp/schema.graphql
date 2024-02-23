@@ -65,16 +65,16 @@ enum MatchResultOpts {
   Loss
 }
 
-enum PenaltyOpts {
-  YellowCard
-  RedCard
-  Disabled
-  DQ
-  Broken
-  NoShow
-}
-
 # types
+
+type PenaltyOpts {
+  YellowCard: Boolean
+  RedCard: Boolean
+  Disabled: Boolean
+  DQ: Boolean
+  Broken: Boolean
+  NoShow: Boolean
+}
 
 type HumPlrScoringType {
   Made: Int
@@ -99,7 +99,7 @@ type TeleopType {
 type PenaltyType {
   Fouls: Int
   Tech: Int
-  Penalties: [PenaltyOpts]
+  PenaltiesCommited: PenaltyOpts
   FoulDesc: String
 }
 

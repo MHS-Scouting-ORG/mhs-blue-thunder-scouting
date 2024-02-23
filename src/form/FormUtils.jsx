@@ -70,9 +70,10 @@ export async function submitState(props) {
   // let penalties = props.state.penaltyVal;
   let yellowCard = props.state.yellowCard; //penalties[0]
   let redCard = props.state.redCard; //penalties[1]
-  let dq = props.state.dq; //penalties[2]
-  let botBroke = props.state.botBroke; //penalties[3]
-  let noShow = props.state.noShow; //penalties[4]
+  let disable = props.state.disable //penalties[2]
+  let dq = props.state.dq; //penalties[3]
+  let botBroke = props.state.botBroke; //penalties[4]
+  let noShow = props.state.noShow; //penalties[5]
   let fouls = props.state.fouls; //counterBoxVals[7]
   let techFouls = props.state.techFouls; //counterBoxVals[8]
   let foulComments = props.state.foulComments;
@@ -114,8 +115,8 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let penaltyArr = [];
-
+  let penaltyArr = [yellowCard, redCard, disable, dq, botBroke, noShow]
+  let newPenaltyArr = penaltyArr.filter(bool => bool)
 
   // update matchResult to enum
   MatchResultOpts.find(opt => {
