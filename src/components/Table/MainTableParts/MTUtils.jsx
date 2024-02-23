@@ -162,14 +162,14 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const mcRobotStrength = getMCRobotStrength(teamStats)
       const mcRobotSize = getMCRobotSpeed(teamStats)
 
-      const mcRobotHang = getMCRobotHang(teamStats)
-      const mcRobotSpeaker = getMCRobotSpeaker(teamStats)
-      const mcRobotAmp = getMCRobotAmp(teamStats)
-      const mcRobotTrap = getMCRobotTrap(teamStats)
+      const mcRobotHang = arrMode((team) => team.Performance.RobotHang !== null ? team.Performance.RobotHang : 0)
+      const mcRobotSpeaker = arrMode((team) => team.Performance.RobotSpeaker !== null ? team.Performance.RobotSpeaker : 0)
+      const mcRobotAmp = arrMode((team) => team.Performance.RobotAmp !== null ? team.Performance.RobotAmp : 0)
+      const mcRobotTrap = arrMode((team) => team.Performance.RobotTrap !== null ? team.Performance.RobotTrap : 0)
       //custom robot stats
-      const avgCycles = calcAvgCycles(teamStats)
-      const avgSpeaker = calcAvgSpeaker(teamStats)
-      const avgAmp = calcAvgAmp(teamStats)
+      const avgCycles = calcAvg((team) => team.Scoring.Cycles !== null ? team.Scoring.Cycles : 0)
+      const avgSpeaker = calcAvg((team) => team.Scoring.Speaker !== null ? team.Scoring.Speaker : 0)
+      const avgAmp = calcAvg((team) => team.Scoring.Amp !== null ? team.Scoring.Amp : 0)
       //robot capabilities 
       const mcDefend = getMCDefend(teamStats)
       //custom robot capabilities
