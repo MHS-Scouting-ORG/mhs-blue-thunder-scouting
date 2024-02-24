@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import { uniqueArr } from '../TableUtils/CalculationUtils'
+// import { getTeamsInRegional } from '../../../api/bluealliance';
 
 
 function TeamMatches(props) {
@@ -9,8 +10,17 @@ function TeamMatches(props) {
   const teamData = props.teamMatches;
   const bookMarkFunc = props.handleBookmark
   const apiData = props.teamMatches;
+  
+  // const regional = props.event
 
-  const allTeamEntries = teamData.map((data) => { return (data.Team) });
+  // const allTeamEntries = async () => { //teamData.map((data) => { return (data.Team) });
+
+  //   const teams = await getTeamsInRegional(regional)
+  //   return teams.
+  // }
+  //console.log(allTeamEntries())
+
+  const allTeamEntries = teamData.map((data) => { return (data.team) })
   const teams = uniqueArr(allTeamEntries);
 
   const [tableState, setTableState] = useState('none');

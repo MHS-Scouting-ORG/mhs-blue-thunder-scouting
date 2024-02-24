@@ -173,7 +173,7 @@ function Summary(props) {
 
             >
               {/* first row container */}
-              <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
+              <div >
             
                 <div>
                   <RankingTable regionalEvent={regional} {...filterState} /> 
@@ -185,9 +185,9 @@ function Summary(props) {
                 
               </div>
               {/* Second row container */}
-              <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
+              <div>
 
-                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} {...filterState}></TeamMatches>
+                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event = {regional} {...filterState}></TeamMatches>
                 <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
 
               </div>
@@ -212,7 +212,7 @@ function Summary(props) {
 
       <div>
         {/* topRow container */}
-        <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
+        <div >
 
           <div>
             <RobotCapabilities {...filterState} />
@@ -224,7 +224,7 @@ function Summary(props) {
         </div>
 
         {/* secondRow container*/}
-        <div style={{ display: 'flex', justifyContent: 'center', columnGap: "100px" }}>
+        <div >
 
           <div>
             <StatsTable {...filterState} />
