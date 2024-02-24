@@ -1,59 +1,57 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
-import { teamMatchesByRegional, getTeam, listTeams } from '../graphql/queries'
+import { teamMatchesByRegional, getTeam, listTeams} from '../graphql/queries'
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
-import buildMatchEntry from './builder'
+import  buildMatchEntry  from './builder'
 
 const client = generateClient()
 
 /**
  * Subscribe to create and update events
- * @param {*} updateFn 
- * @param {*} errorFn 
+ * @param {*} updateFn
+ * @param {*} errorFn
  */
-const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
+const apiSubscribeToMatchUpdates = async function(updateFn, errorFn) {
 
     client.graphql({ query: onCreateTeamMatch }).subscribe({
-        next: ({ value }) => updateFn(value),
+        next: ({value}) => updateFn(value),
         error: (errorFn || (err => console.log(err)))
     })
-    client.graphql({ query: onUpdateTeamMatch }).subscribe({
+    client.graphql({ query : onUpdateTeamMatch }).subscribe({
         next: updateFn,
-        error: (errorFn || (err => console.log(err)))
+        error : (errorFn || (err => console.log(err)))
     })
 }
 
 /*
  * Get a Team by their TeamNumber  that are currently in our database
  */
-const apiGetTeam = async function (teamNumber) {
-    return await client.graphql({ query: getTeam, variables: { id: teamNumber } })
+const apiGetTeam = async function(teamNumber) {
+    return await client.graphql({query: getTeam, variables :{ id:teamNumber} })
 }
 
 /*
  * Add a team to our database
  */
-const apiAddTeam = async function (team) {
-    await client.graphql({ query: createTeam, variables: { input: team } })
+const apiAddTeam = async function(team) {
+    await client.graphql({ query: createTeam, variables : { input: team }})
 }
 
-const apiUpdateTeam = async function (team, data) {
-    await client.graphql({
-        query: updateTeam, variables: {
-            input: {
-                ...data,
-                id: team.id,
-            }
-        }
-    })
+const apiUpdateTeam = async function(team, data) {
+  await client.graphql({ query : updateTeam, variables : {
+    input: {
+       ...data,
+      id: team.id,
+    }
+  }})
 }
 
 /*
  * Get All the teams in our database
  */
-const apiListTeams = async function () {
-    return client.graphql({ query: listTeams })
+const apiListTeams = async function() {
+    return client.graphql({ query : listTeams })
 }
 
 /*
@@ -62,24 +60,20 @@ const apiListTeams = async function () {
  * - regionalId - the regional id;  this is identified by the same id used in the bluealliance api
  * - teamNumber (optional) - the teamNumber
  */
-const getMatchesForRegional = async function (regionalId, teamNumber) {
-    if (!teamNumber) {
-        return client.graphql({
-            query: teamMatchesByRegional, variables: {
-                Regional: regionalId,
-            }
-        })
-    }
-    return client.graphql({
-        query: teamMatchesByRegional, variables: {
+const getMatchesForRegional = async function(regionalId, teamNumber) {
+    if(!teamNumber) {
+        return client.graphql({ query : teamMatchesByRegional, variables : {
             Regional: regionalId,
-            filter: {
-                Team: {
-                    eq: teamNumber
-                }
+        }})
+    }
+    return client.graphql({ query : teamMatchesByRegional, variables :{
+        Regional: regionalId,
+        filter: {
+            Team: {
+                eq: teamNumber
             }
         }
-    })
+    }})
 }
 
 /*
@@ -89,62 +83,54 @@ const getMatchesForRegional = async function (regionalId, teamNumber) {
  * - teamId - the team id
  * - matchid - the match id
  */
-const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId) {
-    if (regionalId === undefined) {
+const apiCreateTeamMatchEntry = async function(regionalId, teamId, matchId) {
+    if(regionalId === undefined) {
         throw new Error("Regional not provided")
     }
-    if (teamId === undefined) {
+    if(teamId === undefined) {
         throw new Error("Team Id not provided")
     }
-    if (matchId === undefined) {
+    if(matchId === undefined) {
         throw new Error(`MatchId not provided; matchId ${matchId}`)
     }
 
-    return client.graphql({
-        query: createTeamMatch, variables: {
-            input: buildMatchEntry(regionalId, teamId, matchId),
-        }
-    })
+    return client.graphql({ query : createTeamMatch, variables :{
+        input: buildMatchEntry(regionalId, teamId, matchId),
+    }})
 }
 
 
-const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
-    if (!regionalId) {
+const apiUpdateTeamMatch = async function(regionalId, teamId, matchId, data) {
+    if(!regionalId) {
         throw new Error("Regional not provided")
     }
-    if (!teamId) {
+    if(!teamId) {
         throw new Error("Team Id not provided")
     }
-    if (!matchId) {
+    if(!matchId) {
         throw new Error("MatchId not provided")
     }
     const input = {
-        ...data,
-        id: matchId,
-        name: "",
-        Team: teamId,
-        Regional: regionalId,
+            ...data,
+            id: matchId,
+            name: "",
+            Team: teamId,
+            Regional: regionalId,
     }
 
-    return client.graphql({
-        query: updateTeamMatch, variables: {
-            input
-        }
-    })
+    return client.graphql({ query : updateTeamMatch, variables : {
+        input
+   }})
 
 
 }
 
-const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
-    await client.graphql({
-        query: deleteTeamMatch, variables: {
-            input: {
-                id: matchId,
-                Team: teamId,
-                Regional: regionalId
-            }
-        }
-    })
+const apiDeleteTeamMatch = async function(regionalId, teamId, matchId) {
+    await client.graphql({ query : deleteTeamMatch, variables : {input : {
+        id: matchId,
+        Team: teamId,
+        Regional: regionalId
+    }  }})
 }
 
 export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }

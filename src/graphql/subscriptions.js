@@ -40,9 +40,11 @@ export const onDeleteTeam = /* GraphQL */ `
     }
   }
 `;
-export const onCreateTeamInfo = /* GraphQL */ `
-  subscription OnCreateTeamInfo($filter: ModelSubscriptionTeamInfoFilterInput) {
-    onCreateTeamInfo(filter: $filter) {
+export const onCreateTeamMatch = /* GraphQL */ `
+  subscription OnCreateTeamMatch(
+    $filter: ModelSubscriptionTeamMatchFilterInput
+  ) {
+    onCreateTeamMatch(filter: $filter) {
       id
       name
       description
@@ -131,9 +133,11 @@ export const onCreateTeamInfo = /* GraphQL */ `
     }
   }
 `;
-export const onUpdateTeamInfo = /* GraphQL */ `
-  subscription OnUpdateTeamInfo($filter: ModelSubscriptionTeamInfoFilterInput) {
-    onUpdateTeamInfo(filter: $filter) {
+export const onUpdateTeamMatch = /* GraphQL */ `
+  subscription OnUpdateTeamMatch(
+    $filter: ModelSubscriptionTeamMatchFilterInput
+  ) {
+    onUpdateTeamMatch(filter: $filter) {
       id
       name
       description
@@ -222,9 +226,11 @@ export const onUpdateTeamInfo = /* GraphQL */ `
     }
   }
 `;
-export const onDeleteTeamInfo = /* GraphQL */ `
-  subscription OnDeleteTeamInfo($filter: ModelSubscriptionTeamInfoFilterInput) {
-    onDeleteTeamInfo(filter: $filter) {
+export const onDeleteTeamMatch = /* GraphQL */ `
+  subscription OnDeleteTeamMatch(
+    $filter: ModelSubscriptionTeamMatchFilterInput
+  ) {
+    onDeleteTeamMatch(filter: $filter) {
       id
       name
       description

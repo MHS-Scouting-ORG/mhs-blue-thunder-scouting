@@ -43,9 +43,9 @@ export const listTeams = /* GraphQL */ `
     }
   }
 `;
-export const getTeamInfo = /* GraphQL */ `
-  query GetTeamInfo($id: ID!, $Regional: String!, $Team: ID!) {
-    getTeamInfo(id: $id, Regional: $Regional, Team: $Team) {
+export const getTeamMatch = /* GraphQL */ `
+  query GetTeamMatch($id: ID!, $Regional: String!, $Team: ID!) {
+    getTeamMatch(id: $id, Regional: $Regional, Team: $Team) {
       id
       name
       description
@@ -134,16 +134,16 @@ export const getTeamInfo = /* GraphQL */ `
     }
   }
 `;
-export const listTeamInfos = /* GraphQL */ `
-  query ListTeamInfos(
+export const listTeamMatches = /* GraphQL */ `
+  query ListTeamMatches(
     $id: ID
-    $regionalTeam: ModelTeamInfoPrimaryCompositeKeyConditionInput
-    $filter: ModelTeamInfoFilterInput
+    $regionalTeam: ModelTeamMatchPrimaryCompositeKeyConditionInput
+    $filter: ModelTeamMatchFilterInput
     $limit: Int
     $nextToken: String
     $sortDirection: ModelSortDirection
   ) {
-    listTeamInfos(
+    listTeamMatches(
       id: $id
       regionalTeam: $regionalTeam
       filter: $filter
@@ -243,15 +243,15 @@ export const listTeamInfos = /* GraphQL */ `
     }
   }
 `;
-export const teamInfosByTeam = /* GraphQL */ `
-  query TeamInfosByTeam(
+export const teamMatchesByTeam = /* GraphQL */ `
+  query TeamMatchesByTeam(
     $Team: ID!
     $sortDirection: ModelSortDirection
-    $filter: ModelTeamInfoFilterInput
+    $filter: ModelTeamMatchFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    teamInfosByTeam(
+    teamMatchesByTeam(
       Team: $Team
       sortDirection: $sortDirection
       filter: $filter
@@ -350,15 +350,15 @@ export const teamInfosByTeam = /* GraphQL */ `
     }
   }
 `;
-export const teamInfosByRegional = /* GraphQL */ `
-  query TeamInfosByRegional(
+export const teamMatchesByRegional = /* GraphQL */ `
+  query TeamMatchesByRegional(
     $Regional: String!
     $sortDirection: ModelSortDirection
-    $filter: ModelTeamInfoFilterInput
+    $filter: ModelTeamMatchFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    teamInfosByRegional(
+    teamMatchesByRegional(
       Regional: $Regional
       sortDirection: $sortDirection
       filter: $filter

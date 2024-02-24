@@ -49,12 +49,12 @@ export const deleteTeam = /* GraphQL */ `
     }
   }
 `;
-export const createTeamInfo = /* GraphQL */ `
-  mutation CreateTeamInfo(
-    $input: CreateTeamInfoInput!
-    $condition: ModelTeamInfoConditionInput
+export const createTeamMatch = /* GraphQL */ `
+  mutation CreateTeamMatch(
+    $input: CreateTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
   ) {
-    createTeamInfo(input: $input, condition: $condition) {
+    createTeamMatch(input: $input, condition: $condition) {
       id
       name
       description
@@ -143,12 +143,12 @@ export const createTeamInfo = /* GraphQL */ `
     }
   }
 `;
-export const updateTeamInfo = /* GraphQL */ `
-  mutation UpdateTeamInfo(
-    $input: UpdateTeamInfoInput!
-    $condition: ModelTeamInfoConditionInput
+export const updateTeamMatch = /* GraphQL */ `
+  mutation UpdateTeamMatch(
+    $input: UpdateTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
   ) {
-    updateTeamInfo(input: $input, condition: $condition) {
+    updateTeamMatch(input: $input, condition: $condition) {
       id
       name
       description
@@ -237,12 +237,12 @@ export const updateTeamInfo = /* GraphQL */ `
     }
   }
 `;
-export const deleteTeamInfo = /* GraphQL */ `
-  mutation DeleteTeamInfo(
-    $input: DeleteTeamInfoInput!
-    $condition: ModelTeamInfoConditionInput
+export const deleteTeamMatch = /* GraphQL */ `
+  mutation DeleteTeamMatch(
+    $input: DeleteTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
   ) {
-    deleteTeamInfo(input: $input, condition: $condition) {
+    deleteTeamMatch(input: $input, condition: $condition) {
       id
       name
       description
