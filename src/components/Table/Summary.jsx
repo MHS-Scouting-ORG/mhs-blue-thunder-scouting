@@ -1,30 +1,25 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs } from "../../../api/bluealliance";
-import { calcColumnSort, arrMode } from "./CalculationUtils"
-import { ueTableData, } from "./MTEffectFunc"
-import { getMatchesForRegional } from "../../../api";
-import GlobalFilter from "../GlobalFilter";
-import List from "../List";
-import Modal from "../Modal";
-import StatsTable from "./StatsTable";
-import RobotPerformance from "./RobotPerformance";
-import RobotCapabilities from "./RobotCapabilities";
-import RobotAuto from "./RobotAuto";
-import CustomRanking from "./CustomRanking";
-import FieldInfo from "./FieldInfo";
-import Penalties from "./Penalties";
-import TeamMatches from "./TeamMatches";
-import Bookmarks from "./Bookmarks";
-import RankingTable from "./RankingTable"
+import { getOprs } from "../../api/bluealliance";
+import { calcColumnSort} from "./TableUtils/CalculationUtils"
+import { ueTableData, } from "./TableUtils/MTEffectFunc"
+import { getMatchesForRegional } from "../../api";
+import GlobalFilter from "./TableUtils/GlobalFilter";
+import List from "./TableUtils/List";
+import StatsTable from "./Tables/StatsTable";
+import RobotPerformance from "./Tables/RobotPerformance";
+import RobotCapabilities from "./Tables/RobotCapabilities";
+import RobotAuto from "./Tables/RobotAuto";
+import FieldInfo from "./Tables/FieldInfo";
+import Penalties from "./Tables/Penalties";
+import TeamMatches from "./Tables/TeamMatches";
+import Bookmarks from "./Tables/Bookmarks";
+import RankingTable from "./Tables/RankingTable"
 
-function MainTable(props) {
+function Summary(props) {
   const regional = props.regional
 
   const [tableData, setTableData] = useState([]); //data on table
-
-  const [modalState, setModalState] = useState(false);
-  const [modalData, setModalData] = useState();
 
   const [sortBy, setSortBy] = useState([]);
 
@@ -74,40 +69,9 @@ function MainTable(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy,])
 
-  const modalClose = () => {
-    setModalState(false);
-  }
-
-  // const modalOpen = () => {
-  //   setModalState(true)
-  //   return modalState
-  // }
-
-  // const setDataModal = (row) => {
-
-  //   const getApiData =  async () => {
-  //     return await getMatchesForRegional('2023azva')
-  //       .then(data => {
-  //         let apiData = data.data.teamMatchesByRegional.items
-  //           return apiData
-  //     })
-  //   }
-
-  //     let setModal = apiData;
-  //     setModal = getApiData().filter(x => x.Team === row.original.Team).filter(team => team.id === regional + "_" + row.original.Match);
-  //     setModalData(setModal)
-  // }
-
-
-  //=========================================================//
-
   const addBookmark = (row) => {
-    console.log(bookmark)
-    console.log(row)
     const teamNumber = row.original.Team
     const matchNumber = row.cells[0].value;
-    console.log(teamNumber)
-    console.log(matchNumber)
 
     const changeApiData = async () => {
       try {
@@ -116,20 +80,16 @@ function MainTable(props) {
 
         const arrNewBookmark = newApiData.filter((matchEntry) => (teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)))
         const newBookmarkEntry = arrNewBookmark[0]
-        console.log(newBookmarkEntry)
 
         let tempBookmark = bookmark
         tempBookmark.find(x => teamNumber === x.Team.substring(3) && matchNumber === x.id.substring((x.id).indexOf("_") + 1)) ? null : tempBookmark.push(newBookmarkEntry)
 
-
-        console.log(tempBookmark)
         setBookmark(tempBookmark)
       }
       catch (err) {
         console.log(err)
       }
     }
-    console.log(bookmark)
     changeApiData();
   }
 
@@ -139,20 +99,8 @@ function MainTable(props) {
 
     const newBookmarkEntries = bookmark.filter((bookmarkedEntry) => !(teamNumber === bookmarkedEntry.Team.substring(3) && matchNumber === bookmarkedEntry.id.substring((bookmarkedEntry.id).indexOf("_") + 1))).splice(0)
 
-    console.log(newBookmarkEntries)
     setBookmark(newBookmarkEntries)
   }
-  //   const newMatchEntries = newApiData.forEach((matchEntry) => {
-  //     if(teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)){
-  //       //bookmark[bookmark.length] = matchEntry
-  //       console.log(bookmark)
-  //       setBookmark(bookmark.push(matchEntry))
-  //       console.log(bookmark)
-  //       // matchEntry.bookMark = !matchEntry.bookMark
-  //     })
-  // }
-
-
 
   const data = React.useMemo(
     () => tableData.map(team => {
@@ -162,26 +110,6 @@ function MainTable(props) {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
         OPR: team.OPR,
-        Priorities: team.Priorities,
-        CCWM: team.CCWM,
-        AvgPoints: team.AvgPoints,
-        AvgCSPoints: team.AvgCSPoints,
-        AvgGridPoints: team.AvgGridPoints,
-        AvgConePts: team.AvgConePts,
-        AvgConeAcc: team.AvgConeAcc,
-        AvgCubePts: team.AvgCubePts,
-        AvgCubeAcc: team.AvgCubeAcc,
-        DPR: team.DPR,
-        Penalties: team.Penalties,
-        SumPriorities: grade !== 0.000 ? grade : "",
-
-        NGridPoints: team.NGridPoints,
-        NConePoints: team.NConePoints,
-        NConeAccuracy: team.NConeAccuracy,
-        NCubePoints: team.NCubePoints,
-        NCubeAccuracy: team.NCubeAccuracy,
-        NChargeStation: team.NChargeStation,
-
       }
     }), [tableData, sortBy]
   )
@@ -223,51 +151,45 @@ function MainTable(props) {
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy, useExpanded);
 
   const {
-    // getTableProps,
-    // getTableBodyProps,
-    // headerGroups,
-    // rows,
     state,
     setGlobalFilter,
-    // prepareRow,
-    // visibleColumns,
   } = tableInstance
 
   const { globalFilter } = state
 
+  const filterState = {
+    information: tableData,
+    gFilter: globalFilter || '',
+  }
+
   return (
     <div>
-      <Modal regional={regional} onOff={modalState} offFunction={modalClose} data={modalData}></Modal>
       <h1 style={{ textAlign: 'center' }}>Crescendo<img src={"./images/bluethundalogo.png"} width="75px" height="75px"></img>
       </h1>
-      <table style={{ width: '1250px' }} >
+      <table >
         <tbody>
           <tr>
             <td
-              style={{
-                minWidth: '750px',
-                textAlign: 'center',
-              }}
+
             >
-              <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. <strong>For Custom Ranking.</strong> Then click on <strong>Grade</strong>. </p>
-              {<List setList={setSortBy} />}
-              <br />
+              {/* first row container */}
               <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
+            
                 <div>
-                  <CustomRanking information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''}></CustomRanking>
+                  <RankingTable regionalEvent={regional} {...filterState} /> 
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
-                  <RankingTable regionalEvent={regional} gFilter={globalFilter != undefined ? globalFilter : ''} />
-                </div>
+
                 <div>
-                  <FieldInfo information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+                  <FieldInfo {...filterState}/>
                 </div>
+                
               </div>
-
-
+              {/* Second row container */}
               <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
-                <TeamMatches handleBookmark={addBookmark} information={tableData} teamMatches={apiData} gFilter={globalFilter != undefined ? globalFilter : ''}></TeamMatches>
-                <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''}></Bookmarks>
+
+                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} {...filterState}></TeamMatches>
+                <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
+
               </div>
               <div>
               </div>
@@ -284,31 +206,36 @@ function MainTable(props) {
 
 
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
+      
       <br></br>
       <br></br>
 
       <div>
-        {/* topRow */}
+        {/* topRow container */}
         <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
+
           <div>
-            <RobotCapabilities information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+            <RobotCapabilities {...filterState} />
           </div>
           <div>
-            <RobotPerformance information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+            <RobotPerformance {...filterState} />
           </div>
+
         </div>
-        {/* secondRow*/}
+
+        {/* secondRow container*/}
         <div style={{ display: 'flex', justifyContent: 'center', columnGap: "100px" }}>
 
           <div>
-            <StatsTable information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+            <StatsTable {...filterState} />
           </div>
           <div>
-          <RobotAuto information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+          <RobotAuto {...filterState}/>
           </div>
           <div>
-            <Penalties information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+            <Penalties {...filterState}/>
           </div>
+
         </div>
       </div>
 
@@ -317,4 +244,4 @@ function MainTable(props) {
   )
 }
 
-export default MainTable; 
+export default Summary; 

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
+import CollapseTButton from "../TableUtils/CollapseTButton";
  
 
-function RobotCapabilities(props) {
+function FieldInfo(props) {
   const filter = props.gFilter
   const [tableState, setTableState] = useState('none')
 
    useEffect(() => {
      setGlobalFilter(filter)
    }, [filter])
-
 
     const toggleTable = () => {
         if(tableState === 'none'){
@@ -35,28 +34,12 @@ function RobotCapabilities(props) {
                   )
               },
               {
-                Header: 'Can Hang?',
-                accessor: 'CanHang'
+                Header: 'Stage Pos',
+                accessor: 'StagePosition'
               },
               {
-                Header: 'Can Speaker?',
-                accessor: 'CanSpeaker'
-              },
-              {
-                Header: 'Can Amp?',
-                accessor: 'CanAmp'
-              },
-              {
-                Header: 'Can Trap?',
-                accessor: 'CanTrap'
-              },
-              {
-                Header: 'Can UnderStage?',
-                accessor: 'CanUnderStage'
-              },
-              {
-                Header: 'Can Defend?',
-                accessor: 'CanDefend'
+                Header: 'Auto Start',
+                accessor: 'AutoStart'
               },
         ], []
     )
@@ -74,7 +57,7 @@ function RobotCapabilities(props) {
     return (
         <div> 
             <div>
-      <CollapseTButton label="Robot Capabilities" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Field Information" toggleFunction={toggleTable}></CollapseTButton>
       
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -136,5 +119,5 @@ function RobotCapabilities(props) {
     )
 }
 
-export default RobotCapabilities
+export default FieldInfo
 

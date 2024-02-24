@@ -1,0 +1,99 @@
+
+//methods for what needs to be shown on summary table, accessors are from form people
+
+const uniqueArr = (arr) => {
+  const a = arr.map(x => x.trim());
+  return a.filter((item, index) => {
+    return a.indexOf(item, 0) === index;
+  })
+}
+
+const getCan = (arr) => {
+  let can = 'no'
+  for(let i = 0; i < arr.length; i++) {
+    if(arr[i] > 0){
+      can = 'yes'
+    }
+  }
+  return can
+}
+//grade
+const calcColumnSort = (arr, gridPts, conePts, coneAcc, cubePts, cubeAcc, charge) => {
+  let sum = 0;
+  if (arr.includes("Grid Points")) {
+    sum = sum + gridPts;
+  }
+  if (arr.includes("Cone Points")) {
+    sum = sum + conePts;
+  }
+  if (arr.includes("Accurate Cone Placement")) {
+    sum = sum + coneAcc;
+  }
+  if (arr.includes("Cube Points")) {
+    sum = sum + cubePts;
+  }
+  if (arr.includes("Accurate Cube Placement")) {
+    sum = sum + cubeAcc;
+  }
+  if (arr.includes("Charge Station")) {
+    sum = sum + charge;
+  }
+
+  return sum.toFixed(3);
+}
+//mode
+const arrMode = (array) => {
+  if (array.length == 0)
+    return null;
+  var modeMap = {};
+  var maxEl = array[0]
+  var maxCount = 1;
+  for (var i = 0; i < array.length; i++) {
+    var el = array[i];
+    if (modeMap[el] == null)
+      modeMap[el] = 1;
+    else
+      modeMap[el]++;
+    if (modeMap[el] > maxCount) {
+      maxEl = el;
+      maxCount = modeMap[el];
+    }
+  }
+  console.log(maxEl)
+  return maxEl;
+}
+
+const calcAvg = (arr) => {
+  let total = 0;
+  for(let i = 0; i < arr.length; i++){
+    total += arr[i]
+  }
+  let average = total / arr.length
+  return average;
+}
+
+const getReliability = (arr, mode) => {
+  let modeCount = 0;
+  for(let i = 0; i < arr.length; i++){
+    if(arr[i] === mode){
+      modeCount++
+    }
+  }
+  return (modeCount/arr.length)
+}
+
+const getPenalties = (arr) => {
+  let pen = arr.map(teamObj => teamObj.Penalties.Penalties).reduce((a,b) => a.concat(b), []).filter((item) => item.trim() !== 'None')
+  return uniqueArr(pen)
+}
+
+// const getMatchOfPenalty = (arr,penalty) => {
+//   let matchOfPenalty = arr.filter(teamObj => {
+//     const penaltyObj = teamObj.Penalties.PenaltiesCommitted.penalty
+//     { `${penalty}`: {trueOrFalse} }
+//   })
+// }
+
+// onClick = ({ target: {checked} })
+
+export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability};

@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
+import CollapseTButton from "../TableUtils/CollapseTButton";
  
 
-function RobotAuto(props) {
+function RobotCapabilities(props) {
   const filter = props.gFilter
-    const [tableState, setTableState] = useState('none')
+  const [tableState, setTableState] = useState('none')
 
-     useEffect(() => {
-       setGlobalFilter(filter)
-     }, [filter])
+   useEffect(() => {
+     setGlobalFilter(filter)
+   }, [filter])
+
 
     const toggleTable = () => {
         if(tableState === 'none'){
@@ -34,32 +35,46 @@ function RobotAuto(props) {
                   )
               },
               {
-                Header: 'Avg Auto',
-                accessor: 'AvgAutoPts'
+                Header: 'Can Hang?',
+                accessor: 'CanHang'
               },
               {
-                Header: 'Auto Start',
-                accessor: 'AutoStart'
+                Header: 'Can Speaker?',
+                accessor: 'CanSpeaker'
+              },
+              {
+                Header: 'Can Amp?',
+                accessor: 'CanAmp'
+              },
+              {
+                Header: 'Can Trap?',
+                accessor: 'CanTrap'
+              },
+              {
+                Header: 'Can UnderStage?',
+                accessor: 'CanUnderStage'
+              },
+              {
+                Header: 'Can Defend?',
+                accessor: 'CanDefend'
               },
         ], []
     )
-    const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)
+    const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 
     const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        setGlobalFilter,
-        prepareRow,
-      } = tableInstance
-
-
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      setGlobalFilter,
+      prepareRow,
+    } = tableInstance
 
     return (
         <div> 
             <div>
-      <CollapseTButton label="Robot Auto" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Robot Capabilities" toggleFunction={toggleTable}></CollapseTButton>
       
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -116,10 +131,10 @@ function RobotAuto(props) {
       </table>
       </div>
 
-        </div>
       </div>
+        </div>
     )
 }
 
-export default RobotAuto
+export default RobotCapabilities
 

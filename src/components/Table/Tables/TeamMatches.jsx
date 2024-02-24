@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
-import { uniqueArr } from './CalculationUtils'
+import CollapseTButton from "../TableUtils/CollapseTButton";
+import { uniqueArr } from '../TableUtils/CalculationUtils'
 
 
 function TeamMatches(props) {

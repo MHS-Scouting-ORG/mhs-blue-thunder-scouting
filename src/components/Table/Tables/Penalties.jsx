@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
+import CollapseTButton from "../TableUtils/CollapseTButton";
 
-function StatsTable(props) {
+
+function Penalties(props) {
   const filter = props.gFilter
   const [tableState, setTableState] = useState('none')
 
-   useEffect(() => {
-     setGlobalFilter(filter)
-   }, [filter])
+  useEffect(() => {
+    setGlobalFilter(filter)
+  }, [filter])
 
   const toggleTable = () => {
     if (tableState === 'none') {
@@ -33,32 +34,24 @@ function StatsTable(props) {
         )
       },
       {
-        Header: 'Avg Pts',
-        accessor: 'AvgPoints'
+        Header: 'Fouls',
+        accessor: 'Fouls'
       },
       {
-        Header: 'Avg Auto',
-        accessor: 'AvgAutoPts'
+        Header: 'Techs',
+        accessor: 'Tech'
       },
       {
-        Header: 'Avg Cycs',
-        accessor: 'AvgCycles'
+        Header: 'Yellow',
+        accessor: 'YellowCard'
       },
       {
-        Header: 'Avg Made Speaker',
-        accessor: 'AvgSpeaker'
+        Header: 'Red',
+        accessor: 'RedCard'
       },
       {
-        Header: 'Avg Made Amp',
-        accessor: 'AvgAmp'
-      },
-      {
-        Header: 'OPR',
-        accessor: 'OPR'
-      },
-      {
-        Header: 'EPA',
-        accessor: 'EPA'
+        Header: 'Broken',
+        accessor: 'BrokenRobot'
       },
     ], []
   )
@@ -76,7 +69,7 @@ function StatsTable(props) {
   return (
     <div>
       <div>
-        <CollapseTButton label="Stats Table" toggleFunction={toggleTable}></CollapseTButton>
+        <CollapseTButton label="Penalties" toggleFunction={toggleTable}></CollapseTButton>
 
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
 
@@ -85,8 +78,6 @@ function StatsTable(props) {
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map(column => (
-
-
                     <th
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       style={{
@@ -126,8 +117,6 @@ function StatsTable(props) {
                       )
                     })}
                   </tr>
-
-                 
                 </React.Fragment>
                 )
               })}
@@ -140,5 +129,5 @@ function StatsTable(props) {
   )
 }
 
-export default StatsTable
+export default Penalties
 

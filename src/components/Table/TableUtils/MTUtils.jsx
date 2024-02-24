@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
 import { getMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { arrMode, calcAvg, getCan, } from "./CalculationUtils"
+import { arrMode, calcAvg, getCan, getReliability } from "./CalculationUtils"
 
 async function getTeams (regional) {
   try {
@@ -11,27 +10,10 @@ async function getTeams (regional) {
        const teamNumObj = {
         TeamNumber: obj.team_number,
         Matches: '',
-        OPR: "", 
-        Priorities: '',
-        CCWM: "", 
-        AvgPoints: 0,
-        AvgGridPoints: 0,
-        AvgConePts: 0,
-        AvgConeAcc: 0,
-        AvgCubePts: 0,
-        AvgCubeAcc: 0,
-        AvgCSPoints: 0,
-        DPR: "",
-        Penalties: "",
-        TeamNum: `frc${obj.team_number}`,
+        OPR: "",
         
-        NGridPoints: 0,
-        NConePoints: 0, 
-        NConeAccuracy: 0, 
-        NCubePoints: 0, 
-        NCubeAccuracy: 0, 
-        NChargeStation: 0,
-
+        TeamNum: `frc${obj.team_number}`,
+      
         //=======ROBOT PERFORMANCE PROPS=========//
         RobotSpeed: 'Faster',
         RobotStrength: 'Stronger',
@@ -58,10 +40,10 @@ async function getTeams (regional) {
         CanAmp: 'Yes',
         CanTrap: 'Yes',
         //======Auto====//
-        //ln46 auto pts
         AutoStart: '1',
         AutoCollide: 'Yes',
-        MostCommonScoring: 'Amp',
+        //most common
+       // MostCommonScoring: 'Amp',
         //===Field RobotInfo==//
         MostCommonScoredElement: "Amp",
         AutoStart: '1',
@@ -71,7 +53,18 @@ async function getTeams (regional) {
         Tech: '1',
         YellowCard: '1',
         RedCard: '1',
-        BrokenRobot: '1'
+        BrokenRobot: '1',
+        //reliability
+        rRobotSpeed: '1',
+        rRobotHang: '1',
+        rRobotSpeaker: '1',
+        rRobotAmp: '1',
+        rRobotTrap: '1',
+        rRobotDefense: '1',
+        rRobotUnderStage: '1',
+        rRobotAutoStart: '1',
+        rRobotStagePos: '1',
+
        }
 
        return teamNumObj
@@ -91,15 +84,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
     return teamNumbers.map(team => { 
       
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum) 
-      //console.log(teamStats)
-      //console.log(teamMatchData)
+      const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.FasterThanUs !== null ? team.RobotInfo.FasterThanUs : 0 ))
-      //const mcRobotStrength = arrMode(teamStats.map((team) => team.RobotInfo.RobotStrength !== null ? team.RobotInfo.RobotStrength : 0 ))
-      //const mcRobotSize = arrMode(teamStats.map((team) => team.RobotInfo.RobotSize !== null ? team.RobotInfo.RobotSize : 0 ))
-
+      
       const mcRobotHang = arrMode(teamStats.map((team) => team.RobotInfo.HangsFaster !== null ? team.RobotInfo.HangsFaster : 0))
       const mcRobotSpeaker = arrMode(teamStats.map((team) => team.RobotInfo.BetterSpeaker !== null ? team.RobotInfo.BetterSpeaker : 0))
       const mcRobotAmp = arrMode(teamStats.map((team) => team.RobotInfo.BetterAmp !== null ? team.RobotInfo.BetterAmp : 0))
@@ -109,9 +98,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const avgSpeaker = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Scoring.PointsScored.SpeakerPoints : 0))
       const avgAmp = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.Amp !== null ? team.Teleop.PointsScored.Amp : 0))
       //robot capabilities 
-      const mcDefend = arrMode(teamStats.map(team => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0))
+      const mcDefend = arrMode(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0))
       //custom robot capabilities
-      const mcUnderStage = arrMode(teamStats.map(team => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0))
+      const mcUnderStage = arrMode(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0))
       //internal calc
       const canHang = getCan(teamStats.map((team) => team.Teleop.EndGame.StageResult !== null ? team.Teleop.EndGame.StageResult : 0))
       //change calc
@@ -120,7 +109,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       //change calc
       const canTrap = getCan(teamStats.map((team) => team.Teleop.EndGame.TrapScored !== null ? team.Teleop.EndGame.TrapScored : 0))
       //Auto
-      const autoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
+      const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
       //const mcScoring = arrMode((team) => team.Auto.ScoringElement !== null ? team.Auto.ScoringElement : 0 )
       //field info
       const mcStagePosition = arrMode(teamStats.map((team) => team.EndGame.StagePosition !== null ? team.EndGame.Position : 0 ))
@@ -131,6 +120,16 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const redCards = teamStats.map(team => team.Penalties.PenaltiesCommitted)
       const brokenRobots = teamStats.map(team => team.Penalties.PenaltiesCommitted)
     
+      const reliableRobotSpeed= getReliability(teamStats.map((team) => team.RobotInfo.FasterThanUs !== null ? team.RobotInfo.FasterThanUs : 0 ), mcRobotSpeed)
+      const reliableRobotHang = getReliability(teamStats.map((team) => team.RobotInfo.HangsFaster !== null ? team.RobotInfo.HangsFaster : 0), mcRobotHang)
+      const reliableRobotSpeaker = getReliability(teamStats.map((team) => team.RobotInfo.BetterSpeaker !== null ? team.RobotInfo.BetterSpeaker : 0), mcRobotSpeaker)
+      const reliableRobotAmp = getReliability(teamStats.map((team) => team.RobotInfo.BetterAmp !== null ? team.RobotInfo.BetterAmp : 0), mcRobotAmp)
+      const reliableRobotTrap = getReliability(teamStats.map((team) => team.RobotInfo.BetterTrap !== null ? team.RobotInfo.BetterTrap : 0), mcRobotTrap)
+      const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0), mcDefend)
+      const reliableRobotUnderStage = getReliability(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0), mcUnderStage)
+      const reliableAutoStart = getReliability(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ), mcAutoStart)
+      const reliableStagePosition = getReliability(teamStats.map((team) => team.EndGame.StagePosition !== null ? team.EndGame.Position : 0 ), mcStagePosition)
+
       console.log(mcRobotSpeed)
 
       //const mcSpeed = modeSpeed(teamStats)
@@ -166,18 +165,23 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         CanTrap: team.CanTrap,
         //===auto==//
         AutoStart: team.AutoStart,
-        //AutoCollide: team.AutoCollide,
-        //MostCommonScoring: team.MostCommonScoring,
-        //===Field RobotInfo==//
-        //MostCommonScoredElement: team.MostCommonScoredElement,
-        AutoStart: team.AutoStart,
         StagePosition: team.StagePosition,
         //===Penalties===//
         Fouls: team.Fouls, 
         Tech: team.Tech,
         YellowCard: team.YellowCard,
         RedCard: team.RedCard,
-        BrokenRobot: team.BrokenRobot
+        BrokenRobot: team.BrokenRobot,
+        //reliability
+        rRobotSpeed: reliableRobotSpeed,
+        rRobotHang: reliableRobotHang,
+        rRobotSpeaker: reliableRobotSpeaker,
+        rRobotAmp: reliableRobotAmp,
+        rRobotTrap: reliableRobotTrap,
+        rRobotDefense: reliableDefense,
+        rRobotUnderStage: reliableRobotUnderStage,
+        rRobotAutoStart: reliableAutoStart,
+        rRobotStagePos: reliableStagePosition,
       }
       return tableDataObj;
     })

@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
-import CollapseTButton from "./CollapseTButton";
+import CollapseTButton from "../TableUtils/CollapseTButton";
  
 
 function RobotPerformance(props) {
