@@ -81,10 +81,14 @@ export async function submitState(props) {
 
 
   // ROBOT INFO //
+  let betterAmp = props.state.betterAmp
+  let betterSpeaker = props.state.betterSpeaker
+  let betterTrap = props.state.betterTrap
   let hangsFaster = props.state.hangsFaster
   let isFaster = props.state.isFaster
   let clearsStage = props.state.clearsStage
   let countersDefense = props.state.countersDefense
+  let canDefend = props.state.canDefend
   let lineUpSpeed = props.state.lineUpSpeed
   let intakeRating = props.state.intakeRating
 
@@ -215,10 +219,14 @@ export async function submitState(props) {
     matchEntry.HumPlrScored.Missed = highNotesMissed
 
     // ROBOT INFO //
+    matchEntry.RobotInfo.BetterAmp = betterAmp
+    matchEntry.RobotInfo.BetterSpeaker = betterSpeaker
+    matchEntry.RobotInfo.BetterTrap = betterTrap
     matchEntry.RobotInfo.FasterThanUs = isFaster
     matchEntry.RobotInfo.PassesUnderStage = clearsStage
     matchEntry.RobotInfo.HangsFaster = hangsFaster
     matchEntry.RobotInfo.CountersDefense = countersDefense
+    matchEntry.RobotInfo.CanDefend = canDefend
     matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
     matchEntry.RobotInfo.IntakeRating = intakeRating
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments

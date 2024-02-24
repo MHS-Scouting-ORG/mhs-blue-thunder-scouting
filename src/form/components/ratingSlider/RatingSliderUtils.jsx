@@ -1,7 +1,7 @@
 import React from "react";
 import RatingSlider from "./RatingSlider";
 
-export function makeRatingSlider(props, label, markerNames, i) {
+export function makeRatingSlider(props, label, markerNames) {
 
     function ratingSliderChanged(sliderVal) {
         // console.log(sliderVal)
@@ -13,7 +13,6 @@ export function makeRatingSlider(props, label, markerNames, i) {
         <div>
             <RatingSlider
                 label={label}
-                index={i}
                 state={props.ratingSliderVals}
                 markerNames={markerNames}
                 changeRatingSlider={ratingSliderChanged}

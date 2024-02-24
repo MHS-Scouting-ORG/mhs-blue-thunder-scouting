@@ -24,7 +24,6 @@ function RatingSlider(props) {
 
 RatingSlider.propTypes = {
     label: PropTypes.string,
-    index: PropTypes.number,
     state: PropTypes.number,
     markerNames: PropTypes.array,
     changeRatingSlider: PropTypes.func,

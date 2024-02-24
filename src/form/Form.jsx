@@ -85,10 +85,14 @@ class Form extends React.Component {
 
       // ROBOT INFO //
       // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
+      betterAmp: false,
+      betterSpeaker: false,
+      betterTrap: false,
       hangsFaster: false,
       isFaster: false,
       clearsStage: false,
       countersDefense: false,
+      canDefend: false,
       // ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
@@ -137,12 +141,17 @@ class Form extends React.Component {
     this.updateRobotBrokenComments = this.updateRobotBrokenComments.bind(this)
 
     //robot info
+    this.updateBetterAmp = this.updateBetterAmp.bind(this)
+    this.updateBetterSpeaker = this.updateBetterSpeaker.bind(this)
+    this.updateBetterTrap = this.updateBetterTrap.bind(this)
     this.updateHangsFaster = this.updateHangsFaster.bind(this)
     this.updateIsFaster = this.updateIsFaster.bind(this)
     this.updateClearsStage = this.updateClearsStage.bind(this)
     this.updateCountersDefense = this.updateCountersDefense.bind(this)
     this.updateLineUpSpeed = this.updateLineUpSpeed.bind(this)
     this.updateIntakeRating = this.updateIntakeRating.bind(this)
+    this.updateCanDefend = this.updateCanDefend.bind(this)
+    this.renderBooleanCheckboxes = this.renderBooleanCheckboxes.bind(this)
 
     //override
     this.updateOverride = this.updateOverride.bind(this)
@@ -214,12 +223,16 @@ class Form extends React.Component {
 
       // ROBOT INFO //
       // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
+      betterAmp: m.RobotInfo.BetterAmp,
+      betterSpeaker: m.RobotInfo.BetterSpeaker,
+      betterTrap: m.RobotInfo.BetterTrap,
       hangsFaster: m.RobotInfo.HangsFaster,
       isFaster: m.RobotInfo.FasterThanUs,
       clearsStage: m.RobotInfo.PassesUnderStage,
       countersDefense: m.RobotInfo.CountersDefense,
       lineUpSpeed: m.RobotInfo.LineupSpeed,
       intakeRating: m.RobotInfo.IntakeRating,
+      canDefend: m.RobotInfo.CanDefend,
 
       // OVERRIDE //
       override: false, //override bool
@@ -391,6 +404,18 @@ class Form extends React.Component {
     this.setState({ booleans })
   }
 
+  updateBetterAmp(val) {
+    this.setState({betterAmp: val})
+  }
+
+  updateBetterSpeaker(val) {
+    this.setState({betterSpeaker: val})
+  }
+
+  updateBetterTrap(val) {
+    this.setState({betterTrap: val})
+  }
+
   updateHangsFaster(val) {
     this.setState({hangsFaster: val})
   }
@@ -407,6 +432,10 @@ class Form extends React.Component {
     this.setState({countersDefense: val})
   }
 
+  updateCanDefend(val) {
+    this.setState({canDefend: val})
+  }
+
   updateRatingSlider(i, value) {
     let ratingSliderVals = [...this.state.ratingSliderVals]
     ratingSliderVals[i] = value
@@ -419,6 +448,21 @@ class Form extends React.Component {
 
   updateIntakeRating(val) {
     this.setState({intakeRating: val})
+  }
+
+  renderBooleanCheckboxes() {
+    return(
+      <>
+      {makeBooleanCheckBox({ changeState: this.updateBetterAmp, booleans: this.state.betterAmp }, "Scores Amp Better ")}
+      {makeBooleanCheckBox({ changeState: this.updateBetterSpeaker, booleans: this.state.betterSpeaker }, "Scores Speaker Better ")}
+      {makeBooleanCheckBox({ changeState: this.updateBetterTrap, booleans: this.state.betterTrap }, "Scores Trap Better ")}
+      {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ")}
+      {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Passes Under Stage ")}
+      {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters Defense ")}
+      {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
+      </>
+    )
+
   }
 
   // OVERRIDE //
@@ -482,7 +526,7 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Amp Scored: ")}
                   {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Speaker Scored: ")}
                   <br></br>
-                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: this.state.left }, "Leave ", 0)}
+                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: this.state.left }, "Leave ")}
                   <br></br>
                 </div>
               ) : (
@@ -504,12 +548,12 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us", 1)}
-                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ", 2)}
+                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
-                  {makeCounterBox({ changeState: this.updateHighNotesMade, counterBoxVals: this.state.highNotesMade }, "High Notes Made: ", 5)}
-                  {makeCounterBox({ changeState: this.updateHighNotesMissed, counterBoxVals: this.state.highNotesMissed }, "High Notes Missed: ", 6)}
+                  {makeCounterBox({ changeState: this.updateHighNotesMade, counterBoxVals: this.state.highNotesMade }, "High Notes Made: ")}
+                  {makeCounterBox({ changeState: this.updateHighNotesMissed, counterBoxVals: this.state.highNotesMissed }, "High Notes Missed: ")}
                   <br></br>
                 </div>
               ) : (
@@ -525,11 +569,9 @@ class Form extends React.Component {
             return (this.state.robotOn ?
               (
                 <div>
-                  {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ", 3)}
-                  {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Passes Under Stage ", 4)}
-                  {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters Defense ", 5)}
-                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"], 0)}
-                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"], 1)}
+                  {this.renderBooleanCheckboxes()}
+                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"])}
+                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
                   <br></br>
                 </div>
               ) : (
@@ -545,8 +587,8 @@ class Form extends React.Component {
             return (this.state.penaltiesOn ?
               (
                 <div>
-                  {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ", 7)}
-                  {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ", 8)}
+                  {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ")}
+                  {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ")}
                   <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls}/>
                   {(_ => [{label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard}, {label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard}, {label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable}, {label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq}, {label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke}, {label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow},].
                     map((obj, i) =>

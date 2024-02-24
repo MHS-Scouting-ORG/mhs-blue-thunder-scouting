@@ -169,10 +169,14 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     },
     Comments: "",
     RobotInfo: {
+      BetterAmp: false,
+      BetterSpeaker: false,
+      BetterTrap: false,
       FasterThanUs: false,
       PassesUnderStage: false,
       HangsFaster: false,
       CountersDefense: false,
+      CanDefend: false,
       LineupSpeed: LineupSpeedOpts.NONE,
       IntakeRating: IntakeRatingOpts.NONE,
       WhatBrokeDesc: "",
@@ -180,7 +184,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Penalties: {
       Fouls: 0,
       Tech: 0,
-      PenaltiesCommited: {
+      PenaltiesCommitted: {
         YellowCard: false,
         RedCard: false,
         Disabled: false,
