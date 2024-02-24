@@ -99,7 +99,7 @@ type TeleopType {
 type PenaltyType {
   Fouls: Int
   Tech: Int
-  PenaltiesCommited: PenaltyOpts
+  PenaltiesCommitted: PenaltyOpts
   FoulDesc: String
 }
 
@@ -125,10 +125,14 @@ enum IntakeRatingOpts {
 # types
 
 type RobotInfoType {
+  BetterAmp: Boolean
+  BetterSpeaker: Boolean
+  BetterTrap: Boolean
   FasterThanUs: Boolean
   PassesUnderStage: Boolean
   HangsFaster: Boolean
   CountersDefense: Boolean
+  CanDefend: Boolean
   LineupSpeed: LineupSpeedOpts
   IntakeRating: IntakeRatingOpts
   WhatBrokeDesc: String

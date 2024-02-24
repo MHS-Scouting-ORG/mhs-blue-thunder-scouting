@@ -100,10 +100,14 @@ export const getTeamInfo = /* GraphQL */ `
       }
       Comments
       RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
         FasterThanUs
         PassesUnderStage
         HangsFaster
         CountersDefense
+        CanDefend
         LineupSpeed
         IntakeRating
         WhatBrokeDesc
@@ -112,7 +116,7 @@ export const getTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        PenaltiesCommited {
+        PenaltiesCommitted {
           YellowCard
           RedCard
           Disabled
@@ -202,10 +206,14 @@ export const listTeamInfos = /* GraphQL */ `
         }
         Comments
         RobotInfo {
+          BetterAmp
+          BetterSpeaker
+          BetterTrap
           FasterThanUs
           PassesUnderStage
           HangsFaster
           CountersDefense
+          CanDefend
           LineupSpeed
           IntakeRating
           WhatBrokeDesc
@@ -214,7 +222,7 @@ export const listTeamInfos = /* GraphQL */ `
         Penalties {
           Fouls
           Tech
-          PenaltiesCommited {
+          PenaltiesCommitted {
             YellowCard
             RedCard
             Disabled
@@ -305,10 +313,14 @@ export const teamInfosByTeam = /* GraphQL */ `
         }
         Comments
         RobotInfo {
+          BetterAmp
+          BetterSpeaker
+          BetterTrap
           FasterThanUs
           PassesUnderStage
           HangsFaster
           CountersDefense
+          CanDefend
           LineupSpeed
           IntakeRating
           WhatBrokeDesc
@@ -317,7 +329,7 @@ export const teamInfosByTeam = /* GraphQL */ `
         Penalties {
           Fouls
           Tech
-          PenaltiesCommited {
+          PenaltiesCommitted {
             YellowCard
             RedCard
             Disabled
@@ -408,10 +420,14 @@ export const teamInfosByRegional = /* GraphQL */ `
         }
         Comments
         RobotInfo {
+          BetterAmp
+          BetterSpeaker
+          BetterTrap
           FasterThanUs
           PassesUnderStage
           HangsFaster
           CountersDefense
+          CanDefend
           LineupSpeed
           IntakeRating
           WhatBrokeDesc
@@ -420,7 +436,7 @@ export const teamInfosByRegional = /* GraphQL */ `
         Penalties {
           Fouls
           Tech
-          PenaltiesCommited {
+          PenaltiesCommitted {
             YellowCard
             RedCard
             Disabled

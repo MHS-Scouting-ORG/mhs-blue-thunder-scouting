@@ -97,10 +97,14 @@ export const onCreateTeamInfo = /* GraphQL */ `
       }
       Comments
       RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
         FasterThanUs
         PassesUnderStage
         HangsFaster
         CountersDefense
+        CanDefend
         LineupSpeed
         IntakeRating
         WhatBrokeDesc
@@ -109,7 +113,7 @@ export const onCreateTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        PenaltiesCommited {
+        PenaltiesCommitted {
           YellowCard
           RedCard
           Disabled
@@ -184,10 +188,14 @@ export const onUpdateTeamInfo = /* GraphQL */ `
       }
       Comments
       RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
         FasterThanUs
         PassesUnderStage
         HangsFaster
         CountersDefense
+        CanDefend
         LineupSpeed
         IntakeRating
         WhatBrokeDesc
@@ -196,7 +204,7 @@ export const onUpdateTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        PenaltiesCommited {
+        PenaltiesCommitted {
           YellowCard
           RedCard
           Disabled
@@ -271,10 +279,14 @@ export const onDeleteTeamInfo = /* GraphQL */ `
       }
       Comments
       RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
         FasterThanUs
         PassesUnderStage
         HangsFaster
         CountersDefense
+        CanDefend
         LineupSpeed
         IntakeRating
         WhatBrokeDesc
@@ -283,7 +295,7 @@ export const onDeleteTeamInfo = /* GraphQL */ `
       Penalties {
         Fouls
         Tech
-        PenaltiesCommited {
+        PenaltiesCommitted {
           YellowCard
           RedCard
           Disabled
