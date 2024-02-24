@@ -96,4 +96,15 @@ const getPenalties = (arr) => {
 
 // onClick = ({ target: {checked} })
 
-export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability};
+const getMatchesOfPenalty = (arr,penalty) => {
+  const matchesWithPenalty = arr.filter(teamObj => {
+    const teamPenaltiesArr = Object.entries(teamObj.Penalties.PenaltiesCommitted)
+    const penaltyArr = teamPenaltiesArr.filter(penaltiesArr => penaltiesArr[0] === penalty)
+    return penaltyArr[0][1]
+  })
+  const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id)
+  console.log(penaltyMatchNumbers)
+  return penaltyMatchNumbers;
+}
+
+export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability, getMatchesOfPenalty};

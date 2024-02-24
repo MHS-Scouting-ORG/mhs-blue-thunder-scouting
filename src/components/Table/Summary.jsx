@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../api/bluealliance";
-import { calcColumnSort} from "./TableUtils/CalculationUtils"
+import { calcColumnSort, getMatchesOfPenalty} from "./TableUtils/CalculationUtils"
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { getMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
@@ -172,6 +172,9 @@ function Summary(props) {
             <td
 
             >
+              <div>
+                <button onClick={console.log(getMatchesOfPenalty())}> TEST THAT SHIT TYPE SHIT </button>
+              </div>
               {/* first row container */}
               <div style={{ display: 'flex', justifyContent: 'center', columnGap: '100px' }}>
             
