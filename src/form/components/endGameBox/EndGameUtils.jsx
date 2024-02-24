@@ -12,7 +12,7 @@ export function makeEndGameMisc(props, title, i) {
   let endGameVal = props.endGameVal;
 
   function changeBool(e) {
-    props.changeState(i, e.target.checked)
+    props.changeState(e.target.checked)
   }
 
   if (endGameVal === "Onstage") {
@@ -42,6 +42,10 @@ export function makeEndGameDropDown(props) {
     props.changeState(value);
   }
 
+  function changeHangsFaster(value) {
+    props.changeHangsFaster(value)
+  }
+
   return (
     <div>
       <DropDown
@@ -51,6 +55,7 @@ export function makeEndGameDropDown(props) {
         value={endGameState}
 
         changeDropDownState={changeEndGame}
+        changeHangsFaster={changeHangsFaster}
       />
     </div>
   )
