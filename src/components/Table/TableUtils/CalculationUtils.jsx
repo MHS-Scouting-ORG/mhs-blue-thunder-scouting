@@ -103,7 +103,6 @@ const getMatchesOfPenalty = (arr,penalty) => {
     return penaltyArr[0][1]
   })
   const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id)
-  console.log(penaltyMatchNumbers)
   return penaltyMatchNumbers;
 }
 

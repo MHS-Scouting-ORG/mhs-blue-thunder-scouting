@@ -1,6 +1,6 @@
 import { getMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { arrMode, calcAvg, getCan, getReliability } from "./CalculationUtils"
+import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty } from "./CalculationUtils"
 
 async function getTeams (regional) {
   try {
@@ -133,9 +133,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const reliableAutoStart = getReliability(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ), mcAutoStart)
       const reliableStagePosition = getReliability(teamStats.map((team) => team.EndGame.StagePosition !== null ? team.EndGame.Position : 0 ), mcStagePosition)
 
-      console.log(mcRobotSpeed)
-
-      //const mcSpeed = modeSpeed(teamStats)
+      console.log(mcRobotSpeed) // test
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,

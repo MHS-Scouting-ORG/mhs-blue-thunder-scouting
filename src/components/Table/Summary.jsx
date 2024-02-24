@@ -172,9 +172,6 @@ function Summary(props) {
             <td
 
             >
-              <div>
-                <button onClick={console.log(getMatchesOfPenalty())}> TEST THAT SHIT TYPE SHIT </button>
-              </div>
               {/* first row container */}
               <div >
             
