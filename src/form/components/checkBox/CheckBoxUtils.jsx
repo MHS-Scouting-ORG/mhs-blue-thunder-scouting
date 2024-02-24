@@ -62,7 +62,6 @@ export function makeBooleanCheckBox(props, name) {
  */
 export function makePenaltyBox(props, name) {
   let penaltyState = props.penaltyVal;
-  // console.log("name: ", name)
 
   return (
     <div>

@@ -1,6 +1,6 @@
 import React from 'react';
 // checkbox utility function imports //
-import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox, makeOverrideBox } from './components/checkBox/CheckBoxUtils';
+import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox } from './components/checkBox/CheckBoxUtils';
 
 // dropdown utility function imports //
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
@@ -96,9 +96,6 @@ class Form extends React.Component {
       // ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
-
-      // OVERRIDE //
-      override: false, //override bool
     }
 
     // FUNCTION BINDING //
@@ -152,9 +149,6 @@ class Form extends React.Component {
     this.updateIntakeRating = this.updateIntakeRating.bind(this)
     this.updateCanDefend = this.updateCanDefend.bind(this)
     this.renderBooleanCheckboxes = this.renderBooleanCheckboxes.bind(this)
-
-    //override
-    this.updateOverride = this.updateOverride.bind(this)
 
     //form component display on/off
     this.updateAutoDisplay = this.updateAutoDisplay.bind(this)
@@ -233,9 +227,6 @@ class Form extends React.Component {
       lineUpSpeed: m.RobotInfo.LineupSpeed,
       intakeRating: m.RobotInfo.IntakeRating,
       canDefend: m.RobotInfo.CanDefend,
-
-      // OVERRIDE //
-      override: false, //override bool
     })
   }
 
@@ -245,8 +236,7 @@ class Form extends React.Component {
   }
 
   updateMatchData (match) {
-    this.setState({ matchData: match })
-    this.setState({ teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+    this.setState({ matchData: match, teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
   updateTeam(team) {
@@ -458,16 +448,11 @@ class Form extends React.Component {
       {makeBooleanCheckBox({ changeState: this.updateBetterTrap, booleans: this.state.betterTrap }, "Scores Trap Better ")}
       {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ")}
       {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Passes Under Stage ")}
-      {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters Defense ")}
+      {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
       {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
       </>
     )
 
-  }
-
-  // OVERRIDE //
-  updateOverride (val) {
-    this.setState({ override: val })
   }
 
   // FORM COMPONENT DISPLAY ON/OFF //
@@ -488,9 +473,7 @@ class Form extends React.Component {
   }
 
   updatePoints(totalPts, autoPts, telePts) {
-    this.setState( {totalPts} )
-    this.setState( {autoPts} )
-    this.setState ( {telePts} )
+    this.setState({ totalPts, autoPts, telePts })
   }
 
   // rendering physical and visible website components
@@ -498,7 +481,7 @@ class Form extends React.Component {
     return (
       <div className="form-contain">
         {/* TITLE */}
-        <h2> CRESCENDO FORM <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} style={{ width: "50px", height: "50px" }}></img> </h2>
+        <h2> CRESCENDO FORM <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'}></img> </h2>
 
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
@@ -515,7 +498,7 @@ class Form extends React.Component {
 
         {/* AUTONOMOUS */}
         <div className="auto-contain">
-          <button onClick={() => this.updateAutoDisplay()} style={{fontSize: "18", width: "30%"}}>AUTONOMOUS:</button>
+          <button onClick={() => this.updateAutoDisplay()}>AUTONOMOUS:</button>
           {(() => {
             return (this.state.autoOn ?
               (
@@ -538,7 +521,7 @@ class Form extends React.Component {
 
         {/* TELEOP */}
         <div className='tele-contain'>
-          <button onClick={() => this.updateTeleDisplay()} style={{fontSize: "18", width: "30%"}}>TELEOP:</button>
+          <button onClick={() => this.updateTeleDisplay()} >TELEOP:</button>
           {(() => {
             return (this.state.teleOn ?
               (
@@ -564,13 +547,13 @@ class Form extends React.Component {
 
         {/* ROBOT/TEAM INFO */}
         <div className="robot-info-contain">
-          <button onClick={() => this.updateRobotDisplay()} style={{fontSize: "18", width: "30%"}}>ROBOT INFO:</button>
+          <button onClick={() => this.updateRobotDisplay()}>ROBOT INFO:</button>
           {(() => {
             return (this.state.robotOn ?
               (
                 <div>
                   {this.renderBooleanCheckboxes()}
-                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Lineup Speed: ", ["None", "Slow", "Average", "Fast"])}
+                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
                   {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
                   <br></br>
                 </div>
@@ -582,7 +565,7 @@ class Form extends React.Component {
 
         {/* PENALTIES */}
         <div className="penalty-contain">
-          <button onClick={() => this.updatePenaltyDisplay()} style={{fontSize: "18", width: "30%"}}>PENALTIES:</button>
+          <button onClick={() => this.updatePenaltyDisplay()}>PENALTIES:</button>
           {(() => {
             return (this.state.penaltiesOn ?
               (
@@ -646,7 +629,6 @@ class Form extends React.Component {
             }}>SUBMIT</button>
           </div>
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-          {makeOverrideBox({ changeState: this.updateOverride, override: this.state.override })}
         </div>
         <br></br>
       </div>

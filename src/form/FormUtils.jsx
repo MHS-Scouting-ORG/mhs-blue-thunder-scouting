@@ -13,7 +13,6 @@ export async function getMatchTeams(props) {
   const data = await getMatchesForRegional(props.regional)
   data.map((match) => {
     if (match.key === matchKey) {
-      console.log("match: ", match)
       props.changeState(match)
     }
   })
@@ -102,8 +101,6 @@ export async function submitState(props) {
   /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
   let incompleteForm = false;
 
-  let override = props.state.override;
-
   if (endGameVal === 'Onstage') {
     endGamePts = 3;
   } else if (endGameVal === "Parked") {
@@ -178,9 +175,9 @@ export async function submitState(props) {
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-  if (incompleteForm && !override) {
+  if (incompleteForm) {
     window.alert(windowAlertMsg);
-  } else if (!incompleteForm || override) {
+  } else if (!incompleteForm) {
     const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
 
     // POINTS //

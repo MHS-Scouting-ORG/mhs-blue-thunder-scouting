@@ -9,13 +9,8 @@ function TextBox(props) {
     (
         <div>
             <p>{props.title}</p>
-            <p style={{ fontSize: 13 }}>{props.description}</p>
-            <textarea onChange={commentState} row="4" cols='50'
-                style={{
-                    width: '60%',
-                    wordWarp: 'normal',
-                }} value={props.value}
-            />
+            <p>{props.description}</p>
+            <textarea onChange={commentState} row="4" cols='50' value={props.value}/>
         </div>
     ) : (
         <div></div>
