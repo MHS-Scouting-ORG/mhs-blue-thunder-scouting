@@ -447,7 +447,7 @@ class Form extends React.Component {
       {makeBooleanCheckBox({ changeState: this.updateBetterSpeaker, booleans: this.state.betterSpeaker }, "Scores Speaker Better ")}
       {makeBooleanCheckBox({ changeState: this.updateBetterTrap, booleans: this.state.betterTrap }, "Scores Trap Better ")}
       {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ")}
-      {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Passes Under Stage ")}
+      {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Goes Under Stage ")}
       {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
       {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
       </>
@@ -577,7 +577,7 @@ class Form extends React.Component {
                     map((obj, i) =>
                       makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `))
                   )()}
-                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke === "Bot Broke "}/>
+                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke}/>
                 </div>
               ) : (
                 <div></div>
