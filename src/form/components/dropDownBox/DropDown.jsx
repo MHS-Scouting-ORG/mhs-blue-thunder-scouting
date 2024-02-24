@@ -10,6 +10,9 @@ function DropDown(props) {
 
     function checkOffOnstage(val) {
         if (val.trim() !== "Onstage") {
+            if (props.changeHangsFaster === undefined) {
+                return
+            }
             props.changeHangsFaster(false)
         }
     }
