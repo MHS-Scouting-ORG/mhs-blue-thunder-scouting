@@ -41,10 +41,6 @@ function FieldInfo(props) {
                 Header: 'Auto Start',
                 accessor: 'AutoStart'
               },
-              {
-                Header: 'Most Common Scored',
-                accessor: 'MostCommonScoredElement'
-              },
         ], []
     )
     const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)

@@ -41,14 +41,6 @@ function RobotAuto(props) {
                 Header: 'Auto Start',
                 accessor: 'AutoStart'
               },
-              {
-                Header: 'Auto Collision?',
-                accessor: 'AutoCollide'
-              },
-              {
-                Header: 'Most Common Scored',
-                accessor: 'MostCommonScoring'
-              },
         ], []
     )
     const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)

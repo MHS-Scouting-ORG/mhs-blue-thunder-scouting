@@ -304,11 +304,10 @@ function MainTable(props) {
             <StatsTable information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
           </div>
           <div>
-            <Penalties information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+          <RobotAuto information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
           </div>
           <div>
-            {/* right */}
-            <RobotAuto information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
+            <Penalties information={tableData} gFilter={globalFilter != undefined ? globalFilter : ''} />
           </div>
         </div>
       </div>
