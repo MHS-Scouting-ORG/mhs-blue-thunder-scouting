@@ -9,7 +9,7 @@ async function getTeams (regional) {
      return data.map(obj => {
        const teamNumObj = {
         TeamNumber: obj.team_number,
-        Matches: '',
+       // Matches: '',
         OPR: "",
         
         TeamNum: `frc${obj.team_number}`,
@@ -86,6 +86,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
 
+      const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints))
+      const avgAutoPoints = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Points))
+
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.FasterThanUs !== null ? team.RobotInfo.FasterThanUs : 0 ))
       
@@ -136,42 +139,42 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
-        Matches: team.Matches,
+       // Matches: team.Matches,
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
-        RobotSpeed: team.RobotSpeed,
-        RobotStrength: team.RobotStrength,
-        RobotSize: team.RobotSize,
+        RobotSpeed: mcRobotSpeed,
+        //RobotStrength: mcRobotStrength,
+        //RobotSize: te,
         //custom//
-        RobotHang: team.RobotHang,
-        RobotSpeaker: team.RobotSpeaker,
-        RobotAmp: team.RobotAmp,
-        RobotTrap: team.RobotTrap,
+        RobotHang: mcRobotHang,
+        RobotSpeaker: mcRobotSpeaker,
+        RobotAmp: mcRobotAmp,
+        RobotTrap: mcRobotTrap,
         //===Stats==/ 
-        AvgPoints: team.AvgPoints,
-        AvgAutoPts: team.AvgAutoPts,
+        AvgPoints: avgPoints,
+        AvgAutoPts: avgAutoPoints,
         //custom//
-        AvgCycles: team.AvgCycles,
-        AvgSpeaker: team.AvgSpeaker,
-        AvgAmp: team.AvgAmp, 
+        AvgCycles: avgCycles,
+        AvgSpeaker: avgSpeaker,
+        AvgAmp: avgAmp, 
         //======Capabilities======//
-        CanDefend: team.CanDefend, //TBD
+        CanDefend: mcDefend, //TBD
         //custom
-        CanUnderStage: team.CanUnderStage,
+        CanUnderStage: mcUnderStage,
         //determined interanally not from form dependent on presence of points
-        CanHang: team.CanHang,
-        CanSpeaker: team.CanSpeaker,
-        CanAmp: team.CanAmp,
-        CanTrap: team.CanTrap,
+        CanHang: canHang,
+        CanSpeaker: canSpeaker,
+        CanAmp: canAmp,
+        CanTrap: canTrap,
         //===auto==//
-        AutoStart: team.AutoStart,
-        StagePosition: team.StagePosition,
+        AutoStart: mcAutoStart,
+        StagePosition: mcStagePosition,
         //===Penalties===//
-        Fouls: team.Fouls, 
-        Tech: team.Tech,
-        YellowCard: team.YellowCard,
-        RedCard: team.RedCard,
-        BrokenRobot: team.BrokenRobot,
+        Fouls: fouls, 
+        Tech: techs,
+        YellowCard: yellowCards,
+        RedCard: redCards,
+        BrokenRobot: brokenRobots,
         //reliability
         rRobotSpeed: reliableRobotSpeed,
         rRobotHang: reliableRobotHang,
