@@ -6,6 +6,10 @@ import { PropTypes } from "prop-types";
 export function makeCounterBox(props, title) {
 
     function buttonMinus() {
+        if (props.counterBoxVals - 1 == -1) {
+            console.log("out of bounds!")
+            return
+        }
         props.changeState(props.counterBoxVals - 1)
     }
 
