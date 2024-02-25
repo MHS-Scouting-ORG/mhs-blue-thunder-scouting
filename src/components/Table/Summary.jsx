@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../api/bluealliance";
-import { calcColumnSort, getMatchesOfPenalty} from "./TableUtils/CalculationUtils"
+import { calcColumnSort} from "./TableUtils/CalculationUtils"
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { getMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";

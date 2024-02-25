@@ -72,6 +72,10 @@ function RankingTable(props) {
               accessor: "Rank",
             },
             {
+              Header: "Grade",
+              accessor: "SumPriorities"
+            },
+            {
               Header: 'Remove?',
               Cell: ({row}) => {
                 return <div>

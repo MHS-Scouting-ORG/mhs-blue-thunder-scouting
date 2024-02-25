@@ -18,26 +18,26 @@ const getCan = (arr) => {
   return can
 }
 //grade
-const calcColumnSort = (arr, gridPts, conePts, coneAcc, cubePts, cubeAcc, charge) => {
+const calcColumnSort = (arr, seaker, amp, cycles) => {
   let sum = 0;
   if (arr.includes("Grid Points")) {
-    sum = sum + gridPts;
+    sum = sum + speaker;
   }
   if (arr.includes("Cone Points")) {
-    sum = sum + conePts;
+    sum = sum + amp;
   }
   if (arr.includes("Accurate Cone Placement")) {
-    sum = sum + coneAcc;
+    sum = sum + cycles;
   }
-  if (arr.includes("Cube Points")) {
-    sum = sum + cubePts;
-  }
-  if (arr.includes("Accurate Cube Placement")) {
-    sum = sum + cubeAcc;
-  }
-  if (arr.includes("Charge Station")) {
-    sum = sum + charge;
-  }
+  // if (arr.includes("Cube Points")) {
+  //   sum = sum + cubePts;
+  // }
+  // if (arr.includes("Accurate Cube Placement")) {
+  //   sum = sum + cubeAcc;
+  // }
+  // if (arr.includes("Charge Station")) {
+  //   sum = sum + charge;
+  // }
 
   return sum.toFixed(3);
 }
@@ -82,20 +82,6 @@ const getReliability = (arr, mode) => {
   return (modeCount/arr.length)
 }
 
-const getPenalties = (arr) => {
-  let pen = arr.map(teamObj => teamObj.Penalties.Penalties).reduce((a,b) => a.concat(b), []).filter((item) => item.trim() !== 'None')
-  return uniqueArr(pen)
-}
-
-// const getMatchOfPenalty = (arr,penalty) => {
-//   let matchOfPenalty = arr.filter(teamObj => {
-//     const penaltyObj = teamObj.Penalties.PenaltiesCommitted.penalty
-//     { `${penalty}`: {trueOrFalse} }
-//   })
-// }
-
-// onClick = ({ target: {checked} })
-
 const getMatchesOfPenalty = (arr,penalty) => {
   const matchesWithPenalty = arr.filter(teamObj => {
     const teamPenaltiesArr = Object.entries(teamObj.Penalties.PenaltiesCommitted)
@@ -106,4 +92,8 @@ const getMatchesOfPenalty = (arr,penalty) => {
   return penaltyMatchNumbers;
 }
 
-export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability, getMatchesOfPenalty};
+const getMax = (arr) => {
+  return arr.sort((a, b) => b - a).shift();
+} 
+
+export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability, getMatchesOfPenalty, getMax};

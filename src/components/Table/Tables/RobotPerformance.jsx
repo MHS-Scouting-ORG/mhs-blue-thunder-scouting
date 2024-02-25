@@ -38,14 +38,6 @@ function RobotPerformance(props) {
                 accessor: 'RobotSpeed'
               },
               {
-                Header: 'Strength',
-                accessor: 'RobotStrength'
-              },
-              {
-                Header: 'Size',
-                accessor: 'RobotSize'
-              },
-              {
                 Header: 'Hang Performance',
                 accessor: 'RobotHang'
               },
@@ -61,6 +53,14 @@ function RobotPerformance(props) {
                 Header: 'Trap Performance',
                 accessor: 'RobotTrap'
               },
+              {
+                Header: 'Intake',
+                accessor: 'IntakeRating'
+              },
+              {
+                Header: 'Alignment',
+                accessor: 'AlignmentSpeed'
+              }
         ], []
     )
     const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)
@@ -86,8 +86,6 @@ function RobotPerformance(props) {
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                
-                
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
                   style={{
