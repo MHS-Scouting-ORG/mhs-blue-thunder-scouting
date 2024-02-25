@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../api/bluealliance";
-import { calcColumnSort} from "./TableUtils/CalculationUtils"
+import { calcColumnSort } from "./TableUtils/CalculationUtils"
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { getMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
@@ -104,12 +104,17 @@ function Summary(props) {
 
   const data = React.useMemo(
     () => tableData.map(team => {
-      const grade = calcColumnSort(sortBy, team.NGridPoints, team.NConePoints, team.NConeAccuracy, team.NCubePoints, team.NCubeAccuracy, team.NChargeStation)
+      const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
 
       return {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
         OPR: team.OPR,
+
+        SumPriorities: grade !== 0.000 ? grade : 0,
+        NSpeaker: team.NSpeaker,
+        NAmp: team.NAmp,
+        NCycles: team.NCycles,
       }
     }), [tableData, sortBy]
   )
@@ -172,22 +177,26 @@ function Summary(props) {
             <td
 
             >
+
+              <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
+              {<List setList={setSortBy} />}
+              <br />
               {/* first row container */}
               <div >
-            
+
                 <div>
-                  <RankingTable regionalEvent={regional} {...filterState} /> 
+                  <RankingTable regionalEvent={regional} {...filterState} />
                 </div>
 
                 <div>
-                  <FieldInfo {...filterState}/>
+                  <FieldInfo {...filterState} />
                 </div>
-                
+
               </div>
               {/* Second row container */}
               <div>
 
-                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event = {regional} {...filterState}></TeamMatches>
+                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
                 <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
 
               </div>
@@ -206,7 +215,7 @@ function Summary(props) {
 
 
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
-      
+
       <br></br>
       <br></br>
 
@@ -230,10 +239,10 @@ function Summary(props) {
             <StatsTable {...filterState} />
           </div>
           <div>
-          <RobotAuto {...filterState}/>
+            <RobotAuto {...filterState} />
           </div>
           <div>
-            <Penalties {...filterState}/>
+            <Penalties {...filterState} />
           </div>
 
         </div>

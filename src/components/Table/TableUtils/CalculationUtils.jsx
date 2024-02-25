@@ -18,15 +18,15 @@ const getCan = (arr) => {
   return can
 }
 //grade
-const calcColumnSort = (arr, seaker, amp, cycles) => {
+const calcColumnSort = (arr, speaker, amp, cycles) => {
   let sum = 0;
-  if (arr.includes("Grid Points")) {
+  if (arr.includes("Speaker")) {
     sum = sum + speaker;
   }
-  if (arr.includes("Cone Points")) {
+  if (arr.includes("Amp")) {
     sum = sum + amp;
   }
-  if (arr.includes("Accurate Cone Placement")) {
+  if (arr.includes("Cycles")) {
     sum = sum + cycles;
   }
   // if (arr.includes("Cube Points")) {

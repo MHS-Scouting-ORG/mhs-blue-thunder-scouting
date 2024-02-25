@@ -27,7 +27,7 @@ class List extends React.Component{
             <div style={{fontSize: '18px'}}>
                 <Checkbox value = "Speaker" changeState={this.addOnColumnSort} id ={0}></Checkbox>
                 <Checkbox value = "Amp" changeState={this.addOnColumnSort} id ={1}></Checkbox>
-                <Checkbox value = "Endgame" changeState={this.addOnColumnSort} id ={2}></Checkbox>
+                <Checkbox value = "Cycles" changeState={this.addOnColumnSort} id ={2}></Checkbox>
                 {/* <Checkbox value = "Intake Rating" changeState={this.addOnColumnSort} id ={3}></Checkbox>
                 <Checkbox value = "Alignment Speed" changeState={this.addOnColumnSort} id ={4}></Checkbox> */}
                 {/* <Checkbox value = "" changeState={this.addOnColumnSort} id ={5}></Checkbox> */}

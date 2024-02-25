@@ -185,6 +185,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         YellowCard: yellowCards,
         RedCard: redCards,
         BrokenRobot: brokenRobots,
+        Disabled: disabledRobots,
+        DQ: disqualifiedRobots,
+        NoShow: noShowRobots,
         //reliability
         relRobotSpeed: reliableRobotSpeed,
         relRobotHang: reliableRobotHang,
