@@ -123,6 +123,10 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const yellowCards = getMatchesOfPenalty(teamStats, 'YellowCard')
       const redCards = getMatchesOfPenalty(teamStats, 'RedCard')
       const brokenRobots = getMatchesOfPenalty(teamStats, 'BrokenRobot')
+
+      const disabledRobots = getMatchesOfPenalty(teamStats,"Disabled")
+      const disqualifiedRobots = getMatchesOfPenalty(teamStats,"DQ")
+      const noShowRobots = getMatchesOfPenalty(teamStats,"NoShow")
     
       const reliableRobotSpeed= getReliability(teamStats.map((team) => team.RobotInfo.FasterThanUs !== null ? team.RobotInfo.FasterThanUs : 0 ), mcRobotSpeed)
       const reliableRobotHang = getReliability(teamStats.map((team) => team.RobotInfo.HangsFaster !== null ? team.RobotInfo.HangsFaster : 0), mcRobotHang)
