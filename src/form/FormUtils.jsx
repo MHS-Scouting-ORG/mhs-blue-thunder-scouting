@@ -118,24 +118,16 @@ export async function submitState(props) {
 
 
   // update matchResult to enum
-  MatchResultOpts.find(opt => {
-    matchResult = (MatchResultOpts[opt] === matchResult)
-  });
+  matchResult = findMatchResult(matchResult)
 
   // update stageResult to enum
-  StageOpts.find(opt => {
-    endGameVal = (StageOpts[opt] === endGameVal)
-  });
+  endGameVal = findStageResult(endGameVal)
 
   // update lineUpSpeed to enum
-  LineupSpeedOpts.find(opt => {
-    lineUpSpeed = (LineupSpeedOpts[opt] === lineUpSpeed)
-  });
+  lineUpSpeed = findLineUpSpeed(lineUpSpeed)
 
   // update intakeRating to enum
-  IntakeRatingOpts.find(opt => {
-    intakeRating = (IntakeRatingOpts[opt] === intakeRating)
-  });
+  intakeRating = findIntakeRating(intakeRating)
 
 
   //POINT CALCULATIONS
@@ -148,7 +140,7 @@ export async function submitState(props) {
   let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
 
-  props.setState(totalPts, autoPts, telePts)
+  props.updatePoints(totalPts, autoPts, telePts)
 
   if (autoPlacement === '') {
     incompleteForm = true;
@@ -212,8 +204,8 @@ export async function submitState(props) {
     matchEntry.Teleop.EndGame.Melody = melody
     matchEntry.Teleop.EndGame.Ensemble = ensemble
 
-    matchEntry.HumPlrScored.Made = highNotesMade
-    matchEntry.HumPlrScored.Missed = highNotesMissed
+    matchEntry.Teleop.HumPlrScored.Made = highNotesMade
+    matchEntry.Teleop.HumPlrScored.Missed = highNotesMissed
 
     // ROBOT INFO //
     matchEntry.RobotInfo.BetterAmp = betterAmp
@@ -231,12 +223,12 @@ export async function submitState(props) {
     // PENALTIES //
     matchEntry.Penalties.Fouls = fouls
     matchEntry.Penalties.Tech = techFouls
-    matchEntry.Penalties.PenaltiesCommited.YellowCard = yellowCard
-    matchEntry.Penalties.PenaltiesCommited.RedCard = redCard
-    matchEntry.Penalties.PenaltiesCommited.Disabled = disable
-    matchEntry.Penalties.PenaltiesCommited.DQ = dq
-    matchEntry.Penalties.PenaltiesCommited.Broken = botBroke
-    matchEntry.Penalties.PenaltiesCommited.NoShow = noShow
+    matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
+    matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
+    matchEntry.Penalties.PenaltiesCommitted.Disabled = disable
+    matchEntry.Penalties.PenaltiesCommitted.DQ = dq
+    matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
+    matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
     matchEntry.Penalties.FoulDesc = foulComments
 
     if (props.matchData === undefined) {
@@ -245,5 +237,66 @@ export async function submitState(props) {
     }
 
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
+  }
+}
+
+// update matchResult to enum
+function findMatchResult(val) {
+  if (val === "win") {
+    return MatchResultOpts.WIN
+  }
+  else if (val === "tie") {
+    return MatchResultOpts.TIE
+  }
+  else if (val === "loss") {
+    return MatchResultOpts.LOSS
+  }
+}
+
+// update stageResult to enum
+function findStageResult(val) {
+  if (val === "Onstage") {
+    return StageOpts.ONSTAGE
+  }
+  else if (val === "Attempted") {
+    return StageOpts.ATTEMPTED
+  }
+  else if (val === "Parked") {
+    return StageOpts.PARKED
+  }
+  else if (val === "None") {
+    return StageOpts.NONE
+  }
+}
+
+// update lineUpSpeed to enum
+function findLineUpSpeed(val) {
+  if (val === "Fast") {
+    return LineupSpeedOpts.FAST
+  }
+  else if (val === "Average") {
+    return LineupSpeedOpts.AVERAGE
+  }
+  else if (val === "Slow") {
+    return LineupSpeedOpts.SLOW
+  }
+  else if (val === "None") {
+    return LineupSpeedOpts.NONE
+  }
+}
+
+// update intakeRating to enum
+function findIntakeRating(val) {
+  if (val === "Good") {
+    return IntakeRatingOpts.GOOD
+  }
+  else if (val === "Average") {
+    return IntakeRatingOpts.AVERAGE
+  }
+  else if (val === "Bad") {
+    return IntakeRatingOpts.BAD
+  }
+  else if (val === "None") {
+    return IntakeRatingOpts.NONE
   }
 }
