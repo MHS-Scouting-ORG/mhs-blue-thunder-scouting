@@ -1,6 +1,150 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-#input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+###############
+### SCORING ###
+###############
+
+# enums
+
+# types
+type TeleScoring {
+  Amp: Int
+  Speaker: Int
+  AmplifiedSpeaker: Int
+  Cycles: Int
+}
+
+type TelePointsScoring {
+  Points: Int
+  EndgamePoints: Int
+  SpeakerPoints: Int
+  AmpPoints: Int
+}
+
+##################
+### AUTONOMOUS ###
+##################
+
+# enums
+type AutoScoring {
+  Amp: Int
+  Speaker: Int
+}
+
+type AutoPointsScoring {
+  Points: Int
+  SpeakerPoints: Int
+  AmpPoints: Int
+}
+
+# types
+type AutonomousType {
+  StartingPosition: Int!
+  AmountScored: AutoScoring
+  PointsScored: AutoPointsScoring
+  Left: Boolean
+}
+
+##############
+### TELEOP ###
+##############
+
+# enums
+enum StageOpts {
+  Onstage
+  Attempted
+  Parked
+  None
+}
+
+enum MatchResultOpts {
+  Win
+  Tie
+  Loss
+}
+
+# types
+
+type PenaltyOpts {
+  YellowCard: Boolean
+  RedCard: Boolean
+  Disabled: Boolean
+  DQ: Boolean
+  Broken: Boolean
+  NoShow: Boolean
+}
+
+type HumPlrScoringType {
+  Made: Int
+  Missed: Int
+}
+
+type EndgameType {
+  MatchResult: MatchResultOpts
+  StageResult: StageOpts
+  TrapScored: Boolean
+  Melody: Boolean
+  Ensemble: Boolean
+}
+
+type TeleopType {
+  AmountScored: TeleScoring
+  PointsScored: TelePointsScoring
+  Endgame: EndgameType
+  HumPlrScoring: HumPlrScoringType
+}
+
+type PenaltyType {
+  Fouls: Int
+  Tech: Int
+  PenaltiesCommitted: PenaltyOpts
+  FoulDesc: String
+}
+
+##################
+### ROBOT INFO ###
+##################
+
+# enums
+enum LineupSpeedOpts {
+  None
+  Slow
+  Average
+  Fast
+}
+
+enum IntakeRatingOpts {
+  None
+  Bad
+  Average
+  Good
+}
+
+# types
+
+type RobotInfoType {
+  BetterAmp: Boolean
+  BetterSpeaker: Boolean
+  BetterTrap: Boolean
+  FasterThanUs: Boolean
+  PassesUnderStage: Boolean
+  HangsFaster: Boolean
+  CountersDefense: Boolean
+  CanDefend: Boolean
+  LineupSpeed: LineupSpeedOpts
+  IntakeRating: IntakeRatingOpts
+  WhatBrokeDesc: String
+}
+
+#################
+### TEAM INFO ###
+#################
+
+# enums
+
+# types
 
 type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
   id: ID! @primaryKey
@@ -9,129 +153,16 @@ type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
   Comment: String
 }
 
-enum IntakeType {
-  SingleSubstation
-  DoubleStation
-  Portals
-  SlidingShelves
-  Ground
-}
-
-enum ChargeStationType {
-  DockedEngaged
-  Docked
-  Attempted
-  None
-  Parked
-}
-
-enum RankingPtsOpts {
-  Win
-  Tie
-  Loss
-  SustainabilityBonus
-  ActivationBonus
-}
-
-enum PriorityOpts {
-  Low
-  Mid
-  Upper
-  Cones
-  Cubes
-  ChargeStation
-  Defense
-  SingleSubstation
-  DoubleStation
-}
-
-type ScorePos {
-  Upper: Int
-  Mid: Int
-  Lower: Int
-}
-
-type Scoring {
-  Cones: ScorePos!
-  Cubes: ScorePos!
-}
-
-type AutonomousType {
-  AutonomousPlacement: Int!
-  Scored: Scoring!
-  Attempted: Scoring!
-  LeftCommunity: Boolean!
-  ChargeStation: ChargeStationType!
-}
-
-enum PenaltyKinds {
-  YellowCard
-  RedCard
-  Disabled
-  DQ
-  BrokenBot
-  NoShow
-  None
-}
-
-type PenaltiesType {
-  Fouls: Int
-  Tech: Int
-  Penalties: [PenaltyKinds]
-}
-
-type Accuracy {
-  High: Float
-  Mid: Float
-  Low: Float
-  Overall: Float
-}
-
-type ScoringComponentType {
-  High: Int
-  Mid: Int
-  Low: Int
-}
-
-type ScoringTotalType {
-  Total: Int
-  GridPoints: Int
-  GridScoringByPlacement: ScoringComponentType
-  Cones: Int
-  Cubes: Int
-}
-
-type EndGameTally {
-  Start: Int
-  End: Int
-}
-
-type TeleopType {
-  Scored: Scoring!
-  Attempted: Scoring!
-  Accuracy: Accuracy
-  ChargeStation: ChargeStationType
-  EndGame: ChargeStationType
-  EndGameTally: EndGameTally
-  ScoringTotal: ScoringTotalType
-  DriveStrength: String
-  DriveSpeed: String
-  ConesAccuracy: Accuracy
-  CubesAccuracy: Accuracy
-  SmartPlacement: Boolean
-}
-
 type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {
   id: ID! @primaryKey(sortKeyFields: ["Regional","Team"])
-  name: String!
+  name: String
   description: String
   Team: ID! @index
   Regional: String! @index
+  TotalPoints: Int
   Autonomous: AutonomousType!
   Teleop: TeleopType!
   Comments: String
-  Penalties: PenaltiesType
-  Priorities: [PriorityOpts]!
-  RankingPts: [RankingPtsOpts]
-
+  RobotInfo: RobotInfoType!
+  Penalties: PenaltyType
 }

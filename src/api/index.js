@@ -9,8 +9,8 @@ const client = generateClient()
 
 /**
  * Subscribe to create and update events
- * @param {*} updateFn 
- * @param {*} errorFn 
+ * @param {*} updateFn
+ * @param {*} errorFn
  */
 const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
 
