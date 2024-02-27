@@ -22,6 +22,9 @@ import { getMatchTeams, submitState } from './FormUtils';
 
 import RadioButton from './components/radiobuttons/RadioButton';
 
+//button styling
+import buttonStyles from './Form.module.css';
+
 
 class Form extends React.Component {
   constructor(props) {
@@ -481,15 +484,15 @@ class Form extends React.Component {
     return (
       <div className="form-contain">
         {/* TITLE */}
-        <h2> CRESCENDO FORM <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'}></img> </h2>
+        <h2> CRESCENDO FORM <img alt="" style={{height:75, width:75}} src={'./images/BLUETHUNDERLOGO_BLUE.png'}></img> </h2>
 
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
-          <button onClick={() => console.log(this.state)}> Check State </button>
+          <button onClick={() => console.log(this.state)} className={buttonStyles.Button}> Check State </button>
 
           {/* MATCH INITIATION */}
           {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
-          <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }}>GET MATCH TEAMS</button>
+          <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }} className={buttonStyles.Button}>GET MATCH TEAMS</button>
           <br></br>
           {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, teams: this.state.teams })}
         </div>
@@ -498,7 +501,7 @@ class Form extends React.Component {
 
         {/* AUTONOMOUS */}
         <div className="auto-contain">
-          <button onClick={() => this.updateAutoDisplay()}>AUTONOMOUS:</button>
+          <button onClick={() => this.updateAutoDisplay()} className={buttonStyles.Button}>AUTONOMOUS</button>
           {(() => {
             return (this.state.autoOn ?
               (
@@ -521,7 +524,7 @@ class Form extends React.Component {
 
         {/* TELEOP */}
         <div className='tele-contain'>
-          <button onClick={() => this.updateTeleDisplay()} >TELEOP:</button>
+          <button onClick={() => this.updateTeleDisplay()} className={buttonStyles.Button}>TELEOP</button>
           {(() => {
             return (this.state.teleOn ?
               (
@@ -547,7 +550,7 @@ class Form extends React.Component {
 
         {/* ROBOT/TEAM INFO */}
         <div className="robot-info-contain">
-          <button onClick={() => this.updateRobotDisplay()}>ROBOT INFO:</button>
+          <button onClick={() => this.updateRobotDisplay()} className={buttonStyles.Button}>ROBOT INFO</button>
           {(() => {
             return (this.state.robotOn ?
               (
@@ -565,7 +568,7 @@ class Form extends React.Component {
 
         {/* PENALTIES */}
         <div className="penalty-contain">
-          <button onClick={() => this.updatePenaltyDisplay()}>PENALTIES:</button>
+          <button onClick={() => this.updatePenaltyDisplay()} className={buttonStyles.Button}>PENALTIES</button>
           {(() => {
             return (this.state.penaltiesOn ?
               (
@@ -626,7 +629,7 @@ class Form extends React.Component {
 
                   }
                 })
-            }}>SUBMIT</button>
+            }} className={buttonStyles.Button} >SUBMIT</button>
           </div>
           <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
         </div>
