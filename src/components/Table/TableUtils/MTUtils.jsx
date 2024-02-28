@@ -136,7 +136,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0), mcDefend)
       const reliableRobotUnderStage = getReliability(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0), mcUnderStage)
       const reliableAutoStart = getReliability(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ), mcAutoStart)
-      const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ), mcStagePosition)
+      const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePos !== null ? team.Endgame.StagePos : 0 ), mcStagePosition)
 
       //grade
       const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
