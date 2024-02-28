@@ -178,8 +178,8 @@ class Form extends React.Component {
       teleAmpScored: m.Teleop.AmountScored.Amp,
       teleSpeakerScored: m.Teleop.AmountScored.Speaker,
       teleAmplifiedSpeakerScored: m.Teleop.AmountScored.AmplifiedSpeaker,
-      highNotesMade: m.Teleop.HumPlrScored.Made,
-      highNotesMissed: m.Teleop.HumPlrScored.Missed,
+      highNotesMade: m.Teleop.HumPlrScoring.Made,
+      highNotesMissed: m.Teleop.HumPlrScoring.Missed,
 
       endGameVal: m.Teleop.EndGame.StageResult, //onstage, attempted, parked, none
       noteInTrap: m.Teleop.EndGame.TrapScored,

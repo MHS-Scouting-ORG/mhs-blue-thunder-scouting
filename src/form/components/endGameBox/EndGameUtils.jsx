@@ -56,6 +56,7 @@ export function makeEndGameDropDown(props) {
 
         changeDropDownState={changeEndGame}
         changeHangsFaster={changeHangsFaster}
+        isAPlacement={false}
       />
     </div>
   )

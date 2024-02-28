@@ -28,7 +28,7 @@ const initTelePointsScored = _ => {
     Points: 0,
     EndgamePoints: 0,
     SpeakerPoints: 0,
-    AmpPoints: 0
+    AmpPoints: 0,
   }
 }
 
@@ -139,6 +139,8 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
   if (matchId === undefined)
     throw new Error("MatchId Not provided")
 
+  console.log("building da entry")
+
   return {
     id: matchId,
     name: "",
@@ -162,7 +164,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
         Melody: false,
         Ensemble: false
       },
-      HumPlrScored: {
+      HumPlrScoring: {
         Made: 0,
         Missed: 0
       }

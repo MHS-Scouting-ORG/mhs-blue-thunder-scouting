@@ -195,14 +195,14 @@ export async function submitState(props) {
     matchEntry.Teleop.PointsScored.SpeakerPoints = speakerPts
     matchEntry.Teleop.PointsScored.AmpPoints = ampPts
 
-    matchEntry.Teleop.EndGame.MatchResult = matchResult
-    matchEntry.Teleop.EndGame.StageResult = endGameVal
-    matchEntry.Teleop.EndGame.TrapScored = noteInTrap
-    matchEntry.Teleop.EndGame.Melody = melody
-    matchEntry.Teleop.EndGame.Ensemble = ensemble
+    matchEntry.Teleop.Endgame.MatchResult = matchResult
+    matchEntry.Teleop.Endgame.StageResult = endGameVal
+    matchEntry.Teleop.Endgame.TrapScored = noteInTrap
+    matchEntry.Teleop.Endgame.Melody = melody
+    matchEntry.Teleop.Endgame.Ensemble = ensemble
 
-    matchEntry.Teleop.HumPlrScored.Made = highNotesMade
-    matchEntry.Teleop.HumPlrScored.Missed = highNotesMissed
+    matchEntry.Teleop.HumPlrScoring.Made = highNotesMade
+    matchEntry.Teleop.HumPlrScoring.Missed = highNotesMissed
 
     // ROBOT INFO //
     matchEntry.RobotInfo.BetterAmp = betterAmp
@@ -234,6 +234,7 @@ export async function submitState(props) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
     }
 
+    console.log("gonna call to apiUpdateTeamMatch")
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
   }
 }

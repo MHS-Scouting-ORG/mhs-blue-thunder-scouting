@@ -8,12 +8,19 @@ function DropDown(props) {
         choices = choices.concat([...props.choices]);
     }
 
-    function checkOffOnstage(val) {
-        if (val.trim() !== "Onstage") {
-            if (props.changeHangsFaster === undefined) {
-                return
+    function dropDownChanged(val) {
+        if (props.isAPlacement) {
+            props.changeDropDownState(parseInt(val))
+        }
+
+        else {
+            props.changeDropDownState(val)
+            if (val.trim() !== "Onstage") {
+                if (props.changeHangsFaster === undefined) {
+                    return
+                }
+                props.changeHangsFaster(false)
             }
-            props.changeHangsFaster(false)
         }
     }
 
@@ -21,8 +28,7 @@ function DropDown(props) {
         <div>
             <label>{props.title}</label>
             <select onChange={({ target : { value } }) => {
-                props.changeDropDownState(value);
-                checkOffOnstage(value);
+                dropDownChanged(value)
             }} value={props.value}>
                 {choices.map((choice) => 
                     typeof(choice) !== 'object' ?
@@ -36,7 +42,7 @@ DropDown.propTypes = {
     title: PropTypes.string,
     choices: PropTypes.array,
     changeDropDownState: PropTypes.func,
-    changeHangsFaster: PropTypes.func
+    changeHangsFaster: PropTypes.func,
 }
 
 export default DropDown;

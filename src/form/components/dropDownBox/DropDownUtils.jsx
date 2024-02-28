@@ -26,6 +26,7 @@ export function makeAutoPlacementDropDownBox(props, title, option) {
         choices={option}
         value={placement}
         changeDropDownState={props.changeState}
+        isAPlacement={true}
       />
     </div>
   )

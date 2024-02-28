@@ -14,6 +14,7 @@ function TeamDropDown(props) {
                 choices={props.teams}
                 value={props.teamNumber}
                 changeDropDownState={props.changeState}
+                isAPlacement={false}
             />
         </div>
     ) : (
