@@ -107,16 +107,16 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       //custom robot capabilities
       const mcUnderStage = arrMode(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0))
       //internal calc
-      const canHang = getCan(teamStats.map((team) => team.Teleop.EndGame.StageResult !== null ? team.Teleop.EndGame.StageResult : 0))
+      const canHang = getCan(teamStats.map((team) => team.Teleop.Endgame.StageResult !== null ? team.Teleop.Endgame.StageResult : 0))
       //change calc
       const canSpeaker = getCan(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Teleop.PointsScored.SpeakerPoints : 0))
       const canAmp = getCan(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointScored.AmpPoints : 0))
       //change calc
-      const canTrap = getCan(teamStats.map((team) => team.Teleop.EndGame.TrapScored !== null ? team.Teleop.EndGame.TrapScored : 0))
+      const canTrap = getCan(teamStats.map((team) => team.Teleop.Endgame.TrapScored !== null ? team.Teleop.Endgame.TrapScored : 0))
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
       //field info
-      const mcStagePosition = arrMode(teamStats.map((team) => team.EndGame.StagePosition !== null ? team.EndGame.Position : 0 ))
+      const mcStagePosition = arrMode(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ))
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
       const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
@@ -136,7 +136,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0), mcDefend)
       const reliableRobotUnderStage = getReliability(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0), mcUnderStage)
       const reliableAutoStart = getReliability(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ), mcAutoStart)
-      const reliableStagePosition = getReliability(teamStats.map((team) => team.EndGame.StagePosition !== null ? team.EndGame.Position : 0 ), mcStagePosition)
+      const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ), mcStagePosition)
 
       //grade
       const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
