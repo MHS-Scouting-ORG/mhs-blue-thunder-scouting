@@ -147,6 +147,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rAmp = avgAmp / maxAmp 
       const rCycles = avgCycles / maxCycles
 
+
+
       console.log(mcRobotSpeed) // test
 
       const tableDataObj = {
