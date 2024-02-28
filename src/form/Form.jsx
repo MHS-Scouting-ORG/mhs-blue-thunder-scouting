@@ -46,7 +46,6 @@ class Form extends React.Component {
       left: false,
 
       // SCORING //
-      // counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
       autoAmpScored: 0,
       autoSpeakerScored: 0,
       teleAmpScored: 0,
@@ -65,13 +64,11 @@ class Form extends React.Component {
       speakerPts: 0,
 
       // RANKING PTS //
-      // rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
       bonusStatus: [false, false],
 
       // PENALTIES //
-      // penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: false,
       redCard: false,
       disable: false,
@@ -84,7 +81,6 @@ class Form extends React.Component {
       robotBrokenComments: "",
 
       // ROBOT INFO //
-      // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
       betterAmp: false,
       betterSpeaker: false,
       betterTrap: false,
@@ -93,7 +89,6 @@ class Form extends React.Component {
       clearsStage: false,
       countersDefense: false,
       canDefend: false,
-      // ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
     }

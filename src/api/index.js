@@ -118,6 +118,8 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
     if (!matchId) {
         throw new Error("MatchId not provided")
     }
+    console.log(data)
+
     const input = {
         ...data,
         id: matchId,
@@ -125,6 +127,8 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
         Team: teamId,
         Regional: regionalId,
     }
+
+    console.log("provided input: ", input)
 
     return client.graphql({
         query: updateTeamMatch, variables: {

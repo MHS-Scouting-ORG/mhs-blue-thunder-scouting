@@ -35,9 +35,6 @@ export async function submitState(props) {
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
 
-  let counterBoxVals = props.state.counterBoxVals
-  let booleans = props.state.booleans
-
   // TEAM INFO //
   let teamNum = props.state.teamNumber;
 
@@ -231,8 +228,9 @@ export async function submitState(props) {
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
     matchEntry.Penalties.FoulDesc = foulComments
 
-    if (props.matchData === undefined) {
+    console.log("MATCH DATA: ", matchEntry)
 
+    if (props.matchData === undefined) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
     }
 
