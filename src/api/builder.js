@@ -1,18 +1,37 @@
-const initScoring = _ => {
+const initAutoAmountScored = _ => {
   return {
-    Cones: {
-      Upper: 0,
-      Mid: 0,
-      Lower: 0
-    },
-    Cubes: {
-      Upper: 0,
-      Mid: 0,
-      Lower: 0
-    }
+    Amp: 0,
+    Speaker: 0,
   }
 
 }
+
+const initAutoPointsScored = _ => {
+  return {
+    Points: 0,
+    SpeakerPoints: 0,
+    AmpPoints: 0,
+  }
+}
+
+const initTeleAmountScored = _ => {
+  return {
+    Amp: 0,
+    Speaker: 0,
+    AmplifiedSpeaker: 0,
+    Cycles: 0,
+  }
+}
+
+const initTelePointsScored = _ => {
+  return {
+    Points: 0,
+    EndgamePoints: 0,
+    SpeakerPoints: 0,
+    AmpPoints: 0,
+  }
+}
+
 
 const generateRandomScoring = function (cap) {
   if (!cap) {
@@ -27,7 +46,6 @@ const generateRandomScoring = function (cap) {
         Mid: 10,
         Lower: 10
       }
-
     }
   }
   return {
@@ -47,7 +65,7 @@ const generateRandomScoring = function (cap) {
   }
 
 }
-const PenaltyKinds = {
+const PenaltyOpts = {
   YELLOW_CARD: "YellowCard",
   RED_CARD: "RedCard",
   DISABLED: "Disabled",
@@ -55,43 +73,40 @@ const PenaltyKinds = {
   BROKEN_BOT: "BrokenBot",
   NO_SHOW: "NoShow",
   NONE: "None"
-
 }
 
-const ChargeStationType = {
-    DOCKED_ENGAGED: "DockedEngaged",
-    DOCKED: "Docked",
-    ATTEMPTED: "Attempted",
-    NONE: "None"
+const StageOpts = {
+  ONSTAGE: "Onstage",
+  ATTEMPTED: "Attempted",
+  PARKED: "Parked",
+  NONE: "None"
 }
 
-const IntakeType = {
-  SINGLE_SUBSTATION: "SingleSubStation",
-  DOUBLE_STATION: "DoubleStation",
-  PORTALS: "Portals",
-  SLIDING_SHELVES: "SlidingShelves",
-  GROUND: "Ground"
+const StagePositionOpts = {
+  LEFT: "Left",
+  RIGHT: "Right",
+  CENTER: "Center",
+  NONE: "None",
 }
 
-const RankingPtsOpts = {
+const LineupSpeedOpts = {
+  NONE: "None",
+  SLOW: "Slow",
+  AVERAGE: "Average",
+  FAST: "Fast"
+}
+
+const IntakeRatingOpts = {
+  NONE: "None",
+  BAD: "Bad",
+  AVERAGE: "Average",
+  GOOD: "Good",
+}
+
+const MatchResultOpts = {
   WIN: "Win",
   TIE: "Tie",
   LOSS: "Loss",
-  SUSTAINABILITY_BONUS: "SustainabilityBonus",
-  ACTIVATION_BONUS: "ActivationBonus",
-
-}
-
-const PriorityOpts = {
-    HIGH: "High",
-    MID: "Mid",
-    LOW: "Low",
-    CONES: "Cones",
-    CUBES: "Cubes",
-    CHARGESTATION: "ChargeStation",
-    DEFENSE: "Defense",
-    SINGLE_SUBSTATION: "SingleSubstation",
-    DOUBLE_STATION: "DoubleStation",
 }
 
 const selectPropsFromEnum = function (enumVals) {
@@ -131,58 +146,64 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
   if (matchId === undefined)
     throw new Error("MatchId Not provided")
 
+  console.log("building da entry")
+
   return {
     id: matchId,
     name: "",
     description: "",
     Team: teamId,
     Regional: regionalId,
+    TotalPoints: 0,
     Autonomous: {
-      AutonomousPlacement: 0,
-      Scored: initScoring(),
-      Attempted: initScoring(),
-      LeftCommunity: false,
-      ChargeStation: ChargeStationType.NONE,
+      StartingPosition: 0,
+      AmountScored: initAutoAmountScored(),
+      PointsScored: initAutoPointsScored(),
+      Left: false,
     },
     Teleop: {
-      Scored: initScoring(),
-      Attempted: initScoring(),
-      ChargeStation: ChargeStationType.NONE,
-      EndGame: ChargeStationType.NONE,
-      EndGameTally: {
-        Start: 0,
-        End: 0
+      AmountScored: initTeleAmountScored(),
+      PointsScored: initTelePointsScored(),
+      Endgame: {
+        MatchResult: MatchResultOpts.WIN,
+        StageResult: StageOpts.NONE,
+        StagePosition: StageOpts.NONE,
+        TrapScored: false,
+        Melody: false,
+        Ensemble: false
       },
-
-      ScoringTotal: {
-        Total: 0,
-        GridPoints: 0,
-        GridScoringByPlacement: {
-          High: 0,
-          Mid: 0,
-          Low: 0
-        },
-        Cones: 0,
-        Cubes: 0,
-      },
-      DriveStrength: "",
-      DriveSpeed: 0,
-      ConesAccuracy: zeroAccuracy(),
-      CubesAccuracy: zeroAccuracy(),
-      SmartPlacement: false,
-
+      HumPlrScoring: {
+        Made: 0,
+        Missed: 0
+      }
     },
-    RankingPts: [],
     Comments: "",
+    RobotInfo: {
+      BetterAmp: false,
+      BetterSpeaker: false,
+      BetterTrap: false,
+      FasterThanUs: false,
+      PassesUnderStage: false,
+      HangsFaster: false,
+      CountersDefense: false,
+      CanDefend: false,
+      LineupSpeed: LineupSpeedOpts.NONE,
+      IntakeRating: IntakeRatingOpts.NONE,
+      WhatBrokeDesc: "",
+    },
     Penalties: {
       Fouls: 0,
       Tech: 0,
-      Penalties: []
+      PenaltiesCommitted: {
+        YellowCard: false,
+        RedCard: false,
+        Disabled: false,
+        DQ: false,
+        Broken: false,
+        NoShow: false,
+      },
+      FoulDesc: ""
     },
-    Priorities: [],
-
-
-
   }
 
 }
@@ -192,10 +213,9 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
   matchEntry.Penalties = {
     Fouls: Math.floor(Math.random() * 4),
     Tech: Math.floor(Math.random() * 4),
-    Penalties: selectPropsFromEnum(PenaltyKinds)
+    Penalties: selectPropsFromEnum(PenaltyOpts)
 
   }
-  matchEntry.Priorities = selectPropsFromEnum(PriorityOpts)
   matchEntry.RankingPts = selectPropsFromEnum(RankingPtsOpts)
   const Attempted = generateRandomScoring()
   const Scored = generateRandomScoring(Attempted)
@@ -241,7 +261,5 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
 /*
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
- * ChargeStationType - enum of valid charge stations types
- * IntakeType - enum of valid intake types
  */
-export { ChargeStationType, IntakeType, PenaltyKinds, RankingPtsOpts, PriorityOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
