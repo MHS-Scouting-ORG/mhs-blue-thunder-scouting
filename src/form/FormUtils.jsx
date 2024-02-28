@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, StagePosOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -201,7 +201,7 @@ export async function submitState(props) {
 
     matchEntry.Teleop.Endgame.MatchResult = matchResult
     matchEntry.Teleop.Endgame.StageResult = endGameVal
-    matchEntry.Teleop.Endgame.StagePosition = stagePosition
+    matchEntry.Teleop.Endgame.StagePos = stagePosition
     matchEntry.Teleop.Endgame.TrapScored = noteInTrap
     matchEntry.Teleop.Endgame.Melody = melody
     matchEntry.Teleop.Endgame.Ensemble = ensemble
@@ -275,16 +275,16 @@ function findStageResult(val) {
 
 function findStagePosition(val) {
   if (val === "Left") {
-    return StagePositionOpts.LEFT
+    return StagePosOpts.LEFT
   }
   else if (val === "Right") {
-    return StagePositionOpts.RIGHT
+    return StagePosOpts.RIGHT
   }
   else if (val === "Center") {
-    return StagePositionOpts.CENTER
+    return StagePosOpts.CENTER
   }
   else if (val === "" || val === "None") {
-    return StagePositionOpts.NONE
+    return StagePosOpts.NONE
   }
 }
 
