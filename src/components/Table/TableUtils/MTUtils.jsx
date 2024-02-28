@@ -110,13 +110,13 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const canHang = getCan(teamStats.map((team) => team.Teleop.Endgame.StageResult !== null ? team.Teleop.Endgame.StageResult : 0))
       //change calc
       const canSpeaker = getCan(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Teleop.PointsScored.SpeakerPoints : 0))
-      const canAmp = getCan(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointScored.AmpPoints : 0))
+      const canAmp = getCan(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointsScored.AmpPoints : 0))
       //change calc
       const canTrap = getCan(teamStats.map((team) => team.Teleop.Endgame.TrapScored !== null ? team.Teleop.Endgame.TrapScored : 0))
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
       //field info
-      const mcStagePosition = arrMode(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ))
+      const mcStagePosition = arrMode(teamStats.map((team) => team.Teleop.Endgame.StagePosition !== null ? team.Teleop.Endgame.Position : 0 ))
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
       const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
