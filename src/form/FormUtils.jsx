@@ -274,15 +274,14 @@ function findStageResult(val) {
 }
 
 function findStagePosition(val) {
-  if (val === "Center") {
-    console.log("ITS CENTER")
-    return StagePositionOpts.CENTER
-  }
-  else if (val === "Left") {
+  if (val === "Left") {
     return StagePositionOpts.LEFT
   }
   else if (val === "Right") {
     return StagePositionOpts.RIGHT
+  }
+  else if (val === "Center") {
+    return StagePositionOpts.CENTER
   }
   else if (val === "" || val === "None") {
     return StagePositionOpts.NONE

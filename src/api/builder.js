@@ -86,7 +86,7 @@ const StagePositionOpts = {
   LEFT: "Left",
   RIGHT: "Right",
   CENTER: "Center",
-  NONE: "None",
+  NONE: "None"
 }
 
 const LineupSpeedOpts = {
