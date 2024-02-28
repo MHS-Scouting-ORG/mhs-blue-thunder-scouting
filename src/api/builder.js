@@ -155,7 +155,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Teleop: {
       AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
-      EndGame: {
+      Endgame: {
         MatchResult: MatchResultOpts.WIN,
         StageResult: StageOpts.NONE,
         TrapScored: false,
