@@ -86,6 +86,7 @@ export const getTeamMatch = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
+          StagePosition
           TrapScored
           Melody
           Ensemble
@@ -192,6 +193,7 @@ export const listTeamMatches = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
+            StagePosition
             TrapScored
             Melody
             Ensemble
@@ -299,6 +301,7 @@ export const teamMatchesByTeam = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
+            StagePosition
             TrapScored
             Melody
             Ensemble
@@ -406,6 +409,7 @@ export const teamMatchesByRegional = /* GraphQL */ `
           Endgame {
             MatchResult
             StageResult
+            StagePosition
             TrapScored
             Melody
             Ensemble
