@@ -59,6 +59,12 @@ enum StageOpts {
   None
 }
 
+enum StagePositionOpts {
+  Left
+  Right
+  Center
+}
+
 enum MatchResultOpts {
   Win
   Tie
@@ -84,6 +90,7 @@ type HumPlrScoringType {
 type EndgameType {
   MatchResult: MatchResultOpts
   StageResult: StageOpts
+  StagePosition: StagePositionOpts
   TrapScored: Boolean
   Melody: Boolean
   Ensemble: Boolean
