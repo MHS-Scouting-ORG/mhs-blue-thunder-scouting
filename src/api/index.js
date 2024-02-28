@@ -104,7 +104,6 @@ const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId) {
 
     return client.graphql({
         query: createTeamMatch, variables: {
-            //ERRORS HERE ("The variables input contains a field that is not defined for input object type 'TeleopTypeInput' ")
             input: buildMatchEntry(regionalId, teamId, matchId),
         }
     })

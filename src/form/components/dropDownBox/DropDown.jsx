@@ -16,10 +16,11 @@ function DropDown(props) {
         else {
             props.changeDropDownState(val)
             if (val.trim() !== "Onstage") {
-                if (props.changeHangsFaster === undefined) {
+                if (props.changeHangsFaster === undefined || props.changeStagePosition === undefined) {
                     return
                 }
                 props.changeHangsFaster(false)
+                props.changeStagePosition("None")
             }
         }
     }

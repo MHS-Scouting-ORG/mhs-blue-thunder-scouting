@@ -38,7 +38,6 @@ export function makeEndGameMiscRadio(props, title) {
             { value: 'Left', label: "Left" },
             { value: 'Right', label: "Right" },
             { value: 'Center', label: "Center" },
-            { value: 'None', label: "None" },
           ]}
           changeState={props.changeState}
           selected={props.stagePosition}
@@ -69,6 +68,10 @@ export function makeEndGameDropDown(props) {
     props.changeHangsFaster(value)
   }
 
+  function changeStagePosition(value) {
+    props.changeStagePosition(value)
+  }
+
   return (
     <div>
       <DropDown
@@ -79,6 +82,7 @@ export function makeEndGameDropDown(props) {
 
         changeDropDownState={changeEndGame}
         changeHangsFaster={changeHangsFaster}
+        changeStagePosition={changeStagePosition}
         isAPlacement={false}
       />
     </div>

@@ -123,7 +123,6 @@ export async function submitState(props) {
 
   // update stagePosition to enum
   stagePosition = findStagePosition(stagePosition)
-  console.log(stagePosition)
 
   // update lineUpSpeed to enum
   lineUpSpeed = findLineUpSpeed(lineUpSpeed)
@@ -276,6 +275,7 @@ function findStageResult(val) {
 
 function findStagePosition(val) {
   if (val === "Center") {
+    console.log("ITS CENTER")
     return StagePositionOpts.CENTER
   }
   else if (val === "Left") {
@@ -284,7 +284,7 @@ function findStagePosition(val) {
   else if (val === "Right") {
     return StagePositionOpts.RIGHT
   }
-  else if (val === "None") {
+  else if (val === "" || val === "None") {
     return StagePositionOpts.NONE
   }
 }

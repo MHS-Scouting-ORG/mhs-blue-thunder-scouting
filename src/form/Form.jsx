@@ -183,8 +183,9 @@ class Form extends React.Component {
       highNotesMade: m.Teleop.HumPlrScoring.Made,
       highNotesMissed: m.Teleop.HumPlrScoring.Missed,
 
-      endGameVal: m.Teleop.EndGame.StageResult, //onstage, attempted, parked, none
-      noteInTrap: m.Teleop.EndGame.TrapScored,
+      endGameVal: m.Teleop.Endgame.StageResult, //onstage, attempted, parked, none
+      stagePosition: m.Teleop.Endgame.StagePosition,
+      noteInTrap: m.Teleop.Endgame.TrapScored,
 
       totalPts: m.TotalPoints,
       autoPts: m.Autonomous.PointsScored.Points,
@@ -195,8 +196,8 @@ class Form extends React.Component {
       rankingPts: 0,
       matchResult: m.Teleop.Endgame.MatchResult, //win, tie, loss
       bonusStatus: [
-        m.Teleop.EndGame.Melody,
-        m.Teleop.EndGame.Ensemble
+        m.Teleop.Endgame.Melody,
+        m.Teleop.Endgame.Ensemble
       ],
 
       // PENALTIES //
@@ -531,7 +532,7 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
-                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, endGameVal: this.state.endGameVal })}
+                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
                   {makeEndGameMiscCheckbox({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
                   {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
