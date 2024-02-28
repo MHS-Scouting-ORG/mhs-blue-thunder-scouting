@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -52,6 +52,7 @@ export async function submitState(props) {
   let highNotesMissed = props.state.highNotesMissed //counterBoxVals[6]
 
   let endGameVal = props.state.endGameVal
+  let stagePosition = props.state.stagePosition
   let noteInTrap = props.state.noteInTrap //booleans[3]
 
   // RANKING PTS //
@@ -119,6 +120,10 @@ export async function submitState(props) {
 
   // update stageResult to enum
   endGameVal = findStageResult(endGameVal)
+
+  // update stagePosition to enum
+  stagePosition = findStagePosition(stagePosition)
+  console.log(stagePosition)
 
   // update lineUpSpeed to enum
   lineUpSpeed = findLineUpSpeed(lineUpSpeed)
@@ -197,6 +202,7 @@ export async function submitState(props) {
 
     matchEntry.Teleop.Endgame.MatchResult = matchResult
     matchEntry.Teleop.Endgame.StageResult = endGameVal
+    matchEntry.Teleop.Endgame.StagePosition = stagePosition
     matchEntry.Teleop.Endgame.TrapScored = noteInTrap
     matchEntry.Teleop.Endgame.Melody = melody
     matchEntry.Teleop.Endgame.Ensemble = ensemble
@@ -265,6 +271,21 @@ function findStageResult(val) {
   }
   else if (val === "None") {
     return StageOpts.NONE
+  }
+}
+
+function findStagePosition(val) {
+  if (val === "Center") {
+    return StagePositionOpts.CENTER
+  }
+  else if (val === "Left") {
+    return StagePositionOpts.LEFT
+  }
+  else if (val === "Right") {
+    return StagePositionOpts.RIGHT
+  }
+  else if (val === "None") {
+    return StagePositionOpts.NONE
   }
 }
 

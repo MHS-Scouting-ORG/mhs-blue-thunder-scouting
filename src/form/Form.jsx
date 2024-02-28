@@ -6,7 +6,7 @@ import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox } from './components/
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
-import { makeEndGameMisc, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+import { makeEndGameMiscCheckbox, makeEndGameMiscRadio, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
@@ -55,6 +55,7 @@ class Form extends React.Component {
       highNotesMissed: 0,
 
       endGameVal: '', //onstage, attempted, parked, none
+      stagePosition: '',
       noteInTrap: false,
 
       totalPts: 0,
@@ -111,6 +112,7 @@ class Form extends React.Component {
     this.updateTeleSpeakerScored = this.updateTeleSpeakerScored.bind(this)
     this.updateTeleAmplifiedSpeakerScored = this.updateTeleAmplifiedSpeakerScored.bind(this)
     this.updateEndGameVal = this.updateEndGameVal.bind(this)
+    this.updateStagePosition = this.updateStagePosition.bind(this)
     this.updateNoteInTrap = this.updateNoteInTrap.bind(this)
     this.updateHighNotesMade = this.updateHighNotesMade.bind(this)
     this.updateHighNotesMissed = this.updateHighNotesMissed.bind(this)
@@ -284,6 +286,10 @@ class Form extends React.Component {
 
   updateEndGameVal(val) {
     this.setState({ endGameVal: val })
+  }
+
+  updateStagePosition(val) {
+    this.setState({ stagePosition: val})
   }
 
   updateNoteInTrap(val) {
@@ -526,7 +532,8 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameMiscCheckbox({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
