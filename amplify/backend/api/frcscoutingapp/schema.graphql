@@ -59,7 +59,7 @@ enum StageOpts {
   None
 }
 
-enum StagePosOpts {
+enum StagePositionOpts {
   Left
   Right
   Center
@@ -91,7 +91,7 @@ type HumPlrScoringType {
 type EndgameType {
   MatchResult: MatchResultOpts
   StageResult: StageOpts
-  StagePos: StagePosOpts
+  StagePosition: StagePositionOpts
   TrapScored: Boolean
   Melody: Boolean
   Ensemble: Boolean
