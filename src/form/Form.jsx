@@ -482,10 +482,11 @@ class Form extends React.Component {
   // rendering physical and visible website components
   render() {
     return (
-      <div className="form-contain">
+      <div style={{align: 'center'}} className="form-contain">
         {/* TITLE */}
-        <h2> CRESCENDO FORM <img alt="" style={{height:75, width:75}} src={'./images/BLUETHUNDERLOGO_BLUE.png'}></img> </h2>
-
+        <br></br>
+        <img alt="" style={{width: '360px'}} src={'./images/FORMHEADER.jpg'}></img>
+        <br></br>
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
           <button onClick={() => console.log(this.state)} className={buttonStyles.Button}> Check State </button>
@@ -587,8 +588,6 @@ class Form extends React.Component {
               ))
           })()}
         </div>
-
-        <br></br>
 
         {/* RANKING POINTS */}
         <div className="ranking-contain">

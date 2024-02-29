@@ -18,7 +18,7 @@ function TeamDropDown(props) {
         </div>
     ) : (
         <div>
-            <label> Team Number
+            <label> Team Number:
                 <input type='number' onChange={setTeamNumber} ></input>
             </label>
         </div>

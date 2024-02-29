@@ -1,0 +1,15 @@
+.Link {
+    text-decoration: none;
+    border: none;
+    font-size: 20px;
+    border-radius: 100px;
+    padding: 10px 10px;
+    font-weight: bold;
+    text-align: center;
+    color: rgb(0, 0, 0);
+}
+
+.Link:hover {
+    background: darkgray;
+    border-radius: 100px;
+}
