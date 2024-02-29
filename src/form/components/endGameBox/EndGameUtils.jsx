@@ -1,14 +1,10 @@
 import React from 'react';
 //import EndGame from './EndGame';
 import DropDown from '../dropDownBox/DropDown';
+import RadioButton from '../radiobuttons/RadioButton';
+import { Radio } from '@aws-amplify/ui-react';
 
-/**
- * function for making the endgamebox
- * @param props obj from form component containing endGameVal, changeEndGameStartBox method, changeEndGameEndBox method              
- * @returns if endgame is not nil or none, returns a time tracker
- * @returns else, returns an empty div
- */
-export function makeEndGameMisc(props, title, i) {
+export function makeEndGameMiscCheckbox(props, title, i) {
   let endGameVal = props.endGameVal;
 
   function changeBool(e) {
@@ -16,12 +12,38 @@ export function makeEndGameMisc(props, title, i) {
   }
 
   if (endGameVal === "Onstage") {
-    return(
+    return (
       <div>
         <label> {title}:
           <input type="checkbox" onChange={e => changeBool(e)}></input>
         </label>
       </div>
+    )
+  }
+  else {
+    return <div></div>;
+  }
+}
+
+export function makeEndGameMiscRadio(props, title) {
+  let endGameVal = props.endGameVal;
+
+  if (endGameVal === "Onstage") {
+    return (
+      <div>
+        <p>{title}</p>
+        <RadioButton
+          label="startingPosition"
+          options={[
+            { value: 'left', label: "Left" },
+            { value: 'right', label: "Right" },
+            { value: 'center', label: "Center" },
+          ]}
+          changeState={props.changeState}
+          selected={props.stagePosition}
+        />
+      </div>
+
     )
   }
   else {
@@ -46,6 +68,10 @@ export function makeEndGameDropDown(props) {
     props.changeHangsFaster(value)
   }
 
+  function changeStagePosition(value) {
+    props.changeStagePosition(value)
+  }
+
   return (
     <div>
       <DropDown
@@ -56,17 +82,19 @@ export function makeEndGameDropDown(props) {
 
         changeDropDownState={changeEndGame}
         changeHangsFaster={changeHangsFaster}
+        changeStagePosition={changeStagePosition}
+        isAPlacement={false}
       />
     </div>
   )
 
-//  return (
-//    <div>
-//      <EndGame
-//        changeEndGameUsed={changeEndGame}
-//        makeEndGameMisc={makeEndGameMisc}
-//        value={endGameState}
-//      />
-//    </div>
-//  )
+  //  return (
+  //    <div>
+  //      <EndGame
+  //        changeEndGameUsed={changeEndGame}
+  //        makeEndGameMisc={makeEndGameMisc}
+  //        value={endGameState}
+  //      />
+  //    </div>
+  //  )
 }

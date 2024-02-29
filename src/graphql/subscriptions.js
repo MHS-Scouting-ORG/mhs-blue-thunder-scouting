@@ -50,128 +50,84 @@ export const onCreateTeamMatch = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
-        AutonomousPlacement
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        StartingPosition
+        AmountScored {
+          Amp
+          Speaker
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        LeftCommunity
-        ChargeStation
+        Left
         __typename
       }
       Teleop {
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          EndgamePoints
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        Accuracy {
-          High
-          Mid
-          Low
-          Overall
+        Endgame {
+          MatchResult
+          StageResult
+          StagePosition
+          TrapScored
+          Melody
+          Ensemble
           __typename
         }
-        ChargeStation
-        EndGame
-        EndGameTally {
-          Start
-          End
+        HumPlrScoring {
+          Made
+          Missed
           __typename
         }
-        ScoringTotal {
-          Total
-          GridPoints
-          GridScoringByPlacement {
-            High
-            Mid
-            Low
-            __typename
-          }
-          Cones
-          Cubes
-          __typename
-        }
-        DriveStrength
-        DriveSpeed
-        ConesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        CubesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        SmartPlacement
         __typename
       }
       Comments
+      RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
+        FasterThanUs
+        PassesUnderStage
+        HangsFaster
+        CountersDefense
+        CanDefend
+        LineupSpeed
+        IntakeRating
+        WhatBrokeDesc
+        __typename
+      }
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
+        FoulDesc
         __typename
       }
-      Priorities
-      RankingPts
       createdAt
       updatedAt
       __typename
@@ -188,128 +144,84 @@ export const onUpdateTeamMatch = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
-        AutonomousPlacement
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        StartingPosition
+        AmountScored {
+          Amp
+          Speaker
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        LeftCommunity
-        ChargeStation
+        Left
         __typename
       }
       Teleop {
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          EndgamePoints
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        Accuracy {
-          High
-          Mid
-          Low
-          Overall
+        Endgame {
+          MatchResult
+          StageResult
+          StagePosition
+          TrapScored
+          Melody
+          Ensemble
           __typename
         }
-        ChargeStation
-        EndGame
-        EndGameTally {
-          Start
-          End
+        HumPlrScoring {
+          Made
+          Missed
           __typename
         }
-        ScoringTotal {
-          Total
-          GridPoints
-          GridScoringByPlacement {
-            High
-            Mid
-            Low
-            __typename
-          }
-          Cones
-          Cubes
-          __typename
-        }
-        DriveStrength
-        DriveSpeed
-        ConesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        CubesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        SmartPlacement
         __typename
       }
       Comments
+      RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
+        FasterThanUs
+        PassesUnderStage
+        HangsFaster
+        CountersDefense
+        CanDefend
+        LineupSpeed
+        IntakeRating
+        WhatBrokeDesc
+        __typename
+      }
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
+        FoulDesc
         __typename
       }
-      Priorities
-      RankingPts
       createdAt
       updatedAt
       __typename
@@ -326,128 +238,84 @@ export const onDeleteTeamMatch = /* GraphQL */ `
       description
       Team
       Regional
+      TotalPoints
       Autonomous {
-        AutonomousPlacement
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        StartingPosition
+        AmountScored {
+          Amp
+          Speaker
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        LeftCommunity
-        ChargeStation
+        Left
         __typename
       }
       Teleop {
-        Scored {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        AmountScored {
+          Amp
+          Speaker
+          AmplifiedSpeaker
+          Cycles
           __typename
         }
-        Attempted {
-          Cones {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
-          Cubes {
-            Upper
-            Mid
-            Lower
-            __typename
-          }
+        PointsScored {
+          Points
+          EndgamePoints
+          SpeakerPoints
+          AmpPoints
           __typename
         }
-        Accuracy {
-          High
-          Mid
-          Low
-          Overall
+        Endgame {
+          MatchResult
+          StageResult
+          StagePosition
+          TrapScored
+          Melody
+          Ensemble
           __typename
         }
-        ChargeStation
-        EndGame
-        EndGameTally {
-          Start
-          End
+        HumPlrScoring {
+          Made
+          Missed
           __typename
         }
-        ScoringTotal {
-          Total
-          GridPoints
-          GridScoringByPlacement {
-            High
-            Mid
-            Low
-            __typename
-          }
-          Cones
-          Cubes
-          __typename
-        }
-        DriveStrength
-        DriveSpeed
-        ConesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        CubesAccuracy {
-          High
-          Mid
-          Low
-          Overall
-          __typename
-        }
-        SmartPlacement
         __typename
       }
       Comments
+      RobotInfo {
+        BetterAmp
+        BetterSpeaker
+        BetterTrap
+        FasterThanUs
+        PassesUnderStage
+        HangsFaster
+        CountersDefense
+        CanDefend
+        LineupSpeed
+        IntakeRating
+        WhatBrokeDesc
+        __typename
+      }
       Penalties {
         Fouls
         Tech
-        Penalties
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+          __typename
+        }
+        FoulDesc
         __typename
       }
-      Priorities
-      RankingPts
       createdAt
       updatedAt
       __typename

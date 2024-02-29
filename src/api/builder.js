@@ -28,7 +28,7 @@ const initTelePointsScored = _ => {
     Points: 0,
     EndgamePoints: 0,
     SpeakerPoints: 0,
-    AmpPoints: 0
+    AmpPoints: 0,
   }
 }
 
@@ -80,6 +80,13 @@ const StageOpts = {
   ATTEMPTED: "Attempted",
   PARKED: "Parked",
   NONE: "None"
+}
+
+const StagePositionOpts = {
+  NONE: "None",
+  LEFT: "Left",
+  RIGHT: "Right",
+  CENTER: "Center",
 }
 
 const LineupSpeedOpts = {
@@ -139,6 +146,8 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
   if (matchId === undefined)
     throw new Error("MatchId Not provided")
 
+  console.log("building da entry")
+
   return {
     id: matchId,
     name: "",
@@ -155,14 +164,15 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Teleop: {
       AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
-      EndGame: {
+      Endgame: {
         MatchResult: MatchResultOpts.WIN,
         StageResult: StageOpts.NONE,
+        StagePosition: StagePositionOpts.NONE,
         TrapScored: false,
         Melody: false,
         Ensemble: false
       },
-      HumPlrScored: {
+      HumPlrScoring: {
         Made: 0,
         Missed: 0
       }
@@ -252,4 +262,4 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }

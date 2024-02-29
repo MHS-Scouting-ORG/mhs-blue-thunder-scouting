@@ -6,7 +6,7 @@ import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox } from './components/
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
-import { makeEndGameMisc, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+import { makeEndGameMiscCheckbox, makeEndGameMiscRadio, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
@@ -49,7 +49,6 @@ class Form extends React.Component {
       left: false,
 
       // SCORING //
-      // counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0], //[autoAmp, autoSpeaker , teleAmp, teleSpeaker, teleAmplifiedSpeaker, highNotesMade, highNotesMissed, fouls, techFouls]
       autoAmpScored: 0,
       autoSpeakerScored: 0,
       teleAmpScored: 0,
@@ -59,6 +58,7 @@ class Form extends React.Component {
       highNotesMissed: 0,
 
       endGameVal: '', //onstage, attempted, parked, none
+      stagePosition: '',
       noteInTrap: false,
 
       totalPts: 0,
@@ -68,13 +68,11 @@ class Form extends React.Component {
       speakerPts: 0,
 
       // RANKING PTS //
-      // rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: '', //win, tie, loss
       bonusStatus: [false, false],
 
       // PENALTIES //
-      // penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: false,
       redCard: false,
       disable: false,
@@ -87,7 +85,6 @@ class Form extends React.Component {
       robotBrokenComments: "",
 
       // ROBOT INFO //
-      // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
       betterAmp: false,
       betterSpeaker: false,
       betterTrap: false,
@@ -96,7 +93,6 @@ class Form extends React.Component {
       clearsStage: false,
       countersDefense: false,
       canDefend: false,
-      // ratingSliderVals: ["", ""], //lineup speed, intake rating
       lineUpSpeed: "",
       intakeRating: "",
     }
@@ -119,6 +115,7 @@ class Form extends React.Component {
     this.updateTeleSpeakerScored = this.updateTeleSpeakerScored.bind(this)
     this.updateTeleAmplifiedSpeakerScored = this.updateTeleAmplifiedSpeakerScored.bind(this)
     this.updateEndGameVal = this.updateEndGameVal.bind(this)
+    this.updateStagePosition = this.updateStagePosition.bind(this)
     this.updateNoteInTrap = this.updateNoteInTrap.bind(this)
     this.updateHighNotesMade = this.updateHighNotesMade.bind(this)
     this.updateHighNotesMissed = this.updateHighNotesMissed.bind(this)
@@ -186,11 +183,12 @@ class Form extends React.Component {
       teleAmpScored: m.Teleop.AmountScored.Amp,
       teleSpeakerScored: m.Teleop.AmountScored.Speaker,
       teleAmplifiedSpeakerScored: m.Teleop.AmountScored.AmplifiedSpeaker,
-      highNotesMade: m.Teleop.HumPlrScored.Made,
-      highNotesMissed: m.Teleop.HumPlrScored.Missed,
+      highNotesMade: m.Teleop.HumPlrScoring.Made,
+      highNotesMissed: m.Teleop.HumPlrScoring.Missed,
 
-      endGameVal: m.Teleop.EndGame.StageResult, //onstage, attempted, parked, none
-      noteInTrap: m.Teleop.EndGame.TrapScored,
+      endGameVal: m.Teleop.Endgame.StageResult, //onstage, attempted, parked, none
+      stagePosition: m.Teleop.Endgame.StagePosition,
+      noteInTrap: m.Teleop.Endgame.TrapScored,
 
       totalPts: m.TotalPoints,
       autoPts: m.Autonomous.PointsScored.Points,
@@ -201,8 +199,8 @@ class Form extends React.Component {
       rankingPts: 0,
       matchResult: m.Teleop.Endgame.MatchResult, //win, tie, loss
       bonusStatus: [
-        m.Teleop.EndGame.Melody,
-        m.Teleop.EndGame.Ensemble
+        m.Teleop.Endgame.Melody,
+        m.Teleop.Endgame.Ensemble
       ],
 
       // PENALTIES //
@@ -292,6 +290,10 @@ class Form extends React.Component {
 
   updateEndGameVal(val) {
     this.setState({ endGameVal: val })
+  }
+
+  updateStagePosition(val) {
+    this.setState({ stagePosition: val})
   }
 
   updateNoteInTrap(val) {
@@ -534,8 +536,9 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
-                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMisc({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
+                  {makeEndGameMiscCheckbox({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
