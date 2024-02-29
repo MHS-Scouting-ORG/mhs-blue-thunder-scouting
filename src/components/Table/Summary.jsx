@@ -63,7 +63,6 @@ function Summary(props) {
     ueTableData(oprList, ccwmList, dprList, tableData, regional)
       .then(data => {
         let holdTableData = data
-        console.log(holdTableData)
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
@@ -102,6 +101,7 @@ function Summary(props) {
     setBookmark(newBookmarkEntries)
   }
 
+  console.log("table data: ",tableData)
   const data = React.useMemo(
     () => tableData.map(team => {
       const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
