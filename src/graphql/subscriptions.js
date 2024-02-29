@@ -85,7 +85,6 @@ export const onCreateTeamMatch = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          StagePosition
           TrapScored
           Melody
           Ensemble
@@ -179,7 +178,6 @@ export const onUpdateTeamMatch = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          StagePosition
           TrapScored
           Melody
           Ensemble
@@ -273,7 +271,6 @@ export const onDeleteTeamMatch = /* GraphQL */ `
         Endgame {
           MatchResult
           StageResult
-          StagePosition
           TrapScored
           Melody
           Ensemble
