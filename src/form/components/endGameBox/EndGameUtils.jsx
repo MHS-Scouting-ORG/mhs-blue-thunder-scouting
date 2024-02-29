@@ -35,9 +35,9 @@ export function makeEndGameMiscRadio(props, title) {
         <RadioButton
           label="startingPosition"
           options={[
-            { value: 'Left', label: "Left" },
-            { value: 'Right', label: "Right" },
-            { value: 'Center', label: "Center" },
+            { value: 'left', label: "Left" },
+            { value: 'right', label: "Right" },
+            { value: 'center', label: "Center" },
           ]}
           changeState={props.changeState}
           selected={props.stagePosition}

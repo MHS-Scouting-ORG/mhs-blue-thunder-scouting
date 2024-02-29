@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, StagePosOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
@@ -201,7 +201,7 @@ export async function submitState(props) {
 
     matchEntry.Teleop.Endgame.MatchResult = matchResult
     matchEntry.Teleop.Endgame.StageResult = endGameVal
-    matchEntry.Teleop.Endgame.StagePos = stagePosition
+    matchEntry.Teleop.Endgame.StagePosition = stagePosition
     matchEntry.Teleop.Endgame.TrapScored = noteInTrap
     matchEntry.Teleop.Endgame.Melody = melody
     matchEntry.Teleop.Endgame.Ensemble = ensemble
@@ -234,6 +234,7 @@ export async function submitState(props) {
     matchEntry.Penalties.FoulDesc = foulComments
 
     console.log("MATCH DATA: ", matchEntry)
+    console.log(StagePositionOpts)
 
     if (props.matchData === undefined) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
@@ -274,21 +275,21 @@ function findStageResult(val) {
 }
 
 function findStagePosition(val) {
-  if (val === "Left") {
+  if (val === "left") {
     console.log("IT GOES LEFT")
-    return StagePosOpts.LEFT
+    return StagePositionOpts.LEFT
   }
-  else if (val === "Right") {
+  else if (val === "right") {
     console.log("IT GOES RIGHT")
-    return StagePosOpts.RIGHT
+    return StagePositionOpts.RIGHT
   }
-  else if (val === "Center") {
+  else if (val === "center") {
     console.log("IT GOES CENTER")
-    return StagePosOpts.CENTER
+    return StagePositionOpts.CENTER
   }
-  else if (val === "" || val === "None") {
+  else if (val === "" || val === "none") {
     console.log("IT GOES NOWHERE")
-    return StagePosOpts.NONE
+    return StagePositionOpts.NONE
   }
 }
 

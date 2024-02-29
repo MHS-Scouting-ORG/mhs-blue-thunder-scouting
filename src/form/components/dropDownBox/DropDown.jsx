@@ -20,7 +20,7 @@ function DropDown(props) {
                     return
                 }
                 props.changeHangsFaster(false)
-                props.changeStagePosition("None")
+                props.changeStagePosition("none")
             }
         }
     }
