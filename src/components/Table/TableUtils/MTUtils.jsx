@@ -122,7 +122,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
       const yellowCards = getMatchesOfPenalty(teamStats, 'YellowCard')
       const redCards = getMatchesOfPenalty(teamStats, 'RedCard')
-      const brokenRobots = getMatchesOfPenalty(teamStats, 'BrokenRobot')
+      const brokenRobots = getMatchesOfPenalty(teamStats, 'Broken')
 
       const disabledRobots = getMatchesOfPenalty(teamStats,"Disabled")
       const disqualifiedRobots = getMatchesOfPenalty(teamStats,"DQ")
@@ -149,7 +149,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
 
 
 
-      console.log(mcRobotSpeed) // test
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,

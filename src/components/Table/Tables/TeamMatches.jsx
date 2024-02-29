@@ -10,7 +10,7 @@ function TeamMatches(props) {
   const bookMarkFunc = props.handleBookmark
   const apiData = props.teamMatches;
 
-  const allTeamEntries = teamData.map((data) => { return (data.team) })
+  const allTeamEntries = teamData.map((data) => { return (data.Team) })
   const teams = uniqueArr(allTeamEntries);
 
   const [tableState, setTableState] = useState('none');

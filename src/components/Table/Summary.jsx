@@ -30,20 +30,41 @@ function Summary(props) {
 
   const [bookmark, setBookmark] = useState([]);
 
+  // useEffect(() => {
+  //   getMatchesForRegional(regional)
+  //     .then(data => {
+  //       const nApiData = data.data.teamMatchesByRegional.items
+
+  //       console.log(nApiData)
+  //       const matchEntries = nApiData.map((matchEntry) => {
+  //         matchEntry.bookMark = false;
+  //         return matchEntry
+  //       })
+
+  //       setApiData(matchEntries)
+  //       console.log(matchEntries)
+  //     })
+  //     .catch(err => console.log(err))
+  // }, [])
+
   useEffect(() => {
-    getMatchesForRegional(regional)
-      .then(data => {
-        const nApiData = data.data.teamMatchesByRegional.items
+    try {
+      const data = getMatchesForRegional(regional)
+      const nApiData = data.data.teamMatchesByRegional.items
 
-        const matchEntries = nApiData.map((matchEntry) => {
-          matchEntry.bookMark = false;
-          return matchEntry
-        })
-
-        setApiData(matchEntries)
-        console.log(matchEntries)
+      console.log("NAPIDATA: ", nApiData)
+      const matchEntries = nApiData.map((matchEntry) => {
+        matchEntry.bookMark = false;
+        return matchEntry
       })
-  }, [])
+
+      setApiData(matchEntries)
+      console.log(matchEntries)
+    }
+    catch(err){
+      console.log(err)
+    }
+  })
 
   useEffect(() => {    //set opr data
     getOprs(regional)
@@ -102,6 +123,7 @@ function Summary(props) {
     setBookmark(newBookmarkEntries)
   }
 
+//=================REMOVE SOMEHOW=======================??
   const data = React.useMemo(
     () => tableData.map(team => {
       const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
@@ -159,6 +181,13 @@ function Summary(props) {
     state,
     setGlobalFilter,
   } = tableInstance
+
+//=======================================================================//
+  // const tableInstance = useTable( {}, useGlobalFilter, useSortBy )
+  // const {
+  //   state,
+  //   setGlobalFilter
+  // } = tableInstance
 
   const { globalFilter } = state
 
