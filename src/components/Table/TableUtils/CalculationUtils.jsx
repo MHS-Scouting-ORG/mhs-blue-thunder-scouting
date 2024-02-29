@@ -83,11 +83,17 @@ const getReliability = (arr, mode) => {
 }
 
 const getMatchesOfPenalty = (arr,penalty) => {
+  console.log(arr)
+  console.log(penalty)
   const matchesWithPenalty = arr.filter(teamObj => {
     const teamPenaltiesArr = Object.entries(teamObj.Penalties.PenaltiesCommitted)
     const penaltyArr = teamPenaltiesArr.filter(penaltiesArr => penaltiesArr[0] === penalty)
+    console.log(teamPenaltiesArr)
+    console.log(penaltyArr[0])
     return penaltyArr[0][1]
+    //return penaltyArr[0]
   })
+  console.log(matchesWithPenalty)
   const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id)
   return penaltyMatchNumbers;
 }

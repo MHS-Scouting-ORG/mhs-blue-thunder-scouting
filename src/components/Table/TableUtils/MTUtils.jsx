@@ -116,7 +116,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
       //field info
-      const mcStagePosition = arrMode(teamStats.map((team) => team.Teleop.Endgame.StagePosition !== null ? team.Teleop.Endgame.Position : 0 ))
+      //const mcStagePosition = arrMode(teamStats.map((team) => team.Teleop.Endgame.StagePosition !== null ? team.Teleop.Endgame.Position : 0 ))
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
       const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
@@ -136,7 +136,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0), mcDefend)
       const reliableRobotUnderStage = getReliability(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0), mcUnderStage)
       const reliableAutoStart = getReliability(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ), mcAutoStart)
-      const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ), mcStagePosition)
+     /// const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ), mcStagePosition)
 
       //grade
       const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
@@ -180,7 +180,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         CanTrap: canTrap,
         //===auto==//
         AutoStart: mcAutoStart,
-        StagePosition: mcStagePosition,
+        //StagePosition: mcStagePosition,
         //===Penalties===//
         Fouls: fouls, 
         Tech: techs,
@@ -199,7 +199,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         relRobotDefense: reliableDefense,
         relRobotUnderStage: reliableRobotUnderStage,
         relRobotAutoStart: reliableAutoStart,
-        relRobotStagePos: reliableStagePosition,
+        //relRobotStagePos: reliableStagePosition,
 
         NSpeaker: rSpeaker,
         NAmp: rAmp,
