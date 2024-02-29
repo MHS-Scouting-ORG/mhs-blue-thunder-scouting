@@ -83,10 +83,10 @@ const StageOpts = {
 }
 
 const StagePositionOpts = {
+  NONE: "None",
   LEFT: "Left",
   RIGHT: "Right",
   CENTER: "Center",
-  NONE: "None",
 }
 
 const LineupSpeedOpts = {
@@ -167,7 +167,6 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       Endgame: {
         MatchResult: MatchResultOpts.WIN,
         StageResult: StageOpts.NONE,
-        StagePosition: StageOpts.NONE,
         TrapScored: false,
         Melody: false,
         Ensemble: false
