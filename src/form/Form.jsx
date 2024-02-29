@@ -538,7 +538,7 @@ class Form extends React.Component {
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
                   {makeEndGameMiscCheckbox({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
-                  {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")}
+                  {/* {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")} */}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>

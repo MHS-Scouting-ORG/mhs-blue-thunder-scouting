@@ -201,7 +201,7 @@ export async function submitState(props) {
 
     matchEntry.Teleop.Endgame.MatchResult = matchResult
     matchEntry.Teleop.Endgame.StageResult = endGameVal
-    matchEntry.Teleop.Endgame.StagePosition = stagePosition
+    // matchEntry.Teleop.Endgame.StagePosition = stagePosition
     matchEntry.Teleop.Endgame.TrapScored = noteInTrap
     matchEntry.Teleop.Endgame.Melody = melody
     matchEntry.Teleop.Endgame.Ensemble = ensemble
@@ -234,7 +234,8 @@ export async function submitState(props) {
     matchEntry.Penalties.FoulDesc = foulComments
 
     console.log("MATCH DATA: ", matchEntry)
-    console.log(StagePositionOpts)
+    // console.log(stagePosition)
+    // console.log(StagePositionOpts)
 
     if (props.matchData === undefined) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
