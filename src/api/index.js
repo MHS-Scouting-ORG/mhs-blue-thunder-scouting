@@ -1,6 +1,6 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
-import { teamMatchesByRegional, getTeam, listTeams } from '../graphql/queries'
+import { teamMatchesByRegional, getTeam, listTeams, getTeamMatch } from '../graphql/queries'
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
@@ -9,8 +9,8 @@ const client = generateClient()
 
 /**
  * Subscribe to create and update events
- * @param {*} updateFn 
- * @param {*} errorFn 
+ * @param {*} updateFn
+ * @param {*} errorFn
  */
 const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
 
@@ -29,6 +29,13 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  */
 const apiGetTeam = async function (teamNumber) {
     return await client.graphql({ query: getTeam, variables: { id: teamNumber } })
+}
+
+/*
+* Get a Team's match by the matchId, regionalId, and teamId
+*/
+const apiGetTeamMatch = async function (matchId, regionalId, teamNumber) {
+    return await client.graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: teamNumber} })
 }
 
 /*
@@ -100,6 +107,8 @@ const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId) {
         throw new Error(`MatchId not provided; matchId ${matchId}`)
     }
 
+    console.log("building match entry")
+
     return client.graphql({
         query: createTeamMatch, variables: {
             input: buildMatchEntry(regionalId, teamId, matchId),
@@ -118,6 +127,9 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
     if (!matchId) {
         throw new Error("MatchId not provided")
     }
+
+    console.log("the data: ", data)
+
     const input = {
         ...data,
         id: matchId,
@@ -125,6 +137,8 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
         Team: teamId,
         Regional: regionalId,
     }
+
+    console.log("provided input: ", input)
 
     return client.graphql({
         query: updateTeamMatch, variables: {
@@ -147,4 +161,4 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
     })
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
+export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
