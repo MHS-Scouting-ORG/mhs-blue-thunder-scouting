@@ -1,7 +1,8 @@
 import React from "react";
 import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
+import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
+import { getTeamMatch } from "../graphql/queries";
 
 /* GET MATCH TEAMS */
 
@@ -243,6 +244,9 @@ export async function submitState(props) {
 
     console.log("gonna call to apiUpdateTeamMatch")
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
+
+    //for testing
+    console.log(await apiGetTeamMatch(matchKey, props.regional, teamNum))
   }
 }
 
@@ -277,19 +281,15 @@ function findStageResult(val) {
 
 function findStagePosition(val) {
   if (val === "left") {
-    console.log("IT GOES LEFT")
     return StagePositionOpts.LEFT
   }
   else if (val === "right") {
-    console.log("IT GOES RIGHT")
     return StagePositionOpts.RIGHT
   }
   else if (val === "center") {
-    console.log("IT GOES CENTER")
     return StagePositionOpts.CENTER
   }
   else if (val === "" || val === "none") {
-    console.log("IT GOES NOWHERE")
     return StagePositionOpts.NONE
   }
 }

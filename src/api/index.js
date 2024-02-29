@@ -1,6 +1,6 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
-import { teamMatchesByRegional, getTeam, listTeams } from '../graphql/queries'
+import { teamMatchesByRegional, getTeam, listTeams, getTeamMatch } from '../graphql/queries'
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
@@ -29,6 +29,13 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  */
 const apiGetTeam = async function (teamNumber) {
     return await client.graphql({ query: getTeam, variables: { id: teamNumber } })
+}
+
+/*
+* Get a Team's match by the matchId, regionalId, and teamId
+*/
+const apiGetTeamMatch = async function (matchId, regionalId, teamNumber) {
+    return await client.graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: teamNumber} })
 }
 
 /*
@@ -154,4 +161,4 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
     })
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
+export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
