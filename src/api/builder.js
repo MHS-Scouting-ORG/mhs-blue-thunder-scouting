@@ -167,7 +167,6 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       Endgame: {
         MatchResult: MatchResultOpts.WIN,
         StageResult: StageOpts.NONE,
-        StagePosition: StagePositionOpts.NONE,
         TrapScored: false,
         Melody: false,
         Ensemble: false
