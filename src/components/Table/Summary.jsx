@@ -84,7 +84,6 @@ function Summary(props) {
     ueTableData(oprList, ccwmList, dprList, tableData, regional)
       .then(data => {
         let holdTableData = data
-        console.log(holdTableData)
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))

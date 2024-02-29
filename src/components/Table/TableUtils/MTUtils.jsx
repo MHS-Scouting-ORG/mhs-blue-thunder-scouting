@@ -74,6 +74,7 @@ async function getTeams (regional) {
 async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable, regional) {
     try {
     const data = await getMatchesForRegional(regional)
+    console.log("getTeamsMatchesAndTableData: ", data)
 
     const tableData = mtable
 
