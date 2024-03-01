@@ -548,8 +548,8 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
-                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangRating, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMiscCheckbox({changeState: this.updateHangRating, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
+                  {/* {makeEndGameMiscCheckbox({changeState: this.updateHangRating, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")} */}
                   {/* {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")} */}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>

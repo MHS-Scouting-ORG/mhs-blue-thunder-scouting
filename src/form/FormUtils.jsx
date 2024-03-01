@@ -134,14 +134,6 @@ export async function submitState(props) {
   lineUpSpeed = findSpeed(lineUpSpeed)
   robotSpeed = findSpeed(robotSpeed)
 
-  console.log(ampRating)
-  console.log(speakerRating)
-  console.log(trapRating)
-  console.log(hangRating)
-  console.log(intakeRating)
-  console.log(lineUpSpeed)
-  console.log(robotSpeed)
-
   //POINT CALCULATIONS
 
   autoPts =  5 * autoSpeakerScored + 2 * autoAmpScored
@@ -251,8 +243,6 @@ export async function submitState(props) {
     if (props.matchData === undefined) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
     }
-
-    console.log("gonna call to apiUpdateTeamMatch")
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
 
     //for testing
