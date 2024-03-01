@@ -99,16 +99,16 @@ export const onCreateTeamMatch = /* GraphQL */ `
       }
       Comments
       RobotInfo {
-        BetterAmp
-        BetterSpeaker
-        BetterTrap
-        FasterThanUs
+        AmpRating
+        SpeakerRating
+        TrapRating
+        HangRating
+        IntakeRating
+        LineupSpeed
+        RobotSpeed
         PassesUnderStage
-        HangsFaster
         CountersDefense
         CanDefend
-        LineupSpeed
-        IntakeRating
         WhatBrokeDesc
         __typename
       }
@@ -192,16 +192,16 @@ export const onUpdateTeamMatch = /* GraphQL */ `
       }
       Comments
       RobotInfo {
-        BetterAmp
-        BetterSpeaker
-        BetterTrap
-        FasterThanUs
+        AmpRating
+        SpeakerRating
+        TrapRating
+        HangRating
+        IntakeRating
+        LineupSpeed
+        RobotSpeed
         PassesUnderStage
-        HangsFaster
         CountersDefense
         CanDefend
-        LineupSpeed
-        IntakeRating
         WhatBrokeDesc
         __typename
       }
@@ -285,16 +285,16 @@ export const onDeleteTeamMatch = /* GraphQL */ `
       }
       Comments
       RobotInfo {
-        BetterAmp
-        BetterSpeaker
-        BetterTrap
-        FasterThanUs
+        AmpRating
+        SpeakerRating
+        TrapRating
+        HangRating
+        IntakeRating
+        LineupSpeed
+        RobotSpeed
         PassesUnderStage
-        HangsFaster
         CountersDefense
         CanDefend
-        LineupSpeed
-        IntakeRating
         WhatBrokeDesc
         __typename
       }

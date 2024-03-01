@@ -89,14 +89,14 @@ const StagePositionOpts = {
   CENTER: "Center",
 }
 
-const LineupSpeedOpts = {
+const SpeedOpts = {
   NONE: "None",
   SLOW: "Slow",
   AVERAGE: "Average",
   FAST: "Fast"
 }
 
-const IntakeRatingOpts = {
+const RatingOpts = {
   NONE: "None",
   BAD: "Bad",
   AVERAGE: "Average",
@@ -178,16 +178,16 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     },
     Comments: "",
     RobotInfo: {
-      BetterAmp: false,
-      BetterSpeaker: false,
-      BetterTrap: false,
-      FasterThanUs: false,
+      AmpRating: RatingOpts.NONE,
+      SpeakerRating: RatingOpts.NONE,
+      TrapRating: RatingOpts.NONE,
+      HangRating: RatingOpts.NONE,
+      IntakeRating: RatingOpts.NONE,
+      LineupSpeed: SpeedOpts.NONE,
+      RobotSpeed: SpeedOpts.NONE,
       PassesUnderStage: false,
-      HangsFaster: false,
       CountersDefense: false,
       CanDefend: false,
-      LineupSpeed: LineupSpeedOpts.NONE,
-      IntakeRating: IntakeRatingOpts.NONE,
       WhatBrokeDesc: "",
     },
     Penalties: {
@@ -261,4 +261,4 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
+export { StageOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
