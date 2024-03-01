@@ -132,13 +132,13 @@ enum RatingOpts {
 # types
 
 type RobotInfoType {
-  AmpRating: RatingOpts
-  SpeakerRating: RatingOpts
-  TrapRating: RatingOpts
-  HangRating: RatingOpts
-  IntakeRating: RatingOpts
-  LineupSpeed: SpeedOpts
-  RobotSpeed: SpeedOpts
+  AmpRating: String
+  SpeakerRating: String
+  TrapRating: String
+  HangRating: String
+  IntakeRating: String
+  LineupSpeed: String
+  RobotSpeed: String
   PassesUnderStage: Boolean
   CountersDefense: Boolean
   CanDefend: Boolean
