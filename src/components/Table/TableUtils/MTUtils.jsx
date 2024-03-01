@@ -81,7 +81,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      console.log('teamMatchData: ', teamMatchData)
+      //console.log('teamMatchData: ', teamMatchData)
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
 
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))
@@ -191,9 +191,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         SumPriorities: team.SumPriorities,
 
 
-        NSpeaker: rSpeaker,
-        NAmp: rAmp,
-        NCycles: rCycles,
+        NSpeaker: isNaN(rSpeaker) ? 0 : rSpeaker,
+        NAmp: isNaN(rAmp) ? 0 : rAmp,
+        NCycles: isNaN(rCycles) ? 0 : rCycles,
 
       }
       return tableDataObj;

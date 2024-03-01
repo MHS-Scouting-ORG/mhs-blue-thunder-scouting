@@ -49,14 +49,18 @@ function RankingTable(props) {
 
   const data = React.useMemo(
     () => rankingState.map(team => {
-      const sumSort = tableData.filter(x => x.TeamNumber === 2090)[0]
+      // console.log("teamRankingObject:", team)
+      // console.log('teamFromRanking:', parseInt(team.team_key.substring(3)))
+      // tableData.forEach(team => console.log("TableDataTeamObject: ", team))
+      const sumSort = tableData.filter(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
+      // console.log("Sumsort:", sumSort, " TeamNumber: ", sumSort[0].TeamNumber)
       return team !== null ? 
         {
           TeamNumber: team.team_key.substring(3),
           Rank: team.rank,
-          SumPriorities: null//sumSort.SumPriorities,//sumSort.SumPriorities,
+          SumPriorities: sumSort[0].SumPriorities,//sumSort.SumPriorities,
         } : null
-      }),[rankingState]
+      }),[tableData]
   )
 
     const columns = React.useMemo(

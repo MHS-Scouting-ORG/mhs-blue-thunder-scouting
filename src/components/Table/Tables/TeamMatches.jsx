@@ -69,9 +69,16 @@ function TeamMatches(props) {
 
   const data = React.useMemo(
     () => (toggle ? allTeamMatches : lastThree).map(team => {
+      console.log(team)
       return {
         Team: team.Team.substring(3),
         Match: team.id.substring(team.id.indexOf("_") + 1),
+        TotalPts: team.TotalPoints,
+        AutoPts: team.Autonomous.PointsScored.Points,
+        SpeakerPts: team.Autonomous.PointsScored.SpeakerPoints + team.Teleop.PointsScored.SpeakerPoints,
+        AmpPts: team.Autonomous.PointsScored.Points + team.Teleop.PointsScored.AmpPoints,
+        EndgamePts: team.Teleop.PointsScored.EndgamePoints,
+        FoulsM: team.Penalties.Fouls
       }
     }), [apiData, teamNumber, allTeamMatches, teamData, toggle]
   )
@@ -84,7 +91,7 @@ function TeamMatches(props) {
       },
       {
         Header: 'TotalPts',
-        acessor: 'TotalPts'
+        accessor: 'TotalPts'
       },
       {
         Header: 'AutoPts',
@@ -104,7 +111,7 @@ function TeamMatches(props) {
       },
       {
         Header: 'Fouls',
-        accessor: 'Fouls'
+        accessor: 'FoulsM'
       },
       {
         Header: 'Add Bookmark?',
