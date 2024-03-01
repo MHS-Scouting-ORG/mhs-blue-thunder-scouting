@@ -71,11 +71,6 @@ const apiListTeams = async function () {
  */
 const getMatchesForRegional = async function (regionalId, teamNumber) {
     if (!teamNumber) {
-        console.log(client.graphql({
-            query: teamMatchesByRegional, variables: {
-                Regional: regionalId,
-            }
-        }))
         return client.graphql({
             query: teamMatchesByRegional, variables: {
                 Regional: regionalId,

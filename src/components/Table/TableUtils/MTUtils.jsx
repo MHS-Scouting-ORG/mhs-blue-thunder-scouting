@@ -11,9 +11,9 @@ async function getTeams (regional) {
         TeamNumber: obj.team_number,
        // Matches: '',
         OPR: "",
-        
+
         TeamNum: `frc${obj.team_number}`,
-      
+
         //=======ROBOT PERFORMANCE PROPS=========//
         RobotSpeed: '',
         //custom for each year, scoring elements
@@ -27,7 +27,7 @@ async function getTeams (regional) {
         //custom//
         AvgCycles: 0,
         AvgSpeaker: 0,
-        AvgAmp: 0, 
+        AvgAmp: 0,
         //======Capabilities======//
         CanDefend: '',
         //custom
@@ -67,20 +67,21 @@ async function getTeams (regional) {
      })
   }
   catch(err){
-   console.log(err) 
+   console.log(err)
   }
 }
 
 async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable, regional) {
     try {
     const data = await getMatchesForRegional(regional)
-    //console.log("getTeamsMatchesAndTableData: ", data)
+    console.log("getTeamsMatchesAndTableData: ", data)
 
     const tableData = mtable
 
-    return teamNumbers.map(team => { 
-      
+    return teamNumbers.map(team => {
+
       const teamMatchData = data.data.teamMatchesByRegional.items;
+      console.log('teamMatchData: ', teamMatchData)
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
 
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))
@@ -125,7 +126,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const disabledRobots = getMatchesOfPenalty(teamStats,"Disabled")
       const disqualifiedRobots = getMatchesOfPenalty(teamStats,"DQ")
       const noShowRobots = getMatchesOfPenalty(teamStats,"NoShow")
-    
+
       const reliableRobotSpeed= getReliability(teamStats.map((team) => team.RobotInfo.FasterThanUs !== null ? team.RobotInfo.FasterThanUs : 0 ), mcRobotSpeed)
       const reliableRobotHang = getReliability(teamStats.map((team) => team.RobotInfo.HangsFaster !== null ? team.RobotInfo.HangsFaster : 0), mcRobotHang)
       const reliableRobotSpeaker = getReliability(teamStats.map((team) => team.RobotInfo.BetterSpeaker !== null ? team.RobotInfo.BetterSpeaker : 0), mcRobotSpeaker)
@@ -138,9 +139,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
       const maxAmp = getMax(tableData.map(team => team.AvgAmp))
       const maxCycles = getMax(tableData.map(team => team.AvgCycles))
-      
+
       const rSpeaker = avgSpeaker / maxSpeaker
-      const rAmp = avgAmp / maxAmp 
+      const rAmp = avgAmp / maxAmp
       const rCycles = avgCycles / maxCycles
       //console.log(avgPoints)
       //console.log(isNaN(avgPoints) ? null : avgPoints)
@@ -203,4 +204,4 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
   }
   }
 
-export { getTeams,getTeamsMatchesAndTableData, } 
+export { getTeams,getTeamsMatchesAndTableData, }

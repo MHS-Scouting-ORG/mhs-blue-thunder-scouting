@@ -86,9 +86,8 @@ const getMatchesOfPenalty = (arr,penalty) => {
     const teamPenaltiesArr = Object.entries(teamObj.Penalties.PenaltiesCommitted)
     const penaltyArr = teamPenaltiesArr.filter(penaltiesArr => penaltiesArr[0] === penalty)
     return penaltyArr[0][1]
-    //return penaltyArr[0]
   })
-  const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id)
+  const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id.substring(matchEntry.id.indexOf("_") + 1))
   return penaltyMatchNumbers;
 }
 

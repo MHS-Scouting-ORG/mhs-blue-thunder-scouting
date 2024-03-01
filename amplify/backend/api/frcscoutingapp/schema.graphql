@@ -115,14 +115,14 @@ type PenaltyType {
 ##################
 
 # enums
-enum LineupSpeedOpts {
+enum SpeedOpts {
   None
   Slow
   Average
   Fast
 }
 
-enum IntakeRatingOpts {
+enum RatingOpts {
   None
   Bad
   Average
@@ -132,16 +132,16 @@ enum IntakeRatingOpts {
 # types
 
 type RobotInfoType {
-  BetterAmp: Boolean
-  BetterSpeaker: Boolean
-  BetterTrap: Boolean
-  FasterThanUs: Boolean
+  AmpRating: RatingOpts
+  SpeakerRating: RatingOpts
+  TrapRating: RatingOpts
+  HangRating: RatingOpts
+  IntakeRating: RatingOpts
+  LineupSpeed: SpeedOpts
+  RobotSpeed: SpeedOpts
   PassesUnderStage: Boolean
-  HangsFaster: Boolean
   CountersDefense: Boolean
   CanDefend: Boolean
-  LineupSpeed: LineupSpeedOpts
-  IntakeRating: IntakeRatingOpts
   WhatBrokeDesc: String
 }
 
