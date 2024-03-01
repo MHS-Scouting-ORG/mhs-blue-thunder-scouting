@@ -7,7 +7,7 @@ import { getRankingsForRegional } from "../../../api/bluealliance";
 function RankingTable(props) {
   const filter = props.gFilter
   const regional = props.regionalEvent
-  const tableData = props.information
+  const tableData = props.sortData
 
   const [rankingState,setRankingState] = useState([])
   const [tableState, setTableState] = useState('none')
@@ -48,12 +48,13 @@ function RankingTable(props) {
 
 
   const data = React.useMemo(
-    () => rankingState.map(team => {     
+    () => rankingState.map(team => {
+      const sumSort = tableData.filter(x => x.TeamNumber === 2090)[0]
       return team !== null ? 
         {
           TeamNumber: team.team_key.substring(3),
           Rank: team.rank,
-          SumPriorities: tableData.filter(x => x.TeamNumber === team.team_key.substring(3))[0],
+          SumPriorities: null//sumSort.SumPriorities,//sumSort.SumPriorities,
         } : null
       }),[rankingState]
   )

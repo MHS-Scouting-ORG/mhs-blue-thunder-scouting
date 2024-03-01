@@ -10,7 +10,6 @@ import StatsTable from "./Tables/StatsTable";
 import RobotPerformance from "./Tables/RobotPerformance";
 import RobotCapabilities from "./Tables/RobotCapabilities";
 import RobotAuto from "./Tables/RobotAuto";
-import FieldInfo from "./Tables/FieldInfo";
 import Penalties from "./Tables/Penalties";
 import TeamMatches from "./Tables/TeamMatches";
 import Bookmarks from "./Tables/Bookmarks";
@@ -30,41 +29,22 @@ function Summary(props) {
 
   const [bookmark, setBookmark] = useState([]);
 
-  // useEffect(() => {
-  //   getMatchesForRegional(regional)
-  //     .then(data => {
-  //       const nApiData = data.data.teamMatchesByRegional.items
-
-  //       console.log(nApiData)
-  //       const matchEntries = nApiData.map((matchEntry) => {
-  //         matchEntry.bookMark = false;
-  //         return matchEntry
-  //       })
-
-  //       setApiData(matchEntries)
-  //       console.log(matchEntries)
-  //     })
-  //     .catch(err => console.log(err))
-  // }, [])
-
   useEffect(() => {
-    try {
-      const data = getMatchesForRegional(regional)
-      const nApiData = data.data.teamMatchesByRegional.items
+    getMatchesForRegional(regional)
+      .then(data => {
+        const nApiData = data.data.teamMatchesByRegional.items
 
-      console.log("NAPIDATA: ", nApiData)
-      const matchEntries = nApiData.map((matchEntry) => {
-        matchEntry.bookMark = false;
-        return matchEntry
+        console.log(nApiData)
+        const matchEntries = nApiData.map((matchEntry) => {
+          matchEntry.bookMark = false;
+          return matchEntry
+        })
+
+        setApiData(matchEntries)
+        console.log(matchEntries)
       })
-
-      setApiData(matchEntries)
-      console.log(matchEntries)
-    }
-    catch(err){
-      console.log(err)
-    }
-  })
+      .catch(err => console.log(err))
+  }, [])
 
   useEffect(() => {    //set opr data
     getOprs(regional)
@@ -122,17 +102,18 @@ function Summary(props) {
     setBookmark(newBookmarkEntries)
   }
 
-//=================REMOVE SOMEHOW=======================??
+  //=================REMOVE SOMEHOW=======================??
   const data = React.useMemo(
     () => tableData.map(team => {
       const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
-
+      console.log(grade)
       return {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
         OPR: team.OPR,
 
         SumPriorities: grade !== 0.000 ? grade : 0,
+        
         NSpeaker: team.NSpeaker,
         NAmp: team.NAmp,
         NCycles: team.NCycles,
@@ -181,7 +162,7 @@ function Summary(props) {
     setGlobalFilter,
   } = tableInstance
 
-//=======================================================================//
+  //=======================================================================//
   // const tableInstance = useTable( {}, useGlobalFilter, useSortBy )
   // const {
   //   state,
@@ -213,11 +194,11 @@ function Summary(props) {
               <div >
 
                 <div>
-                  <RankingTable regionalEvent={regional} {...filterState} />
+                  <RankingTable sortData = {data} regionalEvent={regional} {...filterState} />
                 </div>
 
                 <div>
-                  <FieldInfo {...filterState} />
+                  <RobotAuto {...filterState} />
                 </div>
 
               </div>
@@ -266,9 +247,7 @@ function Summary(props) {
           <div>
             <StatsTable {...filterState} />
           </div>
-          <div>
-            <RobotAuto {...filterState} />
-          </div>
+
           <div>
             <Penalties {...filterState} />
           </div>

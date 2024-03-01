@@ -56,10 +56,6 @@ function StatsTable(props) {
         Header: 'OPR',
         accessor: 'OPR'
       },
-      {
-        Header: 'EPA',
-        accessor: 'EPA'
-      },
     ], []
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
