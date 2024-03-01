@@ -222,7 +222,7 @@ export async function submitState(props) {
 
     // ROBOT INFO //
     matchEntry.RobotInfo.AmpRating = ampRating
-=    matchEntry.RobotInfo.SpeakerRating = speakerRating
+    matchEntry.RobotInfo.SpeakerRating = speakerRating
     matchEntry.RobotInfo.TrapRating = trapRating
     matchEntry.RobotInfo.HangRating = hangRating
     matchEntry.RobotInfo.IntakeRating = intakeRating
