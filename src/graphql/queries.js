@@ -100,16 +100,16 @@ export const getTeamMatch = /* GraphQL */ `
       }
       Comments
       RobotInfo {
-        BetterAmp
-        BetterSpeaker
-        BetterTrap
-        FasterThanUs
+        AmpRating
+        SpeakerRating
+        TrapRating
+        HangRating
+        IntakeRating
+        LineupSpeed
+        RobotSpeed
         PassesUnderStage
-        HangsFaster
         CountersDefense
         CanDefend
-        LineupSpeed
-        IntakeRating
         WhatBrokeDesc
         __typename
       }
@@ -206,16 +206,16 @@ export const listTeamMatches = /* GraphQL */ `
         }
         Comments
         RobotInfo {
-          BetterAmp
-          BetterSpeaker
-          BetterTrap
-          FasterThanUs
+          AmpRating
+          SpeakerRating
+          TrapRating
+          HangRating
+          IntakeRating
+          LineupSpeed
+          RobotSpeed
           PassesUnderStage
-          HangsFaster
           CountersDefense
           CanDefend
-          LineupSpeed
-          IntakeRating
           WhatBrokeDesc
           __typename
         }
@@ -313,16 +313,16 @@ export const teamMatchesByTeam = /* GraphQL */ `
         }
         Comments
         RobotInfo {
-          BetterAmp
-          BetterSpeaker
-          BetterTrap
-          FasterThanUs
+          AmpRating
+          SpeakerRating
+          TrapRating
+          HangRating
+          IntakeRating
+          LineupSpeed
+          RobotSpeed
           PassesUnderStage
-          HangsFaster
           CountersDefense
           CanDefend
-          LineupSpeed
-          IntakeRating
           WhatBrokeDesc
           __typename
         }
@@ -420,16 +420,16 @@ export const teamMatchesByRegional = /* GraphQL */ `
         }
         Comments
         RobotInfo {
-          BetterAmp
-          BetterSpeaker
-          BetterTrap
-          FasterThanUs
+          AmpRating
+          SpeakerRating
+          TrapRating
+          HangRating
+          IntakeRating
+          LineupSpeed
+          RobotSpeed
           PassesUnderStage
-          HangsFaster
           CountersDefense
           CanDefend
-          LineupSpeed
-          IntakeRating
           WhatBrokeDesc
           __typename
         }
