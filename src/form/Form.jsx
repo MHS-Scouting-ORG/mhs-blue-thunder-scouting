@@ -85,16 +85,16 @@ class Form extends React.Component {
       robotBrokenComments: "",
 
       // ROBOT INFO //
-      betterAmp: false,
-      betterSpeaker: false,
-      betterTrap: false,
-      hangsFaster: false,
-      isFaster: false,
+      ampRating: "",
+      speakerRating: "",
+      trapRating: "",
+      hangRating: "",
+      intakeRating: "",
+      lineUpSpeed: "",
+      robotSpeed: "",
       clearsStage: false,
       countersDefense: false,
       canDefend: false,
-      lineUpSpeed: "",
-      intakeRating: "",
     }
 
     // FUNCTION BINDING //
@@ -138,16 +138,18 @@ class Form extends React.Component {
     this.updateRobotBrokenComments = this.updateRobotBrokenComments.bind(this)
 
     //robot info
-    this.updateBetterAmp = this.updateBetterAmp.bind(this)
-    this.updateBetterSpeaker = this.updateBetterSpeaker.bind(this)
-    this.updateBetterTrap = this.updateBetterTrap.bind(this)
-    this.updateHangsFaster = this.updateHangsFaster.bind(this)
-    this.updateIsFaster = this.updateIsFaster.bind(this)
+    this.updateAmpRating = this.updateAmpRating.bind(this)
+    this.updateSpeakerRating = this.updateSpeakerRating.bind(this)
+    this.updateTrapRating = this.updateTrapRating.bind(this)
+    this.updateHangRating = this.updateHangRating.bind(this)
+    this.updateIntakeRating = this.updateIntakeRating.bind(this)
+    this.updateLineUpSpeed = this.updateLineUpSpeed.bind(this)
+    this.updateRobotSpeed = this.updateRobotSpeed.bind(this)
     this.updateClearsStage = this.updateClearsStage.bind(this)
     this.updateCountersDefense = this.updateCountersDefense.bind(this)
-    this.updateLineUpSpeed = this.updateLineUpSpeed.bind(this)
-    this.updateIntakeRating = this.updateIntakeRating.bind(this)
     this.updateCanDefend = this.updateCanDefend.bind(this)
+
+    this.renderRatingSliders = this.renderRatingSliders.bind(this)
     this.renderBooleanCheckboxes = this.renderBooleanCheckboxes.bind(this)
 
     //form component display on/off
@@ -218,15 +220,15 @@ class Form extends React.Component {
 
       // ROBOT INFO //
       // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
-      betterAmp: m.RobotInfo.BetterAmp,
-      betterSpeaker: m.RobotInfo.BetterSpeaker,
-      betterTrap: m.RobotInfo.BetterTrap,
-      hangsFaster: m.RobotInfo.HangsFaster,
-      isFaster: m.RobotInfo.FasterThanUs,
+      ampRating: m.RobotInfo.AmpRating,
+      speakerRating: m.RobotInfo.SpeakerRating,
+      trapRating: m.RobotInfo.TrapRating,
+      hangRating: m.RobotInfo.HangRating,
+      intakeRating: m.RobotInfo.IntakeRating,
+      lineUpSpeed: m.RobotInfo.LineupSpeed,
+      robotSpeed: m.RobotInfo.RobotSpeed,
       clearsStage: m.RobotInfo.PassesUnderStage,
       countersDefense: m.RobotInfo.CountersDefense,
-      lineUpSpeed: m.RobotInfo.LineupSpeed,
-      intakeRating: m.RobotInfo.IntakeRating,
       canDefend: m.RobotInfo.CanDefend,
     })
   }
@@ -399,24 +401,28 @@ class Form extends React.Component {
     this.setState({ booleans })
   }
 
-  updateBetterAmp(val) {
-    this.setState({betterAmp: val})
+  updateAmpRating(val) {
+    this.setState({ampRating: val})
   }
 
-  updateBetterSpeaker(val) {
-    this.setState({betterSpeaker: val})
+  updateSpeakerRating(val) {
+    this.setState({speakerRating: val})
   }
 
-  updateBetterTrap(val) {
-    this.setState({betterTrap: val})
+  updateTrapRating(val) {
+    this.setState({trapRating: val})
   }
 
-  updateHangsFaster(val) {
-    this.setState({hangsFaster: val})
+  updateHangRating(val) {
+    this.setState({hangRating: val})
   }
 
-  updateIsFaster(val) {
-    this.setState({isFaster: val})
+  updateLineUpSpeed(val) {
+    this.setState({lineUpSpeed: val})
+  }
+
+  updateRobotSpeed(val) {
+    this.setState({robotSpeed: val})
   }
 
   updateClearsStage(val) {
@@ -437,21 +443,27 @@ class Form extends React.Component {
     this.setState({ ratingSliderVals })
   }
 
-  updateLineUpSpeed(val) {
-    this.setState({lineUpSpeed: val})
-  }
-
   updateIntakeRating(val) {
     this.setState({intakeRating: val})
+  }
+
+  renderRatingSliders() {
+    return(
+      <>
+        {makeRatingSlider({changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating}, "Amp: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating}, "Speaker: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating}, "Trap: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating}, "Hang: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
+        {makeRatingSlider({changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed}, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
+      </>
+    )
   }
 
   renderBooleanCheckboxes() {
     return(
       <>
-      {makeBooleanCheckBox({ changeState: this.updateBetterAmp, booleans: this.state.betterAmp }, "Scores Amp Better ")}
-      {makeBooleanCheckBox({ changeState: this.updateBetterSpeaker, booleans: this.state.betterSpeaker }, "Scores Speaker Better ")}
-      {makeBooleanCheckBox({ changeState: this.updateBetterTrap, booleans: this.state.betterTrap }, "Scores Trap Better ")}
-      {makeBooleanCheckBox({ changeState: this.updateIsFaster, booleans: this.state.isFaster }, "Faster Than Us ")}
       {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Goes Under Stage ")}
       {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
       {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
@@ -536,8 +548,8 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
-                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangsFaster, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
-                  {makeEndGameMiscCheckbox({changeState: this.updateHangsFaster, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
+                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, changeHangsFaster: this.updateHangRating, changeStagePosition: this.updateStagePosition, endGameVal: this.state.endGameVal })}
+                  {makeEndGameMiscCheckbox({changeState: this.updateHangRating, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")}
                   {/* {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")} */}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
@@ -559,9 +571,8 @@ class Form extends React.Component {
             return (this.state.robotOn ?
               (
                 <div>
+                  {this.renderRatingSliders()}
                   {this.renderBooleanCheckboxes()}
-                  {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
-                  {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
                   <br></br>
                 </div>
               ) : (

@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";
@@ -79,16 +79,16 @@ export async function submitState(props) {
 
 
   // ROBOT INFO //
-  let betterAmp = props.state.betterAmp
-  let betterSpeaker = props.state.betterSpeaker
-  let betterTrap = props.state.betterTrap
-  let hangsFaster = props.state.hangsFaster
-  let isFaster = props.state.isFaster
+  let ampRating = props.state.ampRating
+  let speakerRating = props.state.speakerRating
+  let trapRating = props.state.trapRating
+  let hangRating = props.state.hangRating
+  let intakeRating = props.state.intakeRating
+  let lineUpSpeed = props.state.lineUpSpeed
+  let robotSpeed = props.state.robotSpeed
   let clearsStage = props.state.clearsStage
   let countersDefense = props.state.countersDefense
   let canDefend = props.state.canDefend
-  let lineUpSpeed = props.state.lineUpSpeed
-  let intakeRating = props.state.intakeRating
 
   // INITIALIZE SCORE--------------------------------------------------------------------------------------------
   let autoPts = 0;
@@ -125,12 +125,22 @@ export async function submitState(props) {
   // update stagePosition to enum
   stagePosition = findStagePosition(stagePosition)
 
-  // update lineUpSpeed to enum
-  lineUpSpeed = findLineUpSpeed(lineUpSpeed)
+  // update ratings to enum
+  ampRating = findRating(ampRating)
+  speakerRating = findRating(speakerRating)
+  trapRating = findRating(trapRating)
+  hangRating = findRating(hangRating)
+  intakeRating = findRating(intakeRating)
+  lineUpSpeed = findSpeed(lineUpSpeed)
+  robotSpeed = findSpeed(robotSpeed)
 
-  // update intakeRating to enum
-  intakeRating = findIntakeRating(intakeRating)
-
+  console.log(ampRating)
+  console.log(speakerRating)
+  console.log(trapRating)
+  console.log(hangRating)
+  console.log(intakeRating)
+  console.log(lineUpSpeed)
+  console.log(robotSpeed)
 
   //POINT CALCULATIONS
 
@@ -211,16 +221,16 @@ export async function submitState(props) {
     matchEntry.Teleop.HumPlrScoring.Missed = highNotesMissed
 
     // ROBOT INFO //
-    matchEntry.RobotInfo.BetterAmp = betterAmp
-    matchEntry.RobotInfo.BetterSpeaker = betterSpeaker
-    matchEntry.RobotInfo.BetterTrap = betterTrap
-    matchEntry.RobotInfo.FasterThanUs = isFaster
+    matchEntry.RobotInfo.AmpRating = ampRating
+=    matchEntry.RobotInfo.SpeakerRating = speakerRating
+    matchEntry.RobotInfo.TrapRating = trapRating
+    matchEntry.RobotInfo.HangRating = hangRating
+    matchEntry.RobotInfo.IntakeRating = intakeRating
+    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
+    matchEntry.RobotInfo.RobotSpeed = robotSpeed
     matchEntry.RobotInfo.PassesUnderStage = clearsStage
-    matchEntry.RobotInfo.HangsFaster = hangsFaster
     matchEntry.RobotInfo.CountersDefense = countersDefense
     matchEntry.RobotInfo.CanDefend = canDefend
-    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
-    matchEntry.RobotInfo.IntakeRating = intakeRating
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
 
     // PENALTIES //
@@ -274,7 +284,7 @@ function findStageResult(val) {
   else if (val === "Parked") {
     return StageOpts.PARKED
   }
-  else if (val === "None") {
+  else if (val === "None" || val === "") {
     return StageOpts.NONE
   }
 }
@@ -295,33 +305,33 @@ function findStagePosition(val) {
 }
 
 // update lineUpSpeed to enum
-function findLineUpSpeed(val) {
+function findSpeed(val) {
   if (val === "Fast") {
-    return LineupSpeedOpts.FAST
+    return SpeedOpts.FAST
   }
   else if (val === "Average") {
-    return LineupSpeedOpts.AVERAGE
+    return SpeedOpts.AVERAGE
   }
   else if (val === "Slow") {
-    return LineupSpeedOpts.SLOW
+    return SpeedOpts.SLOW
   }
-  else if (val === "None") {
-    return LineupSpeedOpts.NONE
+  else if (val === "None" || val === "") {
+    return SpeedOpts.NONE
   }
 }
 
 // update intakeRating to enum
-function findIntakeRating(val) {
+function findRating(val) {
   if (val === "Good") {
-    return IntakeRatingOpts.GOOD
+    return RatingOpts.GOOD
   }
   else if (val === "Average") {
-    return IntakeRatingOpts.AVERAGE
+    return RatingOpts.AVERAGE
   }
   else if (val === "Bad") {
-    return IntakeRatingOpts.BAD
+    return RatingOpts.BAD
   }
-  else if (val === "None") {
-    return IntakeRatingOpts.NONE
+  else if (val === "None" || val === "") {
+    return RatingOpts.NONE
   }
 }
