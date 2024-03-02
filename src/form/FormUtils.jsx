@@ -94,8 +94,15 @@ export async function submitState(props) {
   let autoPts = 0;
   let telePts = 0;
   let endGamePts = 0;
-  let ampPts = 0;
-  let speakerPts = 0;
+
+  let totalAmpPts = 0;
+  let totalSpeakerPts = 0;
+
+  let autoAmpPts = 0;
+  let autoSpeakerPts = 0;
+
+  let teleAmpPts = 0;
+  let teleSpeakerPts = 0;
 
   /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
   let incompleteForm = false;
@@ -138,8 +145,15 @@ export async function submitState(props) {
 
   autoPts =  5 * autoSpeakerScored + 2 * autoAmpScored
   telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
-  speakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
-  ampPts = 2 * autoAmpScored + teleAmpScored
+
+  totalSpeakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
+  totalAmpPts = 2 * autoAmpScored + teleAmpScored
+
+  autoAmpPts = 2 * autoAmpScored;
+  autoSpeakerPts = 5 * autoSpeakerScored;
+
+  teleAmpPts = teleAmpScored;
+  teleSpeakerPts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored;
 
   let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
@@ -186,8 +200,8 @@ export async function submitState(props) {
     matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
 
     matchEntry.Autonomous.PointsScored.Points = autoPts
-    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerScored
-    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpScored
+    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerPts
+    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpPts
 
     matchEntry.Autonomous.Left = left
 
@@ -199,8 +213,8 @@ export async function submitState(props) {
 
     matchEntry.Teleop.PointsScored.Points = telePts
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePts
-    matchEntry.Teleop.PointsScored.SpeakerPoints = speakerPts
-    matchEntry.Teleop.PointsScored.AmpPoints = ampPts
+    matchEntry.Teleop.PointsScored.SpeakerPoints = teleSpeakerPts
+    matchEntry.Teleop.PointsScored.AmpPoints = teleAmpPts
 
     matchEntry.Teleop.Endgame.MatchResult = matchResult
     matchEntry.Teleop.Endgame.StageResult = endGameVal
