@@ -151,12 +151,12 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
        // Matches: team.Matches,
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
-        RobotSpeed: mcRobotSpeed === true ? 'Better': 'Worse' + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed),
+        RobotSpeed: mcRobotSpeed,//+ ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed), //=== true ? 'Better': 'Worse' + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed),
         //custom//
-        RobotHang: mcRobotHang === true ? 'Better': 'Worse' + ' ' + (isNaN(reliableRobotHang) ? '' : reliableRobotHang),
-        RobotSpeaker: mcRobotSpeaker === true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotSpeaker) ? '' : reliableRobotSpeaker), 
-        RobotAmp: mcRobotAmp === true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotAmp) ? '' : reliableRobotAmp),
-        RobotTrap: mcRobotTrap === true ? 'Better': 'Worse'  + ' ' +  (isNaN(reliableRobotTrap) ? '' : reliableRobotTrap),
+        RobotHang: mcRobotHang,// + ' ' + (isNaN(reliableRobotHang) ? '' : reliableRobotHang), //=== true ? 'Better': 'Worse' + ' ' + (isNaN(reliableRobotHang) ? '' : reliableRobotHang),
+        RobotSpeaker: mcRobotSpeaker,// + ' ' + (isNaN(reliableRobotSpeaker) ? '' : reliableRobotSpeaker), //=== true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotSpeaker) ? '' : reliableRobotSpeaker), 
+        RobotAmp: mcRobotAmp,// + ' ' + (isNaN(reliableRobotAmp) ? '' : reliableRobotAmp), //=== true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotAmp) ? '' : reliableRobotAmp),
+        RobotTrap: mcRobotTrap,//+ ' ' +  (isNaN(reliableRobotTrap) ? '' : reliableRobotTrap), //=== true ? 'Better': 'Worse'  + ' ' +  (isNaN(reliableRobotTrap) ? '' : reliableRobotTrap),
         IntakeRating: mcIntakeRating,
         AlignmentSpeed: mcAlignmentSpeed,
         //===Stats==/ 
