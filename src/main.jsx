@@ -4,11 +4,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import MainTable from './components/MainTable.jsx'
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-
-const regional = ssm.StringParameter.valueForStringParameter(this, 'regionalKey')
-console.log(regional)
-
+import Form from './form/Form.jsx'
+const regional = "2023azva"
 const router = createBrowserRouter([
   {
     path: "/",
