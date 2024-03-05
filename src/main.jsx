@@ -5,7 +5,10 @@ import App from './App.jsx'
 import './index.css'
 import MainTable from './components/MainTable.jsx'
 import Form from './form/Form.jsx'
-const regional = "2023azva"
+import * as ssm from 'aws-cdk-lib/aws-ssm'
+
+const regional = ssm.getParameter({Name: "regionalKey", WithDecryption: true})
+console.log(regional)
 const router = createBrowserRouter([
   {
     path: "/",

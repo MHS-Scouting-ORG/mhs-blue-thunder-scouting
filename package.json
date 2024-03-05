@@ -15,6 +15,7 @@
     "@aws-sdk/client-ssm": "^3.525.0",
     "aws-amplify": "^6.0.9",
     "aws-cdk-lib": "^2.131.0",
+    "aws-sdk": "^2.1570.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.21.1",
