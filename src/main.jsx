@@ -5,7 +5,8 @@ import App from './App.jsx'
 import './index.css'
 import MainTable from './components/MainTable.jsx'
 import Form from './form/Form.jsx'
-const regional = "2023hiho"
+
+const regional = ssm.StringParameter.valueForStringParameter(this, 'regionalKey')
 const router = createBrowserRouter([
   {
     path: "/",
