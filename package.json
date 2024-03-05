@@ -12,7 +12,9 @@
   "dependencies": {
     "@aws-amplify/ui-react": "^6.0.7",
     "@aws-sdk/client-secrets-manager": "^3.485.0",
+    "@aws-sdk/client-ssm": "^3.525.0",
     "aws-amplify": "^6.0.9",
+    "aws-cdk-lib": "^2.131.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.21.1",
