@@ -2,6 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
+import * as ssm from 'aws-cdk-lib/aws-ssm'
+
 
 import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
 import { Construct } from 'constructs';
@@ -33,6 +35,13 @@ export class cdkStack extends cdk.Stack {
       
     }) 
     secret.grantRead(authRole)
+
+    const regionalKey = new ssm.StringParameter(this, 'regional', {
+      stringValue: '2023hiho',
+      parameterName: 'regionalKey',
+      description: "The regional key"
+    })
+    regionalKey.grantRead(authRole)
 
   }
 }

@@ -5,7 +5,9 @@ import App from './App.jsx'
 import './index.css'
 import MainTable from './components/MainTable.jsx'
 import Form from './form/Form.jsx'
-const regional = "2023hiho"
+import { apiGetRegional } from './api/index.js'
+
+const regional = await apiGetRegional()
 const router = createBrowserRouter([
   {
     path: "/",
