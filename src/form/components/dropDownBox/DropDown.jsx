@@ -19,8 +19,6 @@ function DropDown(props) {
                 if (props.changeHangsFaster === undefined || props.changeStagePosition === undefined) {
                     return
                 }
-                props.changeHangsFaster(false)
-                props.changeStagePosition("none")
             }
         }
     }

@@ -644,7 +644,6 @@ class Form extends React.Component {
                 })
             }} className={buttonStyles.Button} >SUBMIT</button>
           </div>
-          <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
         </div>
         <br></br>
       </div>
