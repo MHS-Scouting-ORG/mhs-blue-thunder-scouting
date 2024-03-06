@@ -1,9 +1,13 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
+import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { teamMatchesByRegional, getTeam, listTeams, getTeamMatch } from '../graphql/queries'
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
+
+import * as Auth from 'aws-amplify/auth'
+const { credentials } = await Auth.fetchAuthSession()
 
 const client = generateClient()
 
@@ -161,4 +165,13 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
     })
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam }
+const apiGetRegional = async function () {
+    const client = new SSMClient({ region: 'us-west-1', credentials: credentials })
+    const command =  new GetParameterCommand({
+        Name: "regionalKey"
+    })
+    const response = await client.send(command)
+    return response.Parameter.Value
+}
+
+export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiGetRegional }
