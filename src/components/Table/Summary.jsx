@@ -34,7 +34,7 @@ function Summary(props) {
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
 
-        console.log(nApiData)
+        //console.log(nApiData)
         const matchEntries = nApiData.map((matchEntry) => {
           matchEntry.bookMark = false;
           return matchEntry
@@ -106,7 +106,6 @@ function Summary(props) {
   const data = React.useMemo(
     () => tableData.map(team => {
       const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
-      console.log(grade)
       return {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,

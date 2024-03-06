@@ -51,15 +51,15 @@ async function getTeams (regional) {
         RedCard: '',
         BrokenRobot: '',
         //reliability
-        relRobotSpeed: '',
-        relRobotHang: '',
-        relRobotSpeaker: '',
-        relRobotAmp: '',
-        relRobotTrap: '',
-        relRobotDefense: '',
-        relRobotUnderStage: '',
-        relRobotAutoStart: '',
-        relRobotStagePos: '',
+        // relRobotSpeed: '',
+        // relRobotHang: '',
+        // relRobotSpeaker: '',
+        // relRobotAmp: '',
+        // relRobotTrap: '',
+        // relRobotDefense: '',
+        // relRobotUnderStage: '',
+        // relRobotAutoStart: '',
+        // relRobotStagePos: '',
 
        }
 
@@ -74,7 +74,7 @@ async function getTeams (regional) {
 async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable, regional) {
     try {
     const data = await getMatchesForRegional(regional)
-    console.log("getTeamsMatchesAndTableData: ", data)
+    //console.log("getTeamsMatchesAndTableData: ", data)
 
     const tableData = mtable
 
@@ -99,10 +99,16 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
       const avgTeleSpeaker = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Teleop.PointsScored.SpeakerPoints : 0))
       const avgAutoSpeaker = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.SpeakerPoints !== null ? team.Autonomous.PointsScored.SpeakerPoints : 0))
-      const avgSpeaker = (avgTeleSpeaker + avgAutoSpeaker) / 2 
-      const avgTeleAmp = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.Amp !== null ? team.Teleop.PointsScored.Amp : 0))
-      const avgAutoAmp = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Amp !== null ? team.Autonomous.PointsScored.Amp : 0))
+      const avgSpeaker = (avgTeleSpeaker + avgAutoSpeaker) / 2
+      const avgMadeTeleSpeaker = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Speaker !== null ? team.Teleop.AmountScored.Speaker : 0))
+      const avgMadeAutoSpeaker = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Speaker !== null ? team.Autonomous.AmountScored.Speaker : 0))
+      const avgMadeSpeaker = (avgMadeTeleSpeaker + avgMadeAutoSpeaker) / 2 
+      const avgTeleAmp = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointsScored.AmpPoints : 0))
+      const avgAutoAmp = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.AmpPoints !== null ? team.Autonomous.PointsScored.AmpPoints : 0))
       const avgAmp = (avgTeleAmp + avgAutoAmp) / 2
+      const avgMadeTeleAmp = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Amp !== null ? team.Teleop.AmountScored.Amp : 0))
+      const avgMadeAutoAmp = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Amp !== null ? team.Autonomous.AmountScored.Amp : 0))
+      const avgMadeAmp = (avgMadeTeleAmp + avgMadeAutoAmp) / 2
       //robot capabilities 
       const mcDefend = getCan(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0))
       //custom robot capabilities
@@ -135,6 +141,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0), mcDefend)
      /// const reliableStagePosition = getReliability(teamStats.map((team) => team.Endgame.StagePosition !== null ? team.Endgame.Position : 0 ), mcStagePosition)
 
+     console.log(mcRobotHang)
       //grade
       const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
       const maxAmp = getMax(tableData.map(team => team.AvgAmp))
@@ -143,9 +150,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const rSpeaker = avgSpeaker / maxSpeaker
       const rAmp = avgAmp / maxAmp
       const rCycles = avgCycles / maxCycles
-      //console.log(avgPoints)
-      //console.log(isNaN(avgPoints) ? null : avgPoints)
-
+      
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
@@ -164,8 +169,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         AvgAutoPts: isNaN(avgAutoPoints) ? null :  avgAutoPoints,
         //custom//
         AvgCycles: isNaN(avgCycles) ? null : avgCycles,
-        AvgSpeaker: isNaN(avgSpeaker) ? null : avgSpeaker,
-        AvgAmp: isNaN(avgAmp) ? null : avgAmp, 
+        AvgSpeaker: isNaN(avgMadeSpeaker) ? null : avgMadeSpeaker,
+        AvgAmp: isNaN(avgMadeAmp) ? null : avgMadeAmp, 
         //======Capabilities======//
         CanDefend: mcDefend  + ' ' +  (isNaN(reliableDefense) ? '' : reliableDefense), //TBD
         //custom
