@@ -8,6 +8,7 @@ import Form from './form/Form.jsx'
 import { apiGetRegional } from './api/index.js'
 
 const regional = await apiGetRegional()
+console.log("reigonal: ", regional)
 const router = createBrowserRouter([
   {
     path: "/",
