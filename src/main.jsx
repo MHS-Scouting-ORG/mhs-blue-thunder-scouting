@@ -19,8 +19,8 @@ import { apiGetRegional } from './api/index.js'
 //   return response.Parameter.Value
 // }
 
-const regional = await apiGetRegional()
-console.log(regional)
+// const regional = await apiGetRegional()
+// console.log(regional)
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,11 +28,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/table",
-        element: <MainTable regional={regional} />
+        element: <MainTable /*regional={regional}*/ />
       },
       {
         path: "/form",
-        element: <Form regional={regional}/>
+        element: <Form /*regional={regional}*/ />
       }
     ]
   }
