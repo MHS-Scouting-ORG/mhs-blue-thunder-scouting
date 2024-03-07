@@ -109,7 +109,6 @@ class Form extends React.Component {
         cubesPts: 0,
         conesPts: 0,
       }
-    
   }
 
   componentDidMount() {
@@ -1361,6 +1360,7 @@ class Form extends React.Component {
       // console.log(this.regional,teamNum,matchKey,matchEntry)
     }
   }
+
 
   //-------------------------------------------------------------------------------------------------------------//
 
