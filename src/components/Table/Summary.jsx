@@ -102,10 +102,9 @@ function Summary(props) {
     setBookmark(newBookmarkEntries)
   }
 
-  //=================REMOVE SOMEHOW=======================??
   const data = React.useMemo(
     () => tableData.map(team => {
-      const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles)
+      const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles, team.NPts, team.NAutoPts, team.NHangPts, team.NSpeakerPts, team.NAmpPts)
       return {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
@@ -116,6 +115,11 @@ function Summary(props) {
         NSpeaker: team.NSpeaker,
         NAmp: team.NAmp,
         NCycles: team.NCycles,
+        NPts: team.NPts,
+        NAutoPts: team.NAutoPts,
+        NHangPts: team.NHangPts,
+        NSpeakerPts: team.NSpeakerPts,
+        NAmpPts: team.NAmpPts,
       }
     }), [tableData, sortBy]
   )
