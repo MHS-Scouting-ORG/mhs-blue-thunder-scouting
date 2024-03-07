@@ -25,6 +25,11 @@ import RadioButton from './components/radiobuttons/RadioButton';
 //button styling
 import buttonStyles from './Form.module.css';
 
+import { apiGetRegional } from '../api';
+
+const getRegional = async function() {
+  return await apiGetRegional()
+}
 
 class Form extends React.Component {
   constructor(props) {
@@ -32,7 +37,7 @@ class Form extends React.Component {
 
     this.matchData = props.matchData; // OVERALL MATCH DATA
 
-    this.regional = props.regional; // REGIONAL KEY
+    this.regional = getRegional(); // REGIONAL KEY
 
     console.log(`initializing form`)
     this.state = {
