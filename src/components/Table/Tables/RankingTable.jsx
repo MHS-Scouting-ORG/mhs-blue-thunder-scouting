@@ -12,7 +12,6 @@ function RankingTable(props) {
   const [rankingState, setRankingState] = useState([])
   const [tableState, setTableState] = useState('none')
 
-
   useEffect(() => {
     getRankingsForRegional(regional)
       .then(data => {
@@ -20,8 +19,7 @@ function RankingTable(props) {
         setRankingState(Object.values(data)[1])
       })
       .catch(err => console.log(err))
-  }, [tableState, rankingState])
-
+  }, [])
 
   useEffect(() => {
     setGlobalFilter(filter)
@@ -51,13 +49,14 @@ function RankingTable(props) {
     () => rankingState.map(team => {
 
       const sumSort = tableData.filter(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
+      console.log(sumSort)
       return team !== null ?
         {
           TeamNumber: team.team_key.substring(3),
           Rank: team.rank,
-          SumPriorities: sumSort[0].SumPriorities,//sumSort.SumPriorities,
+          SumPriorities: sumSort[0] === undefined ? 0.000 : sumSort[0].SumPriorities,
         } : null
-    }), [tableData]
+    }), [rankingState,tableData]
   )
 
   const columns = React.useMemo(
@@ -87,7 +86,7 @@ function RankingTable(props) {
           </div>
         }
       }
-    ], [rankingState, data]
+    ], [data]
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 

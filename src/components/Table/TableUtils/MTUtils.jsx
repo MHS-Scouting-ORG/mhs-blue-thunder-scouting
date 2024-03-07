@@ -1,6 +1,6 @@
 import { getMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty, getMax, calcColumnSort } from "./CalculationUtils"
+import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty, getMax } from "./CalculationUtils"
 
 async function getTeams (regional) {
   try {
