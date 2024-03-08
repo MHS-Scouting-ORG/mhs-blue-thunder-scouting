@@ -7,18 +7,6 @@ function Bookmarks(props) {
   const filter = props.gFilter
   const bookmarkedMatches = props.bookmarkData
   const bookMarkFunc = props.handleBookmark
-  
-  // const bookmarkData = teamData.filter((matchEntry) => {
-  //   const currentTeamNumber = matchEntry.Team.substring(3)
-  //   const currentMatchNumber = matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)
-  //   bookmarks.map((bookmarkedEntry) => {
-  //     const bookmarkedTeam = bookmarkedEntry.Team.substring(3)
-  //     const bookmarkedMatch = bookmarkedEntry.id.substring((matchEntry.id).indexOf("_") + 1)
-  //     if(currentTeamNumber === bookmarkedTeam && currentMatchNumber === bookmarkedMatch)
-  //       return true
-  //     return false
-  //   })
-  // })
 
   const [tableState, setTableState] = useState('none')
 

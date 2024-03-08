@@ -18,7 +18,7 @@ const getCan = (arr) => {
   return can
 }
 //grade
-const calcColumnSort = (arr, speaker, amp, cycles) => {
+const calcColumnSort = (arr, speaker, amp, cycles, pts, autoPts, hang, speakerPts, ampPts) => {
   let sum = 0;
   if (arr.includes("Speaker")) {
     sum = sum + speaker;
@@ -29,15 +29,21 @@ const calcColumnSort = (arr, speaker, amp, cycles) => {
   if (arr.includes("Cycles")) {
     sum = sum + cycles;
   }
-  // if (arr.includes("Cube Points")) {
-  //   sum = sum + cubePts;
-  // }
-  // if (arr.includes("Accurate Cube Placement")) {
-  //   sum = sum + cubeAcc;
-  // }
-  // if (arr.includes("Charge Station")) {
-  //   sum = sum + charge;
-  // }
+  if (arr.includes("Total Points")) {
+    sum = sum + pts;
+  }
+  if (arr.includes("Auto Points")) {
+    sum = sum + autoPts;
+  }
+  if (arr.includes("Hang Points")) {
+    sum = sum + hang;
+  }
+  if (arr.includes("Speaker Points")) {
+    sum = sum + speakerPts;
+  }
+  if (arr.includes("Amp Points")) {
+    sum = sum + ampPts;
+  }
 
   return sum.toFixed(3);
 }
@@ -78,7 +84,7 @@ const getReliability = (arr, mode) => {
       modeCount++
     }
   }
-  return (modeCount/arr.length)
+  return ((modeCount/arr.length) * 100).toFixed(0)
 }
 
 const getMatchesOfPenalty = (arr,penalty) => {

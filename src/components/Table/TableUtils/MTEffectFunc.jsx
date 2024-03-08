@@ -1,4 +1,3 @@
-// import { getMatchesForRegional} from "../../../api";
 import { getTeams, getTeamsMatchesAndTableData } from "./MTUtils"
 
   async function ueTableData(oprList, ccwmList, dprList, mtable, regional){
