@@ -9,8 +9,6 @@ import Form from './form/Form.jsx'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
 
-const regional = '2024isde2'//await apiGetRegional()
-console.log(regional)
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,11 +16,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/table",
-        element: <MainTable regional={regional} />
+        element: <MainTable />
       },
       {
         path: "/form",
-        element: <Form regional={regional} />
+        element: <Form />
       }
     ]
   }
