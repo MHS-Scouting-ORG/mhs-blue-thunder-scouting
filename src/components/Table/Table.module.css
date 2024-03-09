@@ -1,0 +1,5 @@
+.TableRow {
+    display:'flex';
+    justify-content: 'left';
+    column-gap: '100px';
+}

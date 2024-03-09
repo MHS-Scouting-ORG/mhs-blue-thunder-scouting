@@ -17,6 +17,9 @@ import RankingTable from "./Tables/RankingTable"
 
 import { apiGetRegional } from "../../api";
 
+//CSS
+import tableStyles from "./Table.module.css";
+
 function Summary(props) {
   const regional = apiGetRegional()
 
@@ -183,8 +186,9 @@ function Summary(props) {
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>Crescendo<img src={"./images/bluethundalogo.png"} width="75px" height="75px"></img>
-      </h1>
+      <br></br>
+      <img alt="" style={{ width: '360px' }} src={'./images/TABLEHEADER.png'}></img>
+      {/* <h1 style={{ textAlign: 'center' }}>Crescendo<img src={"./images/bluethundalogo.png"} width="75px" height="75px"></img></h1> */}
       <table >
         <tbody>
           <tr>
@@ -196,7 +200,7 @@ function Summary(props) {
               {<List setList={setSortBy} />}
               <br />
               {/* first row container */}
-              <div >
+              <div>
 
                 <div>
                   <RankingTable sortData = {data} regionalEvent={regional} {...filterState} />
@@ -247,7 +251,7 @@ function Summary(props) {
         </div>
 
         {/* secondRow container*/}
-        <div >
+        <div className={tableStyles.TableRow}>
 
           <div>
             <StatsTable {...filterState} />
