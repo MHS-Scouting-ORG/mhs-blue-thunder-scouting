@@ -7,6 +7,7 @@ import awsconfig from './aws-exports'
 import Menu from './utils/menu'
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { apiUpdateRegional } from './api';
 
 const redirectSignInUri = awsconfig.oauth.redirectSignIn.split(',')
 awsconfig.oauth.redirectSignIn = redirectSignInUri[parseInt(import.meta.env.VITE_REDIRECT_INDEX)]
@@ -68,6 +69,7 @@ function App() {
 
           if (user) {
             //console.log(`${JSON.stringify(user)} logged in`)
+            (async () => {await apiUpdateRegional()})()
             return (<AuthenticatedUI user={user} />)
           }
           return (<LoginUI />)
