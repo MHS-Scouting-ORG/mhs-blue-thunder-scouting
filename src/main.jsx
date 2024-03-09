@@ -9,7 +9,7 @@ import Form from './form/Form.jsx'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
 
-const regional = await apiGetRegional()
+const regional = '2024isde2'//await apiGetRegional()
 console.log(regional)
 const router = createBrowserRouter([
   {
