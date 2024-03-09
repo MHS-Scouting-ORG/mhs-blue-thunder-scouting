@@ -2,11 +2,12 @@
 import './App.css';
 import { Amplify } from 'aws-amplify'
 import * as Auth from 'aws-amplify/auth'
-//import { CognitoHostedUIIdentityProvider } from 'aws-amplify/auth';
+// import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import awsconfig from './aws-exports'
 import Menu from './utils/menu'
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { apiUpdateRegional } from './api';
 
 const redirectSignInUri = awsconfig.oauth.redirectSignIn.split(',')
 awsconfig.oauth.redirectSignIn = redirectSignInUri[parseInt(import.meta.env.VITE_REDIRECT_INDEX)]
@@ -51,6 +52,9 @@ function App() {
       if (!user) {
         //setUser(await Auth.currentAuthenticatedUser())
         setUser(await Auth.fetchAuthSession())
+        // Auth.federatedSignIn({
+        //   provider: CognitoHostedUIIdentityProvider.Google
+        // });
       }
     })()
       .then(console.log.bind(console))
@@ -65,6 +69,7 @@ function App() {
 
           if (user) {
             //console.log(`${JSON.stringify(user)} logged in`)
+            (async () => {await apiUpdateRegional()})()
             return (<AuthenticatedUI user={user} />)
           }
           return (<LoginUI />)

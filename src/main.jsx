@@ -5,10 +5,10 @@ import App from './App.jsx'
 import './index.css'
 import MainTable from './components/Table/Summary.jsx'
 import Form from './form/Form.jsx'
+// import * as Auth from 'aws-amplify/auth'
+// import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
 
-const regional = await apiGetRegional()
-console.log("reigonal: ", regional)
 const router = createBrowserRouter([
   {
     path: "/",
@@ -16,11 +16,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/table",
-        element: <MainTable regional={regional} />
+        element: <MainTable />
       },
       {
         path: "/form",
-        element: <Form regional={regional}/>
+        element: <Form />
       }
     ]
   }

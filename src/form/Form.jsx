@@ -8,10 +8,7 @@ import CounterBox from './CounterBox';
 import TextBox from './TextBox';
 import Headers from './Header';
 //import StationTimer from './StationTimer';
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
-//import { ConsoleLogger } from '@aws-amplify/core';
-//import { ChargeStationType, RankingPtsOpts } from '../api/builder';
-// import buildMatchEntry, { ChargeStationType, PenaltyKinds, RankingPtsOpts, PriorityOpts } from '../api/builder'
+import { apiCreateTeamMatchEntry, apiGetRegional, apiUpdateTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 
 class Form extends React.Component {
@@ -20,7 +17,7 @@ class Form extends React.Component {
 
     this.matchData = props.matchData;
 
-    this.regional = props.regional;
+    this.regional = apiGetRegional();
 
     this.changeMatchType = this.changeMatchType.bind(this);
     this.changeElmNum = this.changeElmNum.bind(this);
@@ -109,7 +106,6 @@ class Form extends React.Component {
         cubesPts: 0,
         conesPts: 0,
       }
-    
   }
 
   componentDidMount() {
@@ -1361,6 +1357,7 @@ class Form extends React.Component {
       // console.log(this.regional,teamNum,matchKey,matchEntry)
     }
   }
+
 
   //-------------------------------------------------------------------------------------------------------------//
 

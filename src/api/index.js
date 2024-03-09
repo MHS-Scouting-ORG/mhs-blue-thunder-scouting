@@ -7,9 +7,9 @@ import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
 
 import * as Auth from 'aws-amplify/auth'
-const { credentials } = await Auth.fetchAuthSession()
-
 const client = generateClient()
+
+let regionalKey
 
 /**
  * Subscribe to create and update events
@@ -165,13 +165,18 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
     })
 }
 
-const apiGetRegional = async function () {
+const apiUpdateRegional = async function () {
+    const { credentials } = await Auth.fetchAuthSession()
     const client = new SSMClient({ region: 'us-west-1', credentials: credentials })
     const command =  new GetParameterCommand({
         Name: "regionalKey"
     })
     const response = await client.send(command)
-    return response.Parameter.Value
+    regionalKey = response.Parameter.Value
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiGetRegional }
+const apiGetRegional = function () {
+    return regionalKey
+}
+
+export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiUpdateRegional, apiGetRegional }
