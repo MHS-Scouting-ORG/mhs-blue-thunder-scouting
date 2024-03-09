@@ -1,7 +1,8 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, PenaltyOpts, LineupSpeedOpts, IntakeRatingOpts } from '../api/builder';
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch } from '../api';
+import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts } from '../api/builder';
+import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
+import { getTeamMatch } from "../graphql/queries";
 
 /* GET MATCH TEAMS */
 
@@ -13,7 +14,6 @@ export async function getMatchTeams(props) {
   const data = await getMatchesForRegional(props.regional)
   data.map((match) => {
     if (match.key === matchKey) {
-      console.log("match: ", match)
       props.changeState(match)
     }
   })
@@ -36,9 +36,6 @@ export async function submitState(props) {
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
 
-  let counterBoxVals = props.state.counterBoxVals
-  let booleans = props.state.booleans
-
   // TEAM INFO //
   let teamNum = props.state.teamNumber;
 
@@ -56,24 +53,25 @@ export async function submitState(props) {
   let highNotesMissed = props.state.highNotesMissed //counterBoxVals[6]
 
   let endGameVal = props.state.endGameVal
+  let stagePosition = props.state.stagePosition
   let noteInTrap = props.state.noteInTrap //booleans[3]
 
   // RANKING PTS //
   //let rankingState = props.state.rankingState
   let rankingPts = props.state.rankingPts
   let matchResult = props.state.matchResult //rankingState[0]
-  let melody = props.state.melody //rankingState[1]
-  let ensemble = props.state.ensemble //rankingState[2]
+  let melody = props.state.bonusStatus[0] //rankingState[1]
+  let ensemble = props.state.bonusStatus[1] //rankingState[2]
 
 
   // PENALTIES //
   // let penalties = props.state.penaltyVal;
   let yellowCard = props.state.yellowCard; //penalties[0]
   let redCard = props.state.redCard; //penalties[1]
-  let disable = props.state.disable //penalties[2]
-  let dq = props.state.dq; //penalties[3]
-  let botBroke = props.state.botBroke; //penalties[4]
-  let noShow = props.state.noShow; //penalties[5]
+  let dq = props.state.dq; //penalties[2]
+  let disable = props.state.disable
+  let botBroke = props.state.botBroke; //penalties[3]
+  let noShow = props.state.noShow; //penalties[4]
   let fouls = props.state.fouls; //counterBoxVals[7]
   let techFouls = props.state.techFouls; //counterBoxVals[8]
   let foulComments = props.state.foulComments;
@@ -81,24 +79,33 @@ export async function submitState(props) {
 
 
   // ROBOT INFO //
-  let hangsFaster = props.state.hangsFaster
-  let isFaster = props.state.isFaster
+  let ampRating = props.state.ampRating
+  let speakerRating = props.state.speakerRating
+  let trapRating = props.state.trapRating
+  let hangRating = props.state.hangRating
+  let intakeRating = props.state.intakeRating
+  let lineUpSpeed = props.state.lineUpSpeed
+  let robotSpeed = props.state.robotSpeed
   let clearsStage = props.state.clearsStage
   let countersDefense = props.state.countersDefense
-  let lineUpSpeed = props.state.lineUpSpeed
-  let intakeRating = props.state.intakeRating
+  let canDefend = props.state.canDefend
 
   // INITIALIZE SCORE--------------------------------------------------------------------------------------------
   let autoPts = 0;
   let telePts = 0;
   let endGamePts = 0;
-  let ampPts = 0;
-  let speakerPts = 0;
+
+  let totalAmpPts = 0;
+  let totalSpeakerPts = 0;
+
+  let autoAmpPts = 0;
+  let autoSpeakerPts = 0;
+
+  let teleAmpPts = 0;
+  let teleSpeakerPts = 0;
 
   /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
   let incompleteForm = false;
-
-  let override = props.state.override;
 
   if (endGameVal === 'Onstage') {
     endGamePts = 3;
@@ -115,42 +122,43 @@ export async function submitState(props) {
     autoPts += 3;
   }
 
-  let penaltyArr = [yellowCard, redCard, disable, dq, botBroke, noShow]
-  let newPenaltyArr = penaltyArr.filter(bool => bool)
 
   // update matchResult to enum
-  MatchResultOpts.find(opt => {
-    matchResult = (MatchResultOpts[opt] === matchResult)
-  });
+  matchResult = findMatchResult(matchResult)
 
   // update stageResult to enum
-  StageOpts.find(opt => {
-    endGameVal = (StageOpts[opt] === endGameVal)
-  });
+  endGameVal = findStageResult(endGameVal)
 
-  // update lineUpSpeed to enum
-  LineupSpeedOpts.find(opt => {
-    lineUpSpeed = (LineupSpeedOpts[opt] === lineUpSpeed)
-  });
+  // update stagePosition to enum
+  stagePosition = findStagePosition(stagePosition)
 
-  // update intakeRating to enum
-  IntakeRatingOpts.find(opt => {
-    intakeRating = (IntakeRatingOpts[opt] === intakeRating)
-  });
-
+  // update ratings to enum
+  ampRating = findRating(ampRating)
+  speakerRating = findRating(speakerRating)
+  trapRating = findRating(trapRating)
+  hangRating = findRating(hangRating)
+  intakeRating = findRating(intakeRating)
+  lineUpSpeed = findSpeed(lineUpSpeed)
+  robotSpeed = findSpeed(robotSpeed)
 
   //POINT CALCULATIONS
 
-  autoPts =  5 * autoSpeakerScored + 2 * autoAmpScored
+  autoPts = 5 * autoSpeakerScored + 2 * autoAmpScored
   telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
-  speakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
-  ampPts = 2 * autoAmpScored + teleAmpScored
+
+  totalSpeakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
+  totalAmpPts = 2 * autoAmpScored + teleAmpScored
+
+  autoAmpPts = 2 * autoAmpScored;
+  autoSpeakerPts = 5 * autoSpeakerScored;
+
+  teleAmpPts = teleAmpScored;
+  teleSpeakerPts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored;
 
   let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
   let totalPts = autoPts + telePts + endGamePts
 
-  props.setState(totalPts, ampPts, speakerPts)
-  // setPoints(points, totalGridPts, cubesTeleAutoAccuracy, conesTeleAutoAccuracy, cubePts, conePts);
+  props.updatePoints(totalPts, autoPts, telePts)
 
   if (autoPlacement === '') {
     incompleteForm = true;
@@ -177,9 +185,9 @@ export async function submitState(props) {
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-  if (incompleteForm && !override) {
+  if (incompleteForm) {
     window.alert(windowAlertMsg);
-  } else if (!incompleteForm || override) {
+  } else if (!incompleteForm) {
     const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
 
     // POINTS //
@@ -192,8 +200,8 @@ export async function submitState(props) {
     matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
 
     matchEntry.Autonomous.PointsScored.Points = autoPts
-    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerScored
-    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpScored
+    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerPts
+    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpPts
 
     matchEntry.Autonomous.Left = left
 
@@ -205,38 +213,129 @@ export async function submitState(props) {
 
     matchEntry.Teleop.PointsScored.Points = telePts
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePts
-    matchEntry.Teleop.PointsScored.SpeakerPoints = speakerPts
-    matchEntry.Teleop.PointsScored.AmpPoints = ampPts
+    matchEntry.Teleop.PointsScored.SpeakerPoints = teleSpeakerPts
+    matchEntry.Teleop.PointsScored.AmpPoints = teleAmpPts
 
-    matchEntry.Teleop.EndGame.MatchResult = matchResult
-    matchEntry.Teleop.EndGame.StageResult = endGameVal
-    matchEntry.Teleop.EndGame.TrapScored = noteInTrap
-    matchEntry.Teleop.EndGame.Melody = melody
-    matchEntry.Teleop.EndGame.Ensemble = ensemble
+    matchEntry.Teleop.Endgame.MatchResult = matchResult
+    matchEntry.Teleop.Endgame.StageResult = endGameVal
+    // matchEntry.Teleop.Endgame.StagePosition = stagePosition
+    matchEntry.Teleop.Endgame.TrapScored = noteInTrap
+    matchEntry.Teleop.Endgame.Melody = melody
+    matchEntry.Teleop.Endgame.Ensemble = ensemble
 
-    matchEntry.HumPlrScored.Made = highNotesMade
-    matchEntry.HumPlrScored.Missed = highNotesMissed
+    matchEntry.Teleop.HumPlrScoring.Made = highNotesMade
+    matchEntry.Teleop.HumPlrScoring.Missed = highNotesMissed
 
     // ROBOT INFO //
-    matchEntry.RobotInfo.FasterThanUs = isFaster
-    matchEntry.RobotInfo.PassesUnderStage = clearsStage
-    matchEntry.RobotInfo.HangsFaster = hangsFaster
-    matchEntry.RobotInfo.CountersDefense = countersDefense
-    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
+    matchEntry.RobotInfo.AmpRating = ampRating
+    matchEntry.RobotInfo.SpeakerRating = speakerRating
+    matchEntry.RobotInfo.TrapRating = trapRating
+    matchEntry.RobotInfo.HangRating = hangRating
     matchEntry.RobotInfo.IntakeRating = intakeRating
+    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
+    matchEntry.RobotInfo.RobotSpeed = robotSpeed
+    matchEntry.RobotInfo.PassesUnderStage = clearsStage
+    matchEntry.RobotInfo.CountersDefense = countersDefense
+    matchEntry.RobotInfo.CanDefend = canDefend
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = fouls
     matchEntry.Penalties.Tech = techFouls
-    matchEntry.Penalties.Penalties = undefined
+    matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
+    matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
+    matchEntry.Penalties.PenaltiesCommitted.Disabled = disable
+    matchEntry.Penalties.PenaltiesCommitted.DQ = dq
+    matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
+    matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
     matchEntry.Penalties.FoulDesc = foulComments
 
-    if (props.matchData === undefined) {
+    console.log("MATCH DATA: ", matchEntry)
+    // console.log(stagePosition)
+    // console.log(StagePositionOpts)
 
+    if (props.matchData === undefined) {
       await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
     }
-
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
+
+    //for testing
+    console.log(await apiGetTeamMatch(matchKey, props.regional, teamNum))
+  }
+}
+
+// update matchResult to enum
+function findMatchResult(val) {
+  if (val === "win") {
+    return MatchResultOpts.WIN
+  }
+  else if (val === "tie") {
+    return MatchResultOpts.TIE
+  }
+  else if (val === "loss") {
+    return MatchResultOpts.LOSS
+  }
+}
+
+// update stageResult to enum
+function findStageResult(val) {
+  if (val === "Onstage") {
+    return StageOpts.ONSTAGE
+  }
+  else if (val === "Attempted") {
+    return StageOpts.ATTEMPTED
+  }
+  else if (val === "Parked") {
+    return StageOpts.PARKED
+  }
+  else if (val === "None" || val === "") {
+    return StageOpts.NONE
+  }
+}
+
+function findStagePosition(val) {
+  if (val === "left") {
+    return StagePositionOpts.LEFT
+  }
+  else if (val === "right") {
+    return StagePositionOpts.RIGHT
+  }
+  else if (val === "center") {
+    return StagePositionOpts.CENTER
+  }
+  else if (val === "" || val === "none") {
+    return StagePositionOpts.NONE
+  }
+}
+
+// update lineUpSpeed to enum
+function findSpeed(val) {
+  if (val === "Fast") {
+    return SpeedOpts.FAST
+  }
+  else if (val === "Average") {
+    return SpeedOpts.AVERAGE
+  }
+  else if (val === "Slow") {
+    return SpeedOpts.SLOW
+  }
+  else if (val === "None" || val === "") {
+    return SpeedOpts.NONE
+  }
+}
+
+// update intakeRating to enum
+function findRating(val) {
+  if (val === "Good") {
+    return RatingOpts.GOOD
+  }
+  else if (val === "Average") {
+    return RatingOpts.AVERAGE
+  }
+  else if (val === "Bad") {
+    return RatingOpts.BAD
+  }
+  else if (val === "None" || val === "") {
+    return RatingOpts.NONE
   }
 }

@@ -22,7 +22,6 @@ async function getApiKey() {
   //  const user = await Auth.currentAuthenticatedUser()
   //  const credentials = await Auth.currentCredentials(user)
   const { credentials } = await Auth.fetchAuthSession()
-  // console.log(credentials)
   const client = new SecretsManagerClient({
     region: 'us-west-1',
     credentials,

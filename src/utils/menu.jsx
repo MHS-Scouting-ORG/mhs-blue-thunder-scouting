@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import linkStyles from './menu.module.css'
 function Menu() {
     return (
         <section className="top-nav">
@@ -8,8 +9,8 @@ function Menu() {
                 <div className='menu-button'></div>
             </label>
             <ul className="menu">
-                <li><Link to="/table">TABLE</Link></li>
-                <li><Link to="/form">FORM</Link></li>
+                <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>
+                <li><Link className={linkStyles.Link} to="/form">FORM</Link></li>
             </ul>
         </section>
     )

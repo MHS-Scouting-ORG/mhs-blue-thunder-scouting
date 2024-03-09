@@ -12,6 +12,6 @@ describe('form test', () => {
     })
 
     it('test with object', _ => {
-        render(<Form regional="regional" matchData={buildMatchEntry("regional", "frc2443", 0)} regional="foobar" />)
+        render(<Form regional="regional" matchData={buildMatchEntry("regional", "frc2443", 0)}/>)
     })
 })

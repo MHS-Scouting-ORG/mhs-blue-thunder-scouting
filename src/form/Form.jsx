@@ -1,1482 +1,646 @@
 import React from 'react';
-import CheckBox from './CheckBox';
-import DropDown from './DropDown';
-import MatchDropDown from './MatchDropDown';
-import EndGame from './EndGame';
-import ChargeStation from './ChargeStation';
-import CounterBox from './CounterBox';
-import TextBox from './TextBox';
-import Headers from './Header';
-//import StationTimer from './StationTimer';
-import { apiCreateTeamMatchEntry, apiGetRegional, apiUpdateTeamMatch } from '../api';
-import { getMatchesForRegional } from '../api/bluealliance';
+// checkbox utility function imports //
+import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox } from './components/checkBox/CheckBoxUtils';
+
+// dropdown utility function imports //
+import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
+
+// endgame utility function imports //
+import { makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+
+// counterbox utility function imports //
+import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
+
+// rating slider utility function imports //
+import { makeRatingSlider } from './components/ratingSlider/RatingSliderUtils';
+
+import TextBox from './components/TextBox';
+import Headers from './components/Header';
+
+// general utility function imports //
+import { getMatchTeams, submitState } from './FormUtils';
+
+import RadioButton from './components/radiobuttons/RadioButton';
+
+//button styling
+import buttonStyles from './Form.module.css';
+
+import { apiGetRegional } from '../api';
 
 class Form extends React.Component {
   constructor(props) {
     super(props);
 
-    this.matchData = props.matchData;
+    this.matchData = props.matchData; // OVERALL MATCH DATA
 
-    this.regional = apiGetRegional();
+    this.regional = apiGetRegional() // REGIONAL KEY
 
-    this.changeMatchType = this.changeMatchType.bind(this);
-    this.changeElmNum = this.changeElmNum.bind(this);
-    this.changeMatchNumber = this.changeMatchNumber.bind(this);
-    this.makeMatchTypeDropDown = this.makeMatchTypeDropDown.bind(this);
-    this.makeMatchDropDown = this.makeMatchDropDown.bind(this);
+    console.log(`initializing form`)
+    this.state = {
+      // MATCH INFO //
+      matchType: '', //match type
+      elmNum: '', //elimination
+      matchNumber: '', //match number
+      matchData: 'not found', //data for a given match
+      teamNumber: ' ', //team num
+      teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'], //teams for a given match
 
-    this.logState = this.logState.bind(this);
+      // AUTO SPECIFIC //
+      autoPlacement: '', //1,2,3,4
+      left: false,
 
-    this.getMatchTeams = this.getMatchTeams.bind(this);
-    this.changeTeam = this.changeTeam.bind(this);
-    this.makeTeamDropdown = this.makeTeamDropdown.bind(this);
+      // SCORING //
+      autoAmpScored: 0,
+      autoSpeakerScored: 0,
+      teleAmpScored: 0,
+      teleSpeakerScored: 0,
+      teleAmplifiedSpeakerScored: 0,
+      highNotesMade: 0,
+      highNotesMissed: 0,
 
-    this.whoWonClicked = this.whoWonClicked.bind(this);
-    this.makeWhoWonBox = this.makeWhoWonBox.bind(this);
+      endGameVal: '', //onstage, attempted, parked, none
+      stagePosition: '',
+      noteInTrap: false,
 
-    this.copyArray = this.copyArray.bind(this);
+      totalPts: 0,
+      autoPts: 0,
+      telePts: 0,
+      ampPts: 0,
+      speakerPts: 0,
 
-    this.strategyBox = this.strategyBox.bind(this);
-    this.makeStrategyBox = this.makeStrategyBox.bind(this);
+      // RANKING PTS //
+      rankingPts: 0,
+      matchResult: '', //win, tie, loss
+      bonusStatus: [false, false],
 
-    this.changeBooleanCheckBox = this.changeBooleanCheckBox.bind(this);
-    this.makeBooleanCheckBox = this.makeBooleanCheckBox.bind(this);
+      // PENALTIES //
+      yellowCard: false,
+      redCard: false,
+      disable: false,
+      dq: false,
+      botBroke: false,
+      noShow: false,
+      fouls: 0,
+      techFouls: 0,
+      foulComments: "",
+      robotBrokenComments: "",
 
-    this.dropDownChanged = this.dropDownChanged.bind(this);
-    this.makeDropDownBox = this.makeDropDownBox.bind(this);
+      // ROBOT INFO //
+      ampRating: "",
+      speakerRating: "",
+      trapRating: "",
+      hangRating: "",
+      intakeRating: "",
+      lineUpSpeed: "",
+      robotSpeed: "",
+      clearsStage: false,
+      countersDefense: false,
+      canDefend: false,
+    }
 
-    this.changeEndGame = this.changeEndGame.bind(this);
-    this.changeEndGameStartBox = this.changeEndGameStartBox.bind(this);
-    this.changeEndGameEndBox = this.changeEndGameEndBox.bind(this);
-    this.makeEndGameStartEndBox = this.makeEndGameStartEndBox.bind(this);
-    this.makeEndGameDropDown = this.makeEndGameDropDown.bind(this);
-    this.changeChargeStation = this.changeChargeStation.bind(this);
-    this.makeChargeStationAuto = this.makeChargeStationAuto.bind(this);
+    // FUNCTION BINDING //
 
-    this.setComment = this.setComment.bind(this);
+    //match info
+    this.updateMatchType = this.updateMatchType.bind(this)
+    this.updateMatchData = this.updateMatchData.bind(this)
+    this.updateTeam = this.updateTeam.bind(this)
 
-    this.penaltyBoxChecked = this.penaltyBoxChecked.bind(this);
-    this.makePenaltyBox = this.makePenaltyBox.bind(this);
-    this.bonusBoxChecked = this.bonusBoxChecked.bind(this);
-    this.makeBonusBox = this.makeBonusBox.bind(this);
-    this.overrideChange = this.overrideChange.bind(this);
-    this.makeOverrideBox = this.makeOverrideBox.bind(this);
+    //auto specific
+    this.updateAutonomousPlacement = this.updateAutonomousPlacement.bind(this)
+    this.updateLeftStatus = this.updateLeftStatus.bind(this)
 
-    this.counterBoxChanged = this.counterBoxChanged.bind(this);
-    this.buttonMinus = this.buttonMinus.bind(this);
-    this.buttonPlus = this.buttonPlus.bind(this);
-    this.makeCounterBox = this.makeCounterBox.bind(this);
+    //scoring
+    this.updateAutoAmpScored = this.updateAutoAmpScored.bind(this)
+    this.updateAutoSpeakerScored = this.updateAutoSpeakerScored.bind(this)
+    this.updateTeleAmpScored = this.updateTeleAmpScored.bind(this)
+    this.updateTeleSpeakerScored = this.updateTeleSpeakerScored.bind(this)
+    this.updateTeleAmplifiedSpeakerScored = this.updateTeleAmplifiedSpeakerScored.bind(this)
+    this.updateEndGameVal = this.updateEndGameVal.bind(this)
+    this.updateStagePosition = this.updateStagePosition.bind(this)
+    this.updateNoteInTrap = this.updateNoteInTrap.bind(this)
+    this.updateHighNotesMade = this.updateHighNotesMade.bind(this)
+    this.updateHighNotesMissed = this.updateHighNotesMissed.bind(this)
 
-    this.submitState = this.submitState.bind(this);
+    //ranking pts
+    this.updateRankingPoints = this.updateRankingPoints.bind(this)
+    this.updateMatchResult = this.updateMatchResult.bind(this)
+    this.updateBonus = this.updateBonus.bind(this)
 
-      // initializing form by making array of data
-      console.log(`initializing form`)
-      this.state = {
-        comments: '',
-        //summaryComments: '',
-        stationComments: '',
-        matchType: '',
-        elmNum: '',
-        matchNumber: '',
-        matchData: 'not found',
-        teamNumber: ' ',
-        teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'],
-        matchOverride: false,
-        override: false,
-        endGameVal: ['', '', ''],
-        chargeStationValAuto: '',
-        whoWon: '',
-        checkedWhoWon: [' ', ' '],
-        rankingPts: 0,
-        rankingState: ["", "", ""],
-        bonusVal: [' ', ' '],
-        bonusState: '',
-        penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '],
-        dropDownVal: ['', '', ''],
-        //autoPlacement: 0,
-        counterBoxVals: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        //smartPlacementVal: false,
-        strategyVal: [null, null, null, null, null, null, null, null, null],//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-        //mobilityVal: false,
-        booleans: [false, false],
-        totalPoints: 0,
-        totalGrid: 0,
-        cubesAccuracy: 0,
-        conesAccuracy: 0,
-        cubesPts: 0,
-        conesPts: 0,
-      }
+    //penalties
+    this.updateYellowCard = this.updateYellowCard.bind(this)
+    this.updateRedCard = this.updateRedCard.bind(this)
+    this.updateDisable = this.updateDisable.bind(this)
+    this.updateDQ = this.updateDQ.bind(this)
+    this.updateBotBroke = this.updateBotBroke.bind(this)
+    this.updateNoShow = this.updateNoShow.bind(this)
+    this.updateFoulCount = this.updateFoulCount.bind(this)
+    this.updateTechFoulCount = this.updateTechFoulCount.bind(this)
+    this.updateFoulComments = this.updateFoulComments.bind(this)
+    this.updateRobotBrokenComments = this.updateRobotBrokenComments.bind(this)
+
+    //robot info
+    this.updateAmpRating = this.updateAmpRating.bind(this)
+    this.updateSpeakerRating = this.updateSpeakerRating.bind(this)
+    this.updateTrapRating = this.updateTrapRating.bind(this)
+    this.updateHangRating = this.updateHangRating.bind(this)
+    this.updateIntakeRating = this.updateIntakeRating.bind(this)
+    this.updateLineUpSpeed = this.updateLineUpSpeed.bind(this)
+    this.updateRobotSpeed = this.updateRobotSpeed.bind(this)
+    this.updateClearsStage = this.updateClearsStage.bind(this)
+    this.updateCountersDefense = this.updateCountersDefense.bind(this)
+    this.updateCanDefend = this.updateCanDefend.bind(this)
+
+    this.renderRatingSliders = this.renderRatingSliders.bind(this)
+    this.renderBooleanCheckboxes = this.renderBooleanCheckboxes.bind(this)
+
+    //form component display on/off
+    this.updateAutoDisplay = this.updateAutoDisplay.bind(this)
+    this.updateTeleDisplay = this.updateTeleDisplay.bind(this)
+    this.updateRobotDisplay = this.updateRobotDisplay.bind(this)
+    this.updatePenaltyDisplay = this.updatePenaltyDisplay.bind(this)
   }
 
+  //upon component init
   componentDidMount() {
     console.log(`fill form`)
     if (!this.props.matchData)
       return
     let m = this.props.matchData;
 
-    let rankingStates = [...m.RankingPts];
-    let rankingPoints = 0;
-    if (rankingStates[0] === "Win") {
-      rankingStates[0] = "Team Won ";
-      rankingPoints = 2;
-    }
-    else if (rankingStates[0] === "Tie") {
-      rankingStates[0] = "Team Tied ";
-      rankingPoints = 1;
-    }
-    else if (rankingStates[0] === "Loss") {
-      rankingStates[0] = "Team Lost ";
-      rankingPoints = 0;
-    }
-
-    if (rankingStates[1] === "ActivationBonus") {
-      rankingStates[1] = "Activation ";
-      rankingPoints++;
-    }
-    if (rankingStates[2] === "SustainabilityBonus") {
-      rankingStates[2] = "Sustainability ";
-      rankingPoints++;
-    }
-
-    let priorityStates = [...m.Priorities];
-    for (let i = 0; i < priorityStates.length; i++) {
-      if (priorityStates[i] === "Low") {
-        priorityStates[0] = "Low Node ";
-      }
-      if (priorityStates[i] === "Mid") {
-        priorityStates[1] = "Mid Node ";
-      }
-      if (priorityStates[i] === "Upper") {
-        priorityStates[2] = "High Node ";
-      }
-      if (priorityStates[i] === "Cubes") {
-        priorityStates[3] = "Cubes ";
-      }
-      if (priorityStates[i] === "Cones") {
-        priorityStates[4] = "Cones ";
-      }
-      if (priorityStates[i] === "ChargeStation") {
-        priorityStates[5] = "Charge Station ";
-      }
-      if (priorityStates[i] === "SingleSubstation") {
-        priorityStates[6] = "Single Substation ";
-      }
-      if (priorityStates[i] === "DoubleStation") {
-        priorityStates[7] = "Double Substation ";
-      }
-      if (priorityStates[i] === "Defense") {
-        priorityStates[8] = "Defense ";
-      }
-    }
-
-    let penaltyStates = [...m.Penalties.Penalties];
-    for (let i = 0; i < penaltyStates.length; i++) {
-      if (penaltyStates[i] === "YellowCard") {
-        penaltyStates[0] = "Yellow Card ";
-      }
-      if (penaltyStates[i] === "RedCard") {
-        penaltyStates[1] = "Red Card ";
-      }
-      if (penaltyStates[i] === "Disabled") {
-        penaltyStates[2] = "Disable ";
-      }
-      if (penaltyStates[i] === "DQ") {
-        penaltyStates[3] = "Disqualified ";
-      }
-      if (penaltyStates[i] === "BrokenBot") {
-        penaltyStates[4] = "Bot Broke ";
-      }
-      if (penaltyStates[i] === "NoShow") {
-        penaltyStates[5] = "No Show ";
-      }
-    }
-
-    // creating variable to get match type (quals, elims), and match number
-    const [a, r, matchType, matchNumber] = m.id.match(/(.+)_([a-z]{1,2}[0-9]?)m([0-9+]{1,2})/)
-
-    //this.state = {
+    //INIT
     this.setState({
-      comments: m.Comments,
-      //summaryComments: '',
-      stationComments: "", //UNUSED
       matchType: matchType,
       elmNum: (((m.id.substring(8)).indexOf("f") >= 0) ? (m.id.substring(m.id.length())) : ''), //MATCH ELM NUMBER
       matchNumber: matchNumber,
       matchData: [],
       teamNumber: m.Team,
       teams: [],
-      matchOverride: false, //UNUSED
-      override: true, //OVERRIDE
-      endGameVal: [
-          /*0 - Tele Charge Station*/m.Teleop.EndGame,
-          /*1 - Endgame Start Time*/m.Teleop.EndGameTally.Start,
-          /*2 - Engame End Time*/m.Teleop.EndGameTally.End
+
+      // AUTO SPECIFIC //
+      autoPlacement: m.Autonomous.StartingPosition,
+      left: m.Autonomous.Left,
+
+      // SCORING //
+      autoAmpScored: m.Autonomous.AmountScored.Amp,
+      autoSpeakerScored: m.Autonomous.AmountScored.Speaker,
+      teleAmpScored: m.Teleop.AmountScored.Amp,
+      teleSpeakerScored: m.Teleop.AmountScored.Speaker,
+      teleAmplifiedSpeakerScored: m.Teleop.AmountScored.AmplifiedSpeaker,
+      highNotesMade: m.Teleop.HumPlrScoring.Made,
+      highNotesMissed: m.Teleop.HumPlrScoring.Missed,
+
+      endGameVal: m.Teleop.Endgame.StageResult, //onstage, attempted, parked, none
+      stagePosition: m.Teleop.Endgame.StagePosition,
+      noteInTrap: m.Teleop.Endgame.TrapScored,
+
+      totalPts: m.TotalPoints,
+      autoPts: m.Autonomous.PointsScored.Points,
+      telePts: m.Teleop.PointsScored.Points,
+
+      // RANKING PTS //
+      rankingPts: 0,
+      matchResult: m.Teleop.Endgame.MatchResult, //win, tie, loss
+      bonusStatus: [
+        m.Teleop.Endgame.Melody,
+        m.Teleop.Endgame.Ensemble
       ],
-      chargeStationValAuto: m.Autonomous.ChargeStation,
-      whoWon: '', //UNUSED
-      checkedWhoWon: ['', ''], //UNUSED
-      rankingPts: rankingPoints, //USED
-      rankingState: rankingStates, //RANKING PTS STATES
-      bonusVal: '', //UNUSED
-      bonusState: ["", ""], //UNUSED
-      penaltyVal: penaltyStates,
-      dropDownVal: [
-          /*0 - AutoPlacement*/m.Autonomous.AutonomousPlacement,
-          /*1 - driveStrength*/m.Teleop.DriveStrength,
-          /*2 - driveSpeed*/m.Teleop.DriveSpeed
-      ],
-      counterBoxVals: [
-          //AUTONOMOUS SCORING
-          /*0*/m.Autonomous.Scored.Cubes.Upper,
-          /*1*/m.Autonomous.Scored.Cubes.Mid,
-          /*2*/m.Autonomous.Scored.Cubes.Lower,
-          /*3*/m.Autonomous.Attempted.Cubes.Upper,
-          /*4*/m.Autonomous.Attempted.Cubes.Mid,
-          /*5*/m.Autonomous.Attempted.Cubes.Lower,
-          /*6*/m.Autonomous.Scored.Cones.Upper,
-          /*7*/m.Autonomous.Scored.Cones.Mid,
-          /*8*/m.Autonomous.Scored.Cones.Lower,
-          /*9*/m.Autonomous.Attempted.Cones.Upper,
-          /*10*/m.Autonomous.Attempted.Cones.Mid,
-          /*11*/m.Autonomous.Attempted.Cones.Lower,
-          //TELEOP SCORING
-          /*12*/m.Teleop.Scored.Cubes.Upper,
-          /*13*/m.Teleop.Scored.Cubes.Mid,
-          /*14*/m.Teleop.Scored.Cubes.Lower,
-          /*15*/m.Teleop.Attempted.Cubes.Upper,
-          /*16*/m.Teleop.Attempted.Cubes.Mid,
-          /*17*/m.Teleop.Attempted.Cubes.Lower,
-          /*18*/m.Teleop.Scored.Cones.Upper,
-          /*19*/m.Teleop.Scored.Cones.Mid,
-          /*20*/m.Teleop.Scored.Cones.Lower,
-          /*21*/m.Teleop.Attempted.Cones.Upper,
-          /*22*/m.Teleop.Attempted.Cones.Mid,
-          /*23*/m.Teleop.Attempted.Cones.Lower,
-          /*24*/m.Penalties.Fouls,
-          /*25*/m.Penalties.Tech
-      ],
-      //smartPlacementVal: false,
-      strategyVal: priorityStates,//[' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
-      //mobilityVal: false,
-      booleans: [
-          /*0 - MobilityVal*/m.Autonomous.LeftCommunity,
-          /*1 - SmartPlacement*/m.Teleop.SmartPlacement
-      ],
-      totalPoints: m.Teleop.ScoringTotal.Total,
-      totalGrid: m.Teleop.ScoringTotal.GridPoints,
-      cubesAccuracy: m.Teleop.CubesAccuracy.Overall,
-      conesAccuracy: m.Teleop.ConesAccuracy.Overall,
-      cubesPts: m.Teleop.ScoringTotal.Cubes,
-      conesPts: m.Teleop.ScoringTotal.Cones,
+
+      // PENALTIES //
+      yellowCard: m.Penalties.PenaltiesCommited.YellowCard,
+      redCard: m.Penalties.PenaltiesCommited.RedCard,
+      disable: m.Penalties.PenaltiesCommited.Disabled,
+      dq: m.Penalties.PenaltiesCommited.DQ,
+      botBroke: m.Penalties.PenaltiesCommited.Broken,
+      noShow: m.Penalties.PenaltiesCommited.NoShow,
+      fouls: m.Penalties.Fouls,
+      techFouls: m.Penalties.Tech,
+      foulComments: m.Penalties.FoulDesc,
+      robotBrokenComments: m.RobotInfo.WhatBrokeDesc,
+
+      // ROBOT INFO //
+      ampRating: m.RobotInfo.AmpRating,
+      speakerRating: m.RobotInfo.SpeakerRating,
+      trapRating: m.RobotInfo.TrapRating,
+      hangRating: m.RobotInfo.HangRating,
+      intakeRating: m.RobotInfo.IntakeRating,
+      lineUpSpeed: m.RobotInfo.LineupSpeed,
+      robotSpeed: m.RobotInfo.RobotSpeed,
+      clearsStage: m.RobotInfo.PassesUnderStage,
+      countersDefense: m.RobotInfo.CountersDefense,
+      canDefend: m.RobotInfo.CanDefend,
     })
   }
 
-  //------------------------------------------------------------------------------------------------------------------------//
+  // MATCH INFO //
+  updateMatchType(val, prop) {
+    this.setState({ [prop]: val })
+  }
 
-  changeMatchType(event) {
-    let matchType = event;
-    if (matchType === 'q') {
-      this.setState({ elmNum: '' });
+  updateMatchData(match) {
+    this.setState({ matchData: match, teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
+  }
+
+  updateTeam(team) {
+    this.setState({ teamNumber: team })
+  }
+
+  // AUTO SPECIFIC //
+  updateAutonomousPlacement(val) {
+    this.setState({ autoPlacement: val })
+  }
+
+  updateLeftStatus(value) {
+    this.setState({ left: value })
+  }
+
+  // SCORING //
+  updateCounterBox(i, newState) {
+    let counterBoxVals = [...this.state.counterBoxVals];
+    counterBoxVals[i] = newState;
+    this.setState({ counterBoxVals });
+  }
+
+  updateAutoAmpScored(val) {
+    this.setState({ autoAmpScored: val })
+  }
+
+  updateAutoSpeakerScored(val) {
+    this.setState({ autoSpeakerScored: val })
+  }
+
+  updateTeleAmpScored(val) {
+    this.setState({ teleAmpScored: val })
+  }
+
+  updateTeleSpeakerScored(val) {
+    this.setState({ teleSpeakerScored: val })
+  }
+
+  updateTeleAmplifiedSpeakerScored(val) {
+    this.setState({ teleAmplifiedSpeakerScored: val })
+  }
+
+  updateHighNotesMade(val) {
+    this.setState({ highNotesMade: val })
+  }
+
+  updateHighNotesMissed(val) {
+    this.setState({ highNotesMissed: val })
+  }
+
+  updateEndGameVal(val) {
+    this.setState({ endGameVal: val })
+  }
+
+  updateStagePosition(val) {
+    this.setState({ stagePosition: val })
+  }
+
+  updateNoteInTrap(val) {
+    this.setState({ noteInTrap: val })
+  }
+
+  // RANKING PTS //
+  updateRankingPoints(rankingState) {
+    let rankingPts = this.state.rankingPts
+    if (rankingState === "win") {
+      rankingPts = 2
     }
-    this.setState({ matchType: event });
-    this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-    this.setState({ teamNumber: ' ' });
-  }
-
-  changeElmNum(event) {
-    this.setState({ elmNum: (event.target.value) });
-    this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-    this.setState({ teamNumber: ' ' });
-  }
-
-  changeMatchNumber(event) {
-    if (event.target.value !== 0) {
-      this.setState({ override: false })
+    else if (rankingState === "tie") {
+      rankingPts = 1
     }
-    this.setState({ matchNumber: event.target.value });
-    this.setState({ teams: ['team1', 'team2', 'team3', 'team4', 'team5', 'team6'] });
-    this.setState({ teamNumber: '' });
-  }
-
-  makeMatchTypeDropDown(matchType) {
-    if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
-      return (
-        <input value={this.state.elmNum} onChange={this.changeElmNum} />
-      )
-    }
-  }
-
-  makeMatchDropDown() {
-    let matchTypeState = this.state.matchType;
-    let matchState = '';
-    if (matchTypeState === 'q') {
-      matchState = "Qualification";
-    } else if (matchTypeState === 'qf') {
-      matchState = "QuarterFinal";
-    } else if (matchTypeState === 'sf') {
-      matchState = "SemiFinal";
-    } else if (matchTypeState === 'f') {
-      matchState = "Final";
-    }
-    return (
-      <div>
-        <MatchDropDown
-          setMatchType={this.changeMatchType}
-          setElmNum={this.changeElmNum}
-          generateMatchTypeNum={this.makeMatchTypeDropDown}
-          setMatchNumber={this.changeMatchNumber}
-          matchTypeValue={matchState}
-          matchNumber={this.state.matchNumber}
-        />
-      </div>
-    )
-  }
-
-
-  logState() {
-    console.log(this.state)
-  }
-
-  async getMatchTeams() {
-    //this.regional = '2022hiho'  /* change event_key */
-    let matchKey =  /*put this years event*//*/*/ this.regional  /* */ /*await getRegionals() /* */ + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
-    const teams = async () => {
-      /*
-     await fetch('https://www.thebluealliance.com/api/v3/event/' + this.regional  + '/matches', {
-       mode: 'cors',
-       headers: {
-         'X-TBA-Auth-Key': 'TKWj89sH9nu6hwIza0zK91UQBRUaW5ETVJrZ7KhHOolwmuKxKqD3UkQMAoqHahsn'
-       } */
-      getMatchesForRegional(this.regional)
-        //.then(response => response.json())
-        .then(data => {
-          data.map((matches) => {
-            console.log(matches.key)
-            if (matches.key === matchKey) {
-              this.setState({ matchData: matches })
-              this.setState({ teams: matches.alliances.blue.team_keys.concat(matches.alliances.red.team_keys) });
-              console.log({ teams: matches.alliances.blue.team_keys.concat(matches.alliances.red.team_keys) });
-
-            }
-          })
-        })
-        .catch(err => console.log(err))
-
-    }
-    console.log(this.matchKey);
-    console.log(this.matchData)
-    teams();
-  }
-
-  changeTeam(event) {
-    this.setState({ teamNumber: event.target.value });
-    let data = this.state.matchData;
-    let teamColor = 'red';
-    let selectedTeam = event.target.value;
-    data.alliances.blue.team_keys.map((team) => {
-      if (team === selectedTeam) {
-        teamColor = 'blue';
-      }
-    })
-
-    let whoWon = '';
-    //let wonState = this.state.whoWon;
-    /*if (wonState === '') {
-      if (data.alliances.blue.score > data.alliances.red.score) {
-        wonState = 'blue';
-      } else if (data.alliances.blue.score < data.alliances.red.score) {
-        wonState = 'red';
-      } else {
-        wonState = 'Tie';
-      }
-    } else if (wonState === 'blue') {
-      whoWon = 'blue';
-    } else if (wonState === 'red') {
-      whoWon = 'red';
-    } else {
-      whoWon = 'Tie';
-    }*/
-
-    if (data.alliances.blue.score > data.alliances.red.score) {
-      whoWon = 'blue';
-    } else if (data.alliances.blue.score < data.alliances.red.score) {
-      whoWon = 'red';
-    } else {
-      whoWon = 'Tie';
+    else if (rankingState === "loss") {
+      rankingPts = 0
     }
 
-    let rankingStates = this.state.rankingState;
-
-    if (teamColor === whoWon) {
-      this.setState({ rankingPts: 2 });
-      rankingStates[0] = "Team Won ";
-    } else if (whoWon === 'Tie') {
-      this.setState({ rankingPts: 1 });
-      rankingStates[0] = "Team Tied ";
-    } else if ((whoWon === 'blue' || whoWon === 'red') && teamColor !== whoWon) {
-      this.setState({ rankingPts: 0 });
-      rankingStates[0] = "Team Lost ";
-    }
-
-    rankingStates[1] = '';
-    rankingStates[2] = '';
-    this.setState({ whoWon: whoWon });
-    //this.setState({ checkedWhoWon: [' ', ' '] });
-    //this.setState({ bonusVal: [' ', ' '] });
+    this.setState({ rankingPts })
+    this.setState({ bonusStatus: [false, false] })
   }
 
-  makeTeamDropdown() {
-    let alliances = this.state.teams;
-    return parseInt(this.state.matchNumber) !== 0 ? (
-      <div>
-        <select onChange={this.changeTeam}>
-          <option value={this.state.teamNumber}> {this.state.teamNumber} </option>
-          {alliances.map((alliances) => <option key={alliances}> {alliances} </option>)}
-        </select>
-      </div>
-    ) : (
-      <div>
-        <lable> Team Number
-          <input type='number' onChange={e => { this.setState({ teamNumber: 'frc' + e.target.value }) }}></input>
-        </lable>
-      </div>
-    )
+  updateMatchResult(val) {
+    this.setState({ matchResult: val })
+    this.updateRankingPoints(val)
   }
 
-  whoWonClicked(i, label) {
-    //let data = this.state.matchData;
-    /*if (data === 'not found') {
-      window.alert("PICK A TEAM FIRST");
+  updateBonus(i, val, name) {
+    let bonusStatus = [...this.state.bonusStatus]
+    // bonusStatus[i] = val ? name : ''
+    bonusStatus[i] = !bonusStatus[i]
+    this.setState({ bonusStatus })
+
+    let rankingPts = this.state.rankingPts
+    if (!bonusStatus[i]) {
+      rankingPts--;
     }
     else {
-      if (label === 'Team Won ') {
-        this.setState({ rankingPts: 2 });
-        this.setState({ rankingState: "Win" });
-      } else if (label === 'Team Tied ') {
-        this.setState({ rankingPts: 1 });
-        this.setState({ rankingState: "Tie" });
-      } else if (label === 'Team Lose '){
-        this.setState({ rankingPts: 0})
-        this.setState({ rankingState: 'Loss'})
-      }
-
-      this.setState({ bonusVal: [' ', ' '] })
-
-      let whoWon = this.state.checkedWhoWon
-      whoWon[i - 1] = ' ';
-      whoWon[i + 1] = ' ';
-      if (whoWon[i] === label) {
-        whoWon[i] = ' ';
-      } else if (whoWon[i] === ' ') {
-        whoWon[i] = label;
-      }
-
-      if (whoWon[0] === ' ' && whoWon[1] === ' ') {
-        this.setState({ rankingPts: 0 });
-        this.setState({ rankingState: "Lose" })
-      }
-    }*/
-
-    let data = this.state.matchData;
-    let rankingStates = /*this.copyArray*/(this.state.rankingState);
-    if (data === "not found") {
-      window.alert("PICK A TEAM FIRST");
+      rankingPts++;
     }
-    else {
-
-      if (rankingStates[0] === label) {
-        rankingStates[0] = '';
-        this.setState({ rankingPts: 0 })
-      }
-      else if (rankingStates[0] === '') {
-        rankingStates[0] = label;
-
-        if (label === "Team Won ") {
-          this.setState({ rankingPts: 2 })
-        }
-        else if (label === "Team Tied ") {
-          this.setState({ rankingPts: 1 })
-        }
-        else if (label === "Team Lost ") {
-          this.setState({ rankingPts: 0 })
-        }
-      }
-
-      rankingStates[1] = '';
-      rankingStates[2] = '';
-
-      this.setState({ rankingState: rankingStates })
-    }
+    this.setState({ rankingPts })
+    // this.updateRankingPoints(bonusStatus[i])
   }
 
-  makeWhoWonBox(name, i) {
-    let rankingStates = this.state.rankingState;
-    let checkVal;
-    if (rankingStates[0] === name) {
-      checkVal = true;
-    } else {
-      checkVal = false;
-    }
+  // PENALTIES //
+  updatePenalty([_, i], val) {
+    let penaltyVal = [...this.state.penaltyVal]
+    penaltyVal[i] = val
+    this.setState({ penaltyVal })
+  }
+
+  updateYellowCard(event) {
+    let checked = event.target.checked
+    this.setState({ yellowCard: checked })
+  }
+
+  updateRedCard(event) {
+    let checked = event.target.checked
+    this.setState({ redCard: checked })
+  }
+
+  updateDisable(event) {
+    let checked = event.target.checked
+    this.setState({ disable: checked })
+  }
+
+  updateDQ(event) {
+    let checked = event.target.checked
+    this.setState({ dq: checked })
+  }
+
+  updateBotBroke(event) {
+    let checked = event.target.checked
+    this.setState({ botBroke: checked })
+  }
+
+  updateNoShow(event) {
+    let checked = event.target.checked
+    this.setState({ noShow: checked })
+  }
+
+  updateFoulCount(val) {
+    this.setState({ fouls: val })
+  }
+
+  updateTechFoulCount(val) {
+    this.setState({ techFouls: val })
+  }
+
+  updateFoulComments(comment) {
+    this.setState({ foulComments: comment })
+  }
+
+  updateRobotBrokenComments(comment) {
+    this.setState({ robotBrokenComments: comment })
+  }
+
+  // ROBOT INFO //
+  updateBoolean(i, val) {
+    let booleans = this.state.isFaster
+    booleans[i] = val
+    this.setState({ booleans })
+  }
+
+  updateAmpRating(val) {
+    this.setState({ ampRating: val })
+  }
+
+  updateSpeakerRating(val) {
+    this.setState({ speakerRating: val })
+  }
+
+  updateTrapRating(val) {
+    this.setState({ trapRating: val })
+  }
+
+  updateHangRating(val) {
+    this.setState({ hangRating: val })
+  }
+
+  updateLineUpSpeed(val) {
+    this.setState({ lineUpSpeed: val })
+  }
+
+  updateRobotSpeed(val) {
+    this.setState({ robotSpeed: val })
+  }
+
+  updateClearsStage(val) {
+    this.setState({ clearsStage: val })
+  }
+
+  updateCountersDefense(val) {
+    this.setState({ countersDefense: val })
+  }
+
+  updateCanDefend(val) {
+    this.setState({ canDefend: val })
+  }
+
+  updateRatingSlider(i, value) {
+    let ratingSliderVals = [...this.state.ratingSliderVals]
+    ratingSliderVals[i] = value
+    this.setState({ ratingSliderVals })
+  }
+
+  updateIntakeRating(val) {
+    this.setState({ intakeRating: val })
+  }
+
+  renderRatingSliders() {
     return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.whoWonClicked}
-          place={i}
-          checked={checkVal}
-        />
-      </div>
+      <>
+        {makeRatingSlider({ changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating }, "Amp: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating }, "Speaker: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating }, "Trap: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating }, "Hang: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating }, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed }, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
+        {makeRatingSlider({ changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed }, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
+      </>
     )
   }
 
-  copyArray(Array) {
-    let arrayCopy = [];
-    for (let i = 0; i < Array.length; i++) {
-      arrayCopy.push(Array[i]);
-    }
-
-    return arrayCopy
-
-  }
-
-  strategyBox(i, label) {
-    let strategyStates = this.copyArray(this.state.strategyVal);
-    if (strategyStates[i] === label) {
-      strategyStates[i] = ' ';
-    } else {
-      strategyStates[i] = label;
-    }
-
-    this.setState({ strategyVal: strategyStates })
-  }
-
-  makeStrategyBox(name, i) {
-    let strategyState = this.state.strategyVal;
-    let checkedVal;
-    if (strategyState[i] === name) {
-      checkedVal = true;
-    } else {
-      checkedVal = false;
-    }
+  renderBooleanCheckboxes() {
     return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.strategyBox}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
+      <>
+        {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Goes Under Stage ")}
+        {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
+        {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
+      </>
     )
+
   }
 
-  changeBooleanCheckBox(i) {
-    let booleanStates = this.copyArray(this.state.booleans)
-    booleanStates[i] = !booleanStates[i]
-    this.setState({ booleans: booleanStates })
+  // FORM COMPONENT DISPLAY ON/OFF //
+  updateAutoDisplay() {
+    this.setState({ autoOn: !this.state.autoOn })
   }
 
-  makeBooleanCheckBox(name, i) {
-    let booleanStates = this.state.booleans;
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.changeBooleanCheckBox}
-          place={i}
-          checked={booleanStates[i]}
-        />
-      </div>
-    )
+  updateTeleDisplay() {
+    this.setState({ teleOn: !this.state.teleOn })
   }
 
-  //---------------------------------------------------------------------------------------------------------------//
-
-  dropDownChanged(event, i) {
-    let dropDownStates = this.state.dropDownVal;
-    dropDownStates[i] = event.target.value;
+  updateRobotDisplay() {
+    this.setState({ robotOn: !this.state.robotOn })
   }
 
-  makeDropDownBox(title, option, i) {
-    let dropDownStates = this.state.dropDownVal;
-    return (
-      <div>
-        <DropDown
-          title={title}
-          choices={option}
-          place={i}
-          value={dropDownStates[i]}
-          setState={this.dropDownChanged}
-        />
-      </div>
-    )
+  updatePenaltyDisplay() {
+    this.setState({ penaltiesOn: !this.state.penaltiesOn })
   }
 
-  /*
-  autoPlacmentChanged(event){
-    let autoPlacementState = this.state.autoPlacement;
-    autoPlacementState = event.target.value;
+  updatePoints(totalPts, autoPts, telePts) {
+    this.setState({ totalPts, autoPts, telePts })
   }
-
-  makeAutoPlacement(title, option, i){
-    return(
-      <div>
-        <DropDown
-          title={title}
-          choices={option}
-          place={i}
-          setState={this.autoPlacmentChanged}
-        />
-      </div>
-    )
-  }*/
-
-  //--------------------------------------------------------------------------------------------------------------//
-
-  changeEndGame(event) {
-    let endGame = Array(this.state.endGameVal);
-    endGame[0] = event.target.value;
-    this.setState({ endGameVal: endGame });
-  }
-
-  changeEndGameStartBox(event) {
-    let endGame = this.state.endGameVal;
-    endGame[1] = event.target.value;
-  }
-
-  changeEndGameEndBox(event) {
-    let endGame = this.state.endGameVal;
-    endGame[2] = event.target.value;
-  }
-
-  makeEndGameStartEndBox() {
-    let endGameValues = this.state.endGameVal;
-    let endGame = endGameValues[0];
-    if (endGame !== "None" && endGame !== '') {
-      if (endGame === "Attempted") {
-        return (
-          <div>
-            <p>Match Timer EX:125 (1:25)</p>
-            <label> {"End Game Start: "}
-              <input value={this.state.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameStartBox}></input>
-            </label>
-          </div>
-        )
-      } else if (endGame === 'Parked') {
-        return <div></div>
-      } else {
-        return (
-          <div>
-            <div>
-              <p style={{ fontSize: '14px' }}>Match Timer | EX Start: 25 (0:25), EX End: 3 (0:03)</p>
-              <label> {"End Game Start: "}
-                <input value={this.state.endGameVal[1]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameStartBox}></input>
-              </label>
-            </div>
-            <div>
-              <label> {"End Game End: "}
-                <input value={this.state.endGameVal[2]} style={{ width: '10%' }} type="number" onChange={this.changeEndGameEndBox}></input>
-              </label>
-            </div>
-          </div>
-        )
-      }
-    } else {
-      return <div></div>;
-    }
-  }
-
-  makeEndGameDropDown() {
-    let endGameState = this.state.endGameVal
-    return (
-      <div>
-        <EndGame
-          changeEndGameUsed={this.changeEndGame}
-          makeEndGameStartEndBox={this.makeEndGameStartEndBox}
-          value={endGameState[0]}
-        />
-      </div>
-    )
-  }
-
-  changeChargeStation(event) {
-    let chargeStation = this.state.chargeStationValAuto;
-    chargeStation = event.target.value;
-    this.setState({ chargeStationValAuto: chargeStation });
-  }
-
-  makeChargeStationAuto() {
-    let chargeStationState = this.state.chargeStationValAuto;
-    return (
-      <div>
-        <ChargeStation
-          changeChargeStationUsed={this.changeChargeStation}
-          value={chargeStationState}
-        />
-      </div>
-    )
-  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
-  setComment(event) {
-    this.setState({ comments: event.target.value });
-  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
-  penaltyBoxChecked(i, label) {
-    let penaltyStates = this.copyArray(this.state.penaltyVal);
-    if (penaltyStates[i] === label) {
-      penaltyStates[i] = ' ';
-    } else {
-      penaltyStates[i] = label;
-    }
-    this.setState({ penaltyVal: penaltyStates })
-  }
-
-  makePenaltyBox(name, i) {
-    let penaltyStates = this.state.penaltyVal;
-    let checkedVal;
-    if (penaltyStates[i] === name) {
-      checkedVal = true;
-    } else {
-      checkedVal = false
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.penaltyBoxChecked}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
-    )
-  }
-
-  /*
-  smartPlacementChecked(label) {
-    let smartPlacementState = this.state.smartPlacementVal;
-    if (smartPlacementState === label) {
-      smartPlacementState = false;
-    } else {
-      smartPlacementState = true;
-    }
-  }
-
-  makeSmartPlacementBox(name, i) {
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.smartPlacementChecked}
-          place={i}
-        />
-      </div>
-    )
-  } */
-
-  bonusBoxChecked(i, label) {
-    let ranking = this.copyArray(this.state.rankingState);
-    if (ranking[i] === label) {
-      this.setState({ rankingPts: this.state.rankingPts - 1 });
-    } else {
-      this.setState({ rankingPts: this.state.rankingPts + 1 });
-    }
-
-
-    if (ranking[i] === label) {
-      ranking[i] = ' ';
-    } else {
-      ranking[i] = label;
-    }
-
-    this.setState({ rankingState: ranking })
-  }
-
-  makeBonusBox(name, i) {
-    let rankingState = this.state.rankingState;
-    let checkedVal;
-    if (rankingState[i] === name) {
-      checkedVal = true;
-    }
-    else {
-      checkedVal = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.bonusBoxChecked}
-          place={i}
-          checked={checkedVal}
-        />
-      </div>
-    )
-  }
-
-  /*
-  mobilityBoxClick(i, label) {
-    let mobilityState = this.state.mobilityVal;
-    if (mobilityState === label) {
-      mobilityState = false;
-    } else {
-      mobilityState = true;
-    }
-  }
-
-  makeMobilityBox(name, i) {
-    let mobilityState = this.state.mobilityVal;
-    if (mobilityState === name) {
-      mobilityState = true;
-    } else {
-      mobilityState = false;
-    }
-    return (
-      <div>
-        <CheckBox
-          label={name}
-          changeCheckBoxState={this.mobilityBoxClick}
-          place={i}
-          checked={mobilityState}
-        />
-      </div>
-    )
-  } */
-
-  overrideChange(fill, filler) {
-    this.setState({ override: !this.state.override });
-  }
-
-  makeOverrideBox() {
-    let overrideState = this.state.override;
-    return (
-      <div>
-        <CheckBox
-          label={"Overide "}
-          changeCheckBoxState={this.overrideChange}
-          checked={overrideState}
-        />
-      </div>
-    )
-  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
-  counterBoxChanged(event, i) {
-    let counterStates = this.state.counterBoxVals;
-    if (event.target.value === '' || event.target.value == null) {
-      counterStates[i] = 0
-    }
-    else {
-      counterStates[i] = event.target.value;
-    }
-  }
-
-  buttonMinus(event, i) {
-    let counterStates = this.state.counterBoxVals;
-    if (counterStates[i] > 0) {
-      counterStates[i] = parseInt(counterStates[i] - 1)
-    }
-    else if (counterStates[i] <= 0) {
-      counterStates[i] = 0
-    }
-  }
-
-  buttonPlus(event, i) {
-    let counterStates = this.state.counterBoxVals;
-    if (counterStates[i] >= 0) {
-      counterStates[i] = parseInt(counterStates[i] + 1)
-    }
-    else if (counterStates[i] < 0) {
-      counterStates[i] = 0
-    }
-  }
-
-  makeCounterBox(title, i) {
-    let counterStates = this.state.counterBoxVals;
-    return (
-      <div>
-        <CounterBox
-          label={title}
-          setState={this.counterBoxChanged}
-          place={i}
-          state={counterStates[i]}
-          minusButton={this.buttonMinus}
-          plusButton={this.buttonPlus}
-        />
-      </div>
-    )
-  }
-
-  //-------------------------------------------------------------------------------------------------------------//
-
-  async submitState() {
-    let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-    let matchKey = /*put this years event*//*/*/ this.regional  /* */ /*await getRegionals() /* */ + "_" + this.state.matchType + this.state.elmNum + "m" + this.state.matchNumber;
-    let teamNum = this.state.teamNumber;
-
-    let comments = this.state.comments;
-
-    let dropVal = this.state.dropDownVal;
-    let autoPlacement = dropVal[0];
-    let driveStrength = dropVal[1];
-    let driveSpeed = dropVal[2];
-    //let doubleStation = dropVal[3];
-
-    //let autoPlacement = this.state.autoPlacement;
-
-    //let ranking = this.state.rankingPts;
-    let rankingState = this.state.rankingState;
-
-    let endGame = this.state.endGameVal;
-    let endGameUsed = endGame[0];
-    let endGameStart = endGame[1];
-    let endGameEnd = endGame[2];
-
-    let chargeStationAuto = this.state.chargeStationValAuto;
-    let booleans = this.state.booleans;
-
-    //let bonuses = this.state.bonusVal;
-    let strats = this.state.strategyVal.slice();
-    let strategies = this.state.strategyVal;
-    let penalties = this.state.penaltyVal;
-    let smartPlacement = booleans[1]; //this.state.smartPlacementVal;
-
-    let counterVal = this.state.counterBoxVals;
-
-    let fouls = parseInt(counterVal[24]);
-    let techFouls = parseInt(counterVal[25]);
-
-    /*-------------------------------------------------------------SETTING SCORING VARIABLES--------------------------------------------------------------*/
-
-
-    //AUTONOMOUS-----------------------------------------
-
-    //Auto Cubes & Cones Scoring
-    let highAutoCubes = parseInt(counterVal[0]);
-    let midAutoCubes = parseInt(counterVal[1]);
-    let lowAutoCubes = parseInt(counterVal[2]);
-    let highAutoCones = parseInt(counterVal[6]);
-    let midAutoCones = parseInt(counterVal[7]);
-    let lowAutoCones = parseInt(counterVal[8]);
-    //Auto Cubes & Cones Attempted
-    let highCubesAutoAttempted = parseInt(counterVal[3]);
-    let midCubesAutoAttempted = parseInt(counterVal[4]);
-    let lowCubesAutoAttempted = parseInt(counterVal[5]);
-    let highConesAutoAttempted = parseInt(counterVal[9]);
-    let midConesAutoAttempted = parseInt(counterVal[10]);
-    let lowConesAutoAttempted = parseInt(counterVal[11]);
-
-
-    //TELEOP-----------------------------------------------
-
-    //Tele Cubes & Cones Scoring
-    let highTeleCubes = parseInt(counterVal[12]);
-    let midTeleCubes = parseInt(counterVal[13]);
-    let lowTeleCubes = parseInt(counterVal[14]);
-    let highTeleCones = parseInt(counterVal[18]);
-    let midTeleCones = parseInt(counterVal[19]);
-    let lowTeleCones = parseInt(counterVal[20]);
-    //Tele Cubes & Cones Attempted
-    let highCubesTeleAttempted = parseInt(counterVal[15]);
-    let midCubesTeleAttempted = parseInt(counterVal[16]);
-    let lowCubesTeleAttempted = parseInt(counterVal[17]);
-    let highConesTeleAttempted = parseInt(counterVal[21]);
-    let midConesTeleAttempted = parseInt(counterVal[22]);
-    let lowConesTeleAttempted = parseInt(counterVal[23]);
-
-
-    //OVERALL ATTEMPTED----------------------------------------------------------------------------------
-    let highCubesAttempted = highCubesAutoAttempted + highCubesTeleAttempted + highTeleCubes + highAutoCubes;
-    let highConesAttempted = highConesAutoAttempted + highConesTeleAttempted + highTeleCones + highAutoCones;
-    let midCubesAttempted = midCubesAutoAttempted + midCubesTeleAttempted + midTeleCubes + midAutoCubes;
-    let midConesAttempted = midConesAutoAttempted + midConesTeleAttempted + midTeleCones + midAutoCones;
-    let lowCubesAttempted = lowCubesAutoAttempted + lowCubesTeleAttempted + lowTeleCubes + lowAutoCubes;
-    let lowConesAttempted = lowConesAutoAttempted + lowConesTeleAttempted + lowTeleCones + lowTeleCones;
-
-    let cubesAttempted = parseInt(counterVal[3]) + parseInt(counterVal[4]) + parseInt(counterVal[5]) + parseInt(counterVal[15]) + parseInt(counterVal[16]) + parseInt(counterVal[17]);
-    let conesAttempted = parseInt(counterVal[9]) + parseInt(counterVal[10]) + parseInt(counterVal[11]) + parseInt(counterVal[21]) + parseInt(counterVal[22]) + parseInt(counterVal[23]);
-
-    // INITIALIZE SCORE--------------------------------------------------------------------------------------------
-    let chargeStationPts = 0;
-    let endGamePts = 0;
-    let mobilityPts = 0;
-
-
-    /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
-
-    let mobility = booleans[0]; //this.state.mobilityVal;
-
-    let incompleteForm = false;
-    let incompletePriorities = true;
-
-    let override = this.state.override;
-
-    if (endGameUsed === 'DockedEngaged') {
-      endGamePts = 10;
-    } else if (endGameUsed === "Docked") {
-      endGamePts = 6;
-    } else if (endGameUsed === 'Parked') {
-      endGamePts = 2;
-    } else {
-      endGamePts = 0;
-    }
-
-    if (endGameUsed === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nWhat charge station the robot did"
-    } else {
-      if (endGameUsed !== 'None') {
-        if (endGameUsed === 'Attemped') {
-          if (endGameStart === '') {
-            incompleteForm = true;
-            windowAlertMsg = windowAlertMsg + "\nWhat time the robot started charge station"
-          }
-        } else {
-          if (endGameStart === '') {
-            incompleteForm = true;
-            windowAlertMsg = windowAlertMsg + "\nWhat time the robot started charge station"
-          } if (endGameEnd === '') {
-            incompleteForm = true;
-            windowAlertMsg = windowAlertMsg + "\nWhat time the robot ended charge station"
-          }
-        }
-      }
-    }
-
-    if (chargeStationAuto === 'DockedEngaged') {
-      chargeStationPts = 12;
-    } else if (chargeStationAuto === "Docked") {
-      chargeStationPts = 8;
-    } else {
-      chargeStationPts = 0;
-    }
-
-    if (chargeStationAuto === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nWhat charge station the robot did"
-    }
-
-    if (mobility === false) {
-      mobilityPts = 0;
-    } else {
-      mobilityPts = 3;
-    }
-
-    let penFinal = [];
-    for (let i = 0; i < penalties.length; i++) {
-      let arr = penalties[i];
-      if (arr === 'Yellow Card ') {
-        penFinal[i] = PenaltyKinds.YELLOW_CARD;
-      } else if (arr === 'Red Card ') {
-        penFinal[i] = PenaltyKinds.RED_CARD;
-      } else if (arr === 'Disable ') {
-        penFinal[i] = PenaltyKinds.DISABLED
-      } else if (arr === 'Disqualifed ') {
-        penFinal[i] = PenaltyKinds.DQ
-      } else if (arr === 'Bot Broke ') {
-        penFinal[i] = PenaltyKinds.BROKEN_BOT
-      } else if (arr === 'No Show ') {
-        penFinal[i] = PenaltyKinds.NO_SHOW
-      } else {
-        penFinal[i] = PenaltyKinds.NONE;
-      }
-    }
-
-    //JASON NEEDS TO FIX THE GRAPHQL
-    let stratFinal = [];
-    for (let i = 0; i < strategies.length; i++) {
-      let strategy = strategies[i];
-      if (strategy === "Low Node ") {
-        stratFinal.push(PriorityOpts.LOW);
-      }
-      else if (strategy === "Mid Node ") {
-        stratFinal.push(PriorityOpts.MID);
-      }
-      else if (strategy === "High Node ") {
-        stratFinal.push("Upper");
-      }
-      else if (strategy === "Cubes ") {
-        stratFinal.push(PriorityOpts.CUBES);
-      }
-      else if (strategy === "Cones ") {
-        stratFinal.push(PriorityOpts.CONES);
-      }
-      else if (strategy === "Charge Station ") {
-        stratFinal.push(PriorityOpts.CHARGESTATION);
-      }
-      else if (strategy === "Single Substation ") {
-        stratFinal.push(PriorityOpts.SINGLE_SUBSTATION);
-      }
-      else if (strategy === "Double Substation ") {
-        stratFinal.push(PriorityOpts.DOUBLE_STATION);
-      }
-      else if (strategy === "Defense ") {
-        stratFinal.push(PriorityOpts.DEFENSE);
-      }
-    }
-
-    let rankFinal = [];
-    for (let i = 0; i < rankingState.length; i++) {
-      let rankOp = rankingState[i];
-      if (rankOp === "Team Won ") {
-        rankFinal.push(RankingPtsOpts.WIN);
-      }
-      else if (rankOp === "Team Tied ") {
-        rankFinal.push(RankingPtsOpts.TIE);
-      }
-      else if (rankOp === "Team Lost ") {
-        rankFinal.push(RankingPtsOpts.LOSS);
-      }
-      else if (rankOp === "Sustainability ") {
-        rankFinal.push(RankingPtsOpts.SUSTAINABILITY_BONUS);
-      }
-      else if (rankOp === "Activation ") {
-        rankFinal.push(RankingPtsOpts.ACTIVATION_BONUS);
-      }
-    }
-
-    function setChargeStationType(chargeStation) {
-      if (chargeStation === 'None') {
-        return ChargeStationType.NONE;
-      } else if (chargeStation === 'DockedEngaged') {
-        return ChargeStationType.DOCKED_ENGAGED;
-      } else if (chargeStation === 'Docked') {
-        return ChargeStationType.DOCKED;
-      } else if (chargeStation === 'Parked') {
-        return ChargeStationType.Parked;
-      } else if (chargeStation === 'Attempted') {
-        return ChargeStationType.ATTEMPTED;
-      }
-    }
-
-    let chargeTeleFinal = setChargeStationType(endGameUsed);
-    let chargeAutoFinal = setChargeStationType(chargeStationAuto);
-    //endGameUsed
-    //chargeStationAuto
-    /*
-    <option value='None'>None</option>
-    <option value='DockedEngaged'>Docked & Engaged</option>
-    <option value='Docked'>Docked & Not Enaged</option>
-    <option value='Parked'>Parked</option>
-    <option value='Attempted'>Attempted</option>
-    */
-
-
-    //POINT CALCULATIONS
-
-    let highGridPoints = 6 * (highAutoCones + highAutoCubes) + 5 * (highTeleCones + highTeleCubes);
-    let midGridPoints = 4 * (midAutoCones + midAutoCubes) + 3 * (midTeleCones + midTeleCubes);
-    let lowGridPoints = 3 * (lowAutoCones + lowAutoCubes) + 2 * (lowTeleCones + lowTeleCubes);
-    let autoPoints = 6 * (highAutoCones + highAutoCubes) + 4 * (midAutoCones + midAutoCubes) + 3 * (lowAutoCones + lowAutoCubes);
-    let telePoints = 5 * (highTeleCones + highTeleCubes) + 3 * (midTeleCones + midTeleCubes) + 2 * (lowTeleCones + lowTeleCubes);
-    let points = chargeStationPts + endGamePts + mobilityPts + autoPoints + telePoints;
-    let cubePts = (highAutoCubes * 6) + (highTeleCubes * 5) + (midAutoCubes * 4) + (midTeleCubes * 3) + (lowAutoCubes * 3) + (lowTeleCubes * 2);
-    let conePts = (highAutoCones * 6) + (highTeleCones * 5) + (midAutoCones * 4) + (midTeleCones * 3) + (lowAutoCones * 3) + (lowTeleCones * 2);
-
-    let cubesHighTeleAutoAccuracy = 100 * ((highAutoCubes + highTeleCubes) / (highCubesAttempted + highAutoCubes + highTeleCubes));
-    let conesHighTeleAutoAccuracy = 100 * ((highAutoCones + highTeleCones) / (highConesAttempted + highAutoCones + highTeleCones));
-    //let highAccuracy = 100 * ((conesHighTeleAutoAccuracy + cubesHighTeleAutoAccuracy) / (highCubesAttempted + highConesAttempted));
-
-    let cubesMidTeleAutoAccuracy = 100 * ((midAutoCubes + midTeleCubes) / (midCubesAttempted + midAutoCubes + midTeleCubes));
-    let conesMidTeleAutoAccuracy = 100 * ((midAutoCones + midTeleCones) / (midConesAttempted + midAutoCones + midTeleCones));
-    //let midAccuracy = 100 * ((cubesMidTeleAutoAccuracy + conesMidTeleAutoAccuracy) / (midCubesAttempted + midConesAttempted));
-
-    let cubesLowTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes) / (lowCubesAttempted + lowAutoCubes + lowTeleCubes));
-    let conesLowTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones) / (lowConesAttempted + lowAutoCones + lowTeleCones));
-    //let lowAccuracy = 100 * ((cubesLowTeleAutoAccuracy + conesLowTeleAutoAccuracy) / (lowCubesAttempted + lowConesAttempted));
-
-    let totalGridPts = highGridPoints + midGridPoints + lowGridPoints;
-
-    let cubesTeleAutoAccuracy = 100 * ((lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes) / (cubesAttempted + lowAutoCubes + lowTeleCubes + midAutoCubes + midTeleCubes + highAutoCubes + highTeleCubes));
-    let conesTeleAutoAccuracy = 100 * ((lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones) / (conesAttempted + lowAutoCones + lowTeleCones + midAutoCones + midTeleCones + highAutoCones + highTeleCones));
-    //*/
-
-    this.setState({
-      totalPoints: points,
-      totalGrid: totalGridPts,
-      cubesAccuracy: cubesTeleAutoAccuracy,
-      conesAccuracy: conesTeleAutoAccuracy,
-      cubesPts: cubePts,
-      conesPts: conePts
-
-    })
-
-    if (autoPlacement === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nPosition of robot during Auto"
-    }
-
-    if (driveStrength === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nWhat strength is the robot drive"
-    }
-
-    if (driveSpeed === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nHow fast is the robot drive"
-    }
-
-    if (this.state.matchType === 'qf' || this.state.matchType === 'sf' || this.state.matchType === 'f') {
-      if (this.state.elmNum === '') {
-        incompleteForm = true;
-        windowAlertMsg = windowAlertMsg + "\nFinals Number";
-      }
-    } else if (this.state.matchType === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Quarterfinals, Semifinals, Finals)"
-    }
-
-    if (this.state.matchNumber === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nMatch Number";
-    }
-
-    if (this.state.teamNumber === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nTeam Number"
-    }
-
-    strats.filter(strat => {
-      if (strat !== ' ') {
-        incompletePriorities = false;
-      }
-    })
-
-    if (incompletePriorities === true) {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nRobot priorities/strategies";
-    }
-
-    if (incompleteForm === true && override === false) {
-      window.alert(windowAlertMsg);
-    } else if (incompleteForm === false || override === true) {
-      //console.log(penalties);
-      const matchEntry = buildMatchEntry(this.regional, teamNum, matchKey)
-      //matchEntry.name=''
-      //matchEntry.description=''
-
-      //AUTONOMOUS MATCH ENTREES
-      matchEntry.Autonomous.AutonomousPlacement = autoPlacement
-
-      matchEntry.Autonomous.Attempted.Cones.Upper = highConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cones.Mid = midConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cones.Lower = lowConesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cubes.Upper = highCubesAutoAttempted //DEBUGGING 
-      matchEntry.Autonomous.Attempted.Cubes.Mid = midCubesAutoAttempted //DEBUGGING
-      matchEntry.Autonomous.Attempted.Cubes.Lower = lowCubesAutoAttempted //DEBUGGING
-
-      matchEntry.Autonomous.Scored.Cones.Upper = highAutoCones
-      matchEntry.Autonomous.Scored.Cones.Mid = midAutoCones
-      matchEntry.Autonomous.Scored.Cones.Lower = lowAutoCones
-      matchEntry.Autonomous.Scored.Cubes.Upper = highAutoCubes
-      matchEntry.Autonomous.Scored.Cubes.Mid = midAutoCubes
-      matchEntry.Autonomous.Scored.Cubes.Lower = lowAutoCubes
-
-      matchEntry.Autonomous.LeftCommunity = mobility
-      matchEntry.Autonomous.ChargeStation = chargeAutoFinal
-
-      //TELEOP MATCH ENTREES
-      matchEntry.Teleop.Scored.Cones.Upper = highTeleCones
-      matchEntry.Teleop.Scored.Cones.Mid = midTeleCones
-      matchEntry.Teleop.Scored.Cones.Lower = lowTeleCones
-      matchEntry.Teleop.Scored.Cubes.Upper = highTeleCubes
-      matchEntry.Teleop.Scored.Cubes.Mid = midTeleCubes
-      matchEntry.Teleop.Scored.Cubes.Lower = lowTeleCubes
-
-      matchEntry.Teleop.Attempted.Cones.Upper = highConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cones.Mid = midConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cones.Lower = lowConesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Upper = highCubesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Mid = midCubesTeleAttempted //DEBUGGING
-      matchEntry.Teleop.Attempted.Cubes.Lower = lowCubesTeleAttempted //DEBUGGING
-
-      //matchEntry.Teleop.ChargeStation=chargeTeleFinal
-      matchEntry.Teleop.EndGame = chargeTeleFinal
-      matchEntry.Teleop.EndGameTally.Start = endGameStart
-      matchEntry.Teleop.EndGameTally.End = endGameEnd
-
-      //SCORING TOTAL
-      matchEntry.Teleop.ScoringTotal.Total = points
-      matchEntry.Teleop.ScoringTotal.GridPoints = totalGridPts
-
-      matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.High = highGridPoints
-      matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Mid = midGridPoints
-      matchEntry.Teleop.ScoringTotal.GridScoringByPlacement.Low = lowGridPoints
-
-      matchEntry.Teleop.ScoringTotal.Cones = conePts
-      matchEntry.Teleop.ScoringTotal.Cubes = cubePts
-
-      //DRIVE
-      matchEntry.Teleop.DriveStrength = driveStrength
-      matchEntry.Teleop.DriveSpeed = driveSpeed
-
-      matchEntry.Teleop.SmartPlacement = smartPlacement
-
-      //CONE ACCURACIES
-      matchEntry.Teleop.ConesAccuracy.High = conesHighTeleAutoAccuracy
-      matchEntry.Teleop.ConesAccuracy.Mid = conesMidTeleAutoAccuracy
-      matchEntry.Teleop.ConesAccuracy.Low = conesLowTeleAutoAccuracy
-      matchEntry.Teleop.ConesAccuracy.Overall = conesTeleAutoAccuracy
-
-      //CUBE ACCURACIES
-      matchEntry.Teleop.CubesAccuracy.High = cubesHighTeleAutoAccuracy
-      matchEntry.Teleop.CubesAccuracy.Mid = cubesMidTeleAutoAccuracy
-      matchEntry.Teleop.CubesAccuracy.Low = cubesLowTeleAutoAccuracy
-      matchEntry.Teleop.CubesAccuracy.Overall = cubesTeleAutoAccuracy
-
-      //TOTAL ACCURACIES
-
-      //MATCH DETAILS
-      matchEntry.RankingPts = rankFinal;
-
-      matchEntry.Comments = comments
-
-      matchEntry.Penalties.Fouls = fouls
-      matchEntry.Penalties.Tech = techFouls
-      matchEntry.Penalties.Penalties = penFinal;
-
-      // console.log(stratFinal);
-      // console.log(PriorityOpts.HIGH)
-      // console.log(PriorityOpts.SINGLE_SUBSTATION)
-      // console.log(PriorityOpts.DOUBLE_STATION_SHUTE)
-      matchEntry.Priorities = stratFinal;
-
-      if (this.matchData === undefined) {
-
-        await apiCreateTeamMatchEntry(this.regional, teamNum, matchKey);
-      }
-
-      await apiUpdateTeamMatch(this.regional, teamNum, matchKey, matchEntry);
-
-      /*await *///
-      //console.log(this.state);
-
-      // console.log(this.regional,teamNum,matchKey,matchEntry)
-    }
-  }
-
-
-  //-------------------------------------------------------------------------------------------------------------//
 
   // rendering physical and visible website components
   render() {
     return (
-      <div>
-        <h2> CHARGED UP FORM  <img alt="" src={'./images/BLUETHUNDERLOGO_WHITE.png'} width="50px" height="50px"></img> </h2>
-        <button onClick={this.logState}> Check State </button>
-        {this.makeMatchDropDown()}
-        <button onClick={this.getMatchTeams}>GET MATCH TEAM</button>
+      <div style={{ align: 'center' }} className="form-contain">
+        {/* TITLE */}
         <br></br>
-        {this.makeTeamDropdown()}
+        <img alt="" style={{ width: '360px' }} src={'./images/FORMHEADER.jpg'}></img>
         <br></br>
-        <h3>AUTONOMOUS:</h3>
-        <img alt="" src={'./images/auto placement.jpg'} width="250px" height="260px"></img>
-        {this.makeDropDownBox("Auto Placement: ", [1, 2, 3, 4, 5, 6], 0)}
-        <br></br>
-        <p>🟪Cubes Scored</p>
-        {this.makeCounterBox("High Cubes Made: ", 0)}
-        {this.makeCounterBox("Mid Cubes Made:  ", 1)}
-        {this.makeCounterBox("Low Cubes Made:  ", 2)}
-        <p>🟪Cubes Attempted</p>
-        {this.makeCounterBox("High Cubes Attempted: ", 3)}
-        {this.makeCounterBox("Mid Cubes Attempted: ", 4)}
-        {this.makeCounterBox("Low Cubes Attempted: ", 5)}
-        <p>🔺Cones Scored</p>
-        {this.makeCounterBox("High Cones Made: ", 6)}
-        {this.makeCounterBox("Mid Cones Made: ", 7)}
-        {this.makeCounterBox("Low Cones Made: ", 8)}
-        <p>🔺Cones Attempted</p>
-        {this.makeCounterBox("High Cones Attempted: ", 9)}
-        {this.makeCounterBox("Mid Cones Attempted: ", 10)}
-        {this.makeCounterBox("Low Cones Attempted: ", 11)}
-        <br></br>
-        {this.makeBooleanCheckBox("Mobility ", 0)}{/*this.makeMobilityBox("Mobility ")*/}
-        <br></br>
-        {this.makeChargeStationAuto()}
-        <br></br>
-        <h3>TELE-OP:</h3>
-        <p>🟪Cubes Scored</p>
-        {this.makeCounterBox("High Cubes Made: ", 12)}
-        {this.makeCounterBox("Mid Cubes Made: ", 13)}
-        {this.makeCounterBox("Low Cubes Made: ", 14)}
-        <p>🟪Cubes Attempted</p>
-        {this.makeCounterBox("High Cubes Attempted: ", 15)}
-        {this.makeCounterBox("Mid Cubes Attempted: ", 16)}
-        {this.makeCounterBox("Low Cubes Attempted: ", 17)}
-        <p>🔺Cones Scored</p>
-        {this.makeCounterBox("High Cones Made: ", 18)}
-        {this.makeCounterBox("Mid Cones Made: ", 19)}
-        {this.makeCounterBox("Low Cones Made: ", 20)}
-        <p>🔺Cones Attempted</p>
-        {this.makeCounterBox("High Cones Attempted: ", 21)}
-        {this.makeCounterBox("Mid Cones Attempted: ", 22)}
-        {this.makeCounterBox("Low Cones Attempted: ", 23)}
-        <br></br>
-        {/*this.makeChargeStationTimer("Charge Station Timer: ")*/}
-        {this.makeEndGameDropDown()}
-        {this.makeEndGameStartEndBox()}
-        <br></br>
-        {this.makeBooleanCheckBox("Smart Placement (creates links) ", 1)}{/*this.makeSmartPlacementBox("Smart Placement ")*/}
-        <br></br>
-        {this.makeDropDownBox("Drive Strength: ", ["Weak", "Normal", "Strong"], 1)}
-        {this.makeDropDownBox("Drive Speed: ", ["Slow", "Normal", "Fast"], 2)}
-        <br></br>
-        <h3>PENALTIES:</h3>
-        {this.makeCounterBox("Fouls: ", 24)}
-        {this.makeCounterBox("Tech Fouls: ", 25)}
-        {this.makePenaltyBox("Yellow Card ", 0)}
-        {this.makePenaltyBox("Red Card ", 1)}
-        {this.makePenaltyBox("Disable ", 2)}
-        {this.makePenaltyBox("Disqualifed ", 3)}
-        {this.makePenaltyBox("Bot Broke ", 4)}
-        {this.makePenaltyBox("No Show ", 5)}
-        <br></br>
-        <h3>RANKING POINTS:</h3>
-        {this.makeWhoWonBox("Team Won ", 0)}
-        {this.makeWhoWonBox("Team Tied ", 1)}
-        {this.makeWhoWonBox("Team Lost ", 2)}
-        {this.makeBonusBox("Activation ", 1)}
-        {this.makeBonusBox("Sustainability ", 2)}
-        <Headers display={this.state.rankingPts} />
-        <br></br>
-        <h3>📝STRATEGY & PRIORITIES:</h3>
-        {this.makeStrategyBox("Low Node ", 0)}
-        {this.makeStrategyBox("Mid Node ", 1)}
-        {this.makeStrategyBox("High Node ", 2)}
-        {this.makeStrategyBox("Cubes ", 3)}
-        {this.makeStrategyBox("Cones ", 4)}
-        {this.makeStrategyBox("Charge Station ", 5)}
-        {this.makeStrategyBox("Single Substation ", 6)}
-        {this.makeStrategyBox("Double Substation ", 7)}
-        {this.makeStrategyBox("Defense ", 8)}
-        <br></br>
-        <TextBox title={"💬Comments: "} commentState={this.setComment} value={this.state.comments}></TextBox>
+        {/* CHECK STATE BUTTON */}
+        <div className="match-contain">
+          <button onClick={() => console.log(this.state)} className={buttonStyles.Button}> Check State </button>
 
-        <div>
+          {/* MATCH INITIATION */}
+          {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
+          <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }} className={buttonStyles.Button}>GET MATCH TEAMS</button>
           <br></br>
-          <button onClick={(evt) => {
-            evt.preventDefault()
-            this.submitState()
-              .then(() => {
-                alert("Data succesfully submitted")
-              })
-              .catch(err => {
-                console.log(err)
-                try {
-                  alert(`Error occurred when submitting data ${err?.message}`)
-                }
-                catch(e) {
-
-                }
-              })
-          }
-          }>SUBMIT</button>
+          {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, teams: this.state.teams })}
         </div>
-        <p> ONLY CLICK IF NOTHING ELSE CAN BE FILLED! </p>
-        {this.makeOverrideBox()}
+
+        <br></br>
+
+        {/* AUTONOMOUS */}
+        <div className="auto-contain">
+          <button onClick={() => this.updateAutoDisplay()} className={buttonStyles.Button}>AUTONOMOUS</button>
+          {(() => {
+            return (this.state.autoOn ?
+              (
+                <div>
+                  <img alt="" src={'./images/auto placement.png'}></img>
+                  {makeAutoPlacementDropDownBox({ changeState: this.updateAutonomousPlacement, dropDownVal: this.state.autoPlacement }, "Auto Placement: ", [1, 2, 3, 4])}
+                  <br></br>
+                  {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Amp Scored: ")}
+                  {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Speaker Scored: ")}
+                  <br></br>
+                  {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: this.state.left }, "Leave ")}
+                  <br></br>
+                </div>
+              ) : (
+                <div></div>
+              ))
+          })()}
+        </div>
+
+
+        {/* TELEOP */}
+        <div className='tele-contain'>
+          <button onClick={() => this.updateTeleDisplay()} className={buttonStyles.Button}>TELEOP</button>
+          {(() => {
+            return (this.state.teleOn ?
+              (
+                <div>
+                  {makeCounterBox({ changeState: this.updateTeleAmpScored, counterBoxVals: this.state.teleAmpScored }, "Amp Scored: ")}
+                  {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
+                  {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
+                  <br></br>
+                  {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
+                  {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
+                  <br></br>
+                  <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
+                  {makeCounterBox({ changeState: this.updateHighNotesMade, counterBoxVals: this.state.highNotesMade }, "High Notes Made: ")}
+                  {makeCounterBox({ changeState: this.updateHighNotesMissed, counterBoxVals: this.state.highNotesMissed }, "High Notes Missed: ")}
+                  <br></br>
+                </div>
+              ) : (
+                <div></div>
+              ))
+          })()}
+        </div>
+
+        {/* ROBOT/TEAM INFO */}
+        <div className="robot-info-contain">
+          <button onClick={() => this.updateRobotDisplay()} className={buttonStyles.Button}>ROBOT INFO</button>
+          {(() => {
+            return (this.state.robotOn ?
+              (
+                <div>
+                  {this.renderRatingSliders()}
+                  {this.renderBooleanCheckboxes()}
+                  <br></br>
+                </div>
+              ) : (
+                <div></div>
+              ))
+          })()}
+        </div>
+
+        {/* PENALTIES */}
+        <div className="penalty-contain">
+          <button onClick={() => this.updatePenaltyDisplay()} className={buttonStyles.Button}>PENALTIES</button>
+          {(() => {
+            return (this.state.penaltiesOn ?
+              (
+                <div>
+                  {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ")}
+                  {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ")}
+                  <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls} />
+                  {(_ => [{ label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard }, { label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard }, { label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable }, { label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq }, { label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke }, { label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow },].
+                    map((obj, i) =>
+                      makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `))
+                  )()}
+                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke} />
+                </div>
+              ) : (
+                <div></div>
+              ))
+          })()}
+        </div>
+
+        {/* RANKING POINTS */}
+        <div className="ranking-contain">
+          <h3>RANKING POINTS:</h3>
+          <RadioButton
+            label="whoWon"
+            options={[
+              { value: "win", label: "Team Won" },
+              { value: "tie", label: "Team Tied" },
+              { value: "loss", label: "Team Lost" }
+            ]}
+            changeState={this.updateMatchResult}
+            selected={this.state.matchResult}
+
+          />
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Melody ", 0)}
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Ensemble ", 1)}
+          <Headers display={this.state.rankingPts} />
+        </div>
+
+        <br></br>
+
+        {/* SUBMISSION */}
+        <div className="submit-contain">
+          <div>
+            <button onClick={(evt) => {
+              evt.preventDefault()
+              submitState(this)
+                .then(() => {
+                  alert("Data successfully submitted")
+                })
+                .catch(err => {
+                  console.log(err)
+                  try {
+                    alert(`Error occurred when submitting data ${err?.message}`)
+                  }
+                  catch (e) {
+
+                  }
+                })
+            }} className={buttonStyles.Button} >SUBMIT</button>
+          </div>
+        </div>
         <br></br>
       </div>
     )
