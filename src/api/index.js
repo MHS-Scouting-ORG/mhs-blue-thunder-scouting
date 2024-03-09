@@ -39,7 +39,7 @@ const apiGetTeam = async function (teamNumber) {
 * Get a Team's match by the matchId, regionalId, and teamId
 */
 const apiGetTeamMatch = async function (matchId, regionalId, teamNumber) {
-    return await client.graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: teamNumber} })
+    return await client.graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: teamNumber } })
 }
 
 /*
@@ -168,7 +168,7 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
 const apiUpdateRegional = async function () {
     const { credentials } = await Auth.fetchAuthSession()
     const client = new SSMClient({ region: 'us-west-1', credentials: credentials })
-    const command =  new GetParameterCommand({
+    const command = new GetParameterCommand({
         Name: "regionalKey"
     })
     const response = await client.send(command)

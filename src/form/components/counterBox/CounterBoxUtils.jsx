@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import CounterBox from "./CounterBox";
 import { PropTypes } from "prop-types";
 

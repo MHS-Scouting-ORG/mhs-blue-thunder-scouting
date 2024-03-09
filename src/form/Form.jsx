@@ -6,7 +6,7 @@ import { makeBooleanCheckBox, makePenaltyBox, makeBonusBox } from './components/
 import { makeAutoPlacementDropDownBox, makeMatchDropDown, makeTeamDropDown } from './components/dropDownBox/DropDownUtils';
 
 // endgame utility function imports //
-import { makeEndGameMiscCheckbox, makeEndGameMiscRadio, makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
+import { makeEndGameDropDown } from './components/endGameBox/EndGameUtils';
 
 // counterbox utility function imports //
 import { makeCounterBox } from './components/counterBox/CounterBoxUtils';
@@ -198,7 +198,6 @@ class Form extends React.Component {
       telePts: m.Teleop.PointsScored.Points,
 
       // RANKING PTS //
-      // rankingState: ["", "", ""], // [ (win, tie, loss), activation, sustainability]
       rankingPts: 0,
       matchResult: m.Teleop.Endgame.MatchResult, //win, tie, loss
       bonusStatus: [
@@ -207,7 +206,6 @@ class Form extends React.Component {
       ],
 
       // PENALTIES //
-      // penaltyVal: [' ', ' ', ' ', ' ', ' ', ' '], // yellow card, red card, dq, botbroke, no show
       yellowCard: m.Penalties.PenaltiesCommited.YellowCard,
       redCard: m.Penalties.PenaltiesCommited.RedCard,
       disable: m.Penalties.PenaltiesCommited.Disabled,
@@ -220,7 +218,6 @@ class Form extends React.Component {
       robotBrokenComments: m.RobotInfo.WhatBrokeDesc,
 
       // ROBOT INFO //
-      // booleans: [false, false, false, false, false, false], //mobility, hangsFaster, noteInTrap, isFaster, clearsStage, countersDefense
       ampRating: m.RobotInfo.AmpRating,
       speakerRating: m.RobotInfo.SpeakerRating,
       trapRating: m.RobotInfo.TrapRating,
@@ -239,7 +236,7 @@ class Form extends React.Component {
     this.setState({ [prop]: val })
   }
 
-  updateMatchData (match) {
+  updateMatchData(match) {
     this.setState({ matchData: match, teams: match.alliances.blue.team_keys.concat(match.alliances.red.team_keys) });
   }
 
@@ -253,7 +250,7 @@ class Form extends React.Component {
   }
 
   updateLeftStatus(value) {
-    this.setState( {left: value} )
+    this.setState({ left: value })
   }
 
   // SCORING //
@@ -284,11 +281,11 @@ class Form extends React.Component {
   }
 
   updateHighNotesMade(val) {
-    this.setState({highNotesMade: val})
+    this.setState({ highNotesMade: val })
   }
 
   updateHighNotesMissed(val) {
-    this.setState({highNotesMissed: val})
+    this.setState({ highNotesMissed: val })
   }
 
   updateEndGameVal(val) {
@@ -296,11 +293,11 @@ class Form extends React.Component {
   }
 
   updateStagePosition(val) {
-    this.setState({ stagePosition: val})
+    this.setState({ stagePosition: val })
   }
 
   updateNoteInTrap(val) {
-    this.setState({noteInTrap: val})
+    this.setState({ noteInTrap: val })
   }
 
   // RANKING PTS //
@@ -317,11 +314,11 @@ class Form extends React.Component {
     }
 
     this.setState({ rankingPts })
-    this.setState({ bonusStatus: [false,false]})
+    this.setState({ bonusStatus: [false, false] })
   }
 
   updateMatchResult(val) {
-    this.setState({matchResult: val})
+    this.setState({ matchResult: val })
     this.updateRankingPoints(val)
   }
 
@@ -332,10 +329,10 @@ class Form extends React.Component {
     this.setState({ bonusStatus })
 
     let rankingPts = this.state.rankingPts
-    if(!bonusStatus[i]){
+    if (!bonusStatus[i]) {
       rankingPts--;
     }
-    else{
+    else {
       rankingPts++;
     }
     this.setState({ rankingPts })
@@ -351,40 +348,40 @@ class Form extends React.Component {
 
   updateYellowCard(event) {
     let checked = event.target.checked
-    this.setState({yellowCard: checked})
+    this.setState({ yellowCard: checked })
   }
 
   updateRedCard(event) {
     let checked = event.target.checked
-    this.setState({redCard: checked})
+    this.setState({ redCard: checked })
   }
 
   updateDisable(event) {
     let checked = event.target.checked
-    this.setState({disable: checked})
+    this.setState({ disable: checked })
   }
 
   updateDQ(event) {
     let checked = event.target.checked
-    this.setState({dq: checked})
+    this.setState({ dq: checked })
   }
 
   updateBotBroke(event) {
     let checked = event.target.checked
-    this.setState({botBroke: checked})
+    this.setState({ botBroke: checked })
   }
 
   updateNoShow(event) {
     let checked = event.target.checked
-    this.setState({noShow: checked})
+    this.setState({ noShow: checked })
   }
 
   updateFoulCount(val) {
-    this.setState({fouls: val})
+    this.setState({ fouls: val })
   }
 
   updateTechFoulCount(val) {
-    this.setState({techFouls: val})
+    this.setState({ techFouls: val })
   }
 
   updateFoulComments(comment) {
@@ -392,7 +389,7 @@ class Form extends React.Component {
   }
 
   updateRobotBrokenComments(comment) {
-    this.setState({ robotBrokenComments: comment})
+    this.setState({ robotBrokenComments: comment })
   }
 
   // ROBOT INFO //
@@ -403,39 +400,39 @@ class Form extends React.Component {
   }
 
   updateAmpRating(val) {
-    this.setState({ampRating: val})
+    this.setState({ ampRating: val })
   }
 
   updateSpeakerRating(val) {
-    this.setState({speakerRating: val})
+    this.setState({ speakerRating: val })
   }
 
   updateTrapRating(val) {
-    this.setState({trapRating: val})
+    this.setState({ trapRating: val })
   }
 
   updateHangRating(val) {
-    this.setState({hangRating: val})
+    this.setState({ hangRating: val })
   }
 
   updateLineUpSpeed(val) {
-    this.setState({lineUpSpeed: val})
+    this.setState({ lineUpSpeed: val })
   }
 
   updateRobotSpeed(val) {
-    this.setState({robotSpeed: val})
+    this.setState({ robotSpeed: val })
   }
 
   updateClearsStage(val) {
-    this.setState({clearsStage: val})
+    this.setState({ clearsStage: val })
   }
 
   updateCountersDefense(val) {
-    this.setState({countersDefense: val})
+    this.setState({ countersDefense: val })
   }
 
   updateCanDefend(val) {
-    this.setState({canDefend: val})
+    this.setState({ canDefend: val })
   }
 
   updateRatingSlider(i, value) {
@@ -445,49 +442,49 @@ class Form extends React.Component {
   }
 
   updateIntakeRating(val) {
-    this.setState({intakeRating: val})
+    this.setState({ intakeRating: val })
   }
 
   renderRatingSliders() {
-    return(
+    return (
       <>
-        {makeRatingSlider({changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating}, "Amp: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating}, "Speaker: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating}, "Trap: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating}, "Hang: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
-        {makeRatingSlider({changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed}, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
+        {makeRatingSlider({ changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating }, "Amp: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating }, "Speaker: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating }, "Trap: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating }, "Hang: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating }, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed }, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
+        {makeRatingSlider({ changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed }, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
       </>
     )
   }
 
   renderBooleanCheckboxes() {
-    return(
+    return (
       <>
-      {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Goes Under Stage ")}
-      {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
-      {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
+        {makeBooleanCheckBox({ changeState: this.updateClearsStage, booleans: this.state.clearsStage }, "Goes Under Stage ")}
+        {makeBooleanCheckBox({ changeState: this.updateCountersDefense, booleans: this.state.countersDefense }, "Counters/Gets Around Defense ")}
+        {makeBooleanCheckBox({ changeState: this.updateCanDefend, booleans: this.state.canDefend }, "Can Defend ")}
       </>
     )
 
   }
 
   // FORM COMPONENT DISPLAY ON/OFF //
-  updateAutoDisplay () {
-    this.setState({ autoOn: !this.state.autoOn})
+  updateAutoDisplay() {
+    this.setState({ autoOn: !this.state.autoOn })
   }
 
-  updateTeleDisplay () {
-    this.setState({ teleOn: !this.state.teleOn})
+  updateTeleDisplay() {
+    this.setState({ teleOn: !this.state.teleOn })
   }
 
-  updateRobotDisplay () {
-    this.setState({ robotOn: !this.state.robotOn})
+  updateRobotDisplay() {
+    this.setState({ robotOn: !this.state.robotOn })
   }
 
-  updatePenaltyDisplay () {
-    this.setState({ penaltiesOn: !this.state.penaltiesOn})
+  updatePenaltyDisplay() {
+    this.setState({ penaltiesOn: !this.state.penaltiesOn })
   }
 
   updatePoints(totalPts, autoPts, telePts) {
@@ -497,10 +494,10 @@ class Form extends React.Component {
   // rendering physical and visible website components
   render() {
     return (
-      <div style={{align: 'center'}} className="form-contain">
+      <div style={{ align: 'center' }} className="form-contain">
         {/* TITLE */}
         <br></br>
-        <img alt="" style={{width: '360px'}} src={'./images/FORMHEADER.jpg'}></img>
+        <img alt="" style={{ width: '360px' }} src={'./images/FORMHEADER.jpg'}></img>
         <br></br>
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
@@ -550,8 +547,6 @@ class Form extends React.Component {
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>
                   {makeEndGameDropDown({ changeState: this.updateEndGameVal, endGameVal: this.state.endGameVal })}
-                  {/* {makeEndGameMiscCheckbox({changeState: this.updateHangRating, endGameVal: this.state.endGameVal, booleans: this.state.hangsFaster }, "Hangs Faster Than Us")} */}
-                  {/* {makeEndGameMiscRadio({changeState: this.updateStagePosition, endGameVal: this.state.endGameVal, stagePosition: this.state.stagePosition }, "Stage Position: ")} */}
                   {makeBooleanCheckBox({ changeState: this.updateNoteInTrap, booleans: this.state.noteInTrap }, "Trap Scored ")}
                   <br></br>
                   <p>USE ONLY IF HUMAN PLAYER IS ON AMP</p>
@@ -591,12 +586,12 @@ class Form extends React.Component {
                 <div>
                   {makeCounterBox({ changeState: this.updateFoulCount, counterBoxVals: this.state.fouls }, "Fouls: ")}
                   {makeCounterBox({ changeState: this.updateTechFoulCount, counterBoxVals: this.state.techFouls }, "Tech Fouls: ")}
-                  <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls}/>
-                  {(_ => [{label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard}, {label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard}, {label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable}, {label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq}, {label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke}, {label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow},].
+                  <TextBox changeState={this.updateFoulComments} title="Foul Descriptions:" description="Provide specifics on fouls commited (be brief)." value={this.state.foulComments} displayOn={this.state.fouls || this.state.techFouls} />
+                  {(_ => [{ label: "Yellow Card", updatePenalty: this.updateYellowCard, penaltyVal: this.state.yellowCard }, { label: "Red Card", updatePenalty: this.updateRedCard, penaltyVal: this.state.redCard }, { label: "Disable", updatePenalty: this.updateDisable, penaltyVal: this.state.disable }, { label: "Disqualified", updatePenalty: this.updateDQ, penaltyVal: this.state.dq }, { label: "Bot Broke", updatePenalty: this.updateBotBroke, penaltyVal: this.state.botBroke }, { label: "No Show", updatePenalty: this.updateNoShow, penaltyVal: this.state.noShow },].
                     map((obj, i) =>
                       makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `))
                   )()}
-                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke}/>
+                  <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke} />
                 </div>
               ) : (
                 <div></div>

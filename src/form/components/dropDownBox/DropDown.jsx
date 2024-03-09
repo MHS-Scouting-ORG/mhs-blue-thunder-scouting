@@ -4,7 +4,7 @@ import { PropTypes } from 'prop-types';
 
 function DropDown(props) {
     let choices = ['']
-    if(Array.isArray(props.choices)) {
+    if (Array.isArray(props.choices)) {
         choices = choices.concat([...props.choices]);
     }
 
@@ -26,12 +26,12 @@ function DropDown(props) {
     return (
         <div>
             <label>{props.title}</label>
-            <select onChange={({ target : { value } }) => {
+            <select onChange={({ target: { value } }) => {
                 dropDownChanged(value)
             }} value={props.value}>
-                {choices.map((choice) => 
-                    typeof(choice) !== 'object' ?
-                    <option key={choice}>{choice}</option> : <option value={choice.value} key={choice.value}>{choice.label}</option> )}
+                {choices.map((choice) =>
+                    typeof (choice) !== 'object' ?
+                        <option key={choice}>{choice}</option> : <option value={choice.value} key={choice.value}>{choice.label}</option>)}
             </select>
         </div>
     )

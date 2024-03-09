@@ -18,7 +18,6 @@ import { PropTypes } from 'prop-types';
 export function makeAutoPlacementDropDownBox(props, title, option) {
   let placement = props.autoPlacementVal;
 
-//
   return (
     <div>
       <DropDown
@@ -54,7 +53,7 @@ export function makeMatchDropDown(props) {
       return (
         <input value={props.elmNum} onChange={({ target: { value } }) => {
           props.changeState(value, 'elmNum')
-        }}/>
+        }} />
       )
     }
   }

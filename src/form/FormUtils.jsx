@@ -143,7 +143,7 @@ export async function submitState(props) {
 
   //POINT CALCULATIONS
 
-  autoPts =  5 * autoSpeakerScored + 2 * autoAmpScored
+  autoPts = 5 * autoSpeakerScored + 2 * autoAmpScored
   telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
 
   totalSpeakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored

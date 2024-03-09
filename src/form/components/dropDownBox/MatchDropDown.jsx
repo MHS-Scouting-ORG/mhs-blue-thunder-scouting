@@ -7,9 +7,9 @@ function MatchDropDown(props) {
             <DropDown
                 title="Match Type"
                 choices={[
-                    { value: "q", label: "Qualification" }, 
-                    { value: "qf", label: "QuarterFinal" }, 
-                    { value: "sf", label: "SemiFinal" }, 
+                    { value: "q", label: "Qualification" },
+                    { value: "qf", label: "QuarterFinal" },
+                    { value: "sf", label: "SemiFinal" },
                     { value: "f", label: "Final" }
                 ]}
                 value={props.matchTypeValue}
