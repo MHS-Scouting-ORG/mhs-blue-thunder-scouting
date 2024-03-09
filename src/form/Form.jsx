@@ -33,7 +33,7 @@ class Form extends React.Component {
 
     this.matchData = props.matchData; // OVERALL MATCH DATA
 
-    this.regional = props.regional // REGIONAL KEY
+    this.regional = apiGetRegional() // REGIONAL KEY
 
     console.log(`initializing form`)
     this.state = {
