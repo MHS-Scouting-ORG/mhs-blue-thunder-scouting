@@ -15,8 +15,10 @@ import TeamMatches from "./Tables/TeamMatches";
 import Bookmarks from "./Tables/Bookmarks";
 import RankingTable from "./Tables/RankingTable"
 
+import { apiGetRegional } from "../../api";
+
 function Summary(props) {
-  const regional = props.regional
+  const regional = apiGetRegional()
 
   const [tableData, setTableData] = useState([]); //data on table
 
