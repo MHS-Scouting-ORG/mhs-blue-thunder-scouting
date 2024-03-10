@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import { getRankingsForRegional } from "../../../api/bluealliance";
+import tableStyles from "../Table.module.css";
 
 
 function RankingTable(props) {
@@ -108,7 +109,7 @@ function RankingTable(props) {
 
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
 
-          <table style={{ width: '250px', borderCollapse: 'collapse', overflowX: 'scroll' }}{...getTableProps()}>
+          <table className={tableStyles.Table} {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>

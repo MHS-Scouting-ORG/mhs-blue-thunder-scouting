@@ -200,7 +200,7 @@ function Summary(props) {
               {<List setList={setSortBy} />}
               <br />
               {/* first row container */}
-              <div>
+              <div className={tableStyles.TableRow}>
 
                 <div>
                   <RankingTable sortData = {data} regionalEvent={regional} {...filterState} />
@@ -212,7 +212,7 @@ function Summary(props) {
 
               </div>
               {/* Second row container */}
-              <div>
+              <div className={tableStyles.TableRow}>
 
                 <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
                 <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
@@ -239,7 +239,7 @@ function Summary(props) {
 
       <div>
         {/* topRow container */}
-        <div >
+        <div className={tableStyles.TableRow}>
 
           <div>
             <RobotCapabilities {...filterState} />

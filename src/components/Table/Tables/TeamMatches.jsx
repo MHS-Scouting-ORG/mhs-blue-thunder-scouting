@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import { uniqueArr } from '../TableUtils/CalculationUtils'
-
+import tableStyles from "../Table.module.css";
 
 function TeamMatches(props) {
   const filter = props.gFilter
@@ -153,7 +153,7 @@ function TeamMatches(props) {
 
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
 
-          <table style={{ width: '250px', borderCollapse: 'collapse', overflowX: 'scroll' }}{...getTableProps()}>
+          <table className={tableStyles.Table} {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>

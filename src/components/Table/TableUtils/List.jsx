@@ -1,5 +1,6 @@
 import React from 'react';
 import Checkbox from './Checkbox'
+import tableStyling from '../Table.module.css';
 
 class List extends React.Component{
     constructor(props){
@@ -23,7 +24,7 @@ class List extends React.Component{
     }
     render(){
         return(
-            <div style={{fontSize: '18px'}}>
+            <div className={tableStyling.List}>
                 <Checkbox value = "Speaker" changeState={this.addOnColumnSort} id ={0}></Checkbox>
                 <Checkbox value = "Amp" changeState={this.addOnColumnSort} id ={1}></Checkbox>
                 <Checkbox value = "Cycles" changeState={this.addOnColumnSort} id ={2}></Checkbox>

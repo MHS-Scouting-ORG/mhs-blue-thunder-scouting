@@ -1,11 +1,11 @@
 import React from 'react';
+import tableStyles from "../Table.module.css";
 
 const GlobalFilter = ({filter, set}) => { //search bar
  return (
-    <div style= {{textAlign: 'left', fontSize: '20px'}}>
+    <div className={tableStyles.FilterDiv}>
      <span>
-         Search: {' '}
-         <input value={filter || ''} onChange={e => set(e.target.value)}/>
+         <input placeholder='Search' className={tableStyles.Filter} value={filter || ''} onChange={e => set(e.target.value)}/>
      </span>
     </div>
  );
