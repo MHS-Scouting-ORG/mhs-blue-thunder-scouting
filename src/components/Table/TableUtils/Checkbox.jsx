@@ -1,4 +1,5 @@
 import React from 'react';
+import tableStyling from '../Table.module.css';
 
 class Checkbox extends React.Component{
     constructor(props){
@@ -17,9 +18,7 @@ class Checkbox extends React.Component{
     render(){
         return (
             <div>
-                <label> {this.props.value + " "}
-                    <input type='checkbox' onChange={this.handleChange}/>
-                </label>
+                <button className={!this.state.checked ? tableStyling.CheckboxClicked : tableStyling.Checkbox} onClick={this.handleChange}> {this.props.value + " "} </button>
             </div>
         )
     }

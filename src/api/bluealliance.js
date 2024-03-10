@@ -22,7 +22,6 @@ async function getApiKey() {
   //  const user = await Auth.currentAuthenticatedUser()
   //  const credentials = await Auth.currentCredentials(user)
   const { credentials } = await Auth.fetchAuthSession()
-  console.log("credentials: ", credentials)
   const client = new SecretsManagerClient({
     region: 'us-west-1',
     credentials,
@@ -70,4 +69,8 @@ const getMatchesForRegional = async function (regional) {
   return _fetch(`/event/${regional}/matches`)
 }
 
-export { getMatchesForRegional, getOprs, getTeamInfo, getRegionals, getTeamsInRegional } 
+const getRankingsForRegional = async function (regional) {
+  return  _fetch(`/event/${regional}/rankings`)
+}
+
+export { getMatchesForRegional, getOprs, getTeamInfo, getRegionals, getTeamsInRegional, getRankingsForRegional } 
