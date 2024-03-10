@@ -9,18 +9,6 @@ import Form from './form/Form.jsx'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
 
-// const apiGetRegional = async function () {
-//   const { credentials } = await Auth.fetchAuthSession()
-//   const client = new SSMClient({ region: 'us-west-1', credentials: credentials })
-//   const command =  new GetParameterCommand({
-//       Name: "regionalKey"
-//   })
-//   const response = await client.send(command)
-//   return response.Parameter.Value
-// }
-
-const regional = await apiGetRegional()
-console.log(regional)
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,11 +16,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/table",
-        element: <MainTable regional={regional} />
+        element: <MainTable />
       },
       {
         path: "/form",
-        element: <Form regional={regional} />
+        element: <Form />
       }
     ]
   }

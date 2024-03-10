@@ -20,7 +20,6 @@ function RadioButton({ label, options, changeState, selected }) {
                     )
                 }
             })()
-
             }
         </div>
     )

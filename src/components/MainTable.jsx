@@ -13,8 +13,10 @@ import ConePtsTable from "./ConePtsTable"
 import CubeAccTable from "./CubeAccTable"
 import CubePtsTable from "./CubePtsTable"
 
+import { apiGetRegional } from "../api";
+
 function MainTable(props) {
-  const regional = props.regional
+  const regional = apiGetRegional()
 
   const [tableData,setTableData] = useState([]); //data on table
   const [teamsData,setTeamsData] = useState([]); //data of teams

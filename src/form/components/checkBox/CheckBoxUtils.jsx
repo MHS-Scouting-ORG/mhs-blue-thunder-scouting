@@ -3,7 +3,7 @@ import CheckBox from "./CheckBox";
 
 
 function factFunction(props, name, stateIndex, index) {
-  return function( { target : { checked } }) {
+  return function ({ target: { checked } }) {
     props.changeState([stateIndex, index], checked ? name : null);
   }
 }
@@ -38,7 +38,7 @@ export function makeStrategyBox(props, name, i) {
 export function makeBooleanCheckBox(props, name) {
   let bool = props.booleans;
 
-  function changeBooleanCheckBox({ target : { checked } }){
+  function changeBooleanCheckBox({ target: { checked } }) {
     props.changeState(checked)
   }
 
@@ -88,7 +88,7 @@ export function makeBonusBox(props, name, i) {
     <div>
       <CheckBox
         label={name}
-        changeState={({ target: { checked }}) => props.changeState(i, checked, name)}
+        changeState={({ target: { checked } }) => props.changeState(i, checked, name)}
         checked={bonusChecked}
       />
     </div>
@@ -104,7 +104,7 @@ export function makeBonusBox(props, name, i) {
  */
 export function makeOverrideBox(props) {
 
-  function overrideClicked({ target : { checked } }){
+  function overrideClicked({ target: { checked } }) {
     props.changeState(checked)
   }
 
