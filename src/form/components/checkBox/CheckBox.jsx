@@ -1,4 +1,5 @@
 import React from 'react';
+import checkBox from './CheckBox.module.css';
 
 function CheckBox(props) {
 
@@ -8,7 +9,7 @@ function CheckBox(props) {
 
     return (
         <div>
-            <label>{props.label + ': '}
+            <label className={checkBox.Label} >{props.label + ': '}
                 <input type="checkbox" checked={props.checked} onChange={props.changeState} />
             </label>
         </div>

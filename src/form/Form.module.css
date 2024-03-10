@@ -6,6 +6,7 @@
     margin: 7px;
     background: darkgray;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .Button:hover {

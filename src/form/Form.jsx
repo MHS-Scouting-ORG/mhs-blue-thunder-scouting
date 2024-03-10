@@ -22,8 +22,8 @@ import { getMatchTeams, submitState } from './FormUtils';
 
 import RadioButton from './components/radiobuttons/RadioButton';
 
-//button styling
-import buttonStyles from './Form.module.css';
+// styling
+import classes from './Form.module.css';
 
 import { apiGetRegional } from '../api';
 
@@ -450,7 +450,7 @@ class Form extends React.Component {
 
   renderRatingSliders() {
     return(
-      <>
+      <div> 
         {makeRatingSlider({changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating}, "Amp: ", ["None", "Bad", "Average", "Good"])}
         {makeRatingSlider({changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating}, "Speaker: ", ["None", "Bad", "Average", "Good"])}
         {makeRatingSlider({changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating}, "Trap: ", ["None", "Bad", "Average", "Good"])}
@@ -458,7 +458,7 @@ class Form extends React.Component {
         {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
         {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
         {makeRatingSlider({changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed}, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
-      </>
+        </div>
     )
   }
 
@@ -497,18 +497,18 @@ class Form extends React.Component {
   // rendering physical and visible website components
   render() {
     return (
-      <div style={{align: 'center'}} className="form-contain">
+      <div style={{textAlign: 'center'}} className="form-contain">
         {/* TITLE */}
         <br></br>
         <img alt="" style={{width: '360px'}} src={'./images/FORMHEADER.jpg'}></img>
         <br></br>
         {/* CHECK STATE BUTTON */}
         <div className="match-contain">
-          <button onClick={() => console.log(this.state)} className={buttonStyles.Button}> Check State </button>
+          <button onClick={() => console.log(this.state)} className={classes.Button}> Check State </button>
 
           {/* MATCH INITIATION */}
           {makeMatchDropDown({ ...this.state, changeState: this.updateMatchType })}
-          <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }} className={buttonStyles.Button}>GET MATCH TEAMS</button>
+          <button onClick={() => { getMatchTeams({ ...this.state, changeState: this.updateMatchData, regional: this.regional }) }} className={classes.Button}>GET MATCH TEAMS</button>
           <br></br>
           {makeTeamDropDown({ ...this.state, changeState: this.updateTeam, teams: this.state.teams })}
         </div>
@@ -517,7 +517,7 @@ class Form extends React.Component {
 
         {/* AUTONOMOUS */}
         <div className="auto-contain">
-          <button onClick={() => this.updateAutoDisplay()} className={buttonStyles.Button}>AUTONOMOUS</button>
+          <button onClick={() => this.updateAutoDisplay()} className={classes.Button}>AUTONOMOUS</button>
           {(() => {
             return (this.state.autoOn ?
               (
@@ -540,7 +540,7 @@ class Form extends React.Component {
 
         {/* TELEOP */}
         <div className='tele-contain'>
-          <button onClick={() => this.updateTeleDisplay()} className={buttonStyles.Button}>TELEOP</button>
+          <button onClick={() => this.updateTeleDisplay()} className={classes.Button}>TELEOP</button>
           {(() => {
             return (this.state.teleOn ?
               (
@@ -567,7 +567,7 @@ class Form extends React.Component {
 
         {/* ROBOT/TEAM INFO */}
         <div className="robot-info-contain">
-          <button onClick={() => this.updateRobotDisplay()} className={buttonStyles.Button}>ROBOT INFO</button>
+          <button onClick={() => this.updateRobotDisplay()} className={classes.Button}>ROBOT INFO</button>
           {(() => {
             return (this.state.robotOn ?
               (
@@ -584,7 +584,7 @@ class Form extends React.Component {
 
         {/* PENALTIES */}
         <div className="penalty-contain">
-          <button onClick={() => this.updatePenaltyDisplay()} className={buttonStyles.Button}>PENALTIES</button>
+          <button onClick={() => this.updatePenaltyDisplay()} className={classes.Button}>PENALTIES</button>
           {(() => {
             return (this.state.penaltiesOn ?
               (
@@ -610,16 +610,16 @@ class Form extends React.Component {
           <RadioButton
             label="whoWon"
             options={[
-              { value: "win", label: "Team Won" },
-              { value: "tie", label: "Team Tied" },
+              { value: "win", label: "Team Won | " },
+              { value: "tie", label: "Team Tied | " },
               { value: "loss", label: "Team Lost" }
             ]}
             changeState={this.updateMatchResult}
             selected={this.state.matchResult}
 
           />
-          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Melody ", 0)}
-          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Ensemble ", 1)}
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Melody", 0)}
+          {makeBonusBox({ changeState: this.updateBonus, bonusStatus: this.state.bonusStatus, rankingPoints: this.state.rankingPts }, "Ensemble", 1)}
           <Headers display={this.state.rankingPts} />
         </div>
 
@@ -643,7 +643,7 @@ class Form extends React.Component {
 
                   }
                 })
-            }} className={buttonStyles.Button} >SUBMIT</button>
+            }} className={classes.Button} >SUBMIT</button>
           </div>
         </div>
         <br></br>

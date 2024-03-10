@@ -1,6 +1,7 @@
 import React from "react";
 // import * as sliderOne from '../../../
 import { PropTypes } from 'prop-types';
+import slide from './Slider.module.css';
 
 function RatingSlider(props) {
 
@@ -12,9 +13,9 @@ function RatingSlider(props) {
         <div>
             <datalist id="markers">{makeMarkers()}</datalist>
 
-            <label>{props.label}</label>
+            <label className={slide.Slider} >{props.label}</label>
             <input type="range" name="foo" min="0" max={props.markerNames.length - 1} defaultValue="0" list="markers" style={{
-                width: '100px',
+                textAlign: 'left',
                 margin: '0'
             }} onChange={(e) => { props.changeRatingSlider(e.target.value) }}></input>
             <p>{props.state === '' ? props.markerNames[0] : props.state}</p>

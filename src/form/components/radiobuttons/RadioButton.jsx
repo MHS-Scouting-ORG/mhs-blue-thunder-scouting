@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import radioStyles from './RadioButton.module.css';
 
 function RadioButton({ label, options, changeState, selected }) {
     return (
@@ -9,7 +10,7 @@ function RadioButton({ label, options, changeState, selected }) {
                     return options.map((option) => {
                         return (
                             <label key={option.value}>
-                                <input type="radio" name={label + "-radioButton"} value={option.value} onChange={({ target: { value } }) => {
+                                <input className={radioStyles.Radio} type="radio" name={label + "-radioButton"} value={option.value} onChange={({ target: { value } }) => {
                                     changeState(value)
                                 }} checked={selected === option.value} />
                                 {option.label}

@@ -13,3 +13,38 @@
     background: darkgray;
     border-radius: 100px;
 }
+
+.LogoContainer {
+    animation-name: spin;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-delay: 0;
+    animation-timing-function: linear;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    background-color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.LogoText {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    border: none;
+    font-size: 20px;
+    border-radius: 100px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/*@keyframes spin {
+	0% {
+		rotate: y 0deg;
+	}
+	100% {
+		rotate: y 360deg;
+	}
+}*/
+
