@@ -446,16 +446,6 @@ class Form extends React.Component {
   }
 
   renderRatingSliders() {
-    return (
-      <>
-        {makeRatingSlider({ changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating }, "Amp: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({ changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating }, "Speaker: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({ changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating }, "Trap: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({ changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating }, "Hang: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({ changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating }, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({ changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed }, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
-        {makeRatingSlider({ changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed }, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
-      </>
     return(
       <div> 
         {makeRatingSlider({changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating}, "Amp: ", ["None", "Bad", "Average", "Good"])}
