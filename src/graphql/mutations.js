@@ -107,7 +107,6 @@ export const createTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -120,6 +119,7 @@ export const createTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {
@@ -201,7 +201,6 @@ export const updateTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -214,6 +213,7 @@ export const updateTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {
@@ -295,7 +295,6 @@ export const deleteTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -308,6 +307,7 @@ export const deleteTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {

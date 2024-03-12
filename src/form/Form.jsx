@@ -96,6 +96,7 @@ class Form extends React.Component {
       clearsStage: false,
       countersDefense: false,
       canDefend: false,
+      comments: ""
     }
 
     // FUNCTION BINDING //
@@ -152,6 +153,8 @@ class Form extends React.Component {
 
     this.renderRatingSliders = this.renderRatingSliders.bind(this)
     this.renderBooleanCheckboxes = this.renderBooleanCheckboxes.bind(this)
+
+    this.updateComments = this.updateComments.bind(this)
 
     //form component display on/off
     this.updateAutoDisplay = this.updateAutoDisplay.bind(this)
@@ -228,6 +231,7 @@ class Form extends React.Component {
       clearsStage: m.RobotInfo.PassesUnderStage,
       countersDefense: m.RobotInfo.CountersDefense,
       canDefend: m.RobotInfo.CanDefend,
+      comments: m.RobotInfo.Comments
     })
   }
 
@@ -445,17 +449,21 @@ class Form extends React.Component {
     this.setState({ intakeRating: val })
   }
 
+  updateComments(val) {
+    this.setState({ comments: val })
+  }
+
   renderRatingSliders() {
-    return(
-      <div> 
-        {makeRatingSlider({changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating}, "Amp: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating}, "Speaker: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating}, "Trap: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating}, "Hang: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating}, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
-        {makeRatingSlider({changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed}, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
-        {makeRatingSlider({changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed}, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
-        </div>
+    return (
+      <div>
+        {makeRatingSlider({ changeState: this.updateAmpRating, ratingSliderVals: this.state.ampRating }, "Amp: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateSpeakerRating, ratingSliderVals: this.state.speakerRating }, "Speaker: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateTrapRating, ratingSliderVals: this.state.trapRating }, "Trap: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateHangRating, ratingSliderVals: this.state.hangRating }, "Hang: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateIntakeRating, ratingSliderVals: this.state.intakeRating }, "Intake Rating: ", ["None", "Bad", "Average", "Good"])}
+        {makeRatingSlider({ changeState: this.updateLineUpSpeed, ratingSliderVals: this.state.lineUpSpeed }, "Alignment Speed: ", ["None", "Slow", "Average", "Fast"])}
+        {makeRatingSlider({ changeState: this.updateRobotSpeed, ratingSliderVals: this.state.robotSpeed }, "Robot Speed: ", ["None", "Bad", "Average", "Fast"])}
+      </div>
     )
   }
 
@@ -494,7 +502,7 @@ class Form extends React.Component {
   // rendering physical and visible website components
   render() {
     return (
-      <div style={{textAlign: 'center'}} className="form-contain">
+      <div style={{ textAlign: 'center' }} className="form-contain">
         {/* TITLE */}
         <br></br>
         <img alt="" style={{ width: '360px' }} src={'./images/FORMHEADER.jpg'}></img>
@@ -560,23 +568,6 @@ class Form extends React.Component {
           })()}
         </div>
 
-        {/* ROBOT/TEAM INFO */}
-        <div className="robot-info-contain">
-          <button onClick={() => this.updateRobotDisplay()} className={classes.Button}>ROBOT INFO</button>
-          {(() => {
-            return (this.state.robotOn ?
-              (
-                <div>
-                  {this.renderRatingSliders()}
-                  {this.renderBooleanCheckboxes()}
-                  <br></br>
-                </div>
-              ) : (
-                <div></div>
-              ))
-          })()}
-        </div>
-
         {/* PENALTIES */}
         <div className="penalty-contain">
           <button onClick={() => this.updatePenaltyDisplay()} className={classes.Button}>PENALTIES</button>
@@ -592,6 +583,24 @@ class Form extends React.Component {
                       makePenaltyBox({ changeState: obj.updatePenalty, penaltyVal: obj.penaltyVal }, `${obj.label} `))
                   )()}
                   <TextBox changeState={this.updateRobotBrokenComments} title="Robot Broken Description:" description="IF the robot broke, describe what exactly broke (you can go down to the pit and ask the team what broke)" value={this.state.robotBrokenComments} displayOn={this.state.botBroke} />
+                </div>
+              ) : (
+                <div></div>
+              ))
+          })()}
+        </div>
+
+        {/* ROBOT/TEAM INFO */}
+        <div className="robot-info-contain">
+          <button onClick={() => this.updateRobotDisplay()} className={classes.Button}>ROBOT INFO</button>
+          {(() => {
+            return (this.state.robotOn ?
+              (
+                <div>
+                  {this.renderBooleanCheckboxes()}
+                  {this.renderRatingSliders()}
+                  <TextBox changeState={this.updateComments} title="Comments:" description="[OPTIONAL]" value={this.state.comments} displayOn={true}/>
+                  <br></br>
                 </div>
               ) : (
                 <div></div>

@@ -89,6 +89,7 @@ export async function submitState(props) {
   let clearsStage = props.state.clearsStage
   let countersDefense = props.state.countersDefense
   let canDefend = props.state.canDefend
+  let comments = props.state.comments
 
   // INITIALIZE SCORE--------------------------------------------------------------------------------------------
   let autoPts = 0;
@@ -238,6 +239,7 @@ export async function submitState(props) {
     matchEntry.RobotInfo.CountersDefense = countersDefense
     matchEntry.RobotInfo.CanDefend = canDefend
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
+    matchEntry.RobotInfo.Comments = comments
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = fouls

@@ -98,7 +98,6 @@ export const getTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -111,6 +110,7 @@ export const getTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {
@@ -204,7 +204,6 @@ export const listTeamMatches = /* GraphQL */ `
           }
           __typename
         }
-        Comments
         RobotInfo {
           AmpRating
           SpeakerRating
@@ -217,6 +216,7 @@ export const listTeamMatches = /* GraphQL */ `
           CountersDefense
           CanDefend
           WhatBrokeDesc
+          Comments
           __typename
         }
         Penalties {
@@ -311,7 +311,6 @@ export const teamMatchesByTeam = /* GraphQL */ `
           }
           __typename
         }
-        Comments
         RobotInfo {
           AmpRating
           SpeakerRating
@@ -324,6 +323,7 @@ export const teamMatchesByTeam = /* GraphQL */ `
           CountersDefense
           CanDefend
           WhatBrokeDesc
+          Comments
           __typename
         }
         Penalties {
@@ -418,7 +418,6 @@ export const teamMatchesByRegional = /* GraphQL */ `
           }
           __typename
         }
-        Comments
         RobotInfo {
           AmpRating
           SpeakerRating
@@ -431,6 +430,7 @@ export const teamMatchesByRegional = /* GraphQL */ `
           CountersDefense
           CanDefend
           WhatBrokeDesc
+          Comments
           __typename
         }
         Penalties {

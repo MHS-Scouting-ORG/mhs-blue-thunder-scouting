@@ -97,7 +97,6 @@ export const onCreateTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -110,6 +109,7 @@ export const onCreateTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {
@@ -190,7 +190,6 @@ export const onUpdateTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -203,6 +202,7 @@ export const onUpdateTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {
@@ -283,7 +283,6 @@ export const onDeleteTeamMatch = /* GraphQL */ `
         }
         __typename
       }
-      Comments
       RobotInfo {
         AmpRating
         SpeakerRating
@@ -296,6 +295,7 @@ export const onDeleteTeamMatch = /* GraphQL */ `
         CountersDefense
         CanDefend
         WhatBrokeDesc
+        Comments
         __typename
       }
       Penalties {

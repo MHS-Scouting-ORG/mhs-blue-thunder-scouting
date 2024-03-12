@@ -143,6 +143,7 @@ type RobotInfoType {
   CountersDefense: Boolean
   CanDefend: Boolean
   WhatBrokeDesc: String
+  Comments: String
 }
 
 #################
@@ -169,7 +170,6 @@ type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {
   TotalPoints: Int
   Autonomous: AutonomousType!
   Teleop: TeleopType!
-  Comments: String
   RobotInfo: RobotInfoType!
   Penalties: PenaltyType
 }

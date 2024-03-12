@@ -176,7 +176,6 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
         Missed: 0
       }
     },
-    Comments: "",
     RobotInfo: {
       AmpRating: RatingOpts.NONE,
       SpeakerRating: RatingOpts.NONE,
@@ -189,6 +188,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       CountersDefense: false,
       CanDefend: false,
       WhatBrokeDesc: "",
+      Comments: ""
     },
     Penalties: {
       Fouls: 0,
