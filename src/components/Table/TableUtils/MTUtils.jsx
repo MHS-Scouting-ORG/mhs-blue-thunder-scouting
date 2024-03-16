@@ -155,7 +155,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
-        OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
+        OPR: 1, //oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ) ,
         RobotHang: (mcRobotHang === null ? '' : mcRobotHang) + ' ' + (isNaN(reliableRobotHang) ? '' : reliableRobotHang + '%'), 
