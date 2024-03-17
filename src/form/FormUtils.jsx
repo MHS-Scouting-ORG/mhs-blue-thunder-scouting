@@ -144,6 +144,10 @@ export async function submitState(props) {
 
   //POINT CALCULATIONS
 
+  if (noteInTrap) {
+    endGamePts += 3
+  }
+
   autoPts = 5 * autoSpeakerScored + 2 * autoAmpScored
   telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
 
