@@ -257,8 +257,12 @@ export async function submitState(props) {
     // console.log(StagePositionOpts)
 
     if (props.matchData === undefined) {
-      await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
+      console.log(props.regional)
+      console.log(teamNum)
+      console.log(matchKey)
+      try { apiCreateTeamMatchEntry(props.regional, teamNum, matchKey) } catch (err) {console.log(err)};
     }
+    console.log(props.matchData)
     await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
 
     //for testing

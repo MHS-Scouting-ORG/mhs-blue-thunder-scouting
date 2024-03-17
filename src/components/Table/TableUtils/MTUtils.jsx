@@ -114,7 +114,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
-      const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
+      const techs = calcAvg(teamStats.map(team => team.Penalties.Tech))
       const yellowCards = getMatchesOfPenalty(teamStats, 'YellowCard')
       const redCards = getMatchesOfPenalty(teamStats, 'RedCard')
       const brokenRobots = getMatchesOfPenalty(teamStats, 'Broken')
