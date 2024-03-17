@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import { uniqueArr } from '../TableUtils/CalculationUtils'
-import tableStyles from "../Table.module.css";
 
-function TeamMatches(props) {
+
+function CommentsSection(props) {
   const filter = props.gFilter
   const teamData = props.teamMatches;
   const bookMarkFunc = props.handleBookmark
@@ -70,7 +70,6 @@ function TeamMatches(props) {
   const data = React.useMemo(
     () => (toggle ? allTeamMatches : lastThree).map(team => {
       console.log(team)
-      console.log("TEAMPENALTIESFOULS: ", team.Penalties.Fouls)
       return {
         Team: team.Team.substring(3),
         Match: team.id.substring(team.id.indexOf("_") + 1),
@@ -79,8 +78,7 @@ function TeamMatches(props) {
         SpeakerPts: team.Autonomous.PointsScored.SpeakerPoints + team.Teleop.PointsScored.SpeakerPoints,
         AmpPts: team.Autonomous.PointsScored.Points + team.Teleop.PointsScored.AmpPoints,
         EndgamePts: team.Teleop.PointsScored.EndgamePoints,
-        FoulsM: team.Penalties.Fouls,
-        TechFoulsM: team.Penalties.Tech
+        FoulsM: team.Penalties.Fouls
       }
     }), [apiData, teamNumber, allTeamMatches, teamData, toggle]
   )
@@ -103,30 +101,26 @@ function TeamMatches(props) {
         Header: 'Speaker',
         accessor: 'SpeakerPts'
       },
-      {
-        Header: 'Amp',
-        accessor: 'AmpPts'
-      },
-      {
-        Header: 'Endgame',
-        accessor: 'EndgamePts'
-      },
-      {
-        Header: 'Fouls',
-        accessor: 'FoulsM'
-      },
-      {
-        Header: 'Tech Fouls',
-        accessor: 'TechFoulsM'
-      },
-      {
-        Header: 'Add Bookmark?',
-        Cell: ({ row }) => {
-          return <div>
-            <button onClick={() => bookMarkFunc(row, apiData)}> ADD </button>
-          </div>
-        }
-      }
+      // {
+      //   Header: 'Amp',
+      //   accessor: 'AmpPts'
+      // },
+      // {
+      //   Header: 'Endgame',
+      //   accessor: 'EndgamePts'
+      // },
+      // {
+      //   Header: 'Fouls',
+      //   accessor: 'FoulsM'
+      // },
+      // {
+      //   Header: 'Add Bookmark?',
+      //   Cell: ({ row }) => {
+      //     return <div>
+      //       <button onClick={() => bookMarkFunc(row, apiData)}> ADD </button>
+      //     </div>
+      //   }
+      // }
     ], [apiData]
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
@@ -159,7 +153,7 @@ function TeamMatches(props) {
 
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
 
-          <table className={tableStyles.Table} {...getTableProps()}>
+          <table style={{ width: '250px', borderCollapse: 'collapse', overflowX: 'scroll' }}{...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
