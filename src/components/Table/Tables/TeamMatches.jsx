@@ -75,10 +75,13 @@ function TeamMatches(props) {
         Team: team.Team.substring(3),
         Match: team.id.substring(team.id.indexOf("_") + 1),
         TotalPts: team.TotalPoints,
-        AutoPts: team.Autonomous.PointsScored.Points,
-        SpeakerPts: team.Autonomous.PointsScored.SpeakerPoints + team.Teleop.PointsScored.SpeakerPoints,
-        AmpPts: team.Autonomous.PointsScored.Points + team.Teleop.PointsScored.AmpPoints,
-        EndgamePts: team.Teleop.PointsScored.EndgamePoints,
+        AutoAmpScored: team.Autonomous.AmountScored.Amp,
+        AutoSpeakerScored: team.Autonomous.AmountScored.Speaker,
+        TeleAmpScored: team.Teleop.AmountScored.Amp,
+        TeleSpeakerScored: team.Teleop.AmountScored.Speaker,
+        TeleAmplifiedSpeakerScored: team.Teleop.AmountScored.AmplifiedSpeaker,
+        EndgameResult: team.Teleop.Endgame.StageResult,
+        TrapResult: team.Teleop.Endgame.TrapScored ? "Yes" : "",
         FoulsM: team.Penalties.Fouls,
         TechFoulsM: team.Penalties.Tech
       }
@@ -96,20 +99,32 @@ function TeamMatches(props) {
         accessor: 'TotalPts'
       },
       {
-        Header: 'AutoPts',
-        accessor: 'AutoPts'
+        Header: 'Amp (Auto)',
+        accessor: 'AutoAmpScored'
       },
       {
-        Header: 'Speaker',
-        accessor: 'SpeakerPts'
+        Header: 'Speaker (Auto)',
+        accessor: 'AutoSpeakerScored'
       },
       {
-        Header: 'Amp',
-        accessor: 'AmpPts'
+        Header: 'Amp (Tele)',
+        accessor: 'TeleAmpScored'
+      },
+      {
+        Header: 'Speaker (Tele)',
+        accessor: 'TeleSpeakerScored'
+      },
+      {
+        Header: 'Amped Speaker (Tele)',
+        accessor: 'TeleAmplifiedSpeakerScored'
       },
       {
         Header: 'Endgame',
-        accessor: 'EndgamePts'
+        accessor: 'EndgameResult'
+      },
+      {
+        Header: 'Trap',
+        accessor: 'TrapResult'
       },
       {
         Header: 'Fouls',
