@@ -237,7 +237,7 @@ function Summary(props) {
       <br></br>
       <br></br>
 
-      <div>
+      <table>
         {/* topRow container */}
         <div className={tableStyles.TableRow}>
 
@@ -262,7 +262,7 @@ function Summary(props) {
           </div>
 
         </div>
-      </div>
+      </table>
 
 
     </div>
