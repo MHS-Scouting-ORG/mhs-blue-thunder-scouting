@@ -75,7 +75,7 @@ function TeamMatches(props) {
         Team: team.Team.substring(3),
         Match: team.id.substring(team.id.indexOf("_") + 1),
         TotalPts: team.TotalPoints,
-        AutoStartPos: team.Autonmous.StartingPosition,
+        AutoStartPos: team.Autonomous.StartingPosition,
         AutoAmpScored: team.Autonomous.AmountScored.Amp,
         AutoSpeakerScored: team.Autonomous.AmountScored.Speaker,
         TeleAmpScored: team.Teleop.AmountScored.Amp,
