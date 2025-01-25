@@ -166,10 +166,11 @@ const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
 }
 
 const apiUpdateRegional = async function () {
+    console.log(import.meta.env.MODE)
     const { credentials } = await Auth.fetchAuthSession()
     const client = new SSMClient({ region: 'us-west-1', credentials: credentials })
     const command = new GetParameterCommand({
-        Name: "regionalKey"
+        Name: `regionalKey-${import.meta.env.VITE_AWS_ENV}`
     })
     const response = await client.send(command)
     regionalKey = response.Parameter.Value
