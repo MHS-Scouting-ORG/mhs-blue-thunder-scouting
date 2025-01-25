@@ -31,14 +31,14 @@ export class cdkStack extends cdk.Stack {
     }
     const secret = new secretsmanager.Secret(this, 'blueallianceapi', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-      secretName: `bluealliance-apikey-${cdk.Fn.ref('env')}`
+      secretName: `bluealliance-apikey-${env}`
       
     }) 
     secret.grantRead(authRole)
 
     const regionalKey = new ssm.StringParameter(this, 'regional', {
       stringValue: '2023hiho',
-      parameterName: 'regionalKey',
+      parameterName: `regionalKey-${env}`,
       description: "The regional key"
     })
     regionalKey.grantRead(authRole)
