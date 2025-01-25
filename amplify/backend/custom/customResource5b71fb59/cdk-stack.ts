@@ -38,7 +38,7 @@ export class cdkStack extends cdk.Stack {
 
     const regionalKey = new ssm.StringParameter(this, 'regional', {
       stringValue: '2023hiho',
-      parameterName: 'regionalKey',
+      parameterName: `regionalKey-${cdk.Fn.ref('env')}`,
       description: "The regional key"
     })
     regionalKey.grantRead(authRole)
