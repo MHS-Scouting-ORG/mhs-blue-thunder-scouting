@@ -2,7 +2,7 @@
 import './App.css';
 import { Amplify } from 'aws-amplify'
 import * as Auth from 'aws-amplify/auth'
-// import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
+//import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import awsconfig from './aws-exports'
 import Menu from './utils/menu'
 import { useEffect, useState } from 'react'
@@ -48,7 +48,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      console.log(`async run`)
+      //console.log(`async run`)
       if (!user) {
         //setUser(await Auth.currentAuthenticatedUser())
         setUser(await Auth.fetchAuthSession())
@@ -70,7 +70,7 @@ function App() {
           if (user) {
             //console.log(`${JSON.stringify(user)} logged in`)
             (async () => {await apiUpdateRegional()})()
-            return (<AuthenticatedUI user={user} />)
+          return (<AuthenticatedUI user={user} />)
           }
           return (<LoginUI />)
         }

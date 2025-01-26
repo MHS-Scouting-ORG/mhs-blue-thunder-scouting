@@ -530,8 +530,8 @@ class Form extends React.Component {
                   <img alt="" src={'./images/auto placement.png'}></img>
                   {makeAutoPlacementDropDownBox({ changeState: this.updateAutonomousPlacement, dropDownVal: this.state.autoPlacement }, "Auto Placement: ", [1, 2, 3, 4])}
                   <br></br>
-                  {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Amp Scored: ")}
-                  {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Speaker Scored: ")}
+                  {makeCounterBox({ changeState: this.updateAutoAmpScored, counterBoxVals: this.state.autoAmpScored }, "Coral Scored ")}
+                  {makeCounterBox({ changeState: this.updateAutoSpeakerScored, counterBoxVals: this.state.autoSpeakerScored }, "Algae Scored ")}
                   <br></br>
                   {makeBooleanCheckBox({ changeState: this.updateLeftStatus, booleans: this.state.left }, "Leave ")}
                   <br></br>
@@ -550,7 +550,7 @@ class Form extends React.Component {
             return (this.state.teleOn ?
               (
                 <div>
-                  {makeCounterBox({ changeState: this.updateTeleAmpScored, counterBoxVals: this.state.teleAmpScored }, "Amp Scored: ")}
+                  {makeCounterBox({ changeState: this.updateTeleAmpScored, counterBoxVals: this.state.teleAmpScored }, "This is how u change naming: ")}
                   {makeCounterBox({ changeState: this.updateTeleSpeakerScored, counterBoxVals: this.state.teleSpeakerScored }, "Speaker Scored: ")}
                   {makeCounterBox({ changeState: this.updateTeleAmplifiedSpeakerScored, counterBoxVals: this.state.teleAmplifiedSpeakerScored }, "Amplified Speaker Scored: ")}
                   <br></br>

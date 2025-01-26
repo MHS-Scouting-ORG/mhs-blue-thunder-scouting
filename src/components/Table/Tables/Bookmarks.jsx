@@ -94,7 +94,7 @@ function Bookmarks(props) {
     return (
         <div> 
             <div>
-      <CollapseTButton label="Bookmarked Matches" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Change This Table Notes" toggleFunction={toggleTable}></CollapseTButton>
 
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       

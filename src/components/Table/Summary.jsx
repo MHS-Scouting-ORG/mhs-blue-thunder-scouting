@@ -39,7 +39,7 @@ function Summary(props) {
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
 
-        //console.log(nApiData)
+        console.log(regional + " regional")
         const matchEntries = nApiData.map((matchEntry) => {
           matchEntry.bookMark = false;
           return matchEntry

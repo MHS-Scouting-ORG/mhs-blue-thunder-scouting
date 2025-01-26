@@ -50,7 +50,7 @@ function RankingTable(props) {
     () => rankingState.map(team => {
 
       const sumSort = tableData.filter(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
-      console.log(sumSort)
+      //console.log(sumSort)
       return team !== null ?
         {
           TeamNumber: team.team_key.substring(3),
