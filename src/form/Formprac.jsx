@@ -17,7 +17,9 @@ function Formprac (props) {
   const [elmNum, setElmNum] = useState([]); //elimination
   const [matchNumber, setMatchNumber] = useState([]); //match number
   const [teamNumber, setTeamNumber] = useState([]); //team num
-  const [teams, setTeams] = useState([]); //teams for a given match
+  const [color, setColor] = useState(false); // alliance color
+  const [red, setRed] = useState([]); //red teams for a given match
+  const [blue, setBlue] = useState([]); //blue teams for a given match
 
   /* AUTO SPECIFIC */
   const [autoPlacement, setAuoPlacement] = useState([]); //1,2,3,4
@@ -60,35 +62,75 @@ function Formprac (props) {
 
 
   console.log(`functional component form`)
-  console.log(matchType)
 
   useEffect(() => {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional) 
     .then(data => {
-      const holdMatchesData = data.data
+      console.log(data)
+      const matchKey = regional + "_" + matchType + elmNum + "m" + matchNumber
 
-      setMatchData(holdMatchesData)
+      /* Finds match data from bluealliance based on user input */
+      data.map((match) => {
+        if(match.key === matchKey) {
+          setMatchData(match)
+          console.log(match)
+          console.log(match.alliances.red.team_keys)
+          setRed(match.alliances.red.team_keys)
+          setBlue(match.alliances.blue.team_keys)
+          console.log(red)
+          console.log(blue)
+        }
+      })
+
     })
-  })
-
+  },[matchType, elmNum, matchNumber])
+  
   return (
     <div>
       <h1>FORM</h1>
 
       <div>
-
+      {/* Match Init */}
         <h2>MATCH & ROBOT</h2>
-        <select value= {matchType} onChange={(e) => setMatchType(e.target.value)}>
-          <option value = 'qm'>Qualification</option>
+
+        <select value= {matchType} onChange={(e) => {setMatchType(e.target.value); setElmNum("")}}>
+          <option value = ""></option>
+          <option value = 'q'>Qualification</option>
           <option value = 'qf'>Quarterfinal</option>
           <option value = 'sf'>Semifinal</option>
           <option value = 'f'>Final</option>
         </select>
-
+        {
+        matchType === 'qf' || matchType === 'sf' || matchType === 'f' ? 
+        <input placeholder = "elim#" type = "number" value= {elmNum} onChange={(e) => setElmNum(e.target.value)}></input> 
+        : null
+        }
+        <input placeholder = "match#" type = "number" value= {matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
         <br></br>
 
-        {/* <input type="text" value={matchType} onChange={(e) => setMatchType(e.target.value)} /> */}
+        <button onClick={() => setColor(!color)}>{color === false ? 'RED' : 'BLUE'}</button>
+
+        <select value = {teamNumber} onChange={(e) => setTeamNumber(e.target.value)}>
+          <option>robot #</option>
+          {color === false ?
+
+            matchData != [] ? 
+              red.map((team) => {
+                return <option value = {team} key = {team}>{team}</option>
+              }) : null
+            
+            : matchData != [] ?
+              blue.map((team) => {
+                return <option value = {team} key = {team}>{team}</option>
+              }) : null
+            
+          }
+        </select>
+        <br></br>
+        
+        {/* AUTONOMOUS */}
+        <h2>AUTONOMOUS</h2>
 
       </div>
 

@@ -176,7 +176,7 @@ const apiUpdateRegional = async function () {
     regionalKey = response.Parameter.Value
 }
 
-const apiGetRegional = function () {
+const apiGetRegional = () => {
     return regionalKey
 }
 
