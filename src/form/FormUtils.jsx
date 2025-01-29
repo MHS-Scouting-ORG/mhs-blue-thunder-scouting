@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, StageOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts } from '../api/builder';
+import buildMatchEntry, { MatchResultOpts, EndgameOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";
@@ -32,9 +32,49 @@ export function copyArray(Array) {
  * creates a match entry which is passed to the table
  * @param {*} props the entire form component (i was too lazy to send through each and individual state through a newly created instance of an object)
  */
+
+export async function submitTest(
+  regional,
+  teamNumber,
+  matchKey,
+  autoPlacement,
+  left,
+  autoCoralL1,
+  autoCoralL2,
+  autoCoralL3,
+  autoCoralL4,
+  teleCoralL1,
+  teleCoralL2,
+  teleCoralL3,
+  teleCoralL4,
+  processorScored,
+  netScored,
+  hangType,
+  missedCoralL1,
+  missedCoralL2,
+  missedCoralL3,
+  missedCoralL4,
+  missedProcessor,
+  missedNet,
+  humanNetMade,
+  humanNetMissed,
+  yellowCard,
+  redCard,
+  disable,
+  dq,
+  botBroke,
+  minFouls,
+  majFouls,
+  robotSpeed,
+  robotInsight,
+  robotBrokenComments
+
+) {
+  console.log(regional, matchKey)
+}
 export async function submitState(props) {
-  let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-  let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
+  //let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
+  //let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
 
   // TEAM INFO //
   let teamNum = props.state.teamNumber;
@@ -265,6 +305,8 @@ export async function submitState(props) {
     console.log(await apiGetTeamMatch(matchKey, props.regional, teamNum))
   }
 }
+
+
 
 // update matchResult to enum
 function findMatchResult(val) {

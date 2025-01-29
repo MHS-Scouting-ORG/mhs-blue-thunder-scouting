@@ -1,7 +1,9 @@
 const initAutoAmountScored = _ => {
   return {
-    Amp: 0,
-    Speaker: 0,
+    CoralL1: 0,
+    CoralL2: 0,
+    CoralL3: 0,
+    CoralL4: 0,
   }
 
 }
@@ -9,16 +11,18 @@ const initAutoAmountScored = _ => {
 const initAutoPointsScored = _ => {
   return {
     Points: 0,
-    SpeakerPoints: 0,
-    AmpPoints: 0,
+    CoralPoints: 0,  
   }
 }
 
 const initTeleAmountScored = _ => {
   return {
-    Amp: 0,
-    Speaker: 0,
-    AmplifiedSpeaker: 0,
+    CoralL1: 0,
+    CoralL2: 0,
+    CoralL3: 0,
+    CoralL4: 0,
+    Processor: 0,
+    Net: 0,
     Cycles: 0,
   }
 }
@@ -27,8 +31,8 @@ const initTelePointsScored = _ => {
   return {
     Points: 0,
     EndgamePoints: 0,
-    SpeakerPoints: 0,
-    AmpPoints: 0,
+    CoralPoints: 0,
+    AlgaePoints: 0,
   }
 }
 
@@ -75,9 +79,9 @@ const PenaltyOpts = {
   NONE: "None"
 }
 
-const StageOpts = {
-  ONSTAGE: "Onstage",
-  ATTEMPTED: "Attempted",
+const EndgameOpts = {
+  Deep: "Onstage",
+  Shallow: "Attempted",
   PARKED: "Parked",
   NONE: "None"
 }
@@ -165,11 +169,11 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
       Endgame: {
-        MatchResult: MatchResultOpts.WIN,
-        StageResult: StageOpts.NONE,
-        TrapScored: false,
-        Melody: false,
-        Ensemble: false
+        //MatchResult: MatchResultOpts.WIN,
+        StageResult: EndgameOpts.NONE,
+        // TrapScored: false,
+        // Melody: false,
+        // Ensemble: false
       },
       HumPlrScoring: {
         Made: 0,
@@ -177,16 +181,16 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       }
     },
     RobotInfo: {
-      AmpRating: RatingOpts.NONE,
-      SpeakerRating: RatingOpts.NONE,
-      TrapRating: RatingOpts.NONE,
-      HangRating: RatingOpts.NONE,
-      IntakeRating: RatingOpts.NONE,
-      LineupSpeed: SpeedOpts.NONE,
+      // AmpRating: RatingOpts.NONE,
+      // SpeakerRating: RatingOpts.NONE,
+      // TrapRating: RatingOpts.NONE,
+      // HangRating: RatingOpts.NONE,
+      // IntakeRating: RatingOpts.NONE,
+      //LineupSpeed: SpeedOpts.NONE,
       RobotSpeed: SpeedOpts.NONE,
       PassesUnderStage: false,
       CountersDefense: false,
-      CanDefend: false,
+      //CanDefend: false,
       WhatBrokeDesc: "",
       Comments: ""
     },
@@ -261,4 +265,4 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { StageOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
+export { EndgameOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts, MatchResultOpts, generateRandomEntry, buildMatchEntry as default }
