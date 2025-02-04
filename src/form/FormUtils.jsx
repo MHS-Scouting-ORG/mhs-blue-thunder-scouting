@@ -33,16 +33,22 @@ export function copyArray(Array) {
  * @param {*} props the entire form component (i was too lazy to send through each and individual state through a newly created instance of an object)
  */
 
-export async function submitTest(
+export async function submitState(
   regional,
   teamNumber,
   matchKey,
+  matchData,
+  matchType,
+  elmNum,
+  matchNumber,
   autoPlacement,
   left,
   autoCoralL1,
   autoCoralL2,
   autoCoralL3,
   autoCoralL4,
+  autoProcessorScored,
+  autoNetScored,
   teleCoralL1,
   teleCoralL2,
   teleCoralL3,
@@ -63,6 +69,7 @@ export async function submitTest(
   disable,
   dq,
   botBroke,
+  noShow,
   minFouls,
   majFouls,
   robotSpeed,
@@ -70,316 +77,164 @@ export async function submitTest(
   robotBrokenComments
 
 ) {
-  console.log(regional, matchKey)
-}
-export async function submitState(props) {
-  //let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-  //let matchKey = /*put year event*/ props.regional + "_" + props.state.matchType + props.state.elmNum + "m" + props.state.matchNumber;
 
-  // TEAM INFO //
-  let teamNum = props.state.teamNumber;
+    let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
+    let incompleteForm = false;
 
-  // AUTO SPECIFIC //
-  let autoPlacement = props.state.autoPlacement;
-  let left = props.state.left //booleans[0]
+    /* Points Init */
+    let autoPoints = 0;
+    let endGamePoints = 0;
+    let telePoints = 0;
 
-  // SCORING //
-  let autoAmpScored = props.state.autoAmpScored; //counterBoxVals[0]
-  let autoSpeakerScored = props.state.autoSpeakerScored; //counterBoxVals[1]
-  let teleAmpScored = props.state.teleAmpScored //counterBoxVals[2]
-  let teleSpeakerScored = props.state.teleSpeakerScored //counterBoxVals[3]
-  let teleAmplifiedSpeakerScored = props.state.teleAmplifiedSpeakerScored //counterBoxVals[4]
-  let highNotesMade = props.state.highNotesMade //counterBoxVals[5]
-  let highNotesMissed = props.state.highNotesMissed //counterBoxVals[6]
+    let autoCoralPoints = 0;
+    let teleCoralPoints = 0;
 
-  let endGameVal = props.state.endGameVal
-  let stagePosition = props.state.stagePosition
-  let noteInTrap = props.state.noteInTrap //booleans[3]
-
-  // RANKING PTS //
-  //let rankingState = props.state.rankingState
-  let rankingPts = props.state.rankingPts
-  let matchResult = props.state.matchResult //rankingState[0]
-  let melody = props.state.bonusStatus[0] //rankingState[1]
-  let ensemble = props.state.bonusStatus[1] //rankingState[2]
+    let teleAlgaePoints = 0;
+    let autoAlgaePoints = 0;
 
 
-  // PENALTIES //
-  // let penalties = props.state.penaltyVal;
-  let yellowCard = props.state.yellowCard; //penalties[0]
-  let redCard = props.state.redCard; //penalties[1]
-  let dq = props.state.dq; //penalties[2]
-  let disable = props.state.disable
-  let botBroke = props.state.botBroke; //penalties[3]
-  let noShow = props.state.noShow; //penalties[4]
-  let fouls = props.state.fouls; //counterBoxVals[7]
-  let techFouls = props.state.techFouls; //counterBoxVals[8]
-  let foulComments = props.state.foulComments;
-  let robotBrokenComments = props.state.robotBrokenComments
-
-
-  // ROBOT INFO //
-  let ampRating = props.state.ampRating
-  let speakerRating = props.state.speakerRating
-  let trapRating = props.state.trapRating
-  let hangRating = props.state.hangRating
-  let intakeRating = props.state.intakeRating
-  let lineUpSpeed = props.state.lineUpSpeed
-  let robotSpeed = props.state.robotSpeed
-  let clearsStage = props.state.clearsStage
-  let countersDefense = props.state.countersDefense
-  let canDefend = props.state.canDefend
-  let comments = props.state.comments
-
-  // INITIALIZE SCORE--------------------------------------------------------------------------------------------
-  let autoPts = 0;
-  let telePts = 0;
-  let endGamePts = 0;
-
-  let totalAmpPts = 0;
-  let totalSpeakerPts = 0;
-
-  let autoAmpPts = 0;
-  let autoSpeakerPts = 0;
-
-  let teleAmpPts = 0;
-  let teleSpeakerPts = 0;
-
-  /*----------------------------------------------------POINT CALCULATIONS----------------------------------------------------------*/
-  let incompleteForm = false;
-
-  if (endGameVal === 'Onstage') {
-    endGamePts = 3;
-  } else if (endGameVal === "Parked") {
-    endGamePts = 1;
-  } else if (endGameVal === 'Attempted' || endGameVal === 'None') {
-    endGamePts = 0;
-  } else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
-  }
-
-  if (left) {
-    autoPts += 3;
-  }
-
-
-  // update matchResult to enum
-  matchResult = findMatchResult(matchResult)
-
-  // update stageResult to enum
-  endGameVal = findStageResult(endGameVal)
-
-  // update stagePosition to enum
-  stagePosition = findStagePosition(stagePosition)
-
-  // update ratings to enum
-  ampRating = findRating(ampRating)
-  speakerRating = findRating(speakerRating)
-  trapRating = findRating(trapRating)
-  hangRating = findRating(hangRating)
-  intakeRating = findRating(intakeRating)
-  lineUpSpeed = findSpeed(lineUpSpeed)
-  robotSpeed = findSpeed(robotSpeed)
-
-  //POINT CALCULATIONS
-
-  autoPts = 5 * autoSpeakerScored + 2 * autoAmpScored
-  telePts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored + teleAmpScored
-
-  totalSpeakerPts = 5 * (autoSpeakerScored + teleAmplifiedSpeakerScored) + 2 * teleSpeakerScored
-  totalAmpPts = 2 * autoAmpScored + teleAmpScored
-
-  autoAmpPts = 2 * autoAmpScored;
-  autoSpeakerPts = 5 * autoSpeakerScored;
-
-  teleAmpPts = teleAmpScored;
-  teleSpeakerPts = 2 * teleSpeakerScored + 5 * teleAmplifiedSpeakerScored;
-
-  let cycles = teleAmpScored + teleSpeakerScored + teleAmplifiedSpeakerScored
-  let totalPts = autoPts + telePts + endGamePts
-
-  props.updatePoints(totalPts, autoPts, telePts)
-
-  if (autoPlacement === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nPosition of robot during Auto"
-  }
-
-  if (props.state.matchType === 'qf' || props.state.matchType === 'sf' || props.state.matchType === 'f') {
-    if (props.state.elmNum === '') {
+  /* Checks Match Selects */
+  if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
+    if (elmNum === '') {
       incompleteForm = true;
       windowAlertMsg = windowAlertMsg + "\nFinals Number";
     }
-  } else if (props.state.matchType === '') {
+  } else if (matchType === '') {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Quarterfinals, Semifinals, Finals)"
+    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Quarterfinals, Semifinals or Finals)"
   }
 
-  if (props.state.matchNumber === '') {
+  if (matchNumber === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nMatch Number";
   }
 
-  if (props.state.teamNumber === '') {
+  if (teamNumber === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
+  /* Auto Placement Select */
+  if (autoPlacement === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
+  }
+
+  if(left){
+    autoPoints += 3;
+  }
+
+  /* EndGame Select */
+  if(hangType === 'Deep'){
+    endGamePoints += 12;
+  }
+  else if(hangType === 'Shallow'){
+    endGamePoints += 6;
+  }
+  else if(hangType === 'Parked'){
+    endGamePoints += 2;
+  }
+  else {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
+  }
+
+  /* Robot Info Select */
+  // if(robotSpeed === 'Slow'){
+
+  // }
+
+  /* Point Calc */
+
+  autoCoralPoints = (autoCoralL1 * 3) + (autoCoralL2 * 4) + (autoCoralL3 * 6) + (autoCoralL4 * 7);
+  teleCoralPoints = (teleCoralL1 * 2) + (teleCoralL2 * 3) + (teleCoralL3 * 4) + (teleCoralL4 * 5);
+
+  teleAlgaePoints = (processorScored * 6) + (netScored * 4);
+  autoAlgaePoints = (autoProcessorScored * 6) + (autoNetScored * 4);
+
+  autoPoints += (autoCoralPoints + autoAlgaePoints);
+  telePoints += (teleCoralPoints + teleAlgaePoints);
+
+  let cycles = processorScored + netScored + teleCoralL1 + teleCoralL2 + teleCoralL3 + teleCoralL4;
+  let totalPoints = autoPoints + telePoints + endGamePoints;
+
+  console.log("test", regional, matchKey, autoPoints, telePoints, totalPoints, hangType)
+
+
+  /* Window Msg Check */
   if (incompleteForm) {
     window.alert(windowAlertMsg);
-  } else if (!incompleteForm) {
-    const matchEntry = buildMatchEntry(props.regional, teamNum, matchKey)
+  }
+  else if (!incompleteForm) {
+    const matchEntry = buildMatchEntry(regional, teamNumber, matchKey) 
+    
+    console.log("init", matchEntry)
 
-    // POINTS //
-    matchEntry.TotalPoints = totalPts
-
-    // AUTO SPECIFIC //
+     // AUTO SPECIFIC //
     matchEntry.Autonomous.StartingPosition = autoPlacement
-
-    matchEntry.Autonomous.AmountScored.Amp = autoAmpScored
-    matchEntry.Autonomous.AmountScored.Speaker = autoSpeakerScored
-
-    matchEntry.Autonomous.PointsScored.Points = autoPts
-    matchEntry.Autonomous.PointsScored.SpeakerPoints = autoSpeakerPts
-    matchEntry.Autonomous.PointsScored.AmpPoints = autoAmpPts
-
     matchEntry.Autonomous.Left = left
 
-    // TELEOP //
-    matchEntry.Teleop.AmountScored.Amp = teleAmpScored
-    matchEntry.Teleop.AmountScored.Speaker = teleSpeakerScored
-    matchEntry.Teleop.AmountScored.AmplifiedSpeaker = teleAmplifiedSpeakerScored
+    matchEntry.Autonomous.AmountScored.CoralL1 = autoCoralL1
+    matchEntry.Autonomous.AmountScored.CoralL2 = autoCoralL2
+    matchEntry.Autonomous.AmountScored.CoralL3 = autoCoralL3
+    matchEntry.Autonomous.AmountScored.CoralL4 = autoCoralL4
+
+    matchEntry.Autonomous.AmountScored.Processor = autoProcessorScored
+    matchEntry.Autonomous.AmountScored.Net = autoNetScored
+
+    matchEntry.Autonomous.PointsScored.Points = autoPoints
+    matchEntry.Autonomous.PointsScored.CoralPoints = autoCoralPoints
+    matchEntry.Autonomous.PointsScored.AlgaePoints = autoAlgaePoints
+
+     
+     /* TELEOP SPECIFIC*/
+    matchEntry.Teleop.AmountScored.CoralL1 = teleCoralL1
+    matchEntry.Teleop.AmountScored.CoralL2 = teleCoralL2
+    matchEntry.Teleop.AmountScored.CoralL3 = teleCoralL3
+    matchEntry.Teleop.AmountScored.CoralL4 = teleCoralL4
+
+    matchEntry.Teleop.AmountScored.Processor = processorScored
+    matchEntry.Teleop.AmountScored.Net = netScored
     matchEntry.Teleop.AmountScored.Cycles = cycles
 
-    matchEntry.Teleop.PointsScored.Points = telePts
-    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePts
-    matchEntry.Teleop.PointsScored.SpeakerPoints = teleSpeakerPts
-    matchEntry.Teleop.PointsScored.AmpPoints = teleAmpPts
+    matchEntry.Teleop.PointsScored.Points = telePoints
+    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
+    matchEntry.Teleop.PointsScored.CoralPoints = teleCoralPoints
+    matchEntry.Teleop.PointsScored.AlgaePoints = teleAlgaePoints
+    
+    matchEntry.Teleop.Endgame.EndGameResult = hangType
+     
+    matchEntry.Teleop.HumPlrScoring.Made = humanNetMade
+    matchEntry.Teleop.HumPlrScoring.Missed = humanNetMissed
 
-    matchEntry.Teleop.Endgame.MatchResult = matchResult
-    matchEntry.Teleop.Endgame.StageResult = endGameVal
-    // matchEntry.Teleop.Endgame.StagePosition = stagePosition
-    matchEntry.Teleop.Endgame.TrapScored = noteInTrap
-    matchEntry.Teleop.Endgame.Melody = melody
-    matchEntry.Teleop.Endgame.Ensemble = ensemble
-
-    matchEntry.Teleop.HumPlrScoring.Made = highNotesMade
-    matchEntry.Teleop.HumPlrScoring.Missed = highNotesMissed
-
-    // ROBOT INFO //
-    matchEntry.RobotInfo.AmpRating = ampRating
-    matchEntry.RobotInfo.SpeakerRating = speakerRating
-    matchEntry.RobotInfo.TrapRating = trapRating
-    matchEntry.RobotInfo.HangRating = hangRating
-    matchEntry.RobotInfo.IntakeRating = intakeRating
-    matchEntry.RobotInfo.LineupSpeed = lineUpSpeed
-    matchEntry.RobotInfo.RobotSpeed = robotSpeed
-    matchEntry.RobotInfo.PassesUnderStage = clearsStage
-    matchEntry.RobotInfo.CountersDefense = countersDefense
-    matchEntry.RobotInfo.CanDefend = canDefend
-    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = comments
+    /* Robot Info */
+    matchEntry.RobotInfo.SpeedOpts = robotSpeed
 
     // PENALTIES //
-    matchEntry.Penalties.Fouls = fouls
-    matchEntry.Penalties.Tech = techFouls
+    matchEntry.Penalties.Fouls = minFouls
+    matchEntry.Penalties.Tech = majFouls
     matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
     matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
     matchEntry.Penalties.PenaltiesCommitted.Disabled = disable
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
-    matchEntry.Penalties.FoulDesc = foulComments
 
-    console.log("MATCH DATA: ", matchEntry)
-    // console.log(stagePosition)
-    // console.log(StagePositionOpts)
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
+    matchEntry.RobotInfo.Comments = robotInsight
 
-    if (props.matchData === undefined) {
-      await apiCreateTeamMatchEntry(props.regional, teamNum, matchKey);
+
+    console.log("matchEntry", matchEntry)
+
+    if (matchData === undefined) {
+      await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
-    await apiUpdateTeamMatch(props.regional, teamNum, matchKey, matchEntry);
+    await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
 
     //for testing
-    console.log(await apiGetTeamMatch(matchKey, props.regional, teamNum))
+   apiGetTeamMatch(matchKey, regional, teamNumber)
+   .then((teamMatch) => console.log(teamMatch))
   }
-}
 
-
-
-// update matchResult to enum
-function findMatchResult(val) {
-  if (val === "win") {
-    return MatchResultOpts.WIN
-  }
-  else if (val === "tie") {
-    return MatchResultOpts.TIE
-  }
-  else if (val === "loss") {
-    return MatchResultOpts.LOSS
-  }
-}
-
-// update stageResult to enum
-function findStageResult(val) {
-  if (val === "Onstage") {
-    return StageOpts.ONSTAGE
-  }
-  else if (val === "Attempted") {
-    return StageOpts.ATTEMPTED
-  }
-  else if (val === "Parked") {
-    return StageOpts.PARKED
-  }
-  else if (val === "None" || val === "") {
-    return StageOpts.NONE
-  }
-}
-
-function findStagePosition(val) {
-  if (val === "left") {
-    return StagePositionOpts.LEFT
-  }
-  else if (val === "right") {
-    return StagePositionOpts.RIGHT
-  }
-  else if (val === "center") {
-    return StagePositionOpts.CENTER
-  }
-  else if (val === "" || val === "none") {
-    return StagePositionOpts.NONE
-  }
-}
-
-// update lineUpSpeed to enum
-function findSpeed(val) {
-  if (val === "Fast") {
-    return SpeedOpts.FAST
-  }
-  else if (val === "Average") {
-    return SpeedOpts.AVERAGE
-  }
-  else if (val === "Slow") {
-    return SpeedOpts.SLOW
-  }
-  else if (val === "None" || val === "") {
-    return SpeedOpts.NONE
-  }
-}
-
-// update intakeRating to enum
-function findRating(val) {
-  if (val === "Good") {
-    return RatingOpts.GOOD
-  }
-  else if (val === "Average") {
-    return RatingOpts.AVERAGE
-  }
-  else if (val === "Bad") {
-    return RatingOpts.BAD
-  }
-  else if (val === "None" || val === "") {
-    return RatingOpts.NONE
-  }
+  console.log("test2", regional, matchKey, autoPoints, telePoints, totalPoints, hangType)
 }

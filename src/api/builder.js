@@ -4,6 +4,8 @@ const initAutoAmountScored = _ => {
     CoralL2: 0,
     CoralL3: 0,
     CoralL4: 0,
+    Processor: 0,
+    Net: 0
   }
 
 }
@@ -11,7 +13,8 @@ const initAutoAmountScored = _ => {
 const initAutoPointsScored = _ => {
   return {
     Points: 0,
-    CoralPoints: 0,  
+    CoralPoints: 0,
+    AlgaePoints: 0,  
   }
 }
 
@@ -80,8 +83,8 @@ const PenaltyOpts = {
 }
 
 const EndgameOpts = {
-  Deep: "Onstage",
-  Shallow: "Attempted",
+  Deep: "Deep",
+  Shallow: "Shallow",
   PARKED: "Parked",
   NONE: "None"
 }
@@ -170,7 +173,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       PointsScored: initTelePointsScored(),
       Endgame: {
         //MatchResult: MatchResultOpts.WIN,
-        StageResult: EndgameOpts.NONE,
+        EndGameResult: EndgameOpts.NONE,
         // TrapScored: false,
         // Melody: false,
         // Ensemble: false
@@ -188,8 +191,8 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       // IntakeRating: RatingOpts.NONE,
       //LineupSpeed: SpeedOpts.NONE,
       RobotSpeed: SpeedOpts.NONE,
-      PassesUnderStage: false,
-      CountersDefense: false,
+      //PassesUnderStage: false,
+      //CountersDefense: false,
       //CanDefend: false,
       WhatBrokeDesc: "",
       Comments: ""

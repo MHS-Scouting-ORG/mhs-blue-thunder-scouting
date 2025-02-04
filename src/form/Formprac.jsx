@@ -5,29 +5,32 @@ import { apiGetRegional } from '../api/index';
 //import {  }
 // styling
 import classes from './Form.module.css';
-import { submitTest } from '../form/FormUtils'
+import { submitState } from '../form/FormUtils'
+
 function Formprac (props) {
 /* Regional Key */
   const regional = apiGetRegional()
 
   /* MATCH */
   const [matchData, setMatchData] = useState([])
-  const [matchType, setMatchType] = useState([]); //match type
-  const [elmNum, setElmNum] = useState([]); //elimination
-  const [matchNumber, setMatchNumber] = useState([]); //match number
-  const [teamNumber, setTeamNumber] = useState([]); //team num
+  const [matchType, setMatchType] = useState(''); //match type
+  const [elmNum, setElmNum] = useState(''); //elimination
+  const [matchNumber, setMatchNumber] = useState(''); //match number
+  const [teamNumber, setTeamNumber] = useState(''); //team num
   const [color, setColor] = useState(false); // alliance color
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [autoPlacement, setAuoPlacement] = useState([]); //1,2,3,4
+  const [autoPlacement, setAuoPlacement] = useState(''); //1,2,3,4
   const [left, setLeft] = useState(false);
   const [autoCoralL1, setAutoCoralL1] = useState(0);
   const [autoCoralL2, setAutoCoralL2] = useState(0);
   const [autoCoralL3, setAutoCoralL3] = useState(0);
   const [autoCoralL4, setAutoCoralL4] = useState(0);
+  const [autoProcessorScored, setAutoProcessorScored] = useState(0);
+  const [autoNetScored, setAutoNetScored] = useState(0);
   
   /* TElEOP */
   const [teleCoralL1, setTeleCoralL1] = useState(0);
@@ -102,6 +105,8 @@ function Formprac (props) {
     console.log("auto coral l2", autoCoralL2)
     console.log("auto coral l3", autoCoralL3)
     console.log("auto coral l4", autoCoralL4)
+    console.log("auto processor scored", autoProcessorScored)
+    console.log("auto net scored", autoNetScored)
     console.log("tele coral l1", teleCoralL1)
     console.log("tele coral l2", teleCoralL2)
     console.log("tele coral l3", teleCoralL3)
@@ -122,6 +127,7 @@ function Formprac (props) {
     console.log("disable", disable)
     console.log("dq", dq)
     console.log("bot broke", botBroke)
+    console.log("no show", noShow)
     console.log("min fouls", minFouls)
     console.log("maj fouls", majFouls)
     console.log("robot speed", robotSpeed)
@@ -187,6 +193,8 @@ function Formprac (props) {
           <button onClick={() => setAutoCoralL2(autoCoralL2 + 1)}>L2 Scored</button>
           <button onClick={() => setAutoCoralL3(autoCoralL3 + 1)}>L3 Scored</button>
           <button onClick={() => setAutoCoralL4(autoCoralL4 + 1)}>L4 Scored</button>
+          <button onClick={() => setAutoProcessorScored(autoProcessorScored + 1)}>Processor Scored</button>
+          <button onClick={() => setAutoNetScored(autoNetScored + 1)}>Net Scored</button>
           <br></br>
 
         {/* TELEOP */}
@@ -201,7 +209,7 @@ function Formprac (props) {
             <option value = ''>Endgame Type</option>
             <option value = 'Shallow'>Shallow</option>
             <option value = 'Deep'>Deep</option>
-            <option value = 'Park'>Park</option>
+            <option value = 'Parked'>Park</option>
           </select>
           <br></br>
           <button onClick={() => setMissedCoralL1(missedCoralL1 + 1)}>L1 Missed</button>
@@ -241,16 +249,22 @@ function Formprac (props) {
       </div>
         {/* Submit */}
       <button onClick={() => {setConfirm(!confirm); check()}}>{confirm ? "Not Yet" : "Submit"}</button>
-      {confirm ? <button onClick={() => submitTest(
+      {confirm ? <button onClick={() => submitState(
         regional,
         teamNumber,
         matchKey,
+        matchData,
+        matchType,
+        elmNum,
+        matchNumber,
         autoPlacement,
         left,
         autoCoralL1,
         autoCoralL2,
         autoCoralL3,
         autoCoralL4,
+        autoProcessorScored,
+        autoNetScored,
         teleCoralL1,
         teleCoralL2,
         teleCoralL3,
@@ -271,6 +285,7 @@ function Formprac (props) {
         disable,
         dq,
         botBroke,
+        noShow,
         minFouls,
         majFouls,
         robotSpeed,
