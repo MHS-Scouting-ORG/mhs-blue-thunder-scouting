@@ -13,6 +13,7 @@ function Menu() {
                 <li><Link className={linkStyles.Link} to="/table">oldTABLE</Link></li>
                 <li><Link className={linkStyles.Link} to="/form">oldFORM</Link></li>
                 <li><Link className={linkStyles.Link} to="/formprac">protFORM</Link></li>
+                <li><Link className={linkStyles.Link} to="/tableprot">protTABLE</Link></li>
             </ul>
         </section>
     )

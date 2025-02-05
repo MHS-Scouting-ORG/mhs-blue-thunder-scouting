@@ -3,13 +3,22 @@ import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import tableStyles from "../Table.module.css";
 
-function RobotAuto(props) {
+function TeamStats(props) {
   const filter = props.gFilter
     const [tableState, setTableState] = useState('none')
+    const [tableColumns, setTableColumns] = useState([])
+    //const [columns, setColumns] = useState([])
+
+    const test = {Header: "test2"}
 
      useEffect(() => {
        setGlobalFilter(filter)
+       
      }, [filter])
+
+    //  useEffect(() => {
+    //    columns.push()
+    //  },[]),
 
     const toggleTable = () => {
         if(tableState === 'none'){
@@ -21,27 +30,20 @@ function RobotAuto(props) {
       }
 
     const data = props.information
+    //console.log("data", data)
 
     const columns = React.useMemo(
         () => [
-            {
-                Header: "Team #",
-                accessor: "TeamNumber",
-                Cell: ({ row }) => (
-                    <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
-                      {row.values.TeamNumber}
-                    </div>
-                  )
-              },
-              {
-                Header: 'Avg Auto',
-                accessor: 'AvgAutoPts'
-              },
-              {
-                Header: 'Auto Start',
-                accessor: 'AutoStart'
-              },
-        ], []
+          {
+            Header: "Team",
+            accessor: "TeamNumber",
+            Cell: ({ row }) => (
+            <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
+              {row.values.TeamNumber}
+            </div>
+          )
+          }
+        ],[]
     )
     const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)
 
@@ -59,7 +61,8 @@ function RobotAuto(props) {
     return (
         <div> 
             <div>
-      <CollapseTButton label="Robot Auto" toggleFunction={toggleTable}></CollapseTButton>
+      <CollapseTButton label="Team Stats" toggleFunction={toggleTable}></CollapseTButton>
+       <button onClick={tableColumns.push(test)}>test</button> 
       
       <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
       
@@ -121,5 +124,5 @@ function RobotAuto(props) {
     )
 }
 
-export default RobotAuto
+export default TeamStats;
 

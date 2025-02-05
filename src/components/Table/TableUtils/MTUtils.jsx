@@ -58,7 +58,7 @@ async function getTeams (regional) {
   }
 }
 
-async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprList, mtable, regional) {
+async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regional) {
     try {
     const data = await getMatchesForRegional(regional)
     
@@ -204,7 +204,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, ccwmList, dprLi
         NAutoPts: isNaN(rAutoPts) ? 0 : rAutoPts,
         NHangPts: isNaN(rHang) ? 0 : rHang,
         NSpeakerPts: isNaN(rSpeakerPoints) ? 0 : rSpeakerPoints,
-        NAmpPts: isNaN(rAmpPts) ? 0 : rAmpPts
+        NAmpPts: isNaN(rAmpPts) ? 0 : rAmpPts,
+
+        Selected: false,
       }
       return tableDataObj;
     })

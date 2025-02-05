@@ -73,4 +73,8 @@ const getRankingsForRegional = async function (regional) {
   return  _fetch(`/event/${regional}/rankings`)
 }
 
-export { getMatchesForRegional, getOprs, getTeamInfo, getRegionals, getTeamsInRegional, getRankingsForRegional } 
+const getSimpleTeamsForRegional = async function (regional) {
+  return _fetch(`/event/${regional}/teams/simple`)
+}
+
+export { getMatchesForRegional, getOprs, getTeamInfo, getRegionals, getTeamsInRegional, getRankingsForRegional, getSimpleTeamsForRegional } 

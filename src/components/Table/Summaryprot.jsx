@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../api/bluealliance";
-import { calcColumnSort } from "./TableUtils/CalculationUtils"
+import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { getMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
@@ -9,18 +9,18 @@ import List from "./TableUtils/List";
 import StatsTable from "./Tables/StatsTable";
 import RobotPerformance from "./Tables/RobotPerformance";
 import RobotCapabilities from "./Tables/RobotCapabilities";
-import RobotAuto from "./Tables/TeamStats";
+import TeamStats from "./Tables/TeamStats";
 import Penalties from "./Tables/Penalties";
 import TeamMatches from "./Tables/TeamMatches";
 import Bookmarks from "./Tables/Bookmarks";
 import DefaultTable from "./Tables/DefaultTable"
 
-import { apiGetRegional } from "../../api";
+import { apiGetRegional } from "../../api"
 
 //CSS
 import tableStyles from "./Table.module.css";
 
-function Summary(props) {
+function TableProt(props) {
   const regional = apiGetRegional()
 
   const [tableData, setTableData] = useState([]); //data on table
@@ -29,8 +29,8 @@ function Summary(props) {
 
   const [apiData, setApiData] = useState([])
   const [oprList, setOprList] = useState([]);
-  const [dprList, setDprList] = useState([]);
-  const [ccwmList, setCcwmList] = useState([]);
+  // const [dprList, setDprList] = useState([]);
+  // const [ccwmList, setCcwmList] = useState([]);
 
   const [bookmark, setBookmark] = useState([]);
 
@@ -55,18 +55,18 @@ function Summary(props) {
     getOprs(regional)
       .then(data => {
         const oprDataArr = Object.values(data)
-        const cData = oprDataArr[0] //ccwm 
-        const dData = oprDataArr[1] //dpr
+        // const cData = oprDataArr[0] //ccwm 
+        // const dData = oprDataArr[1] //dpr
         const oData = oprDataArr[2] //opr
 
         setOprList(oData)
-        setDprList(dData)
-        setCcwmList(cData)
+        // setDprList(dData)
+        // setCcwmList(cData)
       })
   }, [])
 
   useEffect(() => {
-    ueTableData(oprList, ccwmList, dprList, tableData, regional)
+    ueTableData(oprList, tableData, regional)
       .then(data => {
         let holdTableData = data
         setTableData(holdTableData)
@@ -125,36 +125,38 @@ function Summary(props) {
         NHangPts: team.NHangPts,
         NSpeakerPts: team.NSpeakerPts,
         NAmpPts: team.NAmpPts,
+
+        Selected: team.Selected,
       }
     }), [tableData, sortBy]
   )
 
   const columns = React.useMemo(
     () => [
-      {
-        Header: "Team #",
-        accessor: "TeamNumber",
-        Cell: ({ row }) => (
-          <span{...row.getToggleRowExpandedProps()}>
-            <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
-              {row.values.TeamNumber}
-            </div>
-          </span>
-        )
-      },
-      {
-        Header: "Priorities/Strategies",
-        accessor: "Priorities",
-        Cell: ({ row }) => (
-          <div
-            style={{
-              whiteSpace: 'normal',
-            }}
-          >
-            {row.original.Priorities}
-          </div>
-        )
-      },
+      // {
+      //   Header: "Team #",
+      //   accessor: "TeamNumber",
+      //   Cell: ({ row }) => (
+      //     <span{...row.getToggleRowExpandedProps()}>
+      //       <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
+      //         {row.values.TeamNumber}
+      //       </div>
+      //     </span>
+      //   )
+      // },
+      // {
+      //   Header: "Priorities/Strategies",
+      //   accessor: "Priorities",
+      //   Cell: ({ row }) => (
+      //     <div
+      //       style={{
+      //         whiteSpace: 'normal',
+      //       }}
+      //     >
+      //       {row.original.Priorities}
+      //     </div>
+      //   )
+      // },
 
       {
         Header: "Grade",
@@ -203,21 +205,23 @@ function Summary(props) {
               <div className={tableStyles.TableRow}>
 
                 <div>
+                  <div>Here will be default Table: team #, number, and Quick Evals</div>
                   <DefaultTable sortData = {data} regionalEvent={regional} {...filterState} />
                 </div>
 
                 <div>
-                  <RobotAuto {...filterState} />
+                  <div>Here will be populated table/custom table</div>
+                  <TeamStats {...filterState} />
                 </div>
 
               </div>
               {/* Second row container */}
-              <div className={tableStyles.TableRow}>
-
-                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
+              {/* <div className={tableStyles.TableRow}>
+              
+                {/* <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
                 <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
 
-              </div>
+              </div> */}
               <div>
               </div>
 
@@ -242,9 +246,11 @@ function Summary(props) {
         <div className={tableStyles.TableRow}>
 
           <div>
+          <div>Here will be second populated table/custom table or diff type of visualization </div>
             <RobotCapabilities {...filterState} />
           </div>
           <div>
+          <div>Here will be graph </div>
             <RobotPerformance {...filterState} />
           </div>
 
@@ -269,4 +275,4 @@ function Summary(props) {
   )
 }
 
-export default Summary; 
+export default TableProt; 

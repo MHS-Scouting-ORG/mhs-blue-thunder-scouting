@@ -1,25 +1,35 @@
 import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
-import { getRankingsForRegional } from "../../../api/bluealliance";
+import { getRankingsForRegional, getSimpleTeamsForRegional } from "../../../api/bluealliance";
 import tableStyles from "../Table.module.css";
 
 
-function RankingTable(props) {
+function DefaultTable(props) {
   const filter = props.gFilter
   const regional = props.regionalEvent
   const tableData = props.sortData
 
   const [rankingState, setRankingState] = useState([])
-  const [tableState, setTableState] = useState('none')
+  const [simpleTeams, setSimpleTeams] = useState([])
+  const [tableState, setTableState] = useState('')
+  const [rowState, setRowState] = useState(false)
 
   useEffect(() => {
     getRankingsForRegional(regional)
       .then(data => {
-        // console.log(data)
+        console.log(data)
         setRankingState(Object.values(data)[1])
       })
       .catch(err => console.log(err))
+  }, [])
+
+  useEffect(() => {
+    getSimpleTeamsForRegional(regional) 
+    .then(data => {
+      console.log(data)
+      setSimpleTeams(data)
+    })
   }, [])
 
   useEffect(() => {
@@ -29,11 +39,11 @@ function RankingTable(props) {
 
   const toggleTable = () => {
     //console.log("    ")
-    if (tableState === 'none') {
-      setTableState(' ')
+    if (tableState === '') {
+      setTableState('none ')
     }
     else {
-      setTableState('none')
+      setTableState('')
     }
   }
 
@@ -48,13 +58,19 @@ function RankingTable(props) {
 
   const data = React.useMemo(
     () => rankingState.map(team => {
+      let simTeam = 'error';
+      simpleTeams.map(sTeam => {
+        if(sTeam.key.substring(3) === team.team_key.substring(3)){
+          simTeam = sTeam
+        }
+      })
 
       const sumSort = tableData.filter(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
-      //console.log(sumSort)
+      
       return team !== null ?
         {
           TeamNumber: team.team_key.substring(3),
-          Rank: team.rank,
+          Name: simTeam.nickname,
           SumPriorities: sumSort[0] === undefined ? 0.000 : sumSort[0].SumPriorities,
         } : null
     }), [rankingState,tableData]
@@ -66,30 +82,38 @@ function RankingTable(props) {
         Header: "Team Number",
         accessor: "TeamNumber",
         Cell: ({ row }) => (
-          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
+          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} onClick={() => {setRowState(!rowState)}}>
             {row.values.TeamNumber}
           </div>
         )
       },
       {
-        Header: "Rank",
-        accessor: "Rank",
+        Header: "Name",
+        accessor: "Name",
+      },
+      {
+        Header: "Evaluation",
+        accessor: "Evaluation"
       },
       {
         Header: "Grade",
         accessor: "SumPriorities"
       },
-      {
-        Header: 'Remove?',
-        Cell: ({ row }) => {
-          return <div>
-            <button onClick={() => { removeTeam(row) }}> X </button>
-          </div>
-        }
-      }
+      // {
+      //   Header: 'Remove?',
+      //   Cell: ({ row }) => {
+      //     return <div>
+      //       <button onClick={() => { removeTeam(row) }}> X </button>
+      //     </div>
+      //   }
+      // }
     ], [data]
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
+
+  const {
+    state,
+  } = tableInstance
 
   const {
     getTableProps,
@@ -100,14 +124,19 @@ function RankingTable(props) {
     prepareRow,
   } = tableInstance
 
+  const { globalFilter } = state
+
 
 
   return (
     <div>
       <div>
-        <CollapseTButton label="Team List" toggleFunction={toggleTable}></CollapseTButton>
+        <CollapseTButton label="All Teams" toggleFunction={toggleTable}></CollapseTButton>
 
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
+
+          {/* Search */}
+         <input placeholder='Search' value={globalFilter || ''} onChange={e => setGlobalFilter(e.target.value)}/>
 
           <table className={tableStyles.Table} {...getTableProps()}>
             <thead>
@@ -164,5 +193,5 @@ function RankingTable(props) {
   )
 }
 
-export default RankingTable
+export default DefaultTable
 

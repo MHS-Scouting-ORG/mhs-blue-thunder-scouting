@@ -6,9 +6,11 @@ import './index.css'
 import MainTable from './components/Table/Summary.jsx'
 import Form from './form/Form.jsx'
 import Formprac from './form/Formprac.jsx'
+import TableProt from './components/Table/Summaryprot.jsx'
 // import * as Auth from 'aws-amplify/auth'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
+import { Table } from '@aws-amplify/ui-react'
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,11 @@ const router = createBrowserRouter([
       {
         path: "/formprac",
         element: <Formprac/>
+      },
+      /* Prototpye Table */
+      {
+        path: "/tableprot",
+        element: <TableProt/>
       }
     ]
   }
