@@ -122,7 +122,7 @@ function TableProt(props) {
         console.log(err)
       }
     }
-
+    //console.log(teamsClicked)
     settingTeamsClicked()
   }
 

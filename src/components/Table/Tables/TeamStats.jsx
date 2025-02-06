@@ -11,7 +11,7 @@ function TeamStats(props) {
   const [tableColumns, setTableColumns] = useState([])
   //const [columns, setColumns] = useState([])
 
-  const test = {Header: "test2"}
+  //const test = {Header: "test2"}
 
     useEffect(() => {
       setGlobalFilter(filter)
