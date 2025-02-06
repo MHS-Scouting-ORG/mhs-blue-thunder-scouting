@@ -111,9 +111,8 @@ function TableProt(props) {
   const handleTeamClicked = (team) => {
     const settingTeamsClicked = () => {
       try {
-        console.log(teamsClicked)
         if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
-          setTeamsClicked(teamsClicked.concat([{TeamNumber: team}]))
+          setTeamsClicked(teamsClicked => [...teamsClicked, {TeamNumber: team}])
         }
         //console.log("team", team, "teamsClicked", teamsClicked)
         
