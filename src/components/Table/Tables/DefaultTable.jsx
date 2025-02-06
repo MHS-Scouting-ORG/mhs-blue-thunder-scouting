@@ -9,6 +9,7 @@ function DefaultTable(props) {
   const filter = props.gFilter
   const regional = props.regionalEvent
   const tableData = props.sortData
+  const teamsClickedFunc = props.teamsClicked
 
   const [rankingState, setRankingState] = useState([])
   const [simpleTeams, setSimpleTeams] = useState([])
@@ -82,7 +83,7 @@ function DefaultTable(props) {
         Header: "Team Number",
         accessor: "TeamNumber",
         Cell: ({ row }) => (
-          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} onClick={() => {setRowState(!rowState)}}>
+          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} onClick={() => {teamsClickedFunc(row.original.TeamNumber)}}>
             {row.values.TeamNumber}
           </div>
         )

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs } from "../../api/bluealliance";
+import { getOprs, getTeamsInRegional } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { getMatchesForRegional } from "../../api";
@@ -33,6 +33,7 @@ function TableProt(props) {
   // const [ccwmList, setCcwmList] = useState([]);
 
   const [bookmark, setBookmark] = useState([]);
+  const [teamsClicked, setTeamsClicked] = useState([]);
 
   useEffect(() => {
     getMatchesForRegional(regional)
@@ -105,6 +106,24 @@ function TableProt(props) {
     const newBookmarkEntries = bookmark.filter((bookmarkedEntry) => !(teamNumber === bookmarkedEntry.Team.substring(3) && matchNumber === bookmarkedEntry.id.substring((bookmarkedEntry.id).indexOf("_") + 1))).splice(0)
 
     setBookmark(newBookmarkEntries)
+  }
+
+  const handleTeamClicked = (team) => {
+    const settingTeamsClicked = () => {
+      try {
+        console.log(teamsClicked)
+        if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
+          setTeamsClicked(teamsClicked.concat([{TeamNumber: team}]))
+        }
+        //console.log("team", team, "teamsClicked", teamsClicked)
+        
+      }
+      catch (err) {
+        console.log(err)
+      }
+    }
+
+    settingTeamsClicked()
   }
 
   const data = React.useMemo(
@@ -203,25 +222,24 @@ function TableProt(props) {
               <br />
               {/* first row container */}
               <div className={tableStyles.TableRow}>
-
                 <div>
                   <div>Here will be default Table: team #, number, and Quick Evals</div>
-                  <DefaultTable sortData = {data} regionalEvent={regional} {...filterState} />
+                  <DefaultTable sortData = {data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
                 </div>
 
                 <div>
                   <div>Here will be populated table/custom table</div>
-                  <TeamStats {...filterState} />
+                  <TeamStats selectedTeams={teamsClicked} {...filterState} />
                 </div>
 
               </div>
               {/* Second row container */}
-              {/* <div className={tableStyles.TableRow}>
+               <div className={tableStyles.TableRow}>
               
                 {/* <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
                 <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
-
-              </div> */}
+ */}
+              </div>
               <div>
               </div>
 

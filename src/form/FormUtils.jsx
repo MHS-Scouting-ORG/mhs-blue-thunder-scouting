@@ -1,8 +1,9 @@
 import React from "react";
-import buildMatchEntry, { MatchResultOpts, EndgameOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts } from '../api/builder';
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch } from '../api';
+import buildMatchEntry, { MatchResultOpts, EndgameOpts, StagePositionOpts, PenaltyOpts, SpeedOpts, RatingOpts} from '../api/builder';
+import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";
+import { generateRandomEntry } from "../api/builder";
 
 /* GET MATCH TEAMS */
 
@@ -115,29 +116,29 @@ export async function submitState(
   }
 
   /* Auto Placement Select */
-  if (autoPlacement === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
-  }
+  // if (autoPlacement === '') {
+  //   incompleteForm = true;
+  //   windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
+  // }
 
-  if(left){
-    autoPoints += 3;
-  }
+  // if(left){
+  //   autoPoints += 3;
+  // }
 
   /* EndGame Select */
-  if(hangType === 'Deep'){
-    endGamePoints += 12;
-  }
-  else if(hangType === 'Shallow'){
-    endGamePoints += 6;
-  }
-  else if(hangType === 'Parked'){
-    endGamePoints += 2;
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
-  }
+  // if(hangType === 'Deep'){
+  //   endGamePoints += 12;
+  // }
+  // else if(hangType === 'Shallow'){
+  //   endGamePoints += 6;
+  // }
+  // else if(hangType === 'Parked'){
+  //   endGamePoints += 2;
+  // }
+  // else {
+  //   incompleteForm = true;
+  //   windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
+  // }
 
   /* Robot Info Select */
   // if(robotSpeed === 'Slow'){
@@ -230,6 +231,8 @@ export async function submitState(
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
+
+    //generateRandomEntry(regional, teamNumber, matchKey)
 
     //for testing
    apiGetTeamMatch(matchKey, regional, teamNumber)
