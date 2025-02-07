@@ -32,6 +32,8 @@ function TableProt(props) {
   // const [dprList, setDprList] = useState([]);
   // const [ccwmList, setCcwmList] = useState([]);
 
+  const [hiddenButton, setHiddenButton] = useState('')
+
   const [bookmark, setBookmark] = useState([]);
   const [teamsClicked, setTeamsClicked] = useState([]);
 
@@ -108,20 +110,26 @@ function TableProt(props) {
     setBookmark(newBookmarkEntries)
   }
 
+  const addTable = () => {
+    if(hiddenButton === 'hidden'){
+    setHiddenButton('')
+    }
+    else {
+      setHiddenButton('hidden')
+    }
+  }
+
   const handleTeamClicked = (team) => {
     const settingTeamsClicked = () => {
       try {
         if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
           setTeamsClicked(teamsClicked => [...teamsClicked, {TeamNumber: team}])
-        }
-        //console.log("team", team, "teamsClicked", teamsClicked)
-        
+        }        
       }
       catch (err) {
         console.log(err)
       }
     }
-    //console.log(teamsClicked)
     settingTeamsClicked()
   }
 
@@ -229,6 +237,9 @@ function TableProt(props) {
                 <div>
                   <div>Here will be populated table/custom table</div>
                   <TeamStats selectedTeams={teamsClicked} {...filterState} />
+                </div>
+                <div>
+                <button hidden = {hiddenButton} onClick = {() => addTable()}>Compare Another Team?</button>
                 </div>
 
               </div>

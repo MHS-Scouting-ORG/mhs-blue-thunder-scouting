@@ -8,19 +8,12 @@ function TeamStats(props) {
   const selectedTeams = props.selectedTeams
 
   const [tableState, setTableState] = useState('none')
-  const [tableColumns, setTableColumns] = useState([])
-  //const [columns, setColumns] = useState([])
-
-  //const test = {Header: "test2"}
+  const [tableColumns, setTableColumns] = useState([{Header: "Team", accessor: "TeamNumber", Cell: ({ row }) => (<div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}> {row.values.TeamNumber} </div>)}])
 
     useEffect(() => {
       setGlobalFilter(filter)
       
     }, [filter])
-
-  //  useEffect(() => {
-  //    columns.push()
-  //  },[]),
 
   const toggleTable = () => {
       if(tableState === 'none'){
@@ -30,27 +23,15 @@ function TeamStats(props) {
         setTableState('none')
       }
     }
-
-    //const data = props.information
-    
-
+  
   const data = React.useMemo(
     () => selectedTeams
     , [selectedTeams]
   )
 
   const columns = React.useMemo(
-      () => [
-        {
-          Header: "Team",
-          accessor: "TeamNumber",
-          Cell: ({ row }) => (
-          <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
-            {row.values.TeamNumber}
-          </div>
-        )
-        }
-      ],[]
+      () => tableColumns
+      ,[tableColumns]
   )
   const tableInstance = useTable({columns, data}, useGlobalFilter, useSortBy)
 
@@ -69,17 +50,17 @@ function TeamStats(props) {
       <div> 
           <div>
     <CollapseTButton label="Team Stats" toggleFunction={toggleTable}></CollapseTButton>
-      <button onClick={() => tableColumns.push(test)}>test</button> 
     
     <div style={{display: tableState, maxHeight: '15rem', overflowY: 'scroll'}}>
-    
+
+    <button onClick={() => tableColumns.find((e) => e.Header === "test1") === undefined ? setTableColumns(tableColumns.concat([{Header: "test1", accessor: "test1"}])): setTableColumns(tableColumns.filter((x) => x.Header !== "test1"))}>test</button>
+    <button onClick={() => tableColumns.find((e) => e.Header === "test2") === undefined ? setTableColumns(tableColumns.concat([{Header: "test2", accessor: "test2"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "test2"))}>test2</button>
+
     <table className={tableStyles.Table}{...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
-              
-              
               <th
                 {...column.getHeaderProps(column.getSortByToggleProps())}
                 style={{
