@@ -32,7 +32,9 @@ function TableProt(props) {
   // const [dprList, setDprList] = useState([]);
   // const [ccwmList, setCcwmList] = useState([]);
 
-  const [hiddenButton, setHiddenButton] = useState('')
+  const [addTableButton, setAddTableButton] = useState('')
+  const [addTableButton2, setAddTableButton2] = useState('')
+
 
   const [bookmark, setBookmark] = useState([]);
   const [teamsClicked, setTeamsClicked] = useState([]);
@@ -75,7 +77,7 @@ function TableProt(props) {
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, oprList, sortBy,])
+  }, [apiData, oprList, sortBy])
 
   const addBookmark = (row) => {
     const teamNumber = row.original.Team
@@ -111,12 +113,31 @@ function TableProt(props) {
   }
 
   const addTable = () => {
-    if(hiddenButton === 'hidden'){
-    setHiddenButton('')
+    if(addTableButton === ''){
+    setAddTableButton('hidden')
     }
     else {
-      setHiddenButton('hidden')
+      setAddTableButton('')
     }
+  }
+
+  const addTable2 = () => {
+    if(addTableButton2 === ''){
+      setAddTableButton2('hidden')
+      }
+      else {
+        setAddTableButton2('')
+      }
+  }
+
+  const hideTable2 = () => {
+    if(hideTableButton2 === 'hidden'){
+      setHideTableButton2('')
+      }
+      else {
+        setHideTableButton2('hidden')
+        setAddTableButton2('')
+      }
   }
 
   const handleTeamClicked = (team) => {
@@ -238,8 +259,20 @@ function TableProt(props) {
                   <div>Here will be populated table/custom table</div>
                   <TeamStats selectedTeams={teamsClicked} {...filterState} />
                 </div>
+
+                {/* Compare another team button : adds new table */}
                 <div>
-                <button hidden = {hiddenButton} onClick = {() => addTable()}>Compare Another Team?</button>
+                {
+                  addTableButton === '' ? 
+                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
+                  : 
+                    <div>
+                      <TeamStats selectedTeams={teamsClicked} {...filterState}/> 
+                      <button onClick={addTable}>-</button>  
+                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
+                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
+                    </div>
+                }
                 </div>
 
               </div>

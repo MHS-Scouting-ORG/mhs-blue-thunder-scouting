@@ -11,6 +11,7 @@ export const createTeam = /* GraphQL */ `
       name
       description
       Comment
+      Other
       createdAt
       updatedAt
       __typename
@@ -27,6 +28,7 @@ export const updateTeam = /* GraphQL */ `
       name
       description
       Comment
+      Other
       createdAt
       updatedAt
       __typename
@@ -43,6 +45,7 @@ export const deleteTeam = /* GraphQL */ `
       name
       description
       Comment
+      Other
       createdAt
       updatedAt
       __typename

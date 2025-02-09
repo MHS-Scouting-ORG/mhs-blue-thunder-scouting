@@ -159,6 +159,7 @@ type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
   name: String!
   description: String
   Comment: String
+  Other: String
 }
 
 type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {

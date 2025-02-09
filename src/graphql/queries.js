@@ -8,6 +8,7 @@ export const getTeam = /* GraphQL */ `
       name
       description
       Comment
+      Other
       createdAt
       updatedAt
       __typename
@@ -34,6 +35,7 @@ export const listTeams = /* GraphQL */ `
         name
         description
         Comment
+        Other
         createdAt
         updatedAt
         __typename
