@@ -54,14 +54,18 @@ export const onCreateTeamMatch = /* GraphQL */ `
       Autonomous {
         StartingPosition
         AmountScored {
-          Amp
-          Speaker
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Left
@@ -69,25 +73,23 @@ export const onCreateTeamMatch = /* GraphQL */ `
       }
       Teleop {
         AmountScored {
-          Amp
-          Speaker
-          AmplifiedSpeaker
-          Cycles
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
           EndgamePoints
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Endgame {
-          MatchResult
-          StageResult
-          TrapScored
-          Melody
-          Ensemble
+          EndGameResult
           __typename
         }
         HumPlrScoring {
@@ -98,16 +100,7 @@ export const onCreateTeamMatch = /* GraphQL */ `
         __typename
       }
       RobotInfo {
-        AmpRating
-        SpeakerRating
-        TrapRating
-        HangRating
-        IntakeRating
-        LineupSpeed
         RobotSpeed
-        PassesUnderStage
-        CountersDefense
-        CanDefend
         WhatBrokeDesc
         Comments
         __typename
@@ -147,14 +140,18 @@ export const onUpdateTeamMatch = /* GraphQL */ `
       Autonomous {
         StartingPosition
         AmountScored {
-          Amp
-          Speaker
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Left
@@ -162,25 +159,23 @@ export const onUpdateTeamMatch = /* GraphQL */ `
       }
       Teleop {
         AmountScored {
-          Amp
-          Speaker
-          AmplifiedSpeaker
-          Cycles
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
           EndgamePoints
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Endgame {
-          MatchResult
-          StageResult
-          TrapScored
-          Melody
-          Ensemble
+          EndGameResult
           __typename
         }
         HumPlrScoring {
@@ -191,16 +186,7 @@ export const onUpdateTeamMatch = /* GraphQL */ `
         __typename
       }
       RobotInfo {
-        AmpRating
-        SpeakerRating
-        TrapRating
-        HangRating
-        IntakeRating
-        LineupSpeed
         RobotSpeed
-        PassesUnderStage
-        CountersDefense
-        CanDefend
         WhatBrokeDesc
         Comments
         __typename
@@ -240,14 +226,18 @@ export const onDeleteTeamMatch = /* GraphQL */ `
       Autonomous {
         StartingPosition
         AmountScored {
-          Amp
-          Speaker
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Left
@@ -255,25 +245,23 @@ export const onDeleteTeamMatch = /* GraphQL */ `
       }
       Teleop {
         AmountScored {
-          Amp
-          Speaker
-          AmplifiedSpeaker
-          Cycles
+          CoralL1
+          CoralL2
+          CoralL3
+          CoralL4
+          Processor
+          Net
           __typename
         }
         PointsScored {
           Points
           EndgamePoints
-          SpeakerPoints
-          AmpPoints
+          CoralPoints
+          AlgaePoints
           __typename
         }
         Endgame {
-          MatchResult
-          StageResult
-          TrapScored
-          Melody
-          Ensemble
+          EndGameResult
           __typename
         }
         HumPlrScoring {
@@ -284,16 +272,7 @@ export const onDeleteTeamMatch = /* GraphQL */ `
         __typename
       }
       RobotInfo {
-        AmpRating
-        SpeakerRating
-        TrapRating
-        HangRating
-        IntakeRating
-        LineupSpeed
         RobotSpeed
-        PassesUnderStage
-        CountersDefense
-        CanDefend
         WhatBrokeDesc
         Comments
         __typename

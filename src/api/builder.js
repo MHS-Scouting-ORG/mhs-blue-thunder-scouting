@@ -89,31 +89,11 @@ const EndgameOpts = {
   NONE: "None"
 }
 
-const StagePositionOpts = {
-  NONE: "None",
-  LEFT: "Left",
-  RIGHT: "Right",
-  CENTER: "Center",
-}
-
 const SpeedOpts = {
   NONE: "None",
   SLOW: "Slow",
   AVERAGE: "Average",
   FAST: "Fast"
-}
-
-const RatingOpts = {
-  NONE: "None",
-  BAD: "Bad",
-  AVERAGE: "Average",
-  GOOD: "Good",
-}
-
-const MatchResultOpts = {
-  WIN: "Win",
-  TIE: "Tie",
-  LOSS: "Loss",
 }
 
 const selectPropsFromEnum = function (enumVals) {
@@ -172,11 +152,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       AmountScored: initTeleAmountScored(),
       PointsScored: initTelePointsScored(),
       Endgame: {
-        //MatchResult: MatchResultOpts.WIN,
         EndGameResult: EndgameOpts.NONE,
-        // TrapScored: false,
-        // Melody: false,
-        // Ensemble: false
       },
       HumPlrScoring: {
         Made: 0,
@@ -184,16 +160,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       }
     },
     RobotInfo: {
-      // AmpRating: RatingOpts.NONE,
-      // SpeakerRating: RatingOpts.NONE,
-      // TrapRating: RatingOpts.NONE,
-      // HangRating: RatingOpts.NONE,
-      // IntakeRating: RatingOpts.NONE,
-      //LineupSpeed: SpeedOpts.NONE,
       RobotSpeed: SpeedOpts.NONE,
-      //PassesUnderStage: false,
-      //CountersDefense: false,
-      //CanDefend: false,
       WhatBrokeDesc: "",
       Comments: ""
     },

@@ -10,19 +10,17 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 # types
 type TeleScoring {
-  CoralL1: Int
-  CoralL2: Int
-  CoralL3: Int
-  CoralL4: Int
-  Processor: Int
-  Net: Int
+  Amp: Int
+  Speaker: Int
+  AmplifiedSpeaker: Int
+  Cycles: Int
 }
 
 type TelePointsScoring {
   Points: Int
   EndgamePoints: Int
-  CoralPoints: Int
-  AlgaePoints: Int
+  SpeakerPoints: Int
+  AmpPoints: Int
 }
 
 ##################
@@ -31,18 +29,14 @@ type TelePointsScoring {
 
 # enums
 type AutoScoring {
-  CoralL1: Int
-  CoralL2: Int
-  CoralL3: Int
-  CoralL4: Int
-  Processor: Int
-  Net: Int
+  Amp: Int
+  Speaker: Int
 }
 
 type AutoPointsScoring {
   Points: Int
-  CoralPoints: Int
-  AlgaePoints: Int
+  SpeakerPoints: Int
+  AmpPoints: Int
 }
 
 # types
@@ -58,12 +52,24 @@ type AutonomousType {
 ##############
 
 # enums
-
-enum EndgameOpts {
-  Deep
-  Shallow
+enum StageOpts {
+  Onstage
+  Attempted
   Parked
   None
+}
+
+enum StagePositionOpts {
+  Left
+  Right
+  Center
+  None
+}
+
+enum MatchResultOpts {
+  Win
+  Tie
+  Loss
 }
 
 # types
@@ -83,7 +89,11 @@ type HumPlrScoringType {
 }
 
 type EndgameType {
-  EndGameResult: EndgameOpts
+  MatchResult: MatchResultOpts
+  StageResult: StageOpts
+  TrapScored: Boolean
+  Melody: Boolean
+  Ensemble: Boolean
 }
 
 type TeleopType {
@@ -112,10 +122,26 @@ enum SpeedOpts {
   Fast
 }
 
+enum RatingOpts {
+  None
+  Bad
+  Average
+  Good
+}
+
 # types
 
 type RobotInfoType {
+  AmpRating: RatingOpts
+  SpeakerRating: RatingOpts
+  TrapRating: RatingOpts
+  HangRating: RatingOpts
+  IntakeRating: RatingOpts
+  LineupSpeed: SpeedOpts
   RobotSpeed: SpeedOpts
+  PassesUnderStage: Boolean
+  CountersDefense: Boolean
+  CanDefend: Boolean
   WhatBrokeDesc: String
   Comments: String
 }
@@ -123,6 +149,8 @@ type RobotInfoType {
 #################
 ### TEAM INFO ###
 #################
+
+# enums
 
 # types
 
