@@ -16,6 +16,7 @@ type TeleScoring {
   CoralL4: Int
   Processor: Int
   Net: Int
+  Cycles: Int
 }
 
 type TelePointsScoring {

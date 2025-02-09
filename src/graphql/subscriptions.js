@@ -79,6 +79,7 @@ export const onCreateTeamMatch = /* GraphQL */ `
           CoralL4
           Processor
           Net
+          Cycles
           __typename
         }
         PointsScored {
@@ -165,6 +166,7 @@ export const onUpdateTeamMatch = /* GraphQL */ `
           CoralL4
           Processor
           Net
+          Cycles
           __typename
         }
         PointsScored {
@@ -251,6 +253,7 @@ export const onDeleteTeamMatch = /* GraphQL */ `
           CoralL4
           Processor
           Net
+          Cycles
           __typename
         }
         PointsScored {

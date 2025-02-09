@@ -80,6 +80,7 @@ export const getTeamMatch = /* GraphQL */ `
           CoralL4
           Processor
           Net
+          Cycles
           __typename
         }
         PointsScored {
@@ -179,6 +180,7 @@ export const listTeamMatches = /* GraphQL */ `
             CoralL4
             Processor
             Net
+            Cycles
             __typename
           }
           PointsScored {
@@ -279,6 +281,7 @@ export const teamMatchesByTeam = /* GraphQL */ `
             CoralL4
             Processor
             Net
+            Cycles
             __typename
           }
           PointsScored {
@@ -379,6 +382,7 @@ export const teamMatchesByRegional = /* GraphQL */ `
             CoralL4
             Processor
             Net
+            Cycles
             __typename
           }
           PointsScored {
