@@ -73,7 +73,7 @@ const apiListTeams = async function () {
  * - regionalId - the regional id;  this is identified by the same id used in the bluealliance api
  * - teamNumber (optional) - the teamNumber
  */
-const getMatchesForRegional = async function (regionalId, teamNumber) {
+const apigetMatchesForRegional = async function (regionalId, teamNumber) {
     if (!teamNumber) {
         return client.graphql({
             query: teamMatchesByRegional, variables: {
@@ -180,4 +180,4 @@ const apiGetRegional = () => {
     return regionalKey
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, getMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiUpdateRegional, apiGetRegional }
+export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiUpdateRegional, apiGetRegional }

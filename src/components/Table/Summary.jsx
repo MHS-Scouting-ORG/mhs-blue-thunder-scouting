@@ -3,7 +3,7 @@ import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils"
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
-import { getMatchesForRegional } from "../../api";
+import { apigetMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
 import List from "./TableUtils/List";
 import StatsTable from "./Tables/StatsTable";
@@ -35,7 +35,7 @@ function Summary(props) {
   const [bookmark, setBookmark] = useState([]);
 
   useEffect(() => {
-    getMatchesForRegional(regional)
+    apigetMatchesForRegional(regional)
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
 

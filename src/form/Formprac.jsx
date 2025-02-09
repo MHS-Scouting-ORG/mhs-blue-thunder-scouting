@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
-import { apiGetRegional } from '../api/index';
+import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
 //import {  }
 // styling
 import classes from './Form.module.css';
@@ -21,6 +21,7 @@ function Formprac (props) {
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
+  const [presentMatchData, setPresentMatchData] = useState([]) //state for present match in our database
 
   /* AUTO SPECIFIC */
   const [autoPlacement, setAuoPlacement] = useState(''); //1,2,3,4
@@ -81,6 +82,7 @@ function Formprac (props) {
       data.map((match) => {
         if(match.key === matchKey) {
           setMatchData(match)
+          //console.log("bluealliace", matchData)
           setRed(match.alliances.red.team_keys)
           setBlue(match.alliances.blue.team_keys)
         }
@@ -160,7 +162,19 @@ function Formprac (props) {
 
         <button onClick={() => setColor(!color)}>{color === false ? 'RED' : 'BLUE'}</button>
 
-        <select value = {teamNumber} onChange={(e) => setTeamNumber(e.target.value)}>
+        <select value = {teamNumber.substring(3)} 
+          onChange={
+            async (e) => {
+              setTeamNumber(e.target.value); 
+              apigetMatchesForRegional(regional)
+                .then((data) => {
+                  let matches = data.data.teamMatchesByRegional.items
+                  matches.find((x) => x.Team === teamNumber) !== undefined ? setMatchData(matches.find((x) => x.team === teamNumber)) : console.log("no current match in our database")
+                  console.log(matchData)
+              }, [])
+            }
+          }
+        >
           <option>robot #</option>
           {color === false ?
 

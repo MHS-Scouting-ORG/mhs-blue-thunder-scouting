@@ -172,7 +172,7 @@ export async function submitState(
     console.log("init", matchEntry)
 
      // AUTO SPECIFIC //
-    matchEntry.Autonomous.StartingPosition = autoPlacement
+    matchEntry.Autonomous.StartingPosition = parseInt(autoPlacement)
     matchEntry.Autonomous.Left = left
 
     matchEntry.Autonomous.AmountScored.CoralL1 = autoCoralL1
@@ -209,7 +209,7 @@ export async function submitState(
     matchEntry.Teleop.HumPlrScoring.Missed = humanNetMissed
 
     /* Robot Info */
-    matchEntry.RobotInfo.SpeedOpts = robotSpeed
+    matchEntry.RobotInfo.RobotSpeed = robotSpeed
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls
@@ -222,7 +222,7 @@ export async function submitState(
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
 
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = robotInsight
+    //matchEntry.RobotInfo.Comments = robotInsight
 
 
     console.log("matchEntry", matchEntry)

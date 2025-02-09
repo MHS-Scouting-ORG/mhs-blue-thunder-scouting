@@ -3,7 +3,7 @@ import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs, getTeamsInRegional } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
-import { getMatchesForRegional } from "../../api";
+import { apigetMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
 import List from "./TableUtils/List";
 import StatsTable from "./Tables/StatsTable";
@@ -40,7 +40,7 @@ function TableProt(props) {
   const [teamsClicked, setTeamsClicked] = useState([]);
 
   useEffect(() => {
-    getMatchesForRegional(regional)
+    apigetMatchesForRegional(regional)
       .then(data => {
         const nApiData = data.data.teamMatchesByRegional.items
 
@@ -85,7 +85,7 @@ function TableProt(props) {
 
     const changeApiData = async () => {
       try {
-        const allData = await getMatchesForRegional(regional)
+        const allData = await apigetMatchesForRegional(regional)
         const newApiData = allData.data.teamMatchesByRegional.items
 
         const arrNewBookmark = newApiData.filter((matchEntry) => (teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)))
