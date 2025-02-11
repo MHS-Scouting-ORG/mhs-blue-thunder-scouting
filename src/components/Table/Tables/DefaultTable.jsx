@@ -14,7 +14,6 @@ function DefaultTable(props) {
   const [rankingState, setRankingState] = useState([])
   const [simpleTeams, setSimpleTeams] = useState([])
   const [tableState, setTableState] = useState('')
-  const [rowState, setRowState] = useState(false)
 
   useEffect(() => {
     getRankingsForRegional(regional)
@@ -28,7 +27,6 @@ function DefaultTable(props) {
   useEffect(() => {
     getSimpleTeamsForRegional(regional) 
     .then(data => {
-      console.log(data)
       setSimpleTeams(data)
     })
   }, [])
@@ -39,7 +37,6 @@ function DefaultTable(props) {
 
 
   const toggleTable = () => {
-    //console.log("    ")
     if (tableState === '') {
       setTableState('none ')
     }
@@ -47,16 +44,7 @@ function DefaultTable(props) {
       setTableState('')
     }
   }
-
-  const removeTeam = (row) => {
-    console.log(row.original.TeamNumber)
-    const clickedTeam = rankingState.find(x => x.rank === row.original.Rank)
-    const removedTeam = rankingState.toSpliced(rankingState.indexOf(clickedTeam), 1)
-    setRankingState(removedTeam)
-    console.log(removedTeam)
-  }
-
-
+  
   const data = React.useMemo(
     () => rankingState.map(team => {
       let simTeam = 'error';
@@ -100,14 +88,6 @@ function DefaultTable(props) {
         Header: "Grade",
         accessor: "SumPriorities"
       },
-      // {
-      //   Header: 'Remove?',
-      //   Cell: ({ row }) => {
-      //     return <div>
-      //       <button onClick={() => { removeTeam(row) }}> X </button>
-      //     </div>
-      //   }
-      // }
     ], [data]
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)

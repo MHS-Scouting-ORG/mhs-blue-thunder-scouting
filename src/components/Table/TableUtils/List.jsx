@@ -25,14 +25,14 @@ class List extends React.Component{
     render(){
         return(
             <div className={tableStyling.List}>
-                <Checkbox value = "Speaker" changeState={this.addOnColumnSort} id ={0}></Checkbox>
-                <Checkbox value = "Amp" changeState={this.addOnColumnSort} id ={1}></Checkbox>
+                <Checkbox value = "Coral" changeState={this.addOnColumnSort} id ={0}></Checkbox>
+                <Checkbox value = "Algae" changeState={this.addOnColumnSort} id ={1}></Checkbox>
                 <Checkbox value = "Cycles" changeState={this.addOnColumnSort} id ={2}></Checkbox>
                 <Checkbox value = "Total Points" changeState={this.addOnColumnSort} id ={3}></Checkbox>
                 <Checkbox value = "Auto Points" changeState={this.addOnColumnSort} id ={4}></Checkbox>
-                <Checkbox value = "Hang Points" changeState={this.addOnColumnSort} id ={5}></Checkbox>
-                <Checkbox value = "Speaker Points" changeState={this.addOnColumnSort} id ={6}></Checkbox>
-                <Checkbox value = "Amp Points" changeState={this.addOnColumnSort} id ={7}></Checkbox>
+                <Checkbox value = "Endgame Points" changeState={this.addOnColumnSort} id ={5}></Checkbox>
+                <Checkbox value = "Coral Points" changeState={this.addOnColumnSort} id ={6}></Checkbox>
+                <Checkbox value = "Algae Points" changeState={this.addOnColumnSort} id ={7}></Checkbox>
 
             </div>
         )

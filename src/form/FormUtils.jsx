@@ -38,7 +38,7 @@ export async function submitState(
   regional,
   teamNumber,
   matchKey,
-  matchData,
+  apiMatchData,
   matchType,
   elmNum,
   matchNumber,
@@ -115,35 +115,45 @@ export async function submitState(
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-  /* Auto Placement Select */
-  // if (autoPlacement === '') {
-  //   incompleteForm = true;
-  //   windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
-  // }
+   /* Auto Placement Select */
+  if (autoPlacement === '') {
+    incompleteForm = true;
+     windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
+    }
 
-  // if(left){
-  //   autoPoints += 3;
-  // }
+   if(left){
+     autoPoints += 3;
+   }
 
   /* EndGame Select */
-  // if(hangType === 'Deep'){
-  //   endGamePoints += 12;
-  // }
-  // else if(hangType === 'Shallow'){
-  //   endGamePoints += 6;
-  // }
-  // else if(hangType === 'Parked'){
-  //   endGamePoints += 2;
-  // }
-  // else {
-  //   incompleteForm = true;
-  //   windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
-  // }
+   if(hangType === 'Deep'){
+     endGamePoints += 12;
+   }
+   else if(hangType === 'Shallow'){
+     endGamePoints += 6;
+   }
+   else if(hangType === 'Parked'){
+     endGamePoints += 2;
+   }
+   else {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
+   }
 
-  /* Robot Info Select */
-  // if(robotSpeed === 'Slow'){
-
-  // }
+   /* Robot Info Select */
+   if(robotSpeed === 'Slow'){
+    robotSpeed = "Slow";
+   }
+   else if(robotSpeed === "Average"){
+    robotSpeed = "Average";
+   }
+   else if(robotSpeed == "Fast"){
+    robotSpeed ="Fast";
+   }
+   else {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+   }
 
   /* Point Calc */
 
@@ -159,9 +169,6 @@ export async function submitState(
   let cycles = processorScored + netScored + teleCoralL1 + teleCoralL2 + teleCoralL3 + teleCoralL4;
   let totalPoints = autoPoints + telePoints + endGamePoints;
 
-  console.log("test", regional, matchKey, autoPoints, telePoints, totalPoints, hangType)
-
-
   /* Window Msg Check */
   if (incompleteForm) {
     window.alert(windowAlertMsg);
@@ -170,6 +177,8 @@ export async function submitState(
     const matchEntry = buildMatchEntry(regional, teamNumber, matchKey) 
     
     console.log("init", matchEntry)
+
+    matchEntry.TotalPoints = totalPoints
 
      // AUTO SPECIFIC //
     matchEntry.Autonomous.StartingPosition = parseInt(autoPlacement)
@@ -222,22 +231,24 @@ export async function submitState(
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
 
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    //matchEntry.RobotInfo.Comments = robotInsight
+    matchEntry.RobotInfo.Comments = robotInsight
 
 
-    console.log("matchEntry", matchEntry)
+    console.log("matchEntry", matchEntry.Team)
+    console.log("apiMatchData", apiMatchData)
+    console.log(apiMatchData.find(x => x.Team === matchEntry.Team))
 
-    if (matchData === undefined) {
+    /* currently submits and updates the new form completely */
+
+    if (apiMatchData.find(x => x.Team === matchEntry.Team) === undefined) {
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
 
-    //generateRandomEntry(regional, teamNumber, matchKey)
-
     //for testing
    apiGetTeamMatch(matchKey, regional, teamNumber)
-   .then((teamMatch) => console.log(teamMatch))
-  }
+   .then((teamMatch) => console.log("apiGetTeamMatch", teamMatch))
+   .catch(err => console.log(err))
 
-  console.log("test2", regional, matchKey, autoPoints, telePoints, totalPoints, hangType)
+  }
 }

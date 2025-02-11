@@ -9,45 +9,7 @@ async function getTeams (regional) {
      return data.map(obj => {
        const teamNumObj = {
         TeamNumber: obj.team_number,
-       // Matches: '',
-        OPR: "",
         TeamNum: `frc${obj.team_number}`,
-        //=======ROBOT PERFORMANCE PROPS=========//
-        RobotSpeed: '',
-        //custom for each year, scoring elements
-        RobotHang: '',
-        RobotSpeaker: '',
-        RobotAmp: '',
-        RobotTrap: '',
-        //=======Stats=========//
-        AvgPoints: 0,
-        AvgAutoPts: 0,
-        //custom//
-        AvgCycles: 0,
-        AvgSpeaker: 0,
-        AvgAmp: 0,
-        //======Capabilities======//
-        CanDefend: '',
-        //custom
-        CanUnderStage: '',
-        //determined internally not from form dependent on presence of points
-        CanHang: '',
-        CanSpeaker: '',
-        CanAmp: '',
-        CanTrap: '',
-        //======Auto====//
-        AutoStart: 0,
-        AutoCollide: '',
-        //most common
-        //===Field RobotInfo==//
-        //AutoStart: '1',
-        StagePosition: '',
-        //===Penalties===//
-        Fouls: 0,
-        Tech: 0,
-        YellowCard: '',
-        RedCard: '',
-        BrokenRobot: '',
        }
 
        return teamNumObj
@@ -75,43 +37,55 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 0 ))
-      const mcRobotHang = arrMode(teamStats.map((team) => team.RobotInfo.HangRating !== null ? team.RobotInfo.HangRating : 0))
-      const mcRobotSpeaker = arrMode(teamStats.map((team) => team.RobotInfo.SpeakerRating !== null ? team.RobotInfo.SpeakerRating : 0))
-      const mcRobotAmp = arrMode(teamStats.map((team) => team.RobotInfo.AmpRating !== null ? team.RobotInfo.AmpRating : 0))
-      const mcRobotTrap = arrMode(teamStats.map((team) => team.RobotInfo.TrapRating !== null ? team.RobotInfo.TrapRating : 0))
-      const mcIntakeRating = arrMode(teamStats.map((team) => team.RobotInfo.IntakeRating !== null ? team.RobotInfo.IntakeRating : 0))
-      const mcAlignmentSpeed = arrMode(teamStats.map((team) => team.RobotInfo.LineupSpeed !== null ? team.RobotInfo.LineupSpeed : 0))
+
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
-      const avgTeleSpeaker = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Teleop.PointsScored.SpeakerPoints : 0))
-      const avgAutoSpeaker = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.SpeakerPoints !== null ? team.Autonomous.PointsScored.SpeakerPoints : 0))
-      const avgSpeaker = (avgTeleSpeaker + avgAutoSpeaker) / 2
+      const avgTeleCoral = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.CoralPoints !== null ? team.Teleop.PointsScored.CoralPoints : 0))
+      const avgAutoCoral = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.CoralPoints !== null ? team.Autonomous.PointsScored.CoralPoints : 0))
+      const avgCoral = (avgTeleCoral + avgAutoCoral) / 2
 
-      const avgTeleAmp = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointsScored.AmpPoints : 0))
-      const avgAutoAmp = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.AmpPoints !== null ? team.Autonomous.PointsScored.AmpPoints : 0))
-      const avgAmp = (avgTeleAmp + avgAutoAmp) / 2
+      const avgTeleAlgae = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.AlgaePoints !== null ? team.Teleop.PointsScored.AlgaePoints : 0))
+      const avgAutoAlgae = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.AlgaePoints !== null ? team.Autonomous.PointsScored.AlgaePoints : 0))
+      const avgAlgae = (avgTeleAlgae + avgAutoAlgae) / 2
 
-      const hangPoints = teamStats.map((team) => team.Teleop.Endgame.StageResult === "Onstage" ? 2 : 0)
-      const avgHang = calcAvg(hangPoints.length === 0 ? [0] : hangPoints)
+      const avgEndgame = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.EndgamePoints !== null ? team.Teleop.PointsScored.EndgamePoints : 0))
 
       //amount
-      const avgMadeTeleSpeaker = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Speaker !== null ? team.Teleop.AmountScored.Speaker : 0))
-      const avgMadeAutoSpeaker = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Speaker !== null ? team.Autonomous.AmountScored.Speaker : 0))
-      const avgMadeSpeaker = (avgMadeTeleSpeaker + avgMadeAutoSpeaker) / 2
-      const avgMadeTeleAmp = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Amp !== null ? team.Teleop.AmountScored.Amp : 0))
-      const avgMadeAutoAmp = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Amp !== null ? team.Autonomous.AmountScored.Amp : 0))
-      const avgMadeAmp = (avgMadeTeleAmp + avgMadeAutoAmp) / 2
-      //robot capabilities 
-      const canDefend = getCan(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : 0))
-      //custom robot capabilities
-      const canUnderStage = getCan(teamStats.map((team) => team.RobotInfo.PassesUnderStage !== null ? team.RobotInfo.PassesUnderStage : 0))
-      //internal calc
-      const canHang = getCan(teamStats.map((team) => team.Teleop.Endgame.StageResult !== null ? team.Teleop.Endgame.StageResult : 0))
-      const canSpeaker = getCan(teamStats.map((team) => team.Teleop.PointsScored.SpeakerPoints !== null ? team.Teleop.PointsScored.SpeakerPoints : 0))
-      const canAmp = getCan(teamStats.map((team) => team.Teleop.PointsScored.AmpPoints !== null ? team.Teleop.PointsScored.AmpPoints : 0))
-      const canTrap = getCan(teamStats.map((team) => team.Teleop.Endgame.TrapScored !== null ? team.Teleop.Endgame.TrapScored : 0))
+      /* Coral Levels */
+      const avgMadeTeleCoralL1 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL1 !== null ? team.Teleop.AmountScored.CoralL1 : 0))
+      const avgMadeTeleCoralL2= calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL2 !== null ? team.Teleop.AmountScored.CoralL2 : 0))
+      const avgMadeTeleCoralL3 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL3 !== null ? team.Teleop.AmountScored.CoralL3 : 0))
+      const avgMadeTeleCoralL4 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL4 !== null ? team.Teleop.AmountScored.CoralL4 : 0))
+
+      const avgMadeAutoCoralL1 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL1 !== null ? team.Autonomous.AmountScored.CoralL1 : 0))
+      const avgMadeAutoCoralL2 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL2 !== null ? team.Autonomous.AmountScored.CoralL2 : 0))
+      const avgMadeAutoCoralL3 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL3 !== null ? team.Autonomous.AmountScored.CoralL3 : 0))
+      const avgMadeAutoCoralL4 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL4 !== null ? team.Autonomous.AmountScored.CoralL4 : 0))
+
+      const avgMadeCoralL1 = (avgMadeTeleCoralL1 + avgMadeAutoCoralL1) / 2
+      const avgMadeCoralL2 = (avgMadeTeleCoralL2 + avgMadeAutoCoralL2) / 2
+      const avgMadeCoralL3 = (avgMadeTeleCoralL3 + avgMadeAutoCoralL3) / 2
+      const avgMadeCoralL4 = (avgMadeTeleCoralL4 + avgMadeAutoCoralL4) / 2
+      const avgMadeCoral = (avgMadeCoralL1 + avgMadeCoralL2 + avgMadeCoralL3 + avgMadeCoralL4) / 4
+
+      /* Algae */
+      const avgMadeTeleProcessor = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Processor !== null ? team.Teleop.AmountScored.Processor : 0))
+      const avgMadeAutoProcessor = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Processor !== null ? team.Autonomous.AmountScored.Processor : 0))
+
+      const avgMadeProcessor = (avgMadeTeleProcessor + avgMadeAutoProcessor) / 2
+
+      const avgMadeTeleNet = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Net !== null ? team.Teleop.AmountScored.Net : 0))
+      const avgMadeAutoNet = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Processor !== null ? team.Autonomous.AmountScored.Processor : 0))
+
+      const avgMadeNet = (avgMadeTeleNet + avgMadeAutoNet) / 2
+
+      const avgMadeAlgae = (avgMadeProcessor + avgMadeNet) / 2
+
+      /* Accuracy */
+
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
+
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
       const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
@@ -125,64 +99,42 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //reliable 
       const reliableRobotSpeed= getReliability(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 'Average' ), mcRobotSpeed)
-      const reliableRobotHang = getReliability(teamStats.map((team) => team.RobotInfo.HangRating !== null ? team.RobotInfo.HangRating : 'Average'), mcRobotHang)
-      const reliableRobotSpeaker = getReliability(teamStats.map((team) => team.RobotInfo.SpeakerRating !== null ? team.RobotInfo.SpeakerRating : 'Average'), mcRobotSpeaker)
-      const reliableRobotAmp = getReliability(teamStats.map((team) => team.RobotInfo.AmpRating !== null ? team.RobotInfo.AmpRating : 'Average'), mcRobotAmp)
-      const reliableRobotTrap = getReliability(teamStats.map((team) => team.RobotInfo.TrapRating !== null ? team.RobotInfo.TrapRating : 'Average'), mcRobotTrap)
-      const reliableDefense = getReliability(teamStats.map((team) => team.RobotInfo.CanDefend !== null ? team.RobotInfo.CanDefend : false), canDefend === 'yes')
-      const reliableIntake = getReliability(teamStats.map((team) => team.RobotInfo.IntakeRating !== null ? team.RobotInfo.IntakeRating : 'Average'), mcIntakeRating)
-      const reliableAlignment = getReliability(teamStats.map((team) => team.RobotInfo.LineupSpeed !== null ? team.RobotInfo.LineupSpeed : 'Average'), mcAlignmentSpeed)
 
       //grade
-      const maxSpeaker = getMax(tableData.map(team => team.AvgSpeaker))
-      const maxAmp = getMax(tableData.map(team => team.AvgAmp))
+      const maxCoral = getMax(tableData.map(team => team.AvgCoral))
+      const maxAlgae = getMax(tableData.map(team => team.AvgAlgae))
       const maxCycles = getMax(tableData.map(team => team.AvgCycles))
       const maxPts = getMax(tableData.map(team => team.AvgPoints))
       const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
-      const maxHangPts = getMax(tableData.map(team => team.AvgHangPts))
-      const maxSpeakerPts = getMax(tableData.map(team => team.AvgSpeakerPts))
-      const maxAmpPts = getMax(tableData.map(team => team.AvgAmpPts))
+      const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
+      const maxCoralPts = getMax(tableData.map(team => team.AvgCoralPts))
+      const maxAlgaePts = getMax(tableData.map(team => team.AvgAlgaePts))
 
-      const rSpeaker = avgMadeSpeaker / maxSpeaker
-      const rAmp = avgMadeAmp / maxAmp
+      const rCoral = avgMadeCoral / maxCoral
+      const rAlgae = avgMadeAlgae / maxAlgae
       const rCycles = avgCycles / maxCycles
       const rPts = avgPoints / maxPts
       const rAutoPts = avgAutoPoints / maxAutoPts
-      const rHang = avgHang / maxHangPts
-      const rSpeakerPoints = avgSpeaker / maxSpeakerPts 
-      const rAmpPts = avgAmp / maxAmpPts
+      const rEndgamePts = avgEndgame/ maxEndgamePts
+      const rCoralPoints = avgCoral / maxCoralPts 
+      const rAlgaePoints = avgAlgae / maxAlgaePts
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
-        RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ) ,
-        RobotHang: (mcRobotHang === null ? '' : mcRobotHang) + ' ' + (isNaN(reliableRobotHang) ? '' : reliableRobotHang + '%'), 
-        RobotSpeaker:(mcRobotSpeaker === null ? '' : mcRobotSpeaker) + ' ' + (isNaN(reliableRobotSpeaker) ? '' : reliableRobotSpeaker + '%'), //=== true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotSpeaker) ? '' : reliableRobotSpeaker), 
-        RobotAmp: (mcRobotAmp === null ? '' : mcRobotAmp) + ' ' + (isNaN(reliableRobotAmp) ? '' : reliableRobotAmp + '%'), //=== true ? 'Better': 'Worse'  + ' ' + (isNaN(reliableRobotAmp) ? '' : reliableRobotAmp),
-        RobotTrap: (mcRobotTrap === null ? '' : mcRobotTrap) + ' ' +  (isNaN(reliableRobotTrap) ? '' : reliableRobotTrap + '%'), //=== true ? 'Better': 'Worse'  + ' ' +  (isNaN(reliableRobotTrap) ? '' : reliableRobotTrap),
-        IntakeRating: (mcIntakeRating === null ? '' : mcIntakeRating) + ' ' + (isNaN(reliableIntake) ? '' : reliableRobotTrap + '%'),
-        AlignmentSpeed: (mcAlignmentSpeed === null ? '' : mcAlignmentSpeed) + ' ' + (isNaN(reliableAlignment) ? '' : reliableRobotTrap + '%'),
+        RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         //===Stats==/ 
         AvgPoints: isNaN(avgPoints) ? null : avgPoints,
         AvgAutoPts: isNaN(avgAutoPoints) ? null :  avgAutoPoints,
-        AvgHangPts: isNaN(avgHang) ? null : avgHang,
-        AvgSpeakerPts: isNaN(avgSpeaker) ? null : avgSpeaker,
-        AvgAmpPts: isNaN(avgAmp) ? null : avgAmp,
+        AvgEndgamePts: isNaN(avgEndgame) ? null : avgEndgame,
+        AvgCoralPts: isNaN(avgCoral) ? null : avgCoral,
+        AvgAlgaePts: isNaN(avgAlgae) ? null : avgAlgae,
         //custom//
         AvgCycles: isNaN(avgCycles) ? null : avgCycles,
-        AvgSpeaker: isNaN(avgMadeSpeaker) ? null : avgMadeSpeaker,
-        AvgAmp: isNaN(avgMadeAmp) ? null : avgMadeAmp, 
-        //======Capabilities======//
-        CanDefend: (canDefend === 'no' ? '' : canDefend)  + ' ' +  (isNaN(reliableDefense) || canDefend === "no" ? '' : reliableDefense + "%"), //TBD
-        //custom
-        CanUnderStage: canUnderStage  === 'no' ? '' : canUnderStage,
-        //determined interanally not from form dependent on presence of points
-        CanHang: canHang === 'no' ? '' : canHang,
-        CanSpeaker: canSpeaker === 'no' ? '' : canSpeaker,
-        CanAmp: canAmp === 'no' ? '' : canAmp,
-        CanTrap: canTrap === 'no' ? '' : canTrap,
+        AvgCoral: isNaN(avgMadeCoral) ? null : avgMadeCoral,
+        AvgAlgae: isNaN(avgMadeAlgae) ? null : avgMadeAlgae, 
         //===auto==//
         AutoStart: mcAutoStart,
         //===Penalties===//
@@ -195,18 +147,17 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
         DQ: disqualifiedRobots,
         NoShow: noShowRobots,
 
-        SumPriorities: team.SumPriorities,
+        SumPriorities: team.SumPriorities, //grade
 
-        NSpeaker: isNaN(rSpeaker) ? 0 : rSpeaker,
-        NAmp: isNaN(rAmp) ? 0 : rAmp,
+        NCoral: isNaN(rCoral) ? 0 : rCoral,
+        NAlgae: isNaN(rAlgae) ? 0 : rAlgae,
         NCycles: isNaN(rCycles) ? 0 : rCycles,
         NPts: isNaN(rPts) ? 0 : rPts,
         NAutoPts: isNaN(rAutoPts) ? 0 : rAutoPts,
-        NHangPts: isNaN(rHang) ? 0 : rHang,
-        NSpeakerPts: isNaN(rSpeakerPoints) ? 0 : rSpeakerPoints,
-        NAmpPts: isNaN(rAmpPts) ? 0 : rAmpPts,
+        NEndgamePts: isNaN(rEndgamePts) ? 0 : rEndgamePts,
+        NCoralPts: isNaN(rCoralPoints) ? 0 : rCoralPoints,
+        NAlgaePts: isNaN(rAlgaePoints) ? 0 : rAlgaePoints,
 
-        Selected: false,
       }
       return tableDataObj;
     })

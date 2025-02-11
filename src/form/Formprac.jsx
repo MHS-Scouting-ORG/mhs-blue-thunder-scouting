@@ -12,7 +12,8 @@ function Formprac (props) {
   const regional = apiGetRegional()
 
   /* MATCH */
-  const [matchData, setMatchData] = useState([])
+  const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
+  const [apiMatchData, setApiMatchData] = useState([]) //match data in our database
   const [matchType, setMatchType] = useState(''); //match type
   const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
@@ -21,7 +22,6 @@ function Formprac (props) {
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
-  const [presentMatchData, setPresentMatchData] = useState([]) //state for present match in our database
 
   /* AUTO SPECIFIC */
   const [autoPlacement, setAuoPlacement] = useState(''); //1,2,3,4
@@ -82,60 +82,23 @@ function Formprac (props) {
       data.map((match) => {
         if(match.key === matchKey) {
           setMatchData(match)
-          //console.log("bluealliace", matchData)
           setRed(match.alliances.red.team_keys)
           setBlue(match.alliances.blue.team_keys)
         }
       })
-
-    }, [matchType, elmNum, matchNumber])
+    }, [])
   })
 
-  const check = () => {
-    console.log("match data", matchData)
-    console.log("match type", matchType)
-    console.log("elm num", elmNum)
-    console.log("match number", matchNumber)
-    console.log("team number", teamNumber)
-    console.log("color", color)
-    console.log("red", red)
-    console.log("blue", blue)
-    console.log("match key", matchKey)
-    console.log("auto placement", autoPlacement)
-    console.log("left", left)
-    console.log("auto coral l1", autoCoralL1)
-    console.log("auto coral l2", autoCoralL2)
-    console.log("auto coral l3", autoCoralL3)
-    console.log("auto coral l4", autoCoralL4)
-    console.log("auto processor scored", autoProcessorScored)
-    console.log("auto net scored", autoNetScored)
-    console.log("tele coral l1", teleCoralL1)
-    console.log("tele coral l2", teleCoralL2)
-    console.log("tele coral l3", teleCoralL3)
-    console.log("tele coral l4", teleCoralL4)
-    console.log("processor scored", processorScored)
-    console.log("net scored", netScored)
-    console.log("hang type", hangType)
-    console.log("missed coral l1", missedCoralL1)
-    console.log("missed coral l2", missedCoralL2)
-    console.log("missed coral l3", missedCoralL3)
-    console.log("missed coral l4", missedCoralL4)
-    console.log("missed processor", missedProcessor)
-    console.log("missed net", missedNet)
-    console.log("human net made", humanNetMade)
-    console.log("human net missed", humanNetMissed)
-    console.log("yellow card", yellowCard)
-    console.log("red card", redCard)
-    console.log("disable", disable)
-    console.log("dq", dq)
-    console.log("bot broke", botBroke)
-    console.log("no show", noShow)
-    console.log("min fouls", minFouls)
-    console.log("maj fouls", majFouls)
-    console.log("robot speed", robotSpeed)
-    console.log("robot insight", robotInsight)
-    console.log("robot broken comments", robotBrokenComments)
-  }
+   useEffect(() => {
+    /* Check for pre-existing match data in our api */
+    apigetMatchesForRegional(regional)
+    .then((data) => {
+      let matches = data.data.teamMatchesByRegional.items
+      let team = matches.find((x) => x.Team === teamNumber)
+      team !== undefined && apiMatchData.find((x) => x.Team === teamNumber) === undefined ? setApiMatchData(apiMatchData.concat(team)) : null
+    })
+  },[teamNumber]
+) 
   
   return (
     <div>
@@ -145,7 +108,7 @@ function Formprac (props) {
       {/* Match Init */}
         <h2>MATCH & ROBOT</h2>
 
-        <select value= {matchType} onChange={(e) => {setMatchType(e.target.value); setElmNum("")}}>
+        <select value= {matchType} onInput={(e) => {setMatchType(e.target.value); setElmNum("")}}>
           <option value = ""></option>
           <option value = 'q'>Qualification</option>
           <option value = 'qf'>Quarterfinal</option>
@@ -162,19 +125,7 @@ function Formprac (props) {
 
         <button onClick={() => setColor(!color)}>{color === false ? 'RED' : 'BLUE'}</button>
 
-        <select value = {teamNumber.substring(3)} 
-          onChange={
-            async (e) => {
-              setTeamNumber(e.target.value); 
-              apigetMatchesForRegional(regional)
-                .then((data) => {
-                  let matches = data.data.teamMatchesByRegional.items
-                  matches.find((x) => x.Team === teamNumber) !== undefined ? setMatchData(matches.find((x) => x.team === teamNumber)) : console.log("no current match in our database")
-                  console.log(matchData)
-              }, [])
-            }
-          }
-        >
+        <select value = {teamNumber.substring(3)} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
           {color === false ?
 
@@ -262,12 +213,12 @@ function Formprac (props) {
           <br></br>
       </div>
         {/* Submit */}
-      <button onClick={() => {setConfirm(!confirm); check()}}>{confirm ? "Not Yet" : "Submit"}</button>
+      <button onClick={() => {setConfirm(!confirm)}}>{confirm ? "Not Yet" : "Submit"}</button>
       {confirm ? <button onClick={() => submitState(
         regional,
         teamNumber,
         matchKey,
-        matchData,
+        apiMatchData,
         matchType,
         elmNum,
         matchNumber,

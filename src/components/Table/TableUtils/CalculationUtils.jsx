@@ -18,13 +18,13 @@ const getCan = (arr) => {
   return can
 }
 //grade
-const calcColumnSort = (arr, speaker, amp, cycles, pts, autoPts, hang, speakerPts, ampPts) => {
+const calcColumnSort = (arr, coral, algae, cycles, pts, autoPts, endgame, coralPts, algaePts) => {
   let sum = 0;
-  if (arr.includes("Speaker")) {
-    sum = sum + speaker;
+  if (arr.includes("Coral")) {
+    sum = sum + coral;
   }
-  if (arr.includes("Amp")) {
-    sum = sum + amp;
+  if (arr.includes("Algae")) {
+    sum = sum + algae;
   }
   if (arr.includes("Cycles")) {
     sum = sum + cycles;
@@ -35,14 +35,14 @@ const calcColumnSort = (arr, speaker, amp, cycles, pts, autoPts, hang, speakerPt
   if (arr.includes("Auto Points")) {
     sum = sum + autoPts;
   }
-  if (arr.includes("Hang Points")) {
-    sum = sum + hang;
+  if (arr.includes("Endgame Points")) {
+    sum = sum + endgame;
   }
-  if (arr.includes("Speaker Points")) {
-    sum = sum + speakerPts;
+  if (arr.includes("Coral Points")) {
+    sum = sum + coralPts;
   }
-  if (arr.includes("Amp Points")) {
-    sum = sum + ampPts;
+  if (arr.includes("Algae Points")) {
+    sum = sum + algaePts;
   }
 
   return sum.toFixed(3);
