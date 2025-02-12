@@ -101,4 +101,13 @@ const getMax = (arr) => {
   return arr.sort((a, b) => b - a).shift();
 } 
 
-export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability, getMatchesOfPenalty, getMax};
+const getSummary = (arr) => {
+  const newarr = arr.map((match) => {return match.RobotInfo.Comments + ", "})
+  let sumComment = ""
+  for(let i = 0; i < newarr.length; i++){
+    sumComment += newarr[i];
+  }
+  return sumComment
+}
+
+export {uniqueArr, arrMode, calcAvg, getCan, calcColumnSort, getReliability, getMatchesOfPenalty, getMax, getSummary};

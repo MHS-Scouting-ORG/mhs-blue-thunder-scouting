@@ -6,13 +6,7 @@ import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { apigetMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
 import List from "./TableUtils/List";
-import StatsTable from "./Tables/StatsTable";
-import RobotPerformance from "./Tables/RobotPerformance";
-import RobotCapabilities from "./Tables/RobotCapabilities";
 import TeamStats from "./Tables/TeamStats";
-import Penalties from "./Tables/Penalties";
-import TeamMatches from "./Tables/TeamMatches";
-import Bookmarks from "./Tables/Bookmarks";
 import DefaultTable from "./Tables/DefaultTable"
 
 import { apiGetRegional } from "../../api"
@@ -34,6 +28,8 @@ function TableProt(props) {
   const [addTableButton2, setAddTableButton2] = useState('')
 
   const [teamsClicked, setTeamsClicked] = useState([]);
+  const [teamsClicked2, setTeamsClicked2] = useState([]);
+  const [teamsClicked3, setTeamsClicked3] = useState([]);
 
   useEffect(() => {
     apigetMatchesForRegional(regional)
@@ -90,11 +86,10 @@ function TableProt(props) {
   }
 
   /* (needs fixing) adds mutiple team instances  */  
-  const handleTeamClicked = (team) => {
+  const handleTeamClicked = (team, val) => {
     console.log("tableData", tableData)
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
-
-    setTeamsClicked(teamsClicked => [...teamsClicked, {
+    const teamObj =  {
       TeamNumber: team,
       AvgPoints: indivTeam.AvgPoints,
       AvgAutoPts: indivTeam.AvgAutoPts,
@@ -114,8 +109,19 @@ function TableProt(props) {
       Disabled: indivTeam.Disabled,
       DQ: indivTeam.DQ,
       NoShow: indivTeam.NoShow,
-
-    }]) 
+    }
+    if(val === "leftClick") {
+      setTeamsClicked(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else if(val === "rightClick"){
+      setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else if(val === "doubleClick"){
+      setTeamsClicked3(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else{
+      console.log("error")
+    }
   }
 
   const data = React.useMemo(
@@ -188,19 +194,8 @@ function TableProt(props) {
                   <TeamStats selectedTeams={teamsClicked} {...filterState} />
                 </div>
 
-                {/* Compare another team button : adds new table */}
                 <div>
-                {/* {
-                  addTableButton === '' ? 
-                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
-                  : 
-                    <div>
-                      <TeamStats selectedTeams={teamsClicked} {...filterState}/> 
-                      <button onClick={addTable}>-</button>  
-                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
-                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
-                    </div>
-                } */}
+                
                 </div>
               </div>
 
@@ -224,31 +219,25 @@ function TableProt(props) {
         <div className={tableStyles.TableRow}>
 
           <div>
-          <div>Here will be second populated table/custom table or diff type of visualization </div>
-            <RobotCapabilities {...filterState} />
+            {/* Custom Table*/}
+                {
+                  addTableButton === '' ? 
+                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
+                  : 
+                    <div>
+                      <TeamStats selectedTeams={teamsClicked2} {...filterState}/> 
+                      <button onClick={addTable}>-</button>  
+                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
+                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked3} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
+                    </div>
+                }
           </div>
           <div>
-          <div>Here will be graph </div>
-            <RobotPerformance {...filterState} />
-          </div>
-
-        </div>
-
-        {/* secondRow container*/}
-        <div className={tableStyles.TableRow}>
-
-          <div>
-            <StatsTable {...filterState} />
-          </div>
-
-          <div>
-            <Penalties {...filterState} />
-          </div>
-
+              {/* Custom Graph */}
+              
+            </div>
         </div>
       </div>
-
-
     </div>
   )
 }

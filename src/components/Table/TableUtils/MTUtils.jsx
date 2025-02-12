@@ -1,6 +1,6 @@
 import { apigetMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty, getMax } from "./CalculationUtils"
+import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty, getMax, uniqueArr, getSummary } from "./CalculationUtils"
 
 async function getTeams (regional) {
   try {
@@ -31,6 +31,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const teamMatchData = data.data.teamMatchesByRegional.items;
       //console.log('teamMatchData: ', teamMatchData)
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
+      console.log("teamStats", teamStats)
       //general
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))
       const avgAutoPoints = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Points !== null ? team.Autonomous.PointsScored.Points : 0))
@@ -98,7 +99,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const noShowRobots = getMatchesOfPenalty(teamStats,"NoShow")
 
       //reliable 
-      const reliableRobotSpeed= getReliability(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 'Average' ), mcRobotSpeed)
+      const reliableRobotSpeed = getReliability(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 'Average' ), mcRobotSpeed)
+
+      const evaluations = getSummary(teamStats)
 
       //grade
       const maxCoral = getMax(tableData.map(team => team.AvgCoral))
@@ -147,6 +150,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
         DQ: disqualifiedRobots,
         NoShow: noShowRobots,
 
+        
+        Evaluations: evaluations, 
         SumPriorities: team.SumPriorities, //grade
 
         NCoral: isNaN(rCoral) ? 0 : rCoral,

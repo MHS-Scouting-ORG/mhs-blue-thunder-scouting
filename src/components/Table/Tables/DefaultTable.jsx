@@ -10,6 +10,7 @@ function DefaultTable(props) {
   const regional = props.regionalEvent
   const tableData = props.sortData
   const teamsClickedFunc = props.teamsClicked
+  const info = props.information
 
   const [rankingState, setRankingState] = useState([])
   const [simpleTeams, setSimpleTeams] = useState([])
@@ -48,6 +49,8 @@ function DefaultTable(props) {
   const data = React.useMemo(
     () => rankingState.map(team => {
       let simTeam = 'error';
+      const tableTeam = info.find(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
+
       simpleTeams.map(sTeam => {
         if(sTeam.key.substring(3) === team.team_key.substring(3)){
           simTeam = sTeam
@@ -61,6 +64,7 @@ function DefaultTable(props) {
           TeamNumber: team.team_key.substring(3),
           Name: simTeam.nickname,
           SumPriorities: sumSort[0] === undefined ? 0.000 : sumSort[0].SumPriorities,
+          Evaluation: tableTeam === undefined ? '' : tableTeam.Evaluations,
         } : null
     }), [rankingState,tableData]
   )
@@ -71,7 +75,11 @@ function DefaultTable(props) {
         Header: "Team Number",
         accessor: "TeamNumber",
         Cell: ({ row }) => (
-          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} onClick={() => {teamsClickedFunc(row.original.TeamNumber)}}>
+          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} 
+            onClick={() => {teamsClickedFunc(row.original.TeamNumber, "leftClick")}}
+            onDoubleClick={() => {teamsClickedFunc(row.original.TeamNumber, "doubleClick")}}
+            onContextMenu={() => {teamsClickedFunc(row.original.TeamNumber, "rightClick")}}
+          >
             {row.values.TeamNumber}
           </div>
         )

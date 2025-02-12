@@ -8,7 +8,7 @@ function TeamStats(props) {
   const selectedTeams = props.selectedTeams
   const info = props.information
 
-  const [tableState, setTableState] = useState('none')
+  const [tableState, setTableState] = useState('')
   const [tableColumns, setTableColumns] = useState([{Header: "Team", accessor: "TeamNumber", Cell: ({ row }) => (<div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}> {row.values.TeamNumber} </div>)}])
 
     useEffect(() => {
@@ -17,11 +17,11 @@ function TeamStats(props) {
     }, [filter])
 
   const toggleTable = () => {
-      if(tableState === 'none'){
-      setTableState(' ')
+      if(tableState === ''){
+      setTableState('none')
       }
       else {
-        setTableState('none')
+        setTableState('')
       }
     }
   

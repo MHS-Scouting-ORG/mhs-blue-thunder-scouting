@@ -240,7 +240,7 @@ export async function submitState(
 
     /* currently submits and updates the new form completely */
 
-    if (apiMatchData.find(x => x.Team === matchEntry.Team) === undefined) {
+    if (apiMatchData === undefined) {
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
