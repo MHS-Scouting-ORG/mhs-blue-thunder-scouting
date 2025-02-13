@@ -17,6 +17,12 @@ type TeleScoring {
   Processor: Int
   Net: Int
   Cycles: Int
+  CoralL1Missed: Int
+  CoralL2Missed: Int
+  CoralL3Missed: Int
+  CoralL4Missed: Int
+  ProcessorMissed: Int
+  NetMissed: Int
 }
 
 type TelePointsScoring {

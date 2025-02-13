@@ -90,6 +90,12 @@ export const createTeamMatch = /* GraphQL */ `
           Processor
           Net
           Cycles
+          CoralL1Missed
+          CoralL2Missed
+          CoralL3Missed
+          CoralL4Missed
+          ProcessorMissed
+          NetMissed
           __typename
         }
         PointsScored {
@@ -178,6 +184,12 @@ export const updateTeamMatch = /* GraphQL */ `
           Processor
           Net
           Cycles
+          CoralL1Missed
+          CoralL2Missed
+          CoralL3Missed
+          CoralL4Missed
+          ProcessorMissed
+          NetMissed
           __typename
         }
         PointsScored {
@@ -266,6 +278,12 @@ export const deleteTeamMatch = /* GraphQL */ `
           Processor
           Net
           Cycles
+          CoralL1Missed
+          CoralL2Missed
+          CoralL3Missed
+          CoralL4Missed
+          ProcessorMissed
+          NetMissed
           __typename
         }
         PointsScored {

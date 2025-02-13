@@ -29,7 +29,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      //console.log('teamMatchData: ', teamMatchData)
+      console.log('teamMatchData: ', teamMatchData)
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
       console.log("teamStats", teamStats)
       //general
@@ -83,6 +83,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const avgMadeAlgae = (avgMadeProcessor + avgMadeNet) / 2
 
       /* Accuracy */
+      
 
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
