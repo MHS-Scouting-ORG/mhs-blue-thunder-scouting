@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { getOprs, getTeamsInRegional } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
@@ -8,6 +8,9 @@ import GlobalFilter from "./TableUtils/GlobalFilter";
 import List from "./TableUtils/List";
 import TeamStats from "./Tables/TeamStats";
 import DefaultTable from "./Tables/DefaultTable"
+import { Line } from "react-chartjs-2"
+import 'chart.js/auto'; // ADD THIS
+
 
 import { apiGetRegional } from "../../api"
 
@@ -44,6 +47,7 @@ function TableProt(props) {
 
         setApiData(matchEntries)
         console.log("current matches", matchEntries)
+
       })
       .catch(err => console.log(err))
   }, [])
@@ -66,6 +70,8 @@ function TableProt(props) {
       })
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy])
+
+  const ref = useRef();
 
   const addTable = () => {
     if(addTableButton === ''){
@@ -173,6 +179,20 @@ function TableProt(props) {
     ], []
   )
 
+  const lineData = {
+    labels: ["test", "test1"],
+    datasets: [
+      {
+        label: "test3",
+        data: 2, 
+      },
+      {
+        label: "test4", 
+        data: 3,
+      }
+    ]
+  }
+
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy, useExpanded);
 
   const {
@@ -201,7 +221,6 @@ function TableProt(props) {
               {/* first row container */}
               <div className={tableStyles.TableRow}>
                 <div>
-                  <div>Here will be default Table: team #, number, and Quick Evals</div>
                   <DefaultTable sortData = {data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
                 </div>
 
@@ -250,7 +269,7 @@ function TableProt(props) {
           </div>
           <div>
               {/* Custom Graph */}
-              
+              <Line ref = {ref} data = {lineData}></Line>
             </div>
         </div>
       </div>

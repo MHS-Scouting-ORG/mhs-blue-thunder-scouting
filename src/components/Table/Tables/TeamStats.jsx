@@ -91,9 +91,6 @@ function TeamStats(props) {
     <button onClick={() => tableColumns.find((e) => e.Header === "NET ACC") === undefined ? setTableColumns(tableColumns.concat([{Header: "NET ACC", accessor: "NetAcc"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "NET ACC"))}>NET ACC</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "ALGAE ACC") === undefined ? setTableColumns(tableColumns.concat([{Header: "ALGAE ACC", accessor: "AlgaeAcc"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "ALGAE ACC"))}>ALGAE ACC</button>
 
-
-
-
     <table className={tableStyles.Table}{...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
