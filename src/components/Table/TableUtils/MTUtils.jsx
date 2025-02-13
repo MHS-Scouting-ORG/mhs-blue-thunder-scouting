@@ -83,7 +83,29 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const avgMadeAlgae = (avgMadeProcessor + avgMadeNet) / 2
 
       /* Accuracy */
+      const avgMissedCoralL1 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL1Missed !== null ? team.Teleop.AmountScored.CoralL1Missed : 0))
+      const avgMissedCoralL2 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL2Missed !== null ? team.Teleop.AmountScored.CoralL2Missed : 0))
+      const avgMissedCoralL3 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL3Missed !== null ? team.Teleop.AmountScored.CoralL3Missed : 0))
+      const avgMissedCoralL4 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL4Missed !== null ? team.Teleop.AmountScored.CoralL4Missed : 0))
+      const avgMissedCoral = (avgMissedCoralL1 + avgMissedCoralL2 + avgMissedCoralL3 + avgMissedCoralL4) / 4
+
+      const avgMissedProcessor = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.ProcessorMissed !== null ? team.Teleop.AmountScored.ProcessorMissed : 0))
+      const avgMissedNet = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.NetMissed !== null ? team.Teleop.AmountScored.NetMissed : 0))
+      const avgMissedAlgae = (avgMissedProcessor + avgMissedNet) / 2
+
+      const coralL1Acc = avgMadeTeleCoralL1 / (avgMadeTeleCoralL1 + avgMissedCoralL1)
+      const coralL2Acc = avgMadeTeleCoralL2 / (avgMadeTeleCoralL2 + avgMissedCoralL2)
+      const coralL3Acc = avgMadeTeleCoralL3 / (avgMadeTeleCoralL3 + avgMissedCoralL3)
+      const coralL4Acc = avgMadeTeleCoralL4 / (avgMadeTeleCoralL4 + avgMissedCoralL4)
+      const avgCoralTele = (avgMadeTeleCoralL1 + avgMadeTeleCoralL2 + avgMadeTeleCoralL3 + avgMadeTeleCoralL4) / 4
+      const coralAcc =  avgCoralTele / (avgCoralTele + avgMissedCoral)
       
+      const processorAcc = avgMadeTeleProcessor / (avgMadeTeleProcessor + avgMissedProcessor)
+      const netAcc = avgMadeTeleNet / (avgMadeTeleNet + avgMissedNet)
+
+      const avgAlgaeTele =  (avgMadeTeleProcessor + avgMadeTeleNet) / 2
+      const algaeAcc = avgAlgaeTele / (avgAlgaeTele + avgMissedAlgae)
+
 
       //Auto
       const mcAutoStart = arrMode(teamStats.map((team) => team.Autonomous.StartingPosition !== null ? team.Autonomous.StartingPosition : 0 ))
@@ -135,10 +157,28 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
         AvgEndgamePts: isNaN(avgEndgame) ? null : avgEndgame,
         AvgCoralPts: isNaN(avgCoral) ? null : avgCoral,
         AvgAlgaePts: isNaN(avgAlgae) ? null : avgAlgae,
-        //custom//
+        //Made//
         AvgCycles: isNaN(avgCycles) ? null : avgCycles,
         AvgCoral: isNaN(avgMadeCoral) ? null : avgMadeCoral,
         AvgAlgae: isNaN(avgMadeAlgae) ? null : avgMadeAlgae, 
+        /* Missed */
+        AvgMissedCoralL1: isNaN(avgMissedCoralL1) ? null : avgMissedCoralL1,
+        AvgMissedCoralL2: isNaN(avgMissedCoralL2) ? null : avgMissedCoralL2,
+        AvgMissedCoralL3: isNaN(avgMissedCoralL3) ? null : avgMissedCoralL3,
+        AvgMissedCoralL4: isNaN(avgMissedCoralL4) ? null : avgMissedCoralL4,
+        AvgMissedCoral: isNaN(avgMissedCoral) ? null : avgMissedCoral,
+        AvgMissedProcessor: isNaN(avgMissedProcessor) ? null : avgMissedProcessor,
+        AvgMissedNet: isNaN(avgMissedNet) ? null : avgMissedNet,
+        AvgMissedAlgae: isNaN(avgMissedAlgae) ? null : avgMissedAlgae,
+        /* Acc */
+        CoralL1Acc: isNaN(coralL1Acc) ? null : coralL1Acc,
+        CoralL2Acc: isNaN(coralL2Acc) ? null : coralL2Acc,
+        CoralL3Acc: isNaN(coralL3Acc) ? null : coralL3Acc,
+        CoralL4Acc: isNaN(coralL4Acc) ? null : coralL4Acc,
+        CoralAcc: isNaN(coralAcc) ? null : coralAcc,
+        ProcessorAcc: isNaN(processorAcc) ? null : processorAcc,
+        NetAcc: isNaN(netAcc) ? null : netAcc,
+        AlgaeAcc: isNaN(algaeAcc) ? null : algaeAcc,
         //===auto==//
         AutoStart: mcAutoStart,
         //===Penalties===//
