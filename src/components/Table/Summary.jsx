@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs } from "../../api/bluealliance";
-import { calcColumnSort } from "./TableUtils/CalculationUtils"
+import { getOprs, getTeamsInRegional } from "../../api/bluealliance";
+import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { apigetMatchesForRegional } from "../../api";
 import GlobalFilter from "./TableUtils/GlobalFilter";
 import List from "./TableUtils/List";
-import StatsTable from "./Tables/StatsTable";
-import RobotPerformance from "./Tables/RobotPerformance";
-import RobotCapabilities from "./Tables/RobotCapabilities";
-import RobotAuto from "./Tables/TeamStats";
-import Penalties from "./Tables/Penalties";
-import TeamMatches from "./Tables/TeamMatches";
-import Bookmarks from "./Tables/Bookmarks";
+import TeamStats from "./Tables/TeamStats";
 import DefaultTable from "./Tables/DefaultTable"
+import CustomGraph from "./Graphs/CustomGraph"
+import 'chart.js/auto';
 
-import { apiGetRegional } from "../../api";
+import { apiGetRegional } from "../../api"
 
 //CSS
 import tableStyles from "./Table.module.css";
@@ -29,10 +25,13 @@ function Summary(props) {
 
   const [apiData, setApiData] = useState([])
   const [oprList, setOprList] = useState([]);
-  const [dprList, setDprList] = useState([]);
-  const [ccwmList, setCcwmList] = useState([]);
 
-  const [bookmark, setBookmark] = useState([]);
+  const [addTableButton, setAddTableButton] = useState('')
+  const [addTableButton2, setAddTableButton2] = useState('')
+
+  const [teamsClicked, setTeamsClicked] = useState([]);
+  const [teamsClicked2, setTeamsClicked2] = useState([]);
+  const [teamsClicked3, setTeamsClicked3] = useState([]);
 
   useEffect(() => {
     apigetMatchesForRegional(regional)
@@ -46,70 +45,109 @@ function Summary(props) {
         })
 
         setApiData(matchEntries)
-        console.log(matchEntries)
+        console.log("current matches", matchEntries)
+
       })
       .catch(err => console.log(err))
   }, [])
 
-  useEffect(() => {    //set opr data
+  useEffect(() => {    //change to statbotics
     getOprs(regional)
       .then(data => {
         const oprDataArr = Object.values(data)
-        const cData = oprDataArr[0] //ccwm 
-        const dData = oprDataArr[1] //dpr
         const oData = oprDataArr[2] //opr
 
         setOprList(oData)
-        setDprList(dData)
-        setCcwmList(cData)
       })
   }, [])
 
   useEffect(() => {
-    ueTableData(oprList, ccwmList, dprList, tableData, regional)
+    ueTableData(oprList, tableData, regional)
       .then(data => {
         let holdTableData = data
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, oprList, sortBy,])
+  }, [apiData, oprList, sortBy])
 
-  const addBookmark = (row) => {
-    const teamNumber = row.original.Team
-    const matchNumber = row.cells[0].value;
+  const ref = useRef();
 
-    const changeApiData = async () => {
-      try {
-        const allData = await getMatchesForRegional(regional)
-        const newApiData = allData.data.teamMatchesByRegional.items
-
-        const arrNewBookmark = newApiData.filter((matchEntry) => (teamNumber === matchEntry.Team.substring(3) && matchNumber === matchEntry.id.substring((matchEntry.id).indexOf("_") + 1)))
-        const newBookmarkEntry = arrNewBookmark[0]
-
-        let tempBookmark = bookmark
-        tempBookmark.find(x => teamNumber === x.Team.substring(3) && matchNumber === x.id.substring((x.id).indexOf("_") + 1)) ? null : tempBookmark.push(newBookmarkEntry)
-
-        setBookmark(tempBookmark)
-      }
-      catch (err) {
-        console.log(err)
-      }
+  const addTable = () => {
+    if(addTableButton === ''){
+    setAddTableButton('hidden')
     }
-    changeApiData();
+    else {
+      setAddTableButton('')
+    }
   }
 
-  const removeBookmark = (row) => {
-    const teamNumber = row.cells[0].value
-    const matchNumber = row.cells[1].value
+  const addTable2 = () => {
+    if(addTableButton2 === ''){
+      setAddTableButton2('hidden')
+      }
+      else {
+        setAddTableButton2('')
+      }
+  }
 
-    const newBookmarkEntries = bookmark.filter((bookmarkedEntry) => !(teamNumber === bookmarkedEntry.Team.substring(3) && matchNumber === bookmarkedEntry.id.substring((bookmarkedEntry.id).indexOf("_") + 1))).splice(0)
-
-    setBookmark(newBookmarkEntries)
+  /* (needs fixing) adds mutiple team instances  */  
+  const handleTeamClicked = (team, val) => {
+    console.log("team", team)
+    const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
+    const teamObj =  {
+      TeamNumber: team,
+      AvgPoints: indivTeam.AvgPoints,
+      AvgAutoPts: indivTeam.AvgAutoPts,
+      AvgEndgamePts: indivTeam.AvgCoralPts,
+      AvgCoralPts: indivTeam.AvgCoralPts,
+      AvgAlgaePts: indivTeam.AvgAlgaePts,
+      AvgCycles: indivTeam.AvgCycles,
+      AvgCoral: indivTeam.AvgCoral,
+      AvgAlgae: indivTeam.AvgAlgae,
+      AvgMissedCoralL1: indivTeam.AvgMissedCoralL1,
+      AvgMissedCoralL2: indivTeam.AvgMissedCoralL2,
+      AvgMissedCoralL3: indivTeam.AvgMissedCoralL3,
+      AvgMissedCoralL4: indivTeam.AvgMissedCoralL4,
+      AvgMissedCoral: indivTeam.AvgMissedCoral,
+      AvgMissedProcessor: indivTeam.AvgMissedProcessor,
+      AvgMissedNet: indivTeam.AvgMissedNet,
+      AvgMissedAlgae: indivTeam.AvgMissedAlgae,
+      CoralL1Acc: indivTeam.CoralL1Acc,
+      CoralL2Acc: indivTeam.CoralL2Acc,
+      CoralL3Acc: indivTeam.CoralL3Acc,
+      CoralL4Acc: indivTeam.CoralL4Acc,
+      CoralAcc: indivTeam.CoralAcc,
+      ProcessorAcc: indivTeam.ProcessorAcc,
+      NetAcc: indivTeam.NetAcc,
+      AlgaeAcc: indivTeam.AlgaeAcc,
+      AutoStart: indivTeam.AutoStart,
+      RobotSpeed: indivTeam.RobotSpeed,
+      Fouls: indivTeam.Fouls,
+      Tech: indivTeam.Tech,
+      YellowCard: indivTeam.YellowCard,
+      RedCard: indivTeam.RedCard,
+      BrokenRobot: indivTeam.BrokenRobot,
+      Disabled: indivTeam.Disabled,
+      DQ: indivTeam.DQ,
+      NoShow: indivTeam.NoShow,
+    }
+    if(val === "leftClick") {
+      setTeamsClicked(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else if(val === "rightClick"){
+      setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else if(val === "doubleClick"){
+      setTeamsClicked3(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else{
+      console.log("error")
+    }
   }
 
   const data = React.useMemo(
     () => tableData.map(team => {
-      const grade = calcColumnSort(sortBy, team.NSpeaker, team.NAmp, team.NCycles, team.NPts, team.NAutoPts, team.NHangPts, team.NSpeakerPts, team.NAmpPts)
+      const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
       return {
         TeamNumber: team.TeamNumber,
         Matches: team.Matches,
@@ -117,45 +155,22 @@ function Summary(props) {
 
         SumPriorities: grade !== 0.000 ? grade : 0,
         
-        NSpeaker: team.NSpeaker,
-        NAmp: team.NAmp,
+        NCoral: team.NCoral,
+        NAlgae: team.NAlgae,
         NCycles: team.NCycles,
         NPts: team.NPts,
         NAutoPts: team.NAutoPts,
-        NHangPts: team.NHangPts,
-        NSpeakerPts: team.NSpeakerPts,
-        NAmpPts: team.NAmpPts,
+        NEndgamePts: team.NEndgamePts,
+        NCoralPts: team.NCoralPts,
+        NAlgaePts: team.NAlgaePts,
+
+        Selected: team.Selected,
       }
     }), [tableData, sortBy]
   )
 
   const columns = React.useMemo(
     () => [
-      {
-        Header: "Team #",
-        accessor: "TeamNumber",
-        Cell: ({ row }) => (
-          <span{...row.getToggleRowExpandedProps()}>
-            <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}>
-              {row.values.TeamNumber}
-            </div>
-          </span>
-        )
-      },
-      {
-        Header: "Priorities/Strategies",
-        accessor: "Priorities",
-        Cell: ({ row }) => (
-          <div
-            style={{
-              whiteSpace: 'normal',
-            }}
-          >
-            {row.original.Priorities}
-          </div>
-        )
-      },
-
       {
         Header: "Grade",
         accessor: "SumPriorities",
@@ -170,13 +185,6 @@ function Summary(props) {
     setGlobalFilter,
   } = tableInstance
 
-  //=======================================================================//
-  // const tableInstance = useTable( {}, useGlobalFilter, useSortBy )
-  // const {
-  //   state,
-  //   setGlobalFilter
-  // } = tableInstance
-
   const { globalFilter } = state
 
   const filterState = {
@@ -188,37 +196,27 @@ function Summary(props) {
     <div>
       <br></br>
       <img alt="" style={{ width: '360px' }} src={'./images/TABLEHEADER.png'}></img>
-      {/* <h1 style={{ textAlign: 'center' }}>Crescendo<img src={"./images/bluethundalogo.png"} width="75px" height="75px"></img></h1> */}
       <table >
         <tbody>
           <tr>
-            <td
-
-            >
-
+            <td>
               <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
               {<List setList={setSortBy} />}
               <br />
               {/* first row container */}
               <div className={tableStyles.TableRow}>
-
                 <div>
-                  <DefaultTable sortData = {data} regionalEvent={regional} {...filterState} />
+                  <DefaultTable sortData = {data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
                 </div>
 
                 <div>
-                  <RobotAuto {...filterState} />
+                  <div>Here will be populated table/custom table</div>
+                  <TeamStats selectedTeams={teamsClicked} {...filterState} />
                 </div>
 
-              </div>
-              {/* Second row container */}
-              <div className={tableStyles.TableRow}>
-
-                <TeamMatches handleBookmark={addBookmark} teamMatches={apiData} event={regional} {...filterState}></TeamMatches>
-                <Bookmarks bookmarkData={bookmark} handleBookmark={removeBookmark} {...filterState}></Bookmarks>
-
-              </div>
-              <div>
+                <div>
+                
+                </div>
               </div>
 
               <br></br>
@@ -231,7 +229,6 @@ function Summary(props) {
         </tbody>
       </table>
 
-
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
 
       <br></br>
@@ -242,29 +239,25 @@ function Summary(props) {
         <div className={tableStyles.TableRow}>
 
           <div>
-            <RobotCapabilities {...filterState} />
+            {/* Custom Table*/}
+                {
+                  addTableButton === '' ? 
+                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
+                  : 
+                    <div>
+                      <TeamStats selectedTeams={teamsClicked2} {...filterState}/> 
+                      <button onClick={addTable}>-</button>  
+                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
+                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked3} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
+                    </div>
+                }
           </div>
           <div>
-            <RobotPerformance {...filterState} />
-          </div>
-
-        </div>
-
-        {/* secondRow container*/}
-        <div className={tableStyles.TableRow}>
-
-          <div>
-            <StatsTable {...filterState} />
-          </div>
-
-          <div>
-            <Penalties {...filterState} />
-          </div>
-
+              {/* Custom Graph */}
+              <CustomGraph regional = {regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>
+            </div>
         </div>
       </div>
-
-
     </div>
   )
 }

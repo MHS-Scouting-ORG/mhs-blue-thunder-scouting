@@ -30,8 +30,6 @@ function TeamStats(props) {
     ,[selectedTeams]
   )
 
-  console.log(data)
-
   const columns = React.useMemo(
       () => tableColumns
       ,[tableColumns]

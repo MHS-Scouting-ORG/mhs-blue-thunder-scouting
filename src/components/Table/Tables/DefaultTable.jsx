@@ -19,7 +19,6 @@ function DefaultTable(props) {
   useEffect(() => {
     getRankingsForRegional(regional)
       .then(data => {
-        console.log(data)
         setRankingState(Object.values(data)[1])
       })
       .catch(err => console.log(err))

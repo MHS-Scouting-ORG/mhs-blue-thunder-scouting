@@ -29,9 +29,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      console.log('teamMatchData: ', teamMatchData)
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
-      console.log("teamStats", teamStats)
+      //console.log("teamStats", teamStats)
       //general
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))
       const avgAutoPoints = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Points !== null ? team.Autonomous.PointsScored.Points : 0))
