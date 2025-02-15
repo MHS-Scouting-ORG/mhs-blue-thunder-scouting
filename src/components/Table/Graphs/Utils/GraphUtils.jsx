@@ -261,6 +261,90 @@ const getStat = (teamMatches, phase, accessor) => {
     )
 }
 
+const getBubbleStat = (taData, ac) => {
+    let tData = taData[0]
+    return (
+        ac === "AvgPoints" ?
+        tData.AvgPoints
+        :
+        ac === "AvgAutoPts" ?
+        tData.AvgAutoPts
+        :
+        ac === "AvgEndgamePts" ?
+        tData.AvgEndgamePts
+        :
+        ac === "AvgCoralPts" ?
+        tData.AvgCoralPts
+        :
+        ac === "AvgAlgaePts" ?
+        tData.AvgAlgaePts
+        :
+        ac === "AvgCycles" ?
+        tData.AvgCycles
+        :
+        ac === "AvgCoral" ?
+        tData.AvgCoral
+        :
+        ac === "AvgAlgae" ?
+        tData.AvgAlgae
+        :
+        ac === "AvgMissedCoralL1" ?
+        tData.AvgMissedCoralL1
+        :
+        ac === "AvgMissedCoralL12" ?
+        tData.AvgMissedCoralL2
+        :
+        ac === "AvgMissedCoralL3" ?
+        tData.AvgMissedCoralL3
+        :
+        ac === "AvgMissedCoralL4" ?
+        tData.AvgMissedCoralL3
+        :
+        ac === "AvgMissedCoral" ?
+        tData.AvgMoisedCoral
+        :
+        ac === "AvgMissedProcessor" ?
+        tData.AvgMissedProcessor
+        :
+        ac === "AvgMissedNet" ?
+        tData.AvgMissedNet
+        :
+        ac === "AvgMissedAlgae" ?
+        tData.AvgMissedAlgae
+        :
+        ac === "CoralL1Acc" ?
+        tData.CoralL1Acc
+        :
+        ac === "CoralL2Acc" ?
+        tData.CoralL2Acc
+        :
+        ac === "CoralL3Acc" ?
+        tData.CoralL3Acc
+        :
+        ac === "CoralL4Acc" ?
+        tData.CoralL4Acc
+        :
+        ac === "CoralAcc" ?
+        tData.CoralAcc
+        :
+        ac === "ProcessorAcc" ?
+        tData.ProcessorAcc
+        :
+        ac === "NetAcc" ?
+        tData.NetAcc
+        :
+        ac === "Fouls" ?
+        tData.Fouls
+        :
+        ac === "Tech" ?
+        tData.Tech
+        :
+        console.log("fail")
+    )
+}
 
-export {getStat}
+
+
+
+export {getStat, getBubbleStat}
 

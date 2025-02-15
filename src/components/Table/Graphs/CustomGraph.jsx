@@ -1,11 +1,14 @@
 import React, {useEffect, useState, useRef} from "react"
-import {Bar, Bubble, Chart, Doughnut, Line, Pie, PolarArea, Radar, Scatter} from "react-chartjs-2"
 import { apigetMatchesForRegional} from "../../../api"
 import LineGraph from "./LineGraph"
+import BubbleGraph from "./BubbleGraph"
+import RadarGraph from './RadarGraph'
+
 
 
 function CustomGraph(props) {
     const regional = props.regional
+    const tableData = props.information
 
     const [graphType, setGraphType] = useState([])
     const [apiData, setApiData] = useState([])
@@ -19,6 +22,12 @@ function CustomGraph(props) {
 
     const ref = useRef()
 
+    const graphState = {
+        matches: apiData,
+        regional: regional,
+        tableData: tableData,
+    }
+
     return (
         <div> 
             <select onChange = {(e) => setGraphType(e.target.value)}>
@@ -26,15 +35,17 @@ function CustomGraph(props) {
                 <option value = 'Line'>Line</option>
                 <option value = 'Bar'>Bar</option>
                 <option value = 'Bubble'>Bubble</option>
-                <option value = 'Chart'>Chart</option>
-                <option value = 'Doughnut'>Doughnut</option>
-                <option value = 'Pie'>Pie</option>
                 <option value = 'PolarArea'>Polar Area</option>
                 <option value = 'Radar'>Radar</option>
-                <option value = 'Scatter'>Scatter</option>
             </select>
             {
-                graphType === 'Line' ? <LineGraph matches = {apiData} regional = {regional}  /> : null
+                graphType === 'Line' ? <LineGraph {...graphState} /> : null
+            }
+            {
+                graphType === 'Bubble' ? <BubbleGraph {...graphState}  /> : null
+            }
+            {
+                graphType === 'Radar' ? <RadarGraph {...graphState}  /> : null
             }
         </div>
     )

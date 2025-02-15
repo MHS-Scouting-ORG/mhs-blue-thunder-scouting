@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from "react"
 import {Line} from "react-chartjs-2"
 import { getTeamsInRegional} from "../../../api/bluealliance"
-import { getStat } from "./GraphUtils"
+import { getStat } from "./Utils/GraphUtils"
 
 function LineGraph (props) {
     const matches = props.matches

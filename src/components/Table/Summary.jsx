@@ -70,8 +70,6 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy])
 
-  const ref = useRef();
-
   const addTable = () => {
     if(addTableButton === ''){
     setAddTableButton('hidden')
@@ -98,7 +96,7 @@ function Summary(props) {
       TeamNumber: team,
       AvgPoints: indivTeam.AvgPoints,
       AvgAutoPts: indivTeam.AvgAutoPts,
-      AvgEndgamePts: indivTeam.AvgCoralPts,
+      AvgEndgamePts: indivTeam.AvgEndgamePts,
       AvgCoralPts: indivTeam.AvgCoralPts,
       AvgAlgaePts: indivTeam.AvgAlgaePts,
       AvgCycles: indivTeam.AvgCycles,
