@@ -57,14 +57,6 @@ export async function submitState(
   processorScored,
   netScored,
   hangType,
-  missedCoralL1,
-  missedCoralL2,
-  missedCoralL3,
-  missedCoralL4,
-  missedProcessor,
-  missedNet,
-  humanNetMade,
-  humanNetMissed,
   yellowCard,
   redCard,
   disable,
@@ -196,23 +188,14 @@ export async function submitState(
     matchEntry.Autonomous.PointsScored.CoralPoints = autoCoralPoints
     matchEntry.Autonomous.PointsScored.AlgaePoints = autoAlgaePoints
 
-
     /* TELEOP SPECIFIC*/
     matchEntry.Teleop.AmountScored.CoralL1 = teleCoralL1
     matchEntry.Teleop.AmountScored.CoralL2 = teleCoralL2
     matchEntry.Teleop.AmountScored.CoralL3 = teleCoralL3
     matchEntry.Teleop.AmountScored.CoralL4 = teleCoralL4
 
-    matchEntry.Teleop.AmountScored.CoralL1Missed = missedCoralL1
-    matchEntry.Teleop.AmountScored.CoralL2Missed = missedCoralL2
-    matchEntry.Teleop.AmountScored.CoralL3Missed = missedCoralL3
-    matchEntry.Teleop.AmountScored.CoralL4Missed = missedCoralL4
-
     matchEntry.Teleop.AmountScored.Processor = processorScored
     matchEntry.Teleop.AmountScored.Net = netScored
-
-    matchEntry.Teleop.AmountScored.ProcessorMissed = missedProcessor
-    matchEntry.Teleop.AmountScored.NetMissed = missedNet
 
     matchEntry.Teleop.AmountScored.Cycles = cycles
 
@@ -222,9 +205,6 @@ export async function submitState(
     matchEntry.Teleop.PointsScored.AlgaePoints = teleAlgaePoints
 
     matchEntry.Teleop.Endgame.EndGameResult = hangType
-
-    matchEntry.Teleop.HumPlrScoring.Made = humanNetMade
-    matchEntry.Teleop.HumPlrScoring.Missed = humanNetMissed
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed

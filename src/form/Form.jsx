@@ -24,7 +24,7 @@ function Form(props) {
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [autoPlacement, setAuoPlacement] = useState(''); //1,2,3,4
+  const [autoPlacement, setAutoPlacement] = useState(''); //1,2,3,4
   const [left, setLeft] = useState(false);
   const [autoCoralL1, setAutoCoralL1] = useState(0);
   const [autoCoralL2, setAutoCoralL2] = useState(0);
@@ -40,17 +40,7 @@ function Form(props) {
   const [teleCoralL4, setTeleCoralL4] = useState(0);
   const [processorScored, setProcessorScored] = useState(0);
   const [netScored, setNetScored] = useState(0);
-  const [hangType, setHangType] = useState([]);
-
-  /* ACCURACY */
-  const [missedCoralL1, setMissedCoralL1] = useState(0);
-  const [missedCoralL2, setMissedCoralL2] = useState(0);
-  const [missedCoralL3, setMissedCoralL3] = useState(0);
-  const [missedCoralL4, setMissedCoralL4] = useState(0);
-  const [missedProcessor, setMissedProcessor] = useState(0);
-  const [missedNet, setMissedNet] = useState(0)
-  const [humanNetMade, setHumanNetMade] = useState(0);
-  const [humanNetMissed, setHumanNetMissed] = useState(0);
+  const [hangType, setHangType] = useState('');
 
   /* PENALTIES */
   const [yellowCard, setYellowCard] = useState(false);
@@ -102,6 +92,47 @@ function Form(props) {
   }, [teamNumber]
   )
 
+  const resetStates = () => {
+    setMatchData([])
+    setApiMatchData([])
+    setMatchType('')
+    setElmNum('')
+    setMatchNumber('')
+    setTeamNumber('')
+    setColor(false)
+    setRed([])
+    setBlue([])
+    setMatchKey('')
+    setAutoPlacement('')
+    setLeft('')
+    setAutoCoralL1(0)
+    setAutoCoralL2(0)
+    setAutoCoralL3(0)
+    setAutoCoralL4(0)
+    setAutoProcessorScored(0)
+    setAutoNetScored(0)
+    setTeleCoralL1(0)
+    setTeleCoralL2(0)
+    setTeleCoralL3(0)
+    setTeleCoralL4(0)
+    setProcessorScored(0)
+    setNetScored(0)
+    setHangType('')
+    setYellowCard(false)
+    setRedCard(false)
+    setDisable(false)
+    setDQ(false)
+    setBotBroke(false)
+    setNoShow(false)
+    setMinFouls(0)
+    setMajFouls(0)
+    setRobotBrokenComments('')
+    setRobotSpeed([])
+    setRobotInsight('')
+    setConfirm(false)
+
+  }
+
   return (
     <div>
       <h1>FORM</h1>
@@ -148,7 +179,7 @@ function Form(props) {
         {/* AUTONOMOUS */}
         <h2>AUTONOMOUS</h2>
         <div>Auto Placement here maybe clickable button pos?</div>
-        <select value={autoPlacement} onChange={(e) => setAuoPlacement(e.target.value)}>
+        <select value={autoPlacement} onChange={(e) => setAutoPlacement(e.target.value)}>
           <option value=""> temp autoplacement for now</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -179,16 +210,6 @@ function Form(props) {
           <option value='Parked'>Park</option>
         </select>
         <br></br>
-        <button onClick={() => setMissedCoralL1(missedCoralL1 + 1)}>L1 Missed</button>
-        <button onClick={() => setMissedCoralL2(missedCoralL2 + 1)}>L2 Missed</button>
-        <button onClick={() => setMissedCoralL3(missedCoralL3 + 1)}>L3 Missed</button>
-        <button onClick={() => setMissedCoralL4(missedCoralL4 + 1)}>L4 Missed</button>
-        <button onClick={() => setMissedProcessor(missedProcessor + 1)}>Processor Missed</button>
-        <button onClick={() => setMissedNet(missedNet + 1)}>Net Missed</button>
-        <h2>next to scoring buttons</h2>
-        <div>Only if human player is from robot you are scouting</div>
-        <button onClick={() => setHumanNetMade(humanNetMade + 1)}>human net made</button>
-        <button onClick={() => setHumanNetMissed(humanNetMissed + 1)}>human net missed</button>
         <br></br>
 
         {/* PENALTIES */}
@@ -216,51 +237,51 @@ function Form(props) {
       </div>
       {/* Submit */}
       <button onClick={() => { setConfirm(!confirm) }}>{confirm ? "Not Yet" : "Submit"}</button>
-      {confirm ? <button onClick={() => submitState(
-        regional,
-        teamNumber,
-        matchKey,
-        apiMatchData,
-        matchType,
-        elmNum,
-        matchNumber,
-        autoPlacement,
-        left,
-        autoCoralL1,
-        autoCoralL2,
-        autoCoralL3,
-        autoCoralL4,
-        autoProcessorScored,
-        autoNetScored,
-        teleCoralL1,
-        teleCoralL2,
-        teleCoralL3,
-        teleCoralL4,
-        processorScored,
-        netScored,
-        hangType,
-        missedCoralL1,
-        missedCoralL2,
-        missedCoralL3,
-        missedCoralL4,
-        missedProcessor,
-        missedNet,
-        humanNetMade,
-        humanNetMissed,
-        yellowCard,
-        redCard,
-        disable,
-        dq,
-        botBroke,
-        noShow,
-        minFouls,
-        majFouls,
-        robotSpeed,
-        robotInsight,
-        robotBrokenComments
+      {confirm ? <button onClick={() => {
+        submitState(
+          regional,
+          teamNumber,
+          matchKey,
+          apiMatchData,
+          matchType,
+          elmNum,
+          matchNumber,
+          autoPlacement,
+          left,
+          autoCoralL1,
+          autoCoralL2,
+          autoCoralL3,
+          autoCoralL4,
+          autoProcessorScored,
+          autoNetScored,
+          teleCoralL1,
+          teleCoralL2,
+          teleCoralL3,
+          teleCoralL4,
+          processorScored,
+          netScored,
+          hangType,
+          yellowCard,
+          redCard,
+          disable,
+          dq,
+          botBroke,
+          noShow,
+          minFouls,
+          majFouls,
+          robotSpeed,
+          robotInsight,
+          robotBrokenComments
       )
-        .then(_ => alert('Form Submitted'))
-        .catch(err => alert(`Form Incomplete, ${JSON.stringify(err)}`))}
+      .then(_ => {
+        alert('Form Submitted')
+        resetStates()
+      })
+        .catch(err => alert(`Form Incomplete, ${JSON.stringify(err)}`))
+
+
+        }
+      }
       >Confirm</button> : null}
 
     </div>

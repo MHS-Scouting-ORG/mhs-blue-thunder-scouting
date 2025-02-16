@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
 import { getRankingsForRegional, getSimpleTeamsForRegional } from "../../../api/bluealliance";
-import tableStyles from "../Table.module.css";
+import TableStyles from "../Table.module.css";
 
 
 function DefaultTable(props) {
@@ -10,6 +10,7 @@ function DefaultTable(props) {
   const regional = props.regionalEvent
   const tableData = props.sortData
   const teamsClickedFunc = props.teamsClicked
+  const teamsClicked = props.selectedTeams
   const info = props.information
 
   const [rankingState, setRankingState] = useState([])
@@ -48,7 +49,7 @@ function DefaultTable(props) {
   const data = React.useMemo(
     () => rankingState.map(team => {
       let simTeam = 'error';
-      const tableTeam = info?.find(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
+      const tableTeam = info.find(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
 
       simpleTeams.map(sTeam => {
         if(sTeam.key.substring(3) === team.team_key.substring(3)){
@@ -74,8 +75,12 @@ function DefaultTable(props) {
         Header: "Team Number",
         accessor: "TeamNumber",
         Cell: ({ row }) => (
-          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} 
-            onClick={() => {teamsClickedFunc(row.original.TeamNumber, "leftClick")}}
+          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px', color: teamsClicked.find((x) => x.TeamNumber === row.values.TeamNumber) === undefined ? "black" : "#77B6E2" }} 
+            onClick={() => {
+              teamsClickedFunc(row.original.TeamNumber, "leftClick")
+              console.log(row)
+
+            }}
           >
             {row.values.TeamNumber}
           </div>
@@ -124,7 +129,7 @@ function DefaultTable(props) {
           {/* Search */}
          <input placeholder='Search' value={globalFilter || ''} onChange={e => setGlobalFilter(e.target.value)}/>
 
-          <table className={tableStyles.Table} {...getTableProps()}>
+          <table className={TableStyles.Table} {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -146,11 +151,12 @@ function DefaultTable(props) {
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-
+              
               {rows.map(row => {
                 prepareRow(row)
                 return (<React.Fragment>
-                  <tr {...row.getRowProps()}>
+                  {/* Here is where you style row */}
+                  <tr {...row.getRowProps()} >
                     {row.cells.map(cell => {
                       return (
                         <td
@@ -166,6 +172,7 @@ function DefaultTable(props) {
                         </td>
                       )
                     })}
+                    
                   </tr>
                 </React.Fragment>
                 )

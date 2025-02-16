@@ -67,23 +67,6 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy])
 
-  const addTable = () => {
-    if(addTableButton === ''){
-    setAddTableButton('hidden')
-    }
-    else {
-      setAddTableButton('')
-    }
-  }
-
-  const addTable2 = () => {
-    if(addTableButton2 === ''){
-      setAddTableButton2('hidden')
-      }
-      else {
-        setAddTableButton2('')
-      }
-  }
 
   /* (needs fixing) adds mutiple team instances  */
   const handleTeamClicked = (team, val) => {
@@ -99,22 +82,6 @@ function Summary(props) {
       AvgCycles: indivTeam.AvgCycles,
       AvgCoral: indivTeam.AvgCoral,
       AvgAlgae: indivTeam.AvgAlgae,
-      AvgMissedCoralL1: indivTeam.AvgMissedCoralL1,
-      AvgMissedCoralL2: indivTeam.AvgMissedCoralL2,
-      AvgMissedCoralL3: indivTeam.AvgMissedCoralL3,
-      AvgMissedCoralL4: indivTeam.AvgMissedCoralL4,
-      AvgMissedCoral: indivTeam.AvgMissedCoral,
-      AvgMissedProcessor: indivTeam.AvgMissedProcessor,
-      AvgMissedNet: indivTeam.AvgMissedNet,
-      AvgMissedAlgae: indivTeam.AvgMissedAlgae,
-      CoralL1Acc: indivTeam.CoralL1Acc,
-      CoralL2Acc: indivTeam.CoralL2Acc,
-      CoralL3Acc: indivTeam.CoralL3Acc,
-      CoralL4Acc: indivTeam.CoralL4Acc,
-      CoralAcc: indivTeam.CoralAcc,
-      ProcessorAcc: indivTeam.ProcessorAcc,
-      NetAcc: indivTeam.NetAcc,
-      AlgaeAcc: indivTeam.AlgaeAcc,
       AutoStart: indivTeam.AutoStart,
       RobotSpeed: indivTeam.RobotSpeed,
       Fouls: indivTeam.Fouls,
@@ -128,7 +95,14 @@ function Summary(props) {
       key: team,
     }
     if(val === "leftClick") {
-      setTeamsClicked(teamsClicked => [...teamsClicked, teamObj])
+      setTeamsClicked(teamsClicked => {
+        if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
+          return [...teamsClicked, teamObj]
+        }
+        else{
+          return teamsClicked
+        }
+        })
     }
     else if(val === "rightClick"){
       setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
@@ -209,7 +183,7 @@ function Summary(props) {
               {/* first row container */}
               <div className={tableStyles.TableRow}>
                 <div>
-                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
+                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} selectedTeams={teamsClicked} {...filterState} />
                 </div>
 
                 <div>
@@ -241,20 +215,6 @@ function Summary(props) {
         {/* topRow container */}
         <div className={tableStyles.TableRow}>
 
-          <div>
-            {/* Custom Table*/}
-                {
-                  addTableButton === '' ? 
-                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
-                  : 
-                    <div>
-                      <TeamStats selectedTeams={teamsClicked2} {...filterState}/> 
-                      <button onClick={addTable}>-</button>  
-                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
-                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked3} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
-                    </div>
-                }
-          </div>
           <div>
             {/* Custom Graph */}
             <CustomGraph regional={regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>
