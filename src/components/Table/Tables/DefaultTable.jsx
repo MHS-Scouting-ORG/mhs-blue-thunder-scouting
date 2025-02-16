@@ -76,8 +76,6 @@ function DefaultTable(props) {
         Cell: ({ row }) => (
           <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }} 
             onClick={() => {teamsClickedFunc(row.original.TeamNumber, "leftClick")}}
-            onDoubleClick={() => {teamsClickedFunc(row.original.TeamNumber, "doubleClick")}}
-            onContextMenu={() => {teamsClickedFunc(row.original.TeamNumber, "rightClick")}}
           >
             {row.values.TeamNumber}
           </div>

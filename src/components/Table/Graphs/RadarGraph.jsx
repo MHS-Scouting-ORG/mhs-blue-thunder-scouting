@@ -11,7 +11,19 @@ function RadarGraph (props) {
     const tableData = props.tableData //tableData
     const regional = props.regional
 
-    const [bubbleData, setBubbleData] = useState([])
+    const [radarData, setRadarData] = useState([])
+    const [averagePoints, setAveragePoints] = useState([])
+    const [averageAutoPoints, setAverageAutoPoints] = useState([])
+    const [averageEndgamePoints, setAverageEndgamePoints] = useState([])
+    const [averageCoralPoints, setAverageCoralPoints] = useState([])
+    const [averageAlgaePoints, setAverageAlgaePoints] = useState([])
+    const [averageCycles, setAverageCycles] = useState([])
+    const [averageCoralAcc, setAverageCoralAcc] = useState([])
+    const [averageAlgaeAcc, setAverageAlgaeAcc] = useState([])
+    const [averageCoralScored, setAverageCoralScored] = useState([])
+    const [averageAlgaeScored, setAverageAlgaeScored] = useState([])
+
+
     const [selectedTeam, setSelectedTeam] = useState([])
     const [statY, setStatY] = useState([])
     const [statZ, setStatZ] = useState([])
@@ -22,12 +34,12 @@ function RadarGraph (props) {
         getRankingsForRegional(regional)
           .then(data => {
             setRankingState(Object.values(data)[1]) 
-            getTeamMatches()
+            getRadarData()
           })
           .catch(err => console.log(err))
       }, [])
 
-    const getTeamMatches = () => {
+    const getRadarData = () => {
         const teamTableData = tableData.filter(x => x.TeamNumber === selectedTeam)
         const avgPts = teamTableData[0].AvgPoints
         const avgAutoPts = teamTableData[0].AvgAutoPts
@@ -39,7 +51,16 @@ function RadarGraph (props) {
         const avgAlgaeAcc = teamTableData[0].AvgAlgaeAcc
         const avgCoralScored = teamTableData[0].AvgCoralScored
         const avgAlgaeScored = teamTableData[0].AvgAlgae
-        setBubbleData(temp)
+        setAveragePoints(avgPts)
+        setAverageAutoPoints(avgAutoPts)
+        setAverageEndgamePoints(avgEndgamePts)
+        setAverageCoralPoints(avgCoralPts)
+        setAverageAlgaePoints(avgAlgaePts)
+        setAverageCycles(avgCycles)
+        setAverageCoralAcc(avgCoralAcc)
+        setAverageAlgaeAcc(avgAlgaeAcc)
+        setAverageCoralScored(avgCoralScored)
+        setAverageAlgaeAcc(avgAlgaeScored)
     }
 
 
@@ -61,7 +82,7 @@ function RadarGraph (props) {
         datasets: [
             {
                 label: toString(selectedTeam),
-                data: [10, 20, 30, 40]
+                data: [averagePoints, averageAutoPoints,]
             }
         ]
     }

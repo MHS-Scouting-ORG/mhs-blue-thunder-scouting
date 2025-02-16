@@ -26,9 +26,6 @@ function Summary(props) {
   const [apiData, setApiData] = useState([])
   const [oprList, setOprList] = useState([]);
 
-  const [addTableButton, setAddTableButton] = useState('')
-  const [addTableButton2, setAddTableButton2] = useState('')
-
   const [teamsClicked, setTeamsClicked] = useState([]);
   const [teamsClicked2, setTeamsClicked2] = useState([]);
   const [teamsClicked3, setTeamsClicked3] = useState([]);
@@ -70,24 +67,6 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy])
 
-  const addTable = () => {
-    if(addTableButton === ''){
-    setAddTableButton('hidden')
-    }
-    else {
-      setAddTableButton('')
-    }
-  }
-
-  const addTable2 = () => {
-    if(addTableButton2 === ''){
-      setAddTableButton2('hidden')
-      }
-      else {
-        setAddTableButton2('')
-      }
-  }
-
   /* (needs fixing) adds mutiple team instances  */  
   const handleTeamClicked = (team, val) => {
     console.log("team", team)
@@ -128,15 +107,11 @@ function Summary(props) {
       Disabled: indivTeam.Disabled,
       DQ: indivTeam.DQ,
       NoShow: indivTeam.NoShow,
+      key: team,
     }
     if(val === "leftClick") {
-      setTeamsClicked(teamsClicked => [...teamsClicked, teamObj])
-    }
-    else if(val === "rightClick"){
-      setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
-    }
-    else if(val === "doubleClick"){
-      setTeamsClicked3(teamsClicked => [...teamsClicked, teamObj])
+      const tClicked = [...t].concat(teamObj)
+      setTeamsClicked(t => [...t, teamObj])
     }
     else{
       console.log("error")
@@ -235,21 +210,6 @@ function Summary(props) {
       <div>
         {/* topRow container */}
         <div className={tableStyles.TableRow}>
-
-          <div>
-            {/* Custom Table*/}
-                {
-                  addTableButton === '' ? 
-                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
-                  : 
-                    <div>
-                      <TeamStats selectedTeams={teamsClicked2} {...filterState}/> 
-                      <button onClick={addTable}>-</button>  
-                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
-                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked3} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
-                    </div>
-                }
-          </div>
           <div>
               {/* Custom Graph */}
               <CustomGraph regional = {regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>

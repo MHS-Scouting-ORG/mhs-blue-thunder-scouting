@@ -6,6 +6,7 @@ import tableStyles from "../Table.module.css";
 function TeamStats(props) {
   const filter = props.gFilter
   const selectedTeams = props.selectedTeams
+  console.log(selectedTeams)
   const info = props.information
 
   const [tableState, setTableState] = useState('')
