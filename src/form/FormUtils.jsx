@@ -79,19 +79,19 @@ export async function submitState(
 
 ) {
 
-    let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
-    let incompleteForm = false;
+  let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
+  let incompleteForm = false;
 
-    /* Points Init */
-    let autoPoints = 0;
-    let endGamePoints = 0;
-    let telePoints = 0;
+  /* Points Init */
+  let autoPoints = 0;
+  let endGamePoints = 0;
+  let telePoints = 0;
 
-    let autoCoralPoints = 0;
-    let teleCoralPoints = 0;
+  let autoCoralPoints = 0;
+  let teleCoralPoints = 0;
 
-    let teleAlgaePoints = 0;
-    let autoAlgaePoints = 0;
+  let teleAlgaePoints = 0;
+  let autoAlgaePoints = 0;
 
 
   /* Checks Match Selects */
@@ -115,45 +115,45 @@ export async function submitState(
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-   /* Auto Placement Select */
+  /* Auto Placement Select */
   if (autoPlacement === '') {
     incompleteForm = true;
-     windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
-    }
+    windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
+  }
 
-   if(left){
-     autoPoints += 3;
-   }
+  if (left) {
+    autoPoints += 3;
+  }
 
   /* EndGame Select */
-   if(hangType === 'Deep'){
-     endGamePoints += 12;
-   }
-   else if(hangType === 'Shallow'){
-     endGamePoints += 6;
-   }
-   else if(hangType === 'Parked'){
-     endGamePoints += 2;
-   }
-   else {
+  if (hangType === 'Deep') {
+    endGamePoints += 12;
+  }
+  else if (hangType === 'Shallow') {
+    endGamePoints += 6;
+  }
+  else if (hangType === 'Parked') {
+    endGamePoints += 2;
+  }
+  else {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
-   }
+  }
 
-   /* Robot Info Select */
-   if(robotSpeed === 'Slow'){
+  /* Robot Info Select */
+  if (robotSpeed === 'Slow') {
     robotSpeed = "Slow";
-   }
-   else if(robotSpeed === "Average"){
+  }
+  else if (robotSpeed === "Average") {
     robotSpeed = "Average";
-   }
-   else if(robotSpeed == "Fast"){
-    robotSpeed ="Fast";
-   }
-   else {
+  }
+  else if (robotSpeed == "Fast") {
+    robotSpeed = "Fast";
+  }
+  else {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-   }
+  }
 
   /* Point Calc */
 
@@ -174,13 +174,13 @@ export async function submitState(
     window.alert(windowAlertMsg);
   }
   else if (!incompleteForm) {
-    const matchEntry = buildMatchEntry(regional, teamNumber, matchKey) 
-    
+    const matchEntry = buildMatchEntry(regional, teamNumber, matchKey)
+
     console.log("init", matchEntry)
 
     matchEntry.TotalPoints = totalPoints
 
-     // AUTO SPECIFIC //
+    // AUTO SPECIFIC //
     matchEntry.Autonomous.StartingPosition = parseInt(autoPlacement)
     matchEntry.Autonomous.Left = left
 
@@ -196,8 +196,8 @@ export async function submitState(
     matchEntry.Autonomous.PointsScored.CoralPoints = autoCoralPoints
     matchEntry.Autonomous.PointsScored.AlgaePoints = autoAlgaePoints
 
-     
-     /* TELEOP SPECIFIC*/
+
+    /* TELEOP SPECIFIC*/
     matchEntry.Teleop.AmountScored.CoralL1 = teleCoralL1
     matchEntry.Teleop.AmountScored.CoralL2 = teleCoralL2
     matchEntry.Teleop.AmountScored.CoralL3 = teleCoralL3
@@ -220,9 +220,9 @@ export async function submitState(
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
     matchEntry.Teleop.PointsScored.CoralPoints = teleCoralPoints
     matchEntry.Teleop.PointsScored.AlgaePoints = teleAlgaePoints
-    
+
     matchEntry.Teleop.Endgame.EndGameResult = hangType
-     
+
     matchEntry.Teleop.HumPlrScoring.Made = humanNetMade
     matchEntry.Teleop.HumPlrScoring.Missed = humanNetMissed
 
@@ -249,15 +249,13 @@ export async function submitState(
 
     /* currently submits and updates the new form completely */
 
-    if (apiMatchData === undefined) {
+    if (apiMatchData.length === 0) {
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
 
     //for testing
-   apiGetTeamMatch(matchKey, regional, teamNumber)
-   .then((teamMatch) => console.log("apiGetTeamMatch", teamMatch))
-   .catch(err => console.log(err))
+    await apiGetTeamMatch(matchKey, regional, teamNumber)
 
   }
 }
