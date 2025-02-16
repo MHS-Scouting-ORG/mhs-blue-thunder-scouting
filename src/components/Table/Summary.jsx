@@ -67,11 +67,29 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy])
 
-  /* (needs fixing) adds mutiple team instances  */  
+  const addTable = () => {
+    if(addTableButton === ''){
+    setAddTableButton('hidden')
+    }
+    else {
+      setAddTableButton('')
+    }
+  }
+
+  const addTable2 = () => {
+    if(addTableButton2 === ''){
+      setAddTableButton2('hidden')
+      }
+      else {
+        setAddTableButton2('')
+      }
+  }
+
+  /* (needs fixing) adds mutiple team instances  */
   const handleTeamClicked = (team, val) => {
     console.log("team", team)
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
-    const teamObj =  {
+    const teamObj = {
       TeamNumber: team,
       AvgPoints: indivTeam.AvgPoints,
       AvgAutoPts: indivTeam.AvgAutoPts,
@@ -110,36 +128,48 @@ function Summary(props) {
       key: team,
     }
     if(val === "leftClick") {
-      const tClicked = [...t].concat(teamObj)
-      setTeamsClicked(t => [...t, teamObj])
+      setTeamsClicked(teamsClicked => [...teamsClicked, teamObj])
     }
-    else{
+    else if(val === "rightClick"){
+      setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else if(val === "doubleClick"){
+      setTeamsClicked3(teamsClicked => [...teamsClicked, teamObj])
+    }
+    else {
       console.log("error")
     }
   }
 
   const data = React.useMemo(
-    () => tableData.map(team => {
-      const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
-      return {
-        TeamNumber: team.TeamNumber,
-        Matches: team.Matches,
-        OPR: team.OPR,
+    () => {
+      if (tableData) {
+        return tableData.map(team => {
+          const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
+          return {
+            TeamNumber: team.TeamNumber,
+            Matches: team.Matches,
+            OPR: team.OPR,
 
-        SumPriorities: grade !== 0.000 ? grade : 0,
-        
-        NCoral: team.NCoral,
-        NAlgae: team.NAlgae,
-        NCycles: team.NCycles,
-        NPts: team.NPts,
-        NAutoPts: team.NAutoPts,
-        NEndgamePts: team.NEndgamePts,
-        NCoralPts: team.NCoralPts,
-        NAlgaePts: team.NAlgaePts,
+            SumPriorities: grade !== 0.000 ? grade : 0,
 
-        Selected: team.Selected,
+            NCoral: team.NCoral,
+            NAlgae: team.NAlgae,
+            NCycles: team.NCycles,
+            NPts: team.NPts,
+            NAutoPts: team.NAutoPts,
+            NEndgamePts: team.NEndgamePts,
+            NCoralPts: team.NCoralPts,
+            NAlgaePts: team.NAlgaePts,
+
+            Selected: team.Selected,
+          }
+        })
       }
-    }), [tableData, sortBy]
+      else {
+        return []
+      }     
+    }, [tableData, sortBy]
   )
 
   const columns = React.useMemo(
@@ -179,7 +209,7 @@ function Summary(props) {
               {/* first row container */}
               <div className={tableStyles.TableRow}>
                 <div>
-                  <DefaultTable sortData = {data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
+                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
                 </div>
 
                 <div>
@@ -188,7 +218,7 @@ function Summary(props) {
                 </div>
 
                 <div>
-                
+
                 </div>
               </div>
 
@@ -210,10 +240,25 @@ function Summary(props) {
       <div>
         {/* topRow container */}
         <div className={tableStyles.TableRow}>
+
           <div>
-              {/* Custom Graph */}
-              <CustomGraph regional = {regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>
-            </div>
+            {/* Custom Table*/}
+                {
+                  addTableButton === '' ? 
+                    <button hidden = {addTableButton} onClick = {addTable}>Compare Another Team?</button> 
+                  : 
+                    <div>
+                      <TeamStats selectedTeams={teamsClicked2} {...filterState}/> 
+                      <button onClick={addTable}>-</button>  
+                      <button hidden = {addTableButton2} onClick = {addTable2}>Compare Third Team?</button>
+                      {addTableButton2 === 'hidden' ? <div><TeamStats selectedTeams={teamsClicked3} {...filterState}/> <button onClick={addTable2}>-</button></div> : null}
+                    </div>
+                }
+          </div>
+          <div>
+            {/* Custom Graph */}
+            <CustomGraph regional={regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>
+          </div>
         </div>
       </div>
     </div>
