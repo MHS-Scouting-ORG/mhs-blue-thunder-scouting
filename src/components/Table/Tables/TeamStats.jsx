@@ -6,7 +6,6 @@ import tableStyles from "../Table.module.css";
 function TeamStats(props) {
   const filter = props.gFilter
   const selectedTeams = props.selectedTeams
-  console.log(selectedTeams)
   const info = props.information
 
   const [tableState, setTableState] = useState('')
@@ -65,6 +64,7 @@ function TeamStats(props) {
     <button onClick={() => tableColumns.find((e) => e.Header === "AVG Algae AMT") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Algae AMT", accessor: "AvgAlgae"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Algae AMT"))}>AVG Algae AMT</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "MC Autostart") === undefined ? setTableColumns(tableColumns.concat([{Header: "MC Autostart", accessor: "AutoStart"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "MC Autostart"))}>MC Autostart</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "R SPEED") === undefined ? setTableColumns(tableColumns.concat([{Header: "R SPEED", accessor: "RobotSpeed"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R SPEED"))}>R SPEED</button>
+    <button onClick={() => tableColumns.find((e) => e.Header === "R HANG") === undefined ? setTableColumns(tableColumns.concat([{Header: "R SPEED", accessor: "RobotHang"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R HANG"))}>R HANG</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "AVG MINOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MINOR", accessor: "Fouls"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MINOR"))}>AVG MINOR</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "AVG MAJOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MAJOR", accessor: "Tech"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MAJOR"))}>AVG MAJOR</button>
     <button onClick={() => tableColumns.find((e) => e.Header === "YELLOW MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "YELLOW MTS", accessor: "YellowCard"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "YELLOW MTS"))}>YELLOW MTS</button>

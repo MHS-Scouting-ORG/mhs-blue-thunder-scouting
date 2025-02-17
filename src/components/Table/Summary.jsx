@@ -27,8 +27,6 @@ function Summary(props) {
   const [oprList, setOprList] = useState([]);
 
   const [teamsClicked, setTeamsClicked] = useState([]);
-  const [teamsClicked2, setTeamsClicked2] = useState([]);
-  const [teamsClicked3, setTeamsClicked3] = useState([]);
 
   useEffect(() => {
     apigetMatchesForRegional(regional)
@@ -65,12 +63,11 @@ function Summary(props) {
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, oprList, sortBy])
+  }, [apiData, oprList, sortBy, teamsClicked])
 
 
   /* (needs fixing) adds mutiple team instances  */
   const handleTeamClicked = (team, val) => {
-    console.log("team", team)
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
@@ -84,6 +81,7 @@ function Summary(props) {
       AvgAlgae: indivTeam.AvgAlgae,
       AutoStart: indivTeam.AutoStart,
       RobotSpeed: indivTeam.RobotSpeed,
+      RobotHang: indivTeam.RobotHang,
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -105,10 +103,7 @@ function Summary(props) {
         })
     }
     else if(val === "rightClick"){
-      setTeamsClicked2(teamsClicked => [...teamsClicked, teamObj])
-    }
-    else if(val === "doubleClick"){
-      setTeamsClicked3(teamsClicked => [...teamsClicked, teamObj])
+      setTeamsClicked(teamsClicked => teamsClicked.splice(teamsClicked.indexOf(team), 1))
     }
     else {
       console.log("error")
@@ -135,8 +130,6 @@ function Summary(props) {
             NEndgamePts: team.NEndgamePts,
             NCoralPts: team.NCoralPts,
             NAlgaePts: team.NAlgaePts,
-
-            Selected: team.Selected,
           }
         })
       }
@@ -183,7 +176,7 @@ function Summary(props) {
               {/* first row container */}
               <div className={tableStyles.TableRow}>
                 <div>
-                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} selectedTeams={teamsClicked} {...filterState} />
+                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
                 </div>
 
                 <div>

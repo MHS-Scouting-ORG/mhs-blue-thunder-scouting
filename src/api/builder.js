@@ -27,12 +27,6 @@ const initTeleAmountScored = _ => {
     Processor: 0,
     Net: 0,
     Cycles: 0,
-    CoralL1Missed: 0,
-    CoralL2Missed: 0,
-    CoralL3Missed: 0,
-    CoralL4Missed: 0,
-    ProcessorMissed: 0,
-    NetMissed: 0,
   }
 }
 

@@ -36,7 +36,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const avgAutoPoints = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Points !== null ? team.Autonomous.PointsScored.Points : 0))
 
       //Robot Performance
-      const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 0 ))
+      const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : null ))
+      const mcRobotHang = arrMode(teamStats.map((team) => team.Endgame.EndGameResult !== undefined ?  team.Endgame.EndGameResult : null))
 
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
@@ -98,6 +99,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //reliable 
       const reliableRobotSpeed = getReliability(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 'Average' ), mcRobotSpeed)
+      const reliableRobotEndgame = getReliability(teamStats.map((team) => team.Teleop.Endgame.EndgameResult !== null ? team.Teleop.Endgame.EndgameResult : 'Cannot'), mcRobotHang)
 
       const evaluations = getSummary(teamStats)
 
@@ -126,6 +128,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
         OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
+        RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
         //===Stats==/ 
         AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
         AvgAutoPts: isNaN(avgAutoPoints) ? 0 :  avgAutoPoints,

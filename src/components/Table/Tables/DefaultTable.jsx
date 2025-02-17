@@ -10,12 +10,12 @@ function DefaultTable(props) {
   const regional = props.regionalEvent
   const tableData = props.sortData
   const teamsClickedFunc = props.teamsClicked
-  const teamsClicked = props.selectedTeams
   const info = props.information
 
   const [rankingState, setRankingState] = useState([])
   const [simpleTeams, setSimpleTeams] = useState([])
   const [tableState, setTableState] = useState('')
+  const [activeIndex, setActiveIndex] = useState([])
 
   useEffect(() => {
     getRankingsForRegional(regional)
@@ -69,22 +69,35 @@ function DefaultTable(props) {
     }), [rankingState,tableData]
   )
 
+  const getRowId = (idClicked, val) => {
+    if(val === "leftClick"){
+      setActiveIndex(id => {
+        if(id.find(x => x === idClicked) === undefined){
+          return [...id, idClicked]
+        }
+        else {
+          return id
+        }
+      })
+    }
+    else if(val === "rightClick"){
+      setActiveIndex(teamsClicked => teamsClicked.splice(teamsClicked.indexOf(idClicked), teamsClicked.indexOf(idClicked)+ 1))
+    }
+    else{
+      console.log("error")
+    }
+  }
+
   const columns = React.useMemo(
     () => [
       {
         Header: "Team Number",
         accessor: "TeamNumber",
         Cell: ({ row }) => (
-          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px', color: teamsClicked.find((x) => x.TeamNumber === row.values.TeamNumber) === undefined ? "black" : "#77B6E2" }} 
-            onClick={() => {
-              teamsClickedFunc(row.original.TeamNumber, "leftClick")
-              console.log(row)
-
-            }}
-          >
+          <div style={{ fontWeight: 'bold', fontSize: '17px', maxWidth: '20px', textAlign: 'center', }} >
             {row.values.TeamNumber}
           </div>
-        )
+        ),
       },
       {
         Header: "Name",
@@ -150,13 +163,26 @@ function DefaultTable(props) {
                 </tr>
               ))}
             </thead>
-            <tbody {...getTableBodyProps()}>
+            <tbody {...getTableBodyProps()} >
               
               {rows.map(row => {
                 prepareRow(row)
                 return (<React.Fragment>
-                  {/* Here is where you style row */}
-                  <tr {...row.getRowProps()} >
+                  <tr {...row.getRowProps()} 
+                  style={{background: activeIndex.includes(row.id) ? "#77B6E2" : "white" }}
+
+
+                  onClick={() => {
+                    getRowId(row.id, "leftClick")
+                    teamsClickedFunc(row.original.TeamNumber, "leftClick")
+                  }}
+
+                  onContextMenu={() => {
+                    getRowId(row.id, "rightClick")
+                    teamsClickedFunc(row.original.TeamNumber, "rightClick")
+                  }}
+                  
+                  >
                     {row.cells.map(cell => {
                       return (
                         <td

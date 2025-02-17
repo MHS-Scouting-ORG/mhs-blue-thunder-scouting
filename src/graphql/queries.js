@@ -81,12 +81,6 @@ export const getTeamMatch = /* GraphQL */ `
           Processor
           Net
           Cycles
-          CoralL1Missed
-          CoralL2Missed
-          CoralL3Missed
-          CoralL4Missed
-          ProcessorMissed
-          NetMissed
           __typename
         }
         PointsScored {
@@ -187,12 +181,6 @@ export const listTeamMatches = /* GraphQL */ `
             Processor
             Net
             Cycles
-            CoralL1Missed
-            CoralL2Missed
-            CoralL3Missed
-            CoralL4Missed
-            ProcessorMissed
-            NetMissed
             __typename
           }
           PointsScored {
@@ -294,12 +282,6 @@ export const teamMatchesByTeam = /* GraphQL */ `
             Processor
             Net
             Cycles
-            CoralL1Missed
-            CoralL2Missed
-            CoralL3Missed
-            CoralL4Missed
-            ProcessorMissed
-            NetMissed
             __typename
           }
           PointsScored {
@@ -401,12 +383,6 @@ export const teamMatchesByRegional = /* GraphQL */ `
             Processor
             Net
             Cycles
-            CoralL1Missed
-            CoralL2Missed
-            CoralL3Missed
-            CoralL4Missed
-            ProcessorMissed
-            NetMissed
             __typename
           }
           PointsScored {
