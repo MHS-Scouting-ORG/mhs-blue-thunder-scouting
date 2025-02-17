@@ -160,6 +160,9 @@ function Summary(props) {
   const filterState = {
     information: tableData,
     gFilter: globalFilter || '',
+    regionalEvent: regional,
+    teamHandler: {handleTeamClicked},
+    selectedTeams: teamsClicked,
   }
 
   return (
@@ -176,12 +179,12 @@ function Summary(props) {
               {/* first row container */}
               <div className={tableStyles.TableRow}>
                 <div>
-                  <DefaultTable sortData={data} regionalEvent={regional} teamsClicked={handleTeamClicked} {...filterState} />
+                  <DefaultTable sortData={data} {...filterState} />
                 </div>
 
                 <div>
                   <div>Here will be populated table/custom table</div>
-                  <TeamStats selectedTeams={teamsClicked} {...filterState} />
+                  <TeamStats {...filterState} />
                 </div>
 
                 <div>
@@ -210,7 +213,7 @@ function Summary(props) {
 
           <div>
             {/* Custom Graph */}
-            <CustomGraph regional={regional} teamHandler={handleTeamClicked} {...filterState}></CustomGraph>
+            <CustomGraph {...filterState}></CustomGraph>
           </div>
         </div>
       </div>

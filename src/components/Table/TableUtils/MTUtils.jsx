@@ -37,7 +37,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : null ))
-      const mcRobotHang = arrMode(teamStats.map((team) => team.Endgame.EndGameResult !== undefined ?  team.Endgame.EndGameResult : null))
+      const mcRobotHang = arrMode(teamStats.map((team) => team.Teleop.Endgame.EndGameResult !== undefined ?  team.Teleop.Endgame.EndGameResult : null))
 
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))

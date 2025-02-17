@@ -6,6 +6,7 @@ import { getStat } from "./Utils/GraphUtils"
 function LineGraph (props) {
     const matches = props.matches
     const regional = props.regional
+    const selectedTeams = props.selectedTeams
 
     const [currentTeams, setCurrentTeams] = useState([])
     const [selectedTeam, setSelectedTeam] = useState([])

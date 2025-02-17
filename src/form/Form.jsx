@@ -117,7 +117,7 @@ function Form(props) {
     setTeleCoralL4(0)
     setProcessorScored(0)
     setNetScored(0)
-    setHangType('')
+    setHangType([])
     setYellowCard(false)
     setRedCard(false)
     setDisable(false)

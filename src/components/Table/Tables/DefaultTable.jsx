@@ -7,9 +7,9 @@ import TableStyles from "../Table.module.css";
 
 function DefaultTable(props) {
   const filter = props.gFilter
-  const regional = props.regionalEvent
+  const regional = props.regional
   const tableData = props.sortData
-  const teamsClickedFunc = props.teamsClicked
+  const teamsClickedFunc = props.teamHandler
   const info = props.information
 
   const [rankingState, setRankingState] = useState([])

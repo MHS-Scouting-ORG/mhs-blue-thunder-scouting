@@ -9,6 +9,7 @@ import RadarGraph from './RadarGraph'
 function CustomGraph(props) {
     const regional = props.regional
     const tableData = props.information
+    const selectedTeams = props.selectedTeams
 
     const [graphType, setGraphType] = useState([])
     const [apiData, setApiData] = useState([])
@@ -26,6 +27,7 @@ function CustomGraph(props) {
         matches: apiData,
         regional: regional,
         tableData: tableData,
+        selectedTeams: selectedTeams,
     }
 
     return (
