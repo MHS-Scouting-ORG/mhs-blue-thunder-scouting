@@ -227,9 +227,10 @@ export async function submitState(
     console.log("apiMatchData", apiMatchData)
     console.log(apiMatchData.find(x => x.Team === matchEntry.Team))
 
+
     /* currently submits and updates the new form completely */
 
-    if (apiMatchData.length === 0) {
+    if (apiMatchData.find(x => x.id === matchKey) === undefined) {
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);

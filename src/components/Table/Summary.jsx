@@ -161,7 +161,7 @@ function Summary(props) {
     information: tableData,
     gFilter: globalFilter || '',
     regionalEvent: regional,
-    teamHandler: {handleTeamClicked},
+    teamHandler: handleTeamClicked,
     selectedTeams: teamsClicked,
   }
 

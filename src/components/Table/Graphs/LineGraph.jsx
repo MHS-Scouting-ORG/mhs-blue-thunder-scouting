@@ -1,7 +1,9 @@
 import React, {useEffect, useState, useRef} from "react"
 import {Line} from "react-chartjs-2"
 import { getTeamsInRegional} from "../../../api/bluealliance"
+import { apigetMatchesForRegional } from "../../../api"
 import { getStat } from "./Utils/GraphUtils"
+import { uniqueArr } from "../TableUtils/CalculationUtils"
 
 function LineGraph (props) {
     const matches = props.matches
@@ -17,15 +19,13 @@ function LineGraph (props) {
     const [accessor, setAccessor] = useState([])
 
     useEffect(() => {
-        getTeamsInRegional(regional)
+        apigetMatchesForRegional(regional)
         .then(data => {
-            const temp = data.map(x => x.key.substring(3))
-            setCurrentTeams(temp)
-            getTeamMatches(selectedTeam)
-            //console.log("teamMatches", teamMatches)
-            const xLegend = teamMatches.map(x => (x.id).substring((x.id).indexOf("_") + 1)) 
+            const holdMatches = data.data.teamMatchesByRegional.items
+            const xLegend = uniqueArr(holdMatches.map(x => x.id.substring(x.id.indexOf("_") + 1)))
             setXAxis(xLegend)
-            setYAxis(getStat(teamMatches, statType, accessor))
+            console.log(holdMatches)
+            //setYAxis(getStat(teamMatches, statType, accessor))
         })
     },[selectedTeam, teamMatches, statType]);
 
@@ -37,11 +37,11 @@ function LineGraph (props) {
     const ref = useRef()
 
     const lineData = {
-        labels: xAxis,
+        labels: xAxis, // <- all matches here
         datasets: [
             {
-            label: selectedTeam, 
-            data: yAxis, 
+            label: 1, 
+            data: 2, 
             },
         ]
     }
@@ -49,14 +49,7 @@ function LineGraph (props) {
     return (
         <div>
             <div>
-                <select onChange = {(e) => {setSelectedTeam(e.target.value)}}>
-                    <option value = "">Select Team</option> 
-                    {
-                        currentTeams.map((team) => {
-                            return <option value={team}>{team}</option>
-                        })
-                    }
-                </select>
+                
                 <select onChange = {(e) => setStatType(e.target.value)}  >
                     <option value="">Select Phase</option>
                     <option value="tele">Tele</option>

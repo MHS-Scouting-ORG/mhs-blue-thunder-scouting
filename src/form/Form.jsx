@@ -203,7 +203,7 @@ function Form(props) {
         <button onClick={() => setTeleCoralL4(teleCoralL4 + 1)}>L4 Scored</button>
         <button onClick={() => setProcessorScored(processorScored + 1)}>Processor Scored</button>
         <button onClick={() => setNetScored(netScored + 1)}>Net Scored</button>
-        <select onChange={(e) => setHangType(e.target.value)}>
+        <select value={hangType} onChange={(e) => setHangType(e.target.value)}>
           <option value=''>Endgame Type</option>
           <option value='Shallow'>Shallow</option>
           <option value='Deep'>Deep</option>

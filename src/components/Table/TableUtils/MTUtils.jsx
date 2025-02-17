@@ -37,7 +37,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : null ))
-      const mcRobotHang = arrMode(teamStats.map((team) => team.Teleop.Endgame.EndGameResult !== undefined ?  team.Teleop.Endgame.EndGameResult : null))
+      const mcRobotHang = arrMode(teamStats.map((team) => team.Teleop.Endgame.EndGameResult !== null ?  team.Teleop.Endgame.EndGameResult : null))
 
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
@@ -99,7 +99,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //reliable 
       const reliableRobotSpeed = getReliability(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : 'Average' ), mcRobotSpeed)
-      const reliableRobotEndgame = getReliability(teamStats.map((team) => team.Teleop.Endgame.EndgameResult !== null ? team.Teleop.Endgame.EndgameResult : 'Cannot'), mcRobotHang)
+      const reliableRobotEndgame = getReliability(teamStats.map((team) => team.Teleop.Endgame.EndGameResult !== null ? team.Teleop.Endgame.EndGameResult : 'Cannot'), mcRobotHang)
 
       const evaluations = getSummary(teamStats)
 

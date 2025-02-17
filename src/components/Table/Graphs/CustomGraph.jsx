@@ -32,7 +32,8 @@ function CustomGraph(props) {
 
     return (
         <div> 
-            <select onChange = {(e) => setGraphType(e.target.value)}>
+            <LineGraph {...graphState} />
+            {/* <select onChange = {(e) => setGraphType(e.target.value)}>
                 <option value = ''>Select Graph Type</option> 
                 <option value = 'Line'>Line</option>
                 <option value = 'Bar'>Bar</option>
@@ -48,7 +49,7 @@ function CustomGraph(props) {
             }
             {
                 graphType === 'Radar' ? <RadarGraph {...graphState}  /> : null
-            }
+            } */}
         </div>
     )
 }
