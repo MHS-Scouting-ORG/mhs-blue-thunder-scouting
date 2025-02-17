@@ -7,7 +7,7 @@ import TableStyles from "../Table.module.css";
 
 function DefaultTable(props) {
   const filter = props.gFilter
-  const regional = props.regional
+  const regional = props.regional || props.regionalEvent
   const tableData = props.sortData
   const teamsClickedFunc = props.teamHandler
   const info = props.information

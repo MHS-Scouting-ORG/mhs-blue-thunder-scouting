@@ -7,7 +7,7 @@ import RadarGraph from './RadarGraph'
 
 
 function CustomGraph(props) {
-    const regional = props.regional
+    const regional = props.regional || props.regionalEvent
     const tableData = props.information
     const selectedTeams = props.selectedTeams
 

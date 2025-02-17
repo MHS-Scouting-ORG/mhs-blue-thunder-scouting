@@ -17,7 +17,7 @@ awsconfig.oauth.redirectSignOut = redirectSignOutUri[parseInt(import.meta.env.VI
 Amplify.configure(awsconfig)
 
 function AuthenticatedUI({ user }) {
- return (
+  return (
     <div>
 
       <Menu></Menu>
@@ -25,7 +25,7 @@ function AuthenticatedUI({ user }) {
         <Outlet />
       </div>
     </div>
-    )
+  )
 
 }
 
@@ -50,11 +50,10 @@ function App() {
     (async () => {
       //console.log(`async run`)
       if (!user) {
-        //setUser(await Auth.currentAuthenticatedUser())
-        setUser(await Auth.fetchAuthSession())
-        // Auth.federatedSignIn({
-        //   provider: CognitoHostedUIIdentityProvider.Google
-        // });
+        const session = await Auth.fetchAuthSession()
+        await apiUpdateRegional()
+        setUser(session)
+
       }
     })()
       .then(console.log.bind(console))
@@ -69,8 +68,8 @@ function App() {
 
           if (user) {
             //console.log(`${JSON.stringify(user)} logged in`)
-            (async () => {await apiUpdateRegional()})()
-          return (<AuthenticatedUI user={user} />)
+            (async () => { await apiUpdateRegional() })()
+            return (<AuthenticatedUI user={user} />)
           }
           return (<LoginUI />)
         }

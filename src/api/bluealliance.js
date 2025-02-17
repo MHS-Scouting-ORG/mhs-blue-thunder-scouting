@@ -66,14 +66,23 @@ const getTeamsInRegional = async function (regional) {
 }
 
 const getMatchesForRegional = async function (regional) {
+  if (!regional || regional.length === 0)
+    throw new Error(`regional not provided ${regional}`)
+
   return _fetch(`/event/${regional}/matches`)
 }
 
 const getRankingsForRegional = async function (regional) {
-  return  _fetch(`/event/${regional}/rankings`)
+  if (!regional || regional.length === 0)
+    throw new Error(`regional not provided ${regional}`)
+
+  return _fetch(`/event/${regional}/rankings`)
 }
 
 const getSimpleTeamsForRegional = async function (regional) {
+  if (!regional || regional.length === 0)
+    throw new Error(`regional not provided ${regional}`)
+
   return _fetch(`/event/${regional}/teams/simple`)
 }
 
