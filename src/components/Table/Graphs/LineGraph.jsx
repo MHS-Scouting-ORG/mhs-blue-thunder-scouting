@@ -6,15 +6,12 @@ import { getStat } from "./Utils/GraphUtils"
 import { uniqueArr } from "../TableUtils/CalculationUtils"
 
 function LineGraph (props) {
-    const matches = props.matches
     const regional = props.regional
     const selectedTeams = props.selectedTeams
 
-    const [currentTeams, setCurrentTeams] = useState([])
-    const [selectedTeam, setSelectedTeam] = useState([])
-    const [teamMatches, setTeamMatches] = useState([]) 
+    const [apiData, setApiData] = useState([])
+    const [availableTeams, setAvailableTeams] = useState([]) 
     const [xAxis, setXAxis] = useState([])
-    const [yAxis, setYAxis] = useState ([])
     const [statType, setStatType] = useState([])
     const [accessor, setAccessor] = useState([])
 
@@ -22,28 +19,32 @@ function LineGraph (props) {
         apigetMatchesForRegional(regional)
         .then(data => {
             const holdMatches = data.data.teamMatchesByRegional.items
+            setApiData(holdMatches)
             const xLegend = uniqueArr(holdMatches.map(x => x.id.substring(x.id.indexOf("_") + 1)))
             setXAxis(xLegend)
-            console.log(holdMatches)
-            //setYAxis(getStat(teamMatches, statType, accessor))
+            const availTeams = uniqueArr(holdMatches.map(x => x.Team))
+            setAvailableTeams(availTeams)
         })
-    },[selectedTeam, teamMatches, statType]);
+    },[selectedTeams, statType, accessor]);
 
-    const getTeamMatches = (team) => {
-        const temp = matches.filter(x => x.Team.substring(3) === team)
-        setTeamMatches(temp)
+    const createTeamObjArr = () => {
+        return (
+            availableTeams.map(x => {
+                const stat = getStat(x, statType, accessor, apiData)
+                return {
+                    label: x,
+                    data: stat,
+                }
+            })
+        )
+    
     }
 
     const ref = useRef()
 
     const lineData = {
-        labels: xAxis, // <- all matches here
-        datasets: [
-            {
-            label: 1, 
-            data: 2, 
-            },
-        ]
+        labels: xAxis,
+        datasets: createTeamObjArr()
     }
 
     return (

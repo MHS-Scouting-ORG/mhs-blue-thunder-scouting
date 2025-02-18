@@ -178,11 +178,11 @@ function Summary(props) {
               <br />
               {/* first row container */}
               <div className={tableStyles.TableRow}>
-                <div>
+                <div className={tableStyles.TableContainer}>
                   <DefaultTable sortData={data} {...filterState} />
                 </div>
 
-                <div>
+                <div className={tableStyles.TableContainer}>
                   <div>Here will be populated table/custom table</div>
                   <TeamStats {...filterState} />
                 </div>

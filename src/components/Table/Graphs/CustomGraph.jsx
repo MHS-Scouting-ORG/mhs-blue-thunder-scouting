@@ -1,8 +1,6 @@
 import React, {useEffect, useState, useRef} from "react"
 import { apigetMatchesForRegional} from "../../../api"
 import LineGraph from "./LineGraph"
-import BubbleGraph from "./BubbleGraph"
-import RadarGraph from './RadarGraph'
 
 
 
@@ -11,7 +9,6 @@ function CustomGraph(props) {
     const tableData = props.information
     const selectedTeams = props.selectedTeams
 
-    const [graphType, setGraphType] = useState([])
     const [apiData, setApiData] = useState([])
 
     useEffect(() => {
@@ -19,9 +16,7 @@ function CustomGraph(props) {
         .then(data => {
             setApiData(data.data.teamMatchesByRegional.items)
         })
-    },[graphType])
-
-    const ref = useRef()
+    },[])
 
     const graphState = {
         matches: apiData,
@@ -32,24 +27,9 @@ function CustomGraph(props) {
 
     return (
         <div> 
+            <div>Key: Phase = Tele & Auto or Overall TPts & Fouls</div>
+            <div>Certain Stats are only visible to Tele or Auto</div>
             <LineGraph {...graphState} />
-            {/* <select onChange = {(e) => setGraphType(e.target.value)}>
-                <option value = ''>Select Graph Type</option> 
-                <option value = 'Line'>Line</option>
-                <option value = 'Bar'>Bar</option>
-                <option value = 'Bubble'>Bubble</option>
-                <option value = 'PolarArea'>Polar Area</option>
-                <option value = 'Radar'>Radar</option>
-            </select>
-            {
-                graphType === 'Line' ? <LineGraph {...graphState} /> : null
-            }
-            {
-                graphType === 'Bubble' ? <BubbleGraph {...graphState}  /> : null
-            }
-            {
-                graphType === 'Radar' ? <RadarGraph {...graphState}  /> : null
-            } */}
         </div>
     )
 }

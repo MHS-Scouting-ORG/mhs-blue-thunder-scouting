@@ -1,4 +1,6 @@
-const getStat = (teamMatches, phase, accessor) => {
+const getStat = (team, phase, accessor, apiData) => {
+    const teamMatches = apiData.filter(x => x.Team === team)
+
     const totalPts = teamMatches.map((match) => {
         return match.TotalPoints 
     })
