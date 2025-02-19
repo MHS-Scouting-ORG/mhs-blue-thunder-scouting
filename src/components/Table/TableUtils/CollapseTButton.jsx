@@ -18,7 +18,12 @@ class CollapseTButton extends React.Component {
     render() {
         return (
             <div className = "collapseTButton">
-                <button  className={(this.state.clicked ? tableStyling.CollapseTButtonClicked : tableStyling.CollapseTButton)} onClick={() => this.collapseButtonClicked()}> {this.props.label} </button>
+                {
+                    this.props.type === "form" ? <button className={(this.state.clicked ? tableStyling.CollapseTButtonClicked : tableStyling.CollapseFButton)} onClick={() => this.collapseButtonClicked()}> {this.props.label} </button>
+                    : <button  className={(this.state.clicked ? tableStyling.CollapseTButtonClicked : tableStyling.CollapseTButton)} onClick={() => this.collapseButtonClicked()}> {this.props.label} </button>
+
+
+                }
             </div>
         )
     }

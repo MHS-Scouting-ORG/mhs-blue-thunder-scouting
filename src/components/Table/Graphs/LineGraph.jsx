@@ -30,7 +30,6 @@ function LineGraph (props) {
 
     const createTeamObjArr = () => {
         if(selectedTeams.length === 0) {
-            console.log(availableTeams)
             const dataArr =  availableTeams.map(x => {
                 const stat = getStat(x, statType, accessor, apiData)
                 return {

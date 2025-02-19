@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
 import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
-//import {  }
+import { buttonIncremental } from "./FormUtils";
 // styling
 import classes from './Form.module.css';
 import { submitState } from './FormUtils'
+import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
 
 function Form(props) {
   /* Regional Key */
   const regional = apiGetRegional()
+  const type = "form"
 
   /* MATCH */
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
@@ -56,6 +58,13 @@ function Form(props) {
   /* ROBOT INFO */
   const [robotSpeed, setRobotSpeed] = useState([]);
   const [robotInsight, setRobotInsight] = useState("");
+
+  /* Toggle States */
+  const [infoState, setInfoState] = useState('none');
+  const [autoState, setAutoState] = useState('none');
+  const [teleState, setTeleState] = useState('none');
+  const [penaltyState, setPenaltyState] = useState('none');
+  const [robotState, setRobotState] = useState('none');
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -133,27 +142,74 @@ function Form(props) {
 
   }
 
+  const toggleInfo = () => {
+    if (infoState === 'none') {
+      setInfoState('')
+    }
+    else {
+      setInfoState('none')
+    }
+  }
+
+  const toggleAuto = () => {
+    if (autoState === 'none') {
+      setAutoState('')
+    }
+    else {
+      setAutoState('none')
+    }
+  }
+
+  const toggleTele = () => {
+    if (teleState === 'none') {
+      setTeleState('')
+    }
+    else {
+      setTeleState('none')
+    }
+  }
+
+  const togglePenalty = () => {
+    if (penaltyState === 'none') {
+      setPenaltyState('')
+    }
+    else {
+      setPenaltyState('none')
+    }
+  }
+
+    const toggleRobot = () => {
+      if (robotState === 'none') {
+        setRobotState('')
+      }
+      else {
+        setRobotState('none')
+      }
+  }
+
   return (
     <div>
       <h1>FORM</h1>
 
-      <div>
-        {/* Match Init */}
-        <h2>MATCH & ROBOT</h2>
+      {/* Match Init */}
+      <CollapseTButton label="Match Info" toggleFunction={toggleInfo} type={type}/>
+        <div style={{ display: infoState}}> 
+        
+          <select value={matchType} onInput={(e) => { setMatchType(e.target.value); setElmNum("") }}>
+            <option value=""></option>
+            <option value='q'>Qualification</option>
+            <option value='qf'>Quarterfinal</option>
+            <option value='sf'>Semifinal</option>
+            <option value='f'>Final</option>
+          </select>
+          {
+            matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
+              <input placeholder="elim#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
+              : null
+          }
+          <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
+        
 
-        <select value={matchType} onInput={(e) => { setMatchType(e.target.value); setElmNum("") }}>
-          <option value=""></option>
-          <option value='q'>Qualification</option>
-          <option value='qf'>Quarterfinal</option>
-          <option value='sf'>Semifinal</option>
-          <option value='f'>Final</option>
-        </select>
-        {
-          matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
-            <input placeholder="elim#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
-            : null
-        }
-        <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
         <br></br>
 
         <button onClick={() => setColor(!color)}>{color === false ? 'RED' : 'BLUE'}</button>
@@ -174,67 +230,101 @@ function Form(props) {
 
           }
         </select>
+        </div>
+
         <br></br>
 
         {/* AUTONOMOUS */}
-        <h2>AUTONOMOUS</h2>
-        <div>Auto Placement here maybe clickable button pos?</div>
+        <CollapseTButton label="Autonomous" toggleFunction={toggleAuto} type={type}/>
+        <div style={{ display: autoState}}> 
+
+          {/* Placement */}
+          <div>
         <select value={autoPlacement} onChange={(e) => setAutoPlacement(e.target.value)}>
-          <option value=""> temp autoplacement for now</option>
+          <option value=""> Start</option>
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
         </select>
-        <button onClick={() => setLeft(!left)}>Auto Leave</button>
-        <button onClick={() => setAutoCoralL1(autoCoralL1 + 1)}>L1 Scored</button>
-        <button onClick={() => setAutoCoralL2(autoCoralL2 + 1)}>L2 Scored</button>
-        <button onClick={() => setAutoCoralL3(autoCoralL3 + 1)}>L3 Scored</button>
-        <button onClick={() => setAutoCoralL4(autoCoralL4 + 1)}>L4 Scored</button>
-        <button onClick={() => setAutoProcessorScored(autoProcessorScored + 1)}>Processor Scored</button>
-        <button onClick={() => setAutoNetScored(autoNetScored + 1)}>Net Scored</button>
+          </div>
+
+          {/* Left */}
+        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}> 
+          {
+            left === false ? <img src={"./images/autoLeaveFalse.png"} style={{width: "50px"}}/>
+            : <img src={"./images/autoLeaveTrue.png"} style={{width: "50px"}}/>
+          }
+        </button>
+
+        <button onClick={() => setAutoCoralL1(autoCoralL1 + 1)}>{buttonIncremental(autoCoralL1, "coral1", "coral")}</button>
+        <button onClick={() => setAutoCoralL2(autoCoralL2 + 1)}>{buttonIncremental(autoCoralL2, "coral2", "coral")}</button>
+        <button onClick={() => setAutoCoralL3(autoCoralL3 + 1)}>{buttonIncremental(autoCoralL3, "coral3", "coral")}</button>
+        <button onClick={() => setAutoCoralL4(autoCoralL4 + 1)}>{buttonIncremental(autoCoralL4, "coral4", "coral")}</button>
+        <button onClick={() => setAutoProcessorScored(autoProcessorScored + 1)}>{buttonIncremental(autoProcessorScored, "processor", "algae")}</button>
+        <button onClick={() => setAutoNetScored(autoNetScored + 1)}>{buttonIncremental(autoNetScored, "net", "algae")}</button>
+        </div>
+
         <br></br>
 
         {/* TELEOP */}
-        <h2>TELEOP</h2>
-        <button onClick={() => setTeleCoralL1(teleCoralL1 + 1)}>L1 Scored</button>
-        <button onClick={() => setTeleCoralL2(teleCoralL2 + 1)}>L2 Scored</button>
-        <button onClick={() => setTeleCoralL3(teleCoralL3 + 1)}>L3 Scored</button>
-        <button onClick={() => setTeleCoralL4(teleCoralL4 + 1)}>L4 Scored</button>
-        <button onClick={() => setProcessorScored(processorScored + 1)}>Processor Scored</button>
-        <button onClick={() => setNetScored(netScored + 1)}>Net Scored</button>
-        <select value={hangType} onChange={(e) => setHangType(e.target.value)}>
-          <option value=''>Endgame Type</option>
-          <option value='Shallow'>Shallow</option>
-          <option value='Deep'>Deep</option>
-          <option value='Parked'>Park</option>
-        </select>
-        <br></br>
+        <CollapseTButton label="Teleop" toggleFunction={toggleTele} type={type}/>
+        <div style={{ display: teleState}}> 
+        
+        <button onClick={() => setTeleCoralL1(teleCoralL1 + 1)}>{buttonIncremental(teleCoralL1, "coral1", "coral")}</button>
+        <button onClick={() => setTeleCoralL2(teleCoralL2 + 1)}>{buttonIncremental(teleCoralL2, "coral2", "coral")}</button>
+        <button onClick={() => setTeleCoralL3(teleCoralL3 + 1)}>{buttonIncremental(teleCoralL3, "coral3", "coral")}</button>
+        <button onClick={() => setTeleCoralL4(teleCoralL4 + 1)}>{buttonIncremental(teleCoralL4, "coral4", "coral")}</button>
+        <button onClick={() => setProcessorScored(processorScored + 1)}>{buttonIncremental(processorScored, "processor", "algae")}</button>
+        <button onClick={() => setNetScored(netScored + 1)}>{buttonIncremental(netScored, "net", "algae")}</button>
+        <button onClick={() => setMinFouls(minFouls + 1)}>Min Foul</button>
+        <button onClick={() => setMajFouls(majFouls + 1)}>Maj Foul</button>
+
+        <div>
+          <select value={hangType} onChange={(e) => setHangType(e.target.value)}>
+            <option value=''>Endgame Type</option>
+            <option value='Shallow'>Shallow</option>
+            <option value='Deep'>Deep</option>
+            <option value='Parked'>Park</option>
+          </select>
+        </div>
+
+        </div>
+
         <br></br>
 
         {/* PENALTIES */}
-        <h2>PENALTIES</h2>
+        <CollapseTButton label="Penalties" toggleFunction={togglePenalty} type={type}/>
+        <div style={{ display: penaltyState}}> 
+        
         <button onClick={() => setYellowCard(!yellowCard)}>YellowCard</button>
         <button onClick={() => setRedCard(!redCard)}>RedCard</button>
         <button onClick={() => setDisable(!disable)}>Disable</button>
         <button onClick={() => setDQ(!dq)}>DQ</button>
         <button onClick={() => setBotBroke(!botBroke)}>Bot Broke</button>
         <button onClick={() => setNoShow(!noShow)}>No Show</button>
-        <button onClick={() => setMinFouls(minFouls + 1)}>Min Foul</button>
-        <button onClick={() => setMajFouls(majFouls + 1)}>Maj Foul</button>
         {botBroke ? <input placeholder="comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
+        </div>
+
         <br></br>
+
+
         {/* ROBOT INFO */}
-        <h2>ROBOT INFO</h2>
-        <select value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
-          <option value="">Robot Speed</option>
-          <option value="Slow">Slow</option>
-          <option value="Average">Average</option>
-          <option value="Fast">Fast</option>
-        </select>
+        <CollapseTButton label="Robot Info" toggleFunction={toggleRobot} type={type}/>
+        <div style={{ display: robotState}}> 
+        <div>
+          <select value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
+            <option value="">Robot Speed</option>
+            <option value="Slow">Slow</option>
+            <option value="Average">Average</option>
+            <option value="Fast">Fast</option>
+          </select>
+        </div>
+        
         <input type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
+        </div>
+
         <br></br>
-      </div>
       {/* Submit */}
       <button onClick={() => { setConfirm(!confirm) }}>{confirm ? "Not Yet" : "Submit"}</button>
       {confirm ? <button onClick={() => {

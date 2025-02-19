@@ -211,7 +211,7 @@ const getStat = (team, phase, accessor, apiData) => {
             accessor === "HumanMissed" ? 
                 teleHumanMissed
             : 
-            console.log("fail tele")
+            null//console.log("fail tele")
         :
         phase === "auto" ? 
                 /* Auto */
@@ -259,7 +259,7 @@ const getStat = (team, phase, accessor, apiData) => {
             :
             console.log("penalty fail")
         :
-        console.log("fail")
+        null//console.log("fail")
     )
 }
 
@@ -341,7 +341,7 @@ const getBubbleStat = (taData, ac) => {
         ac === "Tech" ?
         tData.Tech
         :
-        console.log("fail")
+        null//console.log("fail")
     )
 }
 
