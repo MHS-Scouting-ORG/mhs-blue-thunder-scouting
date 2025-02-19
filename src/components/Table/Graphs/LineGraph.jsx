@@ -14,6 +14,7 @@ function LineGraph (props) {
     const [xAxis, setXAxis] = useState([])
     const [statType, setStatType] = useState([])
     const [accessor, setAccessor] = useState([])
+    
 
     useEffect(() => {
         apigetMatchesForRegional(regional)
@@ -25,25 +26,43 @@ function LineGraph (props) {
             const availTeams = uniqueArr(holdMatches.map(x => x.Team))
             setAvailableTeams(availTeams)
         })
-    },[selectedTeams, statType, accessor]);
+    },[selectedTeams, statType, accessor, apiData]);
 
     const createTeamObjArr = () => {
-        return (
-            availableTeams.map(x => {
+        if(selectedTeams.length === 0) {
+            console.log(availableTeams)
+            const dataArr =  availableTeams.map(x => {
                 const stat = getStat(x, statType, accessor, apiData)
                 return {
                     label: x,
                     data: stat,
                 }
             })
-        )
+            return (
+               dataArr
+            ) 
+        }
+        else {
+            const dataArr = selectedTeams.map(x => {
+                const team = `frc${x.TeamNumber}` 
+                const stat = getStat(team, statType, accessor, apiData)
+                return {
+                    label: x.TeamNumber,
+                    data: stat,
+                }
+            })
+            return (
+                dataArr
+            )
+        }
+        
     
     }
 
     const ref = useRef()
 
     const lineData = {
-        labels: xAxis,
+        labels: xAxis.sort(),
         datasets: createTeamObjArr()
     }
 
