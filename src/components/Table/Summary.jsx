@@ -89,22 +89,16 @@ function Summary(props) {
       NoShow: indivTeam.NoShow,
       key: team,
     }
-    if(val === "leftClick") {
-      setTeamsClicked(teamsClicked => {
-        if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
-          return [...teamsClicked, teamObj]
-        }
-        else{
-          return teamsClicked
-        }
-        })
+    
+  setTeamsClicked(teamsClicked => {
+    if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
+      return [...teamsClicked, teamObj]
     }
-    else if(val === "rightClick"){
-      setTeamsClicked(teamsClicked => teamsClicked.splice(teamsClicked.indexOf(team), 1))
+    else{
+      const index = teamsClicked.findIndex(x => teamObj.TeamNumber === x.TeamNumber)
+      return  teamsClicked.toSpliced(index, 1)
     }
-    else {
-      console.log("error")
-    }
+    })
   }
 
   const data = React.useMemo(
@@ -166,48 +160,28 @@ function Summary(props) {
     <div>
       <br></br>
       <img alt="" style={{ width: '360px' }} src={'./images/STATSHEADER.png'}></img>
-      <table >
-        <tbody>
-          <tr>
-            <td>
-              <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
-              {<List setList={setSortBy} />}
-              <br />
-              {/* first row container */}
-              <div className={tableStyles.TableRow}>
-                <div className={tableStyles.TableContainer}>
-                  <DefaultTable sortData={data} {...filterState} />
-                </div>
 
-                <div className={tableStyles.TableContainer}>
-                  <TeamStats {...filterState} />
-                </div>
-
-                <div>
-
-                </div>
-              </div>
-
-              <br></br>
-              <br></br>
-
-            </td>
-            <td>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
+      <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
+      {<List setList={setSortBy} />}
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
+      <br />
+      {/* first row container */}
+      <div className={tableStyles.TableRow}>
 
-      <br></br>
-      <br></br>
+        <div className={tableStyles.TableContainer}>
+          <DefaultTable sortData={data} {...filterState} />
+        </div>
 
-      <div>
-        {/* topRow container */}
         <div>
-            {/* Custom Graph */}
-            <CustomGraph {...filterState}></CustomGraph>
+          {/* Custom Graph */}
+          <CustomGraph {...filterState}></CustomGraph>
+        </div>
+
+      </div>
+
+      <div className={tableStyles.TableRow}>
+        <div className={tableStyles.TableContainer}>
+          <TeamStats {...filterState} />
         </div>
       </div>
     </div>

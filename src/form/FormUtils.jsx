@@ -238,50 +238,50 @@ export function toggleIncremental(state, type){
   /* When True */
   if(state) {
     if(type === "autoLeave") {
-      return (<img src="./images/autoLeaveTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/autoLeaveTrue.png" style={{width: "110px"}}/>)
     }
     else if(type === "yellowCard") {
-      return (<img src="./images/yellowTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/yellowTrue.png" style={{width: "100px"}}/>)
     }
     else if(type === "redCard") {
-      return (<img src="./images/redTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/redTrue.png" style={{width: "100px"}}/>)
     }
     else if(type === "disable") {
-      return (<img src="./images/disableTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/disableTrue.png" style={{width: "100px"}}/>)
     }
     else if(type === "dq") {
-      return (<img src="./images/dqTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/dqTrue.png" style={{width: "100px"}}/>)
     }
     else if(type === "broke") {
-      return (<img src="./images/brokeTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/brokeTrue.png" style={{width: "100px"}}/>)
     }
     else if(type === "noShow") {
-      return (<img src="./images/noShowTrue.png" style={{width: "50px"}}/>)
+      return (<img src="./images/noShowTrue.png" style={{width: "100px"}}/>)
     }
     
   }
   /* When False */
   else {
     if(type === "autoLeave") {
-      return (<img src="./images/autoLeaveFalse.png" style={{width: "50px"}}/>)
+      return (<img src="./images/autoLeaveFalse.png" style={{width: "110px"}}/>)
     }
     else if(type === "yellowCard") {
-      return (<img src="./images/yellowDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/yellowDefault.png" style={{width: "100px"}}/>)
     }
     else if(type === "redCard") {
-      return (<img src="./images/redDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/redDefault.png" style={{width: "100px"}}/>)
     }
     else if(type === "disable") {
-      return (<img src="./images/disableDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/disableDefault.png" style={{width: "100px"}}/>)
     }
     else if(type === "dq") {
-      return (<img src="./images/dqDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/dqDefault.png" style={{width: "100px"}}/>)
     }
     else if(type === "broke") {
-      return (<img src="./images/brokeDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/brokeDefault.png" style={{width: "100px"}}/>)
     }
     else if(type === "noShow") {
-      return (<img src="./images/noShowDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/noShowDefault.png" style={{width: "100px"}}/>)
     }
 
   }
@@ -291,97 +291,97 @@ export function buttonIncremental(num, type, element) {
   if (element === "coral") {
     /* Check for default and level */
     if (num === 0 && type === "coral1") {
-      return (<img src="./images/level1.png" style={{width: "50px"}}/>)
+      return (<img src="./images/level1.png" style={{width: "110px"}}/>)
     }
-    else if(num === 0 && type === "coral2") {
-      return (<img src="./images/level2.png" style={{width: "50px"}}/>)
+    else if(num <= 0 && type === "coral2") {
+      return (<img src="./images/level2.png" style={{width: "110px"}}/>)
     }
     else if(num === 0 && type === "coral3") {
-      return (<img src="./images/level3.png" style={{width: "50px"}}/>)
+      return (<img src="./images/level3.png" style={{width: "110px"}}/>)
     }
     else if(num === 0 && type === "coral4") {
-      return (<img src="./images/level4.png" style={{width: "50px"}}/>)
+      return (<img src="./images/level4.png" style={{width: "110px"}}/>)
     }
 
     /* Check for increment */
 
     if( num === 1){
-      return (<img src="./images/incremental/coralOne.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coralOne.png" style={{width: "110px"}}/>)
     }
     if( num === 2){
-      return (<img src="./images/incremental/coralTwo.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coralTwo.png" style={{width: "110px"}}/>)
     }
     if( num === 3){
-      return (<img src="./images/incremental/coralThree.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coralThree.png" style={{width: "110px"}}/>)
     }
     if( num === 4){
-      return (<img src="./images/incremental/coralFour.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coralFour.png" style={{width: "110px"}}/>)
     }
     if( num === 5){
-      return (<img src="./images/incremental/coral5.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral5.png" style={{width: "110px"}}/>)
     }
     if( num === 6){
-      return (<img src="./images/incremental/coral6.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral6.png" style={{width: "110px"}}/>)
     }
     if( num === 7){
-      return (<img src="./images/incremental/coral7.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral7.png" style={{width: "110px"}}/>)
     }
     if( num === 8){
-      return (<img src="./images/incremental/coral8.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral8.png" style={{width: "110px"}}/>)
     }
     if( num === 9){
-      return (<img src="./images/incremental/coral9.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral9.png" style={{width: "110px"}}/>)
     }
     if( num === 10){
-      return (<img src="./images/incremental/coral10.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coral10.png" style={{width: "110px"}}/>)
     }
     if(num > 10){
-      return (<img src="./images/incremental/coralOver10.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/coralOver10.png" style={{width: "110px"}}/>)
     }
   }
   else if (element === "algae"){
     /* Check type */
     if (num === 0 && type === "processor") {
-      return (<img src="./images/processorDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/processorDefault.png" style={{width: "110px"}}/>)
     }
     else if(num === 0 && type === "net") {
-      return (<img src="./images/netDefault.png" style={{width: "50px"}}/>)
+      return (<img src="./images/netDefault.png" style={{width: "110px"}}/>)
     }
 
     /* Check for increment */
 
     if( num === 1){
-      return (<img src="./images/incremental/algae1.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae1.png" style={{width: "110px"}}/>)
     }
     if( num === 2){
-      return (<img src="./images/incremental/algae2.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae2.png" style={{width: "110px"}}/>)
     }
     if( num === 3){
-      return (<img src="./images/incremental/algae3.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae3.png" style={{width: "110px"}}/>)
     }
     if( num === 4){
-      return (<img src="./images/incremental/algae4.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae4.png" style={{width: "110px"}}/>)
     }
     if( num === 5){
-      return (<img src="./images/incremental/algae5.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae5.png" style={{width: "110px"}}/>)
     }
     if( num === 6){
-      return (<img src="./images/incremental/algae6.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae6.png" style={{width: "110px"}}/>)
     }
     if( num === 7){
-      return (<img src="./images/incremental/algae7.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae7.png" style={{width: "110px"}}/>)
     }
     if( num === 8){
-      return (<img src="./images/incremental/algae8.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae8.png" style={{width: "110px"}}/>)
     }
     if( num === 9){
-      return (<img src="./images/incremental/algae9.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae9.png" style={{width: "110px"}}/>)
     }
     if( num === 10){
-      return (<img src="./images/incremental/algae10.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algae10.png" style={{width: "110px"}}/>)
     }
     if(num > 10){
-      return (<img src="./images/incremental/algaeOver10.png" style={{width: "50px"}}/>)
+      return (<img src="./images/incremental/algaeOver10.png" style={{width: "110px"}}/>)
     }
   }
 }

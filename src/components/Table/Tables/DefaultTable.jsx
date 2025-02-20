@@ -69,23 +69,18 @@ function DefaultTable(props) {
     }), [rankingState,tableData]
   )
 
-  const getRowId = (idClicked, val) => {
-    if(val === "leftClick"){
-      setActiveIndex(id => {
-        if(id.find(x => x === idClicked) === undefined){
-          return [...id, idClicked]
-        }
-        else {
-          return id
-        }
-      })
-    }
-    else if(val === "rightClick"){
-      setActiveIndex(teamsClicked => teamsClicked.splice(teamsClicked.indexOf(idClicked), teamsClicked.indexOf(idClicked)+ 1))
-    }
-    else{
-      console.log("error")
-    }
+  const updateIndex = (idClicked, val) => {
+    setActiveIndex(id => {
+      if(id.find(x => x === idClicked) === undefined){
+        return [...id, idClicked]
+      }
+      else {
+        const index = id.indexOf(idClicked)
+        if(index > -1)
+          return [...id.slice(0, index), ...id.slice(index + 1)]
+        return id
+      }
+    })
   }
 
   const columns = React.useMemo(
@@ -170,16 +165,10 @@ function DefaultTable(props) {
                 return (<React.Fragment>
                   <tr {...row.getRowProps()} 
                   style={{background: activeIndex.includes(row.id) ? "#77B6E2" : "white" }}
-
-
+                  
                   onClick={() => {
-                    getRowId(row.id, "leftClick")
-                    teamsClickedFunc(row.original.TeamNumber, "leftClick")
-                  }}
-
-                  onContextMenu={() => {
-                    getRowId(row.id, "rightClick")
-                    teamsClickedFunc(row.original.TeamNumber, "rightClick")
+                    updateIndex(row.id)
+                    teamsClickedFunc(row.original.TeamNumber)
                   }}
                   
                   >

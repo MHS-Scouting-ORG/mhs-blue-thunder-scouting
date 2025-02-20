@@ -67,6 +67,9 @@ function Form(props) {
   const [penaltyState, setPenaltyState] = useState('none');
   const [robotState, setRobotState] = useState('none');
 
+  /* Decremental */
+  const [decremental, setDecremental] = useState(false);
+
   /* Submit */
   const [confirm, setConfirm] = useState(false);
 
@@ -178,7 +181,7 @@ function Form(props) {
     }
   }
 
-    const toggleRobot = () => {
+  const toggleRobot = () => {
       if (robotState === 'none') {
         setRobotState('')
       }
@@ -186,6 +189,16 @@ function Form(props) {
         setRobotState('none')
       }
   }
+
+  const radioAlliance = (val) =>{
+    if (val === 'redAllianceChosen') {
+      setColor(true)
+    }
+    else if (val === 'blueAllianceChosen') {
+      setColor(false)
+    }
+  }
+  
 
   return (
     <div>
@@ -216,8 +229,15 @@ function Form(props) {
         <br></br>
 
         <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+        <div>
+        <div>Alliance Color</div>
+          <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="redAllianceChosen" name="alliance"></input>
+          <label for="red">Red</label>
+          <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="blueAllianceChosen" name="alliance"></input>
+          <label for="blue">Blue</label>
+        </div>
 
-        <button onClick={() => setColor(!color)} style={{backgroundColor: "white", }} >{color ? <img src="./images/white-redGrad.png" style={{width: "50px"}}/> : <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>}</button>
+        {color ? <img src="./images/white-redGrad.png" style={{width: "50px"}}/> : <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>}
         
         <select style={{height: "50px", flex: 1}} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
@@ -245,15 +265,18 @@ function Form(props) {
         <CollapseTButton label="Autonomous" toggleFunction={toggleAuto} type={type}/>
         <div style={{ display: autoState}}> 
 
-          {/* Left */}
-        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}</button>
+        {/* Left */}
+        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}<div>Auto Leave</div></button>
 
-        <button onClick={() => setAutoCoralL1(autoCoralL1 + 1)}>{buttonIncremental(autoCoralL1, "coral1", "coral")}</button>
-        <button onClick={() => setAutoCoralL2(autoCoralL2 + 1)}>{buttonIncremental(autoCoralL2, "coral2", "coral")}</button>
-        <button onClick={() => setAutoCoralL3(autoCoralL3 + 1)}>{buttonIncremental(autoCoralL3, "coral3", "coral")}</button>
-        <button onClick={() => setAutoCoralL4(autoCoralL4 + 1)}>{buttonIncremental(autoCoralL4, "coral4", "coral")}</button>
-        <button onClick={() => setAutoProcessorScored(autoProcessorScored + 1)}>{buttonIncremental(autoProcessorScored, "processor", "algae")}</button>
-        <button onClick={() => setAutoNetScored(autoNetScored + 1)}>{buttonIncremental(autoNetScored, "net", "algae")}</button>
+        <button onClick={() => {decremental ? setAutoCoralL1(autoCoralL1 - 1) :setAutoCoralL1(autoCoralL1 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL1, "coral1", "coral")}<div>Level 1</div></button>
+        <button onClick={() => {decremental ? setAutoCoralL2(autoCoralL2 - 1) :setAutoCoralL2(autoCoralL2 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL2, "coral2", "coral")}<div>Level 2</div></button>
+        <button onClick={() => {decremental ? setAutoCoralL3(autoCoralL3 - 1) :setAutoCoralL3(autoCoralL3 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL3, "coral3", "coral")}<div>Level 3</div></button>
+        <button onClick={() => {decremental ? setAutoCoralL4(autoCoralL4 - 1) :setAutoCoralL4(autoCoralL4 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL4, "coral4", "coral")}<div>Level 4</div></button>
+        <button onClick={() => {decremental ? setAutoProcessorScored(autoProcessorScored - 1) :setAutoProcessorScored(autoProcessorScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoProcessorScored, "processor", "algae")}<div>Processor</div></button>
+        <button onClick={() => {decremental ? setAutoNetScored(autoNetScored - 1) :setAutoNetScored(autoNetScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoNetScored, "net", "algae")}<div>Net</div></button>
+        <div>
+          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+        </div>
         </div>
 
         <br></br>
@@ -262,18 +285,18 @@ function Form(props) {
         <CollapseTButton label="Teleop" toggleFunction={toggleTele} type={type}/>
         <div style={{ display: teleState}}> 
         
-        <button onClick={() => setTeleCoralL1(teleCoralL1 + 1)}>{buttonIncremental(teleCoralL1, "coral1", "coral")}</button>
-        <button onClick={() => setTeleCoralL2(teleCoralL2 + 1)}>{buttonIncremental(teleCoralL2, "coral2", "coral")}</button>
-        <button onClick={() => setTeleCoralL3(teleCoralL3 + 1)}>{buttonIncremental(teleCoralL3, "coral3", "coral")}</button>
-        <button onClick={() => setTeleCoralL4(teleCoralL4 + 1)}>{buttonIncremental(teleCoralL4, "coral4", "coral")}</button>
+        <button onClick={() => {decremental ? setTeleCoralL1(teleCoralL1 - 1) :setTeleCoralL1(teleCoralL1 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL1, "coral1", "coral")}<div>Level 1</div></button>
+        <button onClick={() => {decremental ? setTeleCoralL2(teleCoralL2 - 1) :setTeleCoralL2(teleCoralL2 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL2, "coral2", "coral")}<div>Level 2</div></button>
+        <button onClick={() => {decremental ? setTeleCoralL3(teleCoralL3 - 1) :setTeleCoralL3(teleCoralL3 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL3, "coral3", "coral")}<div>Level 3</div></button>
+        <button onClick={() => {decremental ? setTeleCoralL4(teleCoralL4 - 1) :setTeleCoralL4(teleCoralL4 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL4, "coral4", "coral")}<div>Level 4</div></button>
         <div>
-          <button onClick={() => setProcessorScored(processorScored + 1)}>{buttonIncremental(processorScored, "processor", "algae")}</button>
-          <button onClick={() => setNetScored(netScored + 1)}>{buttonIncremental(netScored, "net", "algae")}</button>
+          <button onClick={() => {decremental ? setProcessorScored(processorScored - 1) :setProcessorScored(processorScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(processorScored, "processor", "algae")}<div>Processor</div></button>
+          <button onClick={() => {decremental ? setNetScored(netScored - 1) :setNetScored(netScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(netScored, "net", "algae")}<div>Net</div></button>
+          <div>
+            <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+          </div>
         </div>
-        <div>
-          <button onClick={() => setMinFouls(minFouls + 1)} style={{height: "55px"}}><img src="./images/minorFoul.png" style={{width: "50px"}}/><div>{minFouls}</div></button>
-          <button onClick={() => setMajFouls(majFouls + 1)} style={{height: "55px"}}><img src="./images/majorFoul.png" style={{width: "50px"}}/><div>{majFouls}</div></button>
-        </div>
+        
 
         <div>
           <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
@@ -292,6 +315,12 @@ function Form(props) {
         <CollapseTButton label="Penalties" toggleFunction={togglePenalty} type={type}/>
         <div style={{ display: penaltyState}}> 
         
+        <div>
+          <button onClick={() => {decremental ? setMinFouls(minFouls - 1) :setMinFouls(minFouls + 1)}} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul:{minFouls}</div></button>
+          <button onClick={() => {decremental ? setMajFouls(majFouls - 1) :setMajFouls(majFouls + 1)}} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul:{majFouls}</div></button>
+          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+        </div>
+
         <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")}</button>
         <button onClick={() => setRedCard(!redCard)} style={{ backgroundColor: redCard === true ? "#ff3131" : "" }}>{toggleIncremental(redCard, "redCard")}</button>
         <button onClick={() => setDisable(!disable)} style={{ backgroundColor: disable === true ? "#ff914d" : "" }}>{toggleIncremental(disable, "disable")}</button>

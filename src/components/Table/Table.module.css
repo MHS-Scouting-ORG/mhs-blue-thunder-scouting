@@ -79,6 +79,17 @@
     width: 100%;
 }
 
+.CollapseFButtonClicked {
+    border: none;
+    font-size: 15px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 7px;
+    background: #77B6E2;
+    font-weight: bold;
+    width: 50%;
+}
+
 .CollapseTButton:hover {
     background: #77B6E2;
 }
