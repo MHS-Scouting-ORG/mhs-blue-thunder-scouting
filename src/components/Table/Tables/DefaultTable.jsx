@@ -140,7 +140,7 @@ function DefaultTable(props) {
         <div style={{ display: tableState, maxHeight: '15rem', overflowY: 'scroll' }}>
 
           {/* Search */}
-         <input placeholder='Search' value={globalFilter || ''} onChange={e => setGlobalFilter(e.target.value)}/>
+         <input style={{width: "100%"}} placeholder='Search' value={globalFilter || ''} onChange={e => setGlobalFilter(e.target.value)}/>
 
           <table className={TableStyles.Table} {...getTableProps()}>
             <thead>

@@ -130,12 +130,6 @@ const getStat = (team, phase, accessor, apiData) => {
         return match.Autonomous.PointsScored.CoralPoints
     })
 
-    /* AutoStart */
-
-    const autoStart = teamMatches.map((match) => {
-        return match.Autonomous.StartingPosition
-    })
-
     /* Penalties */
 
     const majorFouls = teamMatches.map((match) => {
@@ -233,9 +227,6 @@ const getStat = (team, phase, accessor, apiData) => {
             :
             accessor === "Net" ? 
                 autoNet
-            :
-            accessor === "Start" ? 
-                autoStart
             :
                 /* Auto Points */
             accessor === "Points" ? 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs, getTeamsInRegional } from "../../api/bluealliance";
+import { getOprs } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { apigetMatchesForRegional } from "../../api";
@@ -50,7 +50,7 @@ function Summary(props) {
     getOprs(regional)
       .then(data => {
         const oprDataArr = Object.values(data)
-        const oData = oprDataArr[2] //opr
+        const oData = oprDataArr[2] 
 
         setOprList(oData)
       })
@@ -65,8 +65,6 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy, teamsClicked])
 
-
-  /* (needs fixing) adds mutiple team instances  */
   const handleTeamClicked = (team, val) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
@@ -79,7 +77,6 @@ function Summary(props) {
       AvgCycles: indivTeam.AvgCycles,
       AvgCoral: indivTeam.AvgCoral,
       AvgAlgae: indivTeam.AvgAlgae,
-      AutoStart: indivTeam.AutoStart,
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
       Fouls: indivTeam.Fouls,
@@ -168,7 +165,7 @@ function Summary(props) {
   return (
     <div>
       <br></br>
-      <img alt="" style={{ width: '360px' }} src={'./images/TABLEHEADER.png'}></img>
+      <img alt="" style={{ width: '360px' }} src={'./images/STATSHEADER.png'}></img>
       <table >
         <tbody>
           <tr>
@@ -183,7 +180,6 @@ function Summary(props) {
                 </div>
 
                 <div className={tableStyles.TableContainer}>
-                  <div>Here will be populated table/custom table</div>
                   <TeamStats {...filterState} />
                 </div>
 
@@ -209,12 +205,9 @@ function Summary(props) {
 
       <div>
         {/* topRow container */}
-        <div className={tableStyles.TableRow}>
-
-          <div>
+        <div>
             {/* Custom Graph */}
             <CustomGraph {...filterState}></CustomGraph>
-          </div>
         </div>
       </div>
     </div>

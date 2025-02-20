@@ -97,7 +97,6 @@ function LineGraph (props) {
                         <option value ="Endgame">Endgame-Tele</option>
                         <option value ="Human">Human-Tele</option>
                         <option value ="HumanMissed">HumanMissed-Tele</option>
-                        <option value ="Start">AutoStart</option>
                         <option value ="MajorFouls">MajorFouls</option>
                         <option value ="MinorFouls">MinorFouls</option>
                     </select>

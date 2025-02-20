@@ -3,6 +3,8 @@ import { getMatchesForRegional } from '../api/bluealliance';
 
 import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
 import { buttonIncremental } from "./FormUtils";
+import { toggleIncremental } from "./FormUtils"
+
 // styling
 import classes from './Form.module.css';
 import { submitState } from './FormUtils'
@@ -26,7 +28,6 @@ function Form(props) {
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [autoPlacement, setAutoPlacement] = useState(''); //1,2,3,4
   const [left, setLeft] = useState(false);
   const [autoCoralL1, setAutoCoralL1] = useState(0);
   const [autoCoralL2, setAutoCoralL2] = useState(0);
@@ -112,7 +113,6 @@ function Form(props) {
     setRed([])
     setBlue([])
     setMatchKey('')
-    setAutoPlacement('')
     setLeft('')
     setAutoCoralL1(0)
     setAutoCoralL2(0)
@@ -189,32 +189,37 @@ function Form(props) {
 
   return (
     <div>
-      <h1>FORM</h1>
+
+      <img src="./images/FORM HEADER.png" style={{maxWidth: "100%"}}/>
 
       {/* Match Init */}
       <CollapseTButton label="Match Info" toggleFunction={toggleInfo} type={type}/>
         <div style={{ display: infoState}}> 
-        
-          <select value={matchType} onInput={(e) => { setMatchType(e.target.value); setElmNum("") }}>
-            <option value=""></option>
-            <option value='q'>Qualification</option>
-            <option value='qf'>Quarterfinal</option>
-            <option value='sf'>Semifinal</option>
-            <option value='f'>Final</option>
-          </select>
-          {
-            matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
-              <input placeholder="elim#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
-              : null
-          }
-          <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
-        
+
+          <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+            <select style={{height: "50px"}} value={matchType} onInput={(e) => { setMatchType(e.target.value); setElmNum("") }}>
+              <option value="">Select Match Type</option>
+              <option value='q'>Qualification</option>
+              <option value='qf'>Quarterfinal</option>
+              <option value='sf'>Semifinal</option>
+              <option value='f'>Final</option>
+            </select>
+            {
+              matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
+                <input placeholder="elim#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
+                : null
+            }
+            <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
+        </div>
 
         <br></br>
+        <br></br>
 
-        <button onClick={() => setColor(!color)}>{color === false ? 'RED' : 'BLUE'}</button>
+        <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
 
-        <select onChange={(e) => setTeamNumber(e.target.value)}>
+        <button onClick={() => setColor(!color)} style={{backgroundColor: "white", }} >{color ? <img src="./images/white-redGrad.png" style={{width: "50px"}}/> : <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>}</button>
+        
+        <select style={{height: "50px", flex: 1}} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
           {color === false ?
 
@@ -232,30 +237,16 @@ function Form(props) {
         </select>
         </div>
 
+        </div>
+
         <br></br>
 
         {/* AUTONOMOUS */}
         <CollapseTButton label="Autonomous" toggleFunction={toggleAuto} type={type}/>
         <div style={{ display: autoState}}> 
 
-          {/* Placement */}
-          <div>
-        <select value={autoPlacement} onChange={(e) => setAutoPlacement(e.target.value)}>
-          <option value=""> Start</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select>
-          </div>
-
           {/* Left */}
-        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}> 
-          {
-            left === false ? <img src={"./images/autoLeaveFalse.png"} style={{width: "50px"}}/>
-            : <img src={"./images/autoLeaveTrue.png"} style={{width: "50px"}}/>
-          }
-        </button>
+        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}</button>
 
         <button onClick={() => setAutoCoralL1(autoCoralL1 + 1)}>{buttonIncremental(autoCoralL1, "coral1", "coral")}</button>
         <button onClick={() => setAutoCoralL2(autoCoralL2 + 1)}>{buttonIncremental(autoCoralL2, "coral2", "coral")}</button>
@@ -275,13 +266,17 @@ function Form(props) {
         <button onClick={() => setTeleCoralL2(teleCoralL2 + 1)}>{buttonIncremental(teleCoralL2, "coral2", "coral")}</button>
         <button onClick={() => setTeleCoralL3(teleCoralL3 + 1)}>{buttonIncremental(teleCoralL3, "coral3", "coral")}</button>
         <button onClick={() => setTeleCoralL4(teleCoralL4 + 1)}>{buttonIncremental(teleCoralL4, "coral4", "coral")}</button>
-        <button onClick={() => setProcessorScored(processorScored + 1)}>{buttonIncremental(processorScored, "processor", "algae")}</button>
-        <button onClick={() => setNetScored(netScored + 1)}>{buttonIncremental(netScored, "net", "algae")}</button>
-        <button onClick={() => setMinFouls(minFouls + 1)}>Min Foul</button>
-        <button onClick={() => setMajFouls(majFouls + 1)}>Maj Foul</button>
+        <div>
+          <button onClick={() => setProcessorScored(processorScored + 1)}>{buttonIncremental(processorScored, "processor", "algae")}</button>
+          <button onClick={() => setNetScored(netScored + 1)}>{buttonIncremental(netScored, "net", "algae")}</button>
+        </div>
+        <div>
+          <button onClick={() => setMinFouls(minFouls + 1)} style={{height: "55px"}}><img src="./images/minorFoul.png" style={{width: "50px"}}/><div>{minFouls}</div></button>
+          <button onClick={() => setMajFouls(majFouls + 1)} style={{height: "55px"}}><img src="./images/majorFoul.png" style={{width: "50px"}}/><div>{majFouls}</div></button>
+        </div>
 
         <div>
-          <select value={hangType} onChange={(e) => setHangType(e.target.value)}>
+          <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
             <option value=''>Endgame Type</option>
             <option value='Shallow'>Shallow</option>
             <option value='Deep'>Deep</option>
@@ -297,13 +292,16 @@ function Form(props) {
         <CollapseTButton label="Penalties" toggleFunction={togglePenalty} type={type}/>
         <div style={{ display: penaltyState}}> 
         
-        <button onClick={() => setYellowCard(!yellowCard)}>YellowCard</button>
-        <button onClick={() => setRedCard(!redCard)}>RedCard</button>
-        <button onClick={() => setDisable(!disable)}>Disable</button>
-        <button onClick={() => setDQ(!dq)}>DQ</button>
-        <button onClick={() => setBotBroke(!botBroke)}>Bot Broke</button>
-        <button onClick={() => setNoShow(!noShow)}>No Show</button>
-        {botBroke ? <input placeholder="comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
+        <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")}</button>
+        <button onClick={() => setRedCard(!redCard)} style={{ backgroundColor: redCard === true ? "#ff3131" : "" }}>{toggleIncremental(redCard, "redCard")}</button>
+        <button onClick={() => setDisable(!disable)} style={{ backgroundColor: disable === true ? "#ff914d" : "" }}>{toggleIncremental(disable, "disable")}</button>
+        <button onClick={() => setDQ(!dq)} style={{ backgroundColor: dq === true ? "black" : "" }}>{toggleIncremental(dq, "dq")}</button>
+        <button onClick={() => setBotBroke(!botBroke)} style={{ backgroundColor: botBroke === true ? "#77B6E2" : "" }}>{toggleIncremental(botBroke, "broke")}</button>
+        <button onClick={() => setNoShow(!noShow)} style={{ backgroundColor: noShow === true ? "#77B6E2" : "" }}>{toggleIncremental(noShow, "noShow")}</button>
+
+        <div>
+          {botBroke ? <input placeholder="broken comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
+        </div>
         </div>
 
         <br></br>
@@ -313,21 +311,32 @@ function Form(props) {
         <CollapseTButton label="Robot Info" toggleFunction={toggleRobot} type={type}/>
         <div style={{ display: robotState}}> 
         <div>
-          <select value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
+          <select style={{height: "50px"}} value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
             <option value="">Robot Speed</option>
             <option value="Slow">Slow</option>
             <option value="Average">Average</option>
             <option value="Fast">Fast</option>
           </select>
         </div>
-        
-        <input type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
+
+        <input style={{height: "50px"}} type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
         </div>
 
         <br></br>
-      {/* Submit */}
-      <button onClick={() => { setConfirm(!confirm) }}>{confirm ? "Not Yet" : "Submit"}</button>
-      {confirm ? <button onClick={() => {
+        <br></br>
+      {/* Submit Check */}
+      <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white"}}>
+        {
+        confirm ? 
+        /* Not Yet */
+        <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
+        /* Submit */
+        : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Submit</div></div>
+        }
+      </button>
+
+      {/* Submit & Send */}
+      {confirm ? <button style={{backgroundColor:"White"}} onClick={() => {
         submitState(
           regional,
           teamNumber,
@@ -336,7 +345,6 @@ function Form(props) {
           matchType,
           elmNum,
           matchNumber,
-          autoPlacement,
           left,
           autoCoralL1,
           autoCoralL2,
@@ -372,7 +380,7 @@ function Form(props) {
 
         }
       }
-      >Confirm</button> : null}
+      >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
 
     </div>
   )

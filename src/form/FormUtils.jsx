@@ -42,7 +42,6 @@ export async function submitState(
   matchType,
   elmNum,
   matchNumber,
-  autoPlacement,
   left,
   autoCoralL1,
   autoCoralL2,
@@ -107,11 +106,6 @@ export async function submitState(
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-  /* Auto Placement Select */
-  if (autoPlacement === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nRobot AutoStarting Placement"
-  }
 
   if (left) {
     autoPoints += 3;
@@ -173,7 +167,6 @@ export async function submitState(
     matchEntry.TotalPoints = totalPoints
 
     // AUTO SPECIFIC //
-    matchEntry.Autonomous.StartingPosition = parseInt(autoPlacement)
     matchEntry.Autonomous.Left = left
 
     matchEntry.Autonomous.AmountScored.CoralL1 = autoCoralL1
@@ -237,6 +230,59 @@ export async function submitState(
 
     //for testing
     await apiGetTeamMatch(matchKey, regional, teamNumber)
+
+  }
+}
+
+export function toggleIncremental(state, type){
+  /* When True */
+  if(state) {
+    if(type === "autoLeave") {
+      return (<img src="./images/autoLeaveTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "yellowCard") {
+      return (<img src="./images/yellowTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "redCard") {
+      return (<img src="./images/redTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "disable") {
+      return (<img src="./images/disableTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "dq") {
+      return (<img src="./images/dqTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "broke") {
+      return (<img src="./images/brokeTrue.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "noShow") {
+      return (<img src="./images/noShowTrue.png" style={{width: "50px"}}/>)
+    }
+    
+  }
+  /* When False */
+  else {
+    if(type === "autoLeave") {
+      return (<img src="./images/autoLeaveFalse.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "yellowCard") {
+      return (<img src="./images/yellowDefault.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "redCard") {
+      return (<img src="./images/redDefault.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "disable") {
+      return (<img src="./images/disableDefault.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "dq") {
+      return (<img src="./images/dqDefault.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "broke") {
+      return (<img src="./images/brokeDefault.png" style={{width: "50px"}}/>)
+    }
+    else if(type === "noShow") {
+      return (<img src="./images/noShowDefault.png" style={{width: "50px"}}/>)
+    }
 
   }
 }
