@@ -5,6 +5,7 @@ import App from './App.jsx'
 import './index.css'
 import Form from './form/Form.jsx'
 import Summary from './components/Table/Summary.jsx'
+import TeamNotes from './scoutingNotes/TeamNotes.jsx'
 // import * as Auth from 'aws-amplify/auth'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/table",
         element: <Summary/>
+      },
+      {
+        path: "/notes",
+        element: <TeamNotes/>
       }
     ]
   }
