@@ -4,7 +4,6 @@ import { getRankingsForRegional, getSimpleTeamsForRegional } from '../api/blueal
 import { apiGetRegional } from '../api';
 import GlobalFilter from '../components/Table/TableUtils/GlobalFilter';
 import TableStyles from '../components/Table/Table.module.css'
-import NotesStyles from './Notes.module.css'
 import NotesModal from './NotesModal'
 
 
