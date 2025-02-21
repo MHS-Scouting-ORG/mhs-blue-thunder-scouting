@@ -173,7 +173,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "AVG Cycles ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Cycles") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -186,7 +186,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "AVG Coral AMT ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Coral AMT") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -199,7 +199,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "AVG Algae AMT ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Algae AMT") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -212,7 +212,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "AVG MINOR ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "AVG MINOR") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -225,7 +225,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "AVG MAJOR ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "AVG MAJOR") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -244,7 +244,7 @@ function TeamStats(props) {
           <div style={{display: robotInfo}}>
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "R SPEED ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "R SPEED") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",
@@ -257,7 +257,7 @@ function TeamStats(props) {
 
             <button 
               style={{
-                backgroundColor: tableColumns.some(x => x.Header === "R HANG ") ? "#77B6E2" : "darkgray", 
+                backgroundColor: tableColumns.some(x => x.Header === "R HANG") ? "#77B6E2" : "darkgray", 
                 border: "none",
                 fontSize: "15px",
                 padding: "8px",

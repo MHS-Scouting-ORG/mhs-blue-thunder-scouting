@@ -100,22 +100,8 @@
 }
 
 .Filter {
-    font-size: 20px;
+    font-size: 35px;
     display: flex;
     height: 27px;
     width: 100%;
-    transition: width 0.4s ease-in-out;
 }
-  
-.Filter:focus {
-    width: 500px;
-}
-
-/*
-transition: width 0.4s ease-in-out;
-
-  font-size: 14px;
-  transition-property: font-size;
-  transition-duration: 4s;
-  transition-delay: 2s;
-  */

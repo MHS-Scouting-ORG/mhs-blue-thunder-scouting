@@ -13,6 +13,8 @@ function Menu() {
                 <li><Link className={linkStyles.Link} to="/form">FORM</Link></li>
                 <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>
                 <li><Link className={linkStyles.Link} to="/notes">NOTES</Link></li>
+                <li><Link className={linkStyles.Link} to="/upload">UPLOAD</Link></li>
+
             </ul>
         </section>
     )

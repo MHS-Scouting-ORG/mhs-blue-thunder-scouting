@@ -69,7 +69,7 @@ function DefaultTable(props) {
     }), [rankingState,tableData]
   )
 
-  const updateIndex = (idClicked, val) => {
+  const updateIndex = (idClicked) => {
     setActiveIndex(id => {
       if(id.find(x => x === idClicked) === undefined){
         return [...id, idClicked]
