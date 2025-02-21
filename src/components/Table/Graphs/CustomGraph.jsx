@@ -27,7 +27,7 @@ function CustomGraph(props) {
 
     return (
         <div display="flex" flexDirection="row"> 
-            <div>Key: Phase = Tele & Auto or Overall TPts & Fouls</div>
+            <div>Phase = (Tele & Auto) OR (Overall TPts & Fouls)</div>
             <div>Certain Stats are only visible to Tele or Auto</div>
             <LineGraph {...graphState} />
         </div>

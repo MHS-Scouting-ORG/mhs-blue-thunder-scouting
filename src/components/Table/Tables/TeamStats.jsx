@@ -99,42 +99,260 @@ function TeamStats(props) {
         <CollapseTButton label="Points" toggleFunction={togglePts} type={"form"}></CollapseTButton>
         <div style={{display: ptsState}}>
           <div>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG PTS", accessor: "AvgPoints"}])): setTableColumns(tableColumns.filter((x) => x.Header !== "AVG PTS"))}>AVG PTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Auto PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Auto PTS", accessor: "AvgAutoPts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Auto PTS"))}>AVG Auto PTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Endgame PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Endgame PTS", accessor: "AvgEndgamePts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Endgame PTS"))}>AVG Endgame PTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Coral PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Coral PTS", accessor: "AvgCoralPts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Coral PTS"))}>AVG Coral PTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Algae PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Algae PTS", accessor: "AvgAlgaePts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Algae PTS"))}>AVG Algae PTS</button>
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG PTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG PTS", accessor: "AvgPoints"}])): setTableColumns(tableColumns.filter((x) => x.Header !== "AVG PTS"))}
+            >AVG PTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Auto PTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Auto PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Auto PTS", accessor: "AvgAutoPts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Auto PTS"))}
+            >AVG Auto PTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Endgame PTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Endgame PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Endgame PTS", accessor: "AvgEndgamePts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Endgame PTS"))}  
+            >AVG Endgame PTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Coral PTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Coral PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Coral PTS", accessor: "AvgCoralPts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Coral PTS"))}
+            >AVG Coral PTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Algae PTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Algae PTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Algae PTS", accessor: "AvgAlgaePts"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Algae PTS"))}
+            >AVG Algae PTS</button>
+
           </div>
         </div>
 
         <div>
           <CollapseTButton label="Scored" toggleFunction={toggleAmt} type={"form"}></CollapseTButton>
           <div style={{display: amtState}}>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Cycles") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Cycles", accessor: "AvgCycles"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Cycles"))}>AVG Cycles</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Coral AMT") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Coral AMT", accessor: "AvgCoral"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Coral AMT"))}>AVG Coral AMT</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG Algae AMT") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Algae AMT", accessor: "AvgAlgae"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Algae AMT"))}>AVG Algae AMT</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG MINOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MINOR", accessor: "Fouls"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MINOR"))}>AVG MINOR</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "AVG MAJOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MAJOR", accessor: "Tech"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MAJOR"))}>AVG MAJOR</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Cycles ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Cycles") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Cycles", accessor: "AvgCycles"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Cycles"))}
+            >AVG Cycles</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Coral AMT ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}  
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Coral AMT") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Coral AMT", accessor: "AvgCoral"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Coral AMT"))}
+            >AVG Coral AMT</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG Algae AMT ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG Algae AMT") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG Algae AMT", accessor: "AvgAlgae"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG Algae AMT"))}
+            >AVG Algae AMT</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG MINOR ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}
+              onClick={() => tableColumns.find((e) => e.Header === "AVG MINOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MINOR", accessor: "Fouls"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MINOR"))}
+            >AVG MINOR</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "AVG MAJOR ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "AVG MAJOR") === undefined ? setTableColumns(tableColumns.concat([{Header: "AVG MAJOR", accessor: "Tech"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "AVG MAJOR"))}
+            >AVG MAJOR</button>
+
           </div>
         </div>
 
         <div>
           <CollapseTButton label="Robot Info" toggleFunction={toggleRobotInfo} type={"form"}></CollapseTButton>
           <div style={{display: robotInfo}}>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "R SPEED") === undefined ? setTableColumns(tableColumns.concat([{Header: "R SPEED", accessor: "RobotSpeed"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R SPEED"))}>R SPEED</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "R HANG") === undefined ? setTableColumns(tableColumns.concat([{Header: "R HANG", accessor: "RobotHang"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R HANG"))}>R HANG</button>
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "R SPEED ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}
+              onClick={() => tableColumns.find((e) => e.Header === "R SPEED") === undefined ? setTableColumns(tableColumns.concat([{Header: "R SPEED", accessor: "RobotSpeed"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R SPEED"))}
+            >R SPEED</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "R HANG ") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}
+              onClick={() => tableColumns.find((e) => e.Header === "R HANG") === undefined ? setTableColumns(tableColumns.concat([{Header: "R HANG", accessor: "RobotHang"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "R HANG"))}
+            >R HANG</button>
+
           </div>
         </div>
     
         <div>
           <CollapseTButton label="Penalties" toggleFunction={togglePenalties} type={"form"}></CollapseTButton>
           <div style={{display: penalties}}>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "YELLOW MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "YELLOW MTS", accessor: "YellowCard"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "YELLOW MTS"))}>YELLOW MTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "RED MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "RED MTS", accessor: "RedCard"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "RED MTS"))}>RED MTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "BROKEN MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "BROKEN MTS", accessor: "BrokenRobot"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "BROKEN MTS"))}>BROKEN MTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "DISABLED MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "DISABLED MTS", accessor: "Disabled"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "DISABLED MTS"))}>DISABLED MTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "DQ MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "DQ MTS", accessor: "DQ"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "DQ MTS"))}>DQ MTS</button>
-            <button style={{height: "50px"}} onClick={() => tableColumns.find((e) => e.Header === "NOSHOW MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "NOSHOW MTS", accessor: "NoShow"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "NOSHOW MTS"))}>NOSHOW MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "YELLOW MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "YELLOW MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "YELLOW MTS", accessor: "YellowCard"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "YELLOW MTS"))}
+            >YELLOW MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "RED MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }} 
+              onClick={() => tableColumns.find((e) => e.Header === "RED MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "RED MTS", accessor: "RedCard"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "RED MTS"))}
+            >RED MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "BROKEN MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}  
+              onClick={() => tableColumns.find((e) => e.Header === "BROKEN MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "BROKEN MTS", accessor: "BrokenRobot"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "BROKEN MTS"))}
+            >BROKEN MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "DISABLED MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}  
+              onClick={() => tableColumns.find((e) => e.Header === "DISABLED MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "DISABLED MTS", accessor: "Disabled"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "DISABLED MTS"))}
+            >DISABLED MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "DQ MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}  
+              onClick={() => tableColumns.find((e) => e.Header === "DQ MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "DQ MTS", accessor: "DQ"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "DQ MTS"))}
+            >DQ MTS</button>
+
+            <button 
+              style={{
+                backgroundColor: tableColumns.some(x => x.Header === "NOSHOW MTS") ? "#77B6E2" : "darkgray", 
+                border: "none",
+                fontSize: "15px",
+                padding: "8px",
+                borderRadius: "6px",
+                margin: "7px",
+                fontWeight: "bold",
+              }}  
+              onClick={() => tableColumns.find((e) => e.Header === "NOSHOW MTS") === undefined ? setTableColumns(tableColumns.concat([{Header: "NOSHOW MTS", accessor: "NoShow"}])) : setTableColumns(tableColumns.filter((x) => x.Header !== "NOSHOW MTS"))}
+            >NOSHOW MTS</button>
+
           </div>
         </div>
       </div>
