@@ -45,7 +45,7 @@ export const listTeams = /* GraphQL */ `
 `;
 export const getTeamMatch = /* GraphQL */ `
   query GetTeamMatch($id: ID!, $Regional: String!, $Team: ID!) {
-    getTeamMatch(id: $id, Regional: $Regional, Team: $Team) {
+    getTeamMatch(id: $id, Regional: $Regional, Team: $Team first: 1000) {
       id
       name
       description

@@ -88,7 +88,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
 
       //penalties
       const fouls = calcAvg(teamStats.map(team => team.Penalties.Fouls))
-      const techs = calcAvg(teamStats.map(team => team.Penalties.Techs))
+      const techs = calcAvg(teamStats.map(team => team.Penalties.Tech))
       const yellowCards = getMatchesOfPenalty(teamStats, 'YellowCard')
       const redCards = getMatchesOfPenalty(teamStats, 'RedCard')
       const brokenRobots = getMatchesOfPenalty(teamStats, 'Broken')
@@ -125,7 +125,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
-        OPR: oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
+        OPR: 1, //oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
