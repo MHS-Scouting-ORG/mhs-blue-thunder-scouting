@@ -112,13 +112,16 @@ export async function submitState(
   }
 
   /* EndGame Select */
-  if (hangType === 'Deep') {
+  if((redCard || dq || noShow || disable || botBroke) !== false){
+
+  }
+  else if (hangType === 'Deep' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 12;
   }
-  else if (hangType === 'Shallow') {
+  else if (hangType === 'Shallow' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 6;
   }
-  else if (hangType === 'Parked') {
+  else if (hangType === 'Parked' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 2;
   }
   else {
@@ -127,14 +130,17 @@ export async function submitState(
   }
 
   /* Robot Info Select */
-  if (robotSpeed === 'Slow') {
+  if((redCard || dq || noShow || disable || botBroke) !== false){
+
+  }
+  else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
     robotSpeed = "Slow";
   }
-  else if (robotSpeed === "Average") {
+  else if (robotSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
     robotSpeed = "Average";
   }
-  else if (robotSpeed == "Fast") {
-    robotSpeed = "Fast";
+  else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
+    robotSpeed = "Fast"; 
   }
   else {
     incompleteForm = true;

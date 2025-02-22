@@ -65,7 +65,7 @@ function Summary(props) {
       .catch(console.log.bind(console))
   }, [apiData, oprList, sortBy, teamsClicked])
 
-  const handleTeamClicked = (team, val) => {
+  const handleTeamClicked = (team) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,

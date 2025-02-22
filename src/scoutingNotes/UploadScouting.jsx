@@ -71,7 +71,7 @@ function UploadScouting(props) {
         padding: "30px",
         borderRadius: "6px",
         margin: "7px",
-        background:" #77B6E2",
+        background:"darkgrey",
         fontWeight: "bold",
     }} 
       
