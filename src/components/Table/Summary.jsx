@@ -159,7 +159,7 @@ function Summary(props) {
   return (
     <div>
       <br></br>
-      <img alt="" style={{ width: '360px' }} src={'./images/STATSHEADER.png'}></img>
+      <img alt="" style={{ width: '360px' }} src={'./images/STATS-HEADER.png'}></img>
 
       <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
       {<List setList={setSortBy} />}

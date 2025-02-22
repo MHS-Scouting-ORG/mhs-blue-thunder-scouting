@@ -14,6 +14,8 @@ function UploadScouting(props) {
   const regional = apiGetRegional()
 
   const [teams, setTeams] = useState([])
+  const [findTeam, setFindTeam] = useState("")
+  const [nickname, setNickname] = useState(false)
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -24,29 +26,38 @@ function UploadScouting(props) {
     /* Get Matches for Regional from bluealliance */
     getSimpleTeamsForRegional(regional)
       .then(data => {
-        console.log(data)
+        setTeams(data)
+        nicknameBool()
+
       })
       .catch(err => console.log(err))
-  }, [])
+  })
+  
 
   const resetStates = () => {
     setConfirm(false)
 
+  }
+
+  const nicknameBool = () => {
+    teams.find(x => x.key.substring(3) === findTeam) !== undefined ? setNickname(true) : setNickname(false)
   }
   
 
   return (
     <div align="center" style={{padding: "20px"}}>
 
-      <img src="./images/FORM HEADER.png" style={{maxWidth: "100%"}}/>
+      <img src="./images/NOTESHEADER.png" style={{maxWidth: "100%"}}/>
 
       {/* Match Init */}
 
-      <input type="number" placeholder="ROBOT #" style={{width: "300px", fontSize: "50px"}} ></input>
+      <input type="number" placeholder="ROBOT #" style={{width: "300px", fontSize: "50px"}} onChange={(e) => setFindTeam(e.target.value) }></input>
 
       <br></br>
 
-      <hr></hr>{/* Notifies for team */}
+      <div>
+        {teams.find(x => x.key.substring(3) === findTeam) !== undefined ? teams.find(x => x.key.substring(3) === findTeam).nickname : "no team found"}
+      </div>
 
       <br></br>
       <br></br>
@@ -82,7 +93,7 @@ function UploadScouting(props) {
 
       {/* Submit & Send */}
       {confirm ? <button style={{backgroundColor:"White"}} onClick={() => {
-        console.log("Submit")
+        nickname ? console.log("submit func here") : alert('Form Incomplete, wrong/no robot team number')
       .then(_ => {
         alert('Form Submitted')
         resetStates()

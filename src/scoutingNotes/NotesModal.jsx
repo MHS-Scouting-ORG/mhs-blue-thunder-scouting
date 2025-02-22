@@ -6,7 +6,7 @@ function NotesModal(props) {
     const notes = props.notes
     const teamNum = props.teamNum
     const teamName = props.teamName
-    
+
     return (
         <div className="modal" style={{ display: visible ? "block" : "none" }}>
             <div style={{fontSize: "40px", backgroundColor: "white", padding: "20px"}}>

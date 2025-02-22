@@ -105,7 +105,10 @@ function TeamNotes() {
   const { globalFilter } = state
 
   return (
-    <div align='center'>
+    <div align='center' style={{maxWidth: '390px',}}>
+
+    <img alt="" style={{ width: '360px' }} src={'./images/FORMHEADER.png'}></img>
+
       {/* <header>TEAM NOTES</header> */}
       {/* Search */}
     <GlobalFilter filter={globalFilter} set={setGlobalFilter} />

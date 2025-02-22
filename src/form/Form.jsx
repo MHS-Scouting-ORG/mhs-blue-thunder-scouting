@@ -203,7 +203,7 @@ function Form(props) {
   return (
     <div>
 
-      <img src="./images/FORM HEADER.png" style={{maxWidth: "100%"}}/>
+      <img src="./images/FORMHEADER.png" style={{maxWidth: "100%"}}/>
 
       {/* Match Init */}
       <CollapseTButton label="Match Info" toggleFunction={toggleInfo} type={type}/>
