@@ -15,6 +15,8 @@ function Form(props) {
   const regional = apiGetRegional()
   const type = "form"
 
+  console.log(regional)
+
   /* MATCH */
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
   const [apiMatchData, setApiMatchData] = useState([]) //match data in our database
@@ -404,7 +406,7 @@ function Form(props) {
         alert('Form Submitted')
         resetStates()
       })
-        .catch(err => alert(`Form Incomplete, ${JSON.stringify(err)}`))
+        .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
 
 
         }
