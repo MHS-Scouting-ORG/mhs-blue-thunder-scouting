@@ -115,7 +115,7 @@ function Form(props) {
   const resetStates = () => {
     setMatchData([])
     setApiMatchData([])
-    setMatchType('')
+    //setMatchType('')
     setElmNum('')
     setMatchNumber('')
     setTeamNumber('')
