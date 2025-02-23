@@ -147,6 +147,12 @@ export async function submitState(
     windowAlertMsg = windowAlertMsg + "\nRobot Speed"
   }
 
+  /* Match Num Check */
+  if(matchNumber === ''){
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nMatch Number"
+  }
+
   /* Point Calc */
 
   autoCoralPoints = (autoCoralL1 * 3) + (autoCoralL2 * 4) + (autoCoralL3 * 6) + (autoCoralL4 * 7);
