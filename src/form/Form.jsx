@@ -303,7 +303,7 @@ function Form(props) {
         <div>
           <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
             <option value=''>Endgame Type</option>
-            <option value="none">None</option>
+            <option value="None">None</option>
             <option value='Shallow'>Shallow</option>
             <option value='Deep'>Deep</option>
             <option value='Parked'>Park</option>
