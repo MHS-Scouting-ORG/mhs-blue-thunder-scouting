@@ -115,6 +115,9 @@ export async function submitState(
   if((redCard || dq || noShow || disable || botBroke) !== false){
 
   }
+  else if(hangType === "none" && (redCard || dq || noShow || disable || botBroke) === false){
+    endGamePoints += 0;
+  }
   else if (hangType === 'Deep' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 12;
   }
@@ -170,6 +173,7 @@ export async function submitState(
   /* Window Msg Check */
   if (incompleteForm) {
     window.alert(windowAlertMsg);
+    return true;
   }
   else if (!incompleteForm) {
     const matchEntry = buildMatchEntry(regional, teamNumber, matchKey)
@@ -241,9 +245,11 @@ export async function submitState(
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
 
     //for testing
-    //await apiGetTeamMatch(matchKey, regional, teamNumber)
+    await apiGetTeamMatch(matchKey, regional, teamNumber)
 
   }
+  window.alert("Form Submitted");
+  return false;
 }
 
 export function toggleIncremental(state, type){

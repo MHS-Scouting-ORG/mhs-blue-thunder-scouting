@@ -303,6 +303,7 @@ function Form(props) {
         <div>
           <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
             <option value=''>Endgame Type</option>
+            <option value="none">None</option>
             <option value='Shallow'>Shallow</option>
             <option value='Deep'>Deep</option>
             <option value='Parked'>Park</option>
@@ -403,12 +404,11 @@ function Form(props) {
           robotBrokenComments
       )
       .then(_ => {
-        alert('Form Submitted')
-        resetStates()
+        if(_ === false){
+          resetStates()
+        }
       })
         .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
-
-
         }
       }
       >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
