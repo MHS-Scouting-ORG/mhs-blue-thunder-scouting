@@ -91,6 +91,11 @@ function Form(props) {
           setRed(match.alliances.red.team_keys)
           setBlue(match.alliances.blue.team_keys)
         }
+        else {
+          setRed([])
+          setBlue([])
+          setMatchData([])
+        }
       })
       .catch(err => console.log(err))
   }, [matchType, elmNum, matchNumber])
@@ -212,7 +217,7 @@ function Form(props) {
         <div style={{ display: infoState}}> 
 
           <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-            <select style={{height: "50px"}} value={matchType} onInput={(e) => { setMatchType(e.target.value); setElmNum("") }}>
+            <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); setElmNum(""); resetStates() }}>
               <option value="">Select Match Type</option>
               <option value='q'>Qualification</option>
               <option value='qf'>Quarterfinal</option>
@@ -221,7 +226,7 @@ function Form(props) {
             </select>
             {
               matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
-                <input placeholder="elim#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
+                <input placeholder="elim/round#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
                 : null
             }
             <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
