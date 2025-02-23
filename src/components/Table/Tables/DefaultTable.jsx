@@ -12,6 +12,8 @@ function DefaultTable(props) {
   const teamsClickedFunc = props.teamHandler
   const info = props.information
 
+  console.log("info", info)
+
   const [rankingState, setRankingState] = useState([])
   const [simpleTeams, setSimpleTeams] = useState([])
   const [tableState, setTableState] = useState('')
@@ -55,7 +57,7 @@ function DefaultTable(props) {
         if(sTeam.key.substring(3) === team.team_key.substring(3)){
           simTeam = sTeam
         }
-      })
+      },[info])
 
       const sumSort = tableData.filter(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
       

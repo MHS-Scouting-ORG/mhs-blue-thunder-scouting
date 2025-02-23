@@ -1,9 +1,9 @@
 import { getTeams, getTeamsMatchesAndTableData } from "./MTUtils"
 
-  async function ueTableData(oprList, mtable, regional){
+  async function ueTableData(mtable, regional){
     try {
         const teamData = await getTeams(regional)
-        const tableData = await getTeamsMatchesAndTableData(teamData, oprList, mtable, regional)
+        const tableData = await getTeamsMatchesAndTableData(teamData, mtable, regional)
         return tableData;
     }
     catch(err) {

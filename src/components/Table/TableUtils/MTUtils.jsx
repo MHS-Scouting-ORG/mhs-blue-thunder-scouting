@@ -20,9 +20,11 @@ async function getTeams (regional) {
   }
 }
 
-async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regional) {
+async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     try {
     const data = await apigetMatchesForRegional(regional)
+
+    console.log("getTeamMatchesAndTableDataFunc", data)
     
     const tableData = mtable
 
@@ -125,7 +127,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, oprList, mtable, regiona
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
-        OPR: 1, //oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
+        //OPR: 1, //oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),

@@ -20,12 +20,8 @@ function Summary(props) {
   const regional = apiGetRegional()
 
   const [tableData, setTableData] = useState([]); //data on table
-
   const [sortBy, setSortBy] = useState([]);
-
   const [apiData, setApiData] = useState([])
-  const [oprList, setOprList] = useState([]);
-
   const [teamsClicked, setTeamsClicked] = useState([]);
 
   useEffect(() => {
@@ -46,24 +42,15 @@ function Summary(props) {
       .catch(err => console.log(err))
   }, [])
 
-  useEffect(() => {    //change to statbotics
-    getOprs(regional)
-      .then(data => {
-        const oprDataArr = Object.values(data)
-        const oData = oprDataArr[2] 
-
-        setOprList(oData)
-      })
-  }, [])
-
   useEffect(() => {
-    ueTableData(oprList, tableData, regional)
+    ueTableData(tableData, regional)
       .then(data => {
+        console.log("tableData", tableData)
         let holdTableData = data
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, oprList, sortBy, teamsClicked])
+  }, [apiData, sortBy, teamsClicked])
 
   const handleTeamClicked = (team) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))

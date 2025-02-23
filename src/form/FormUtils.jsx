@@ -228,9 +228,9 @@ export async function submitState(
     matchEntry.RobotInfo.Comments = robotInsight
 
 
-    console.log("matchEntry", matchEntry.Team)
-    console.log("apiMatchData", apiMatchData)
-    console.log(apiMatchData.find(x => x.Team === matchEntry.Team))
+    // console.log("matchEntry", matchEntry.Team)
+    // console.log("apiMatchData", apiMatchData)
+    // console.log(apiMatchData.find(x => x.Team === matchEntry.Team))
 
 
     /* currently submits and updates the new form completely */
@@ -241,7 +241,7 @@ export async function submitState(
     await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
 
     //for testing
-    await apiGetTeamMatch(matchKey, regional, teamNumber)
+    //await apiGetTeamMatch(matchKey, regional, teamNumber)
 
   }
 }
