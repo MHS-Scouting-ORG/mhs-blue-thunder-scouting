@@ -194,10 +194,10 @@ function Form(props) {
 
   const radioAlliance = (val) =>{
     if (val === 'redAllianceChosen') {
-      setColor(true)
+      setColor(false)
     }
     else if (val === 'blueAllianceChosen') {
-      setColor(false)
+      setColor(true)
     }
   }
   
@@ -239,7 +239,7 @@ function Form(props) {
           <label for="blue">Blue</label>
         </div>
 
-        {color ? <img src="./images/white-redGrad.png" style={{width: "50px"}}/> : <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>}
+        {color ?  <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>  : <img src="./images/white-redGrad.png" style={{width: "50px"}}/>}
         
         <select style={{height: "50px", flex: 1}} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
