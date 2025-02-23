@@ -40,7 +40,7 @@ export async function submitState(
   matchKey,
   apiMatchData,
   matchType,
-  elmNum,
+  //elmNum,
   matchNumber,
   left,
   autoCoralL1,
@@ -86,19 +86,9 @@ export async function submitState(
 
 
   /* Checks Match Selects */
-  if (matchType === 'sf' || matchType === 'f') {
-    if (elmNum === '') {
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nFinals Number";
-    }
-  } else if (matchType === '') {
+  if (matchType === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals or Finals)"
-  }
-
-  if (matchNumber === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Number";
   }
 
   if (teamNumber === '') {
@@ -115,7 +105,7 @@ export async function submitState(
   if((redCard || dq || noShow || disable || botBroke) !== false){
 
   }
-  else if(hangType === "none" && (redCard || dq || noShow || disable || botBroke) === false){
+  else if(hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false){
     endGamePoints += 0;
   }
   else if (hangType === 'Deep' && (redCard || dq || noShow || disable || botBroke) === false) {
@@ -148,12 +138,6 @@ export async function submitState(
   else {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-  }
-
-  /* Match Num Check */
-  if(matchNumber === ''){
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Number"
   }
 
   /* Point Calc */

@@ -21,7 +21,7 @@ function Form(props) {
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
   const [apiMatchData, setApiMatchData] = useState([]) //match data in our database
   const [matchType, setMatchType] = useState(''); //match type
-  const [elmNum, setElmNum] = useState(''); //elimination
+  // const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
   const [teamNumber, setTeamNumber] = useState(''); //team num
   const [color, setColor] = useState(false); // alliance color
@@ -81,13 +81,16 @@ function Form(props) {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
       .then(data => {
-        let match_key = regional + "_" + matchType + elmNum + "m" + matchNumber
+        let match_key = regional + "_" + matchType + "m" + matchNumber
+
         if(matchType === "sf") {
-          match_key = regional + "_" + matchType + elmNum + "m1" 
+          match_key = regional + "_" + matchType + matchNumber + "m1" 
         }
         if(matchType === "f"){
           match_key = regional + "_" + matchType + "1" + "m" + matchNumber
         }
+
+        setMatchKey(match_key)
 
         /* Finds match data from bluealliance based on user input */
         const match = data.find((x) => x.key === match_key)
@@ -103,7 +106,7 @@ function Form(props) {
         }
       })
       .catch(err => console.log(err))
-  }, [matchType, elmNum, matchNumber])
+  }, [matchType, matchNumber])
   useEffect(() => {
     /* Check for pre-existing match data in our api */
     apigetMatchesForRegional(regional)
@@ -121,7 +124,7 @@ function Form(props) {
     setMatchData([])
     setApiMatchData([])
     //setMatchType('')
-    setElmNum('')
+    //setElmNum('')
     setMatchNumber('')
     setTeamNumber('')
     setColor(false)
@@ -222,13 +225,15 @@ function Form(props) {
         <div style={{ display: infoState}}> 
 
           <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-            <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); setElmNum(""); resetStates() }}>
+            <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); resetStates() }}>
               <option value="">Select Match Type</option>
               <option value='q'>Qualification</option>
               <option value='sf'>Semifinal</option>
               <option value='f'>Final</option>
             </select>
-            {
+            <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
+
+            {/* {
               matchType === 'sf' ?
                 <input placeholder="match#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
                 : null
@@ -237,7 +242,7 @@ function Form(props) {
               matchType === 'q' || matchType === 'f' ?
               <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
               : null
-            }
+            } */}
         </div>
 
         <br></br>
@@ -388,7 +393,7 @@ function Form(props) {
           matchKey,
           apiMatchData,
           matchType,
-          elmNum,
+          //elmNum,
           matchNumber,
           left,
           autoCoralL1,
