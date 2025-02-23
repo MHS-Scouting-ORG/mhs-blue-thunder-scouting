@@ -243,7 +243,7 @@ function Form(props) {
         
         <select style={{height: "50px", flex: 1}} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
-          {color !== false ?
+          {color === false ?
 
             matchData != [] ?
               red.map((team) => {
