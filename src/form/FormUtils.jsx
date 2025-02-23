@@ -86,14 +86,14 @@ export async function submitState(
 
 
   /* Checks Match Selects */
-  if (matchType === 'qf' || matchType === 'sf' || matchType === 'f') {
+  if (matchType === 'sf' || matchType === 'f') {
     if (elmNum === '') {
       incompleteForm = true;
       windowAlertMsg = windowAlertMsg + "\nFinals Number";
     }
   } else if (matchType === '') {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Quarterfinals, Semifinals or Finals)"
+    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals or Finals)"
   }
 
   if (matchNumber === '') {

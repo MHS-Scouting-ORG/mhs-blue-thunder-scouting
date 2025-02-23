@@ -81,8 +81,13 @@ function Form(props) {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
       .then(data => {
-        const match_key = regional + "_" + matchType + elmNum + "m" + matchNumber
-        setMatchKey(match_key)
+        let match_key = regional + "_" + matchType + elmNum + "m" + matchNumber
+        if(matchType === "sf") {
+          match_key = regional + "_" + matchType + elmNum + "m1" 
+        }
+        if(matchType === "f"){
+          match_key = regional + "_" + matchType + "1" + "m" + matchNumber
+        }
 
         /* Finds match data from bluealliance based on user input */
         const match = data.find((x) => x.key === match_key)
@@ -220,16 +225,19 @@ function Form(props) {
             <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); setElmNum(""); resetStates() }}>
               <option value="">Select Match Type</option>
               <option value='q'>Qualification</option>
-              <option value='qf'>Quarterfinal</option>
               <option value='sf'>Semifinal</option>
               <option value='f'>Final</option>
             </select>
             {
-              matchType === 'qf' || matchType === 'sf' || matchType === 'f' ?
-                <input placeholder="elim/round#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
+              matchType === 'sf' ?
+                <input placeholder="match#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
                 : null
             }
-            <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
+            {
+              matchType === 'q' || matchType === 'f' ?
+              <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
+              : null
+            }
         </div>
 
         <br></br>
