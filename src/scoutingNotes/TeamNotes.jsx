@@ -46,7 +46,6 @@ function TeamNotes() {
   const data = React.useMemo(
     () => rankingState.map(team => {
       let simTeam = 'error';
-      // const tableTeam = info.find(x => x.TeamNumber === parseInt(team.team_key.substring(3)))
 
       simpleTeams.map(sTeam => {
         if(sTeam.key.substring(3) === team.team_key.substring(3)){
