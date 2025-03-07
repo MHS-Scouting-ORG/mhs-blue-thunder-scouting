@@ -6,16 +6,21 @@ import { getStat } from "./Utils/GraphUtils"
 import { uniqueArr } from "../TableUtils/CalculationUtils"
 
 function LineGraph (props) {
-    const regional = props.regional
-    const selectedTeams = props.selectedTeams
+    /* props from custom graph */
+    const regional = props.regional //updated in aws
+    const selectedTeams = props.selectedTeams // array of teams selected
 
-    const [apiData, setApiData] = useState([])
-    const [availableTeams, setAvailableTeams] = useState([]) 
-    const [xAxis, setXAxis] = useState([])
-    const [statType, setStatType] = useState([])
-    const [accessor, setAccessor] = useState([])
+    const [apiData, setApiData] = useState([]) // matches in our database
+    const [availableTeams, setAvailableTeams] = useState([])  //teams that have data to view
+    const [xAxis, setXAxis] = useState([]) //state to hold qms
+    const [statType, setStatType] = useState([]) //stat to hold type of stat
+    const [accessor, setAccessor] = useState([]) //the phase(tele/auto) or overall (total)
     
-
+    /*
+     Runs in sync with external data fetch for our database
+     Finds and trims array to uniquely show qms
+     does the same for teams array
+     */
     useEffect(() => {
         apigetMatchesForRegional(regional)
         .then(data => {
@@ -26,8 +31,13 @@ function LineGraph (props) {
             const availTeams = uniqueArr(holdMatches.map(x => x.Team))
             setAvailableTeams(availTeams)
         })
-    },[selectedTeams, statType, accessor, apiData]);
+    },[selectedTeams, statType, accessor, apiData]); //runs dependin on the change of selected teams, stattype, accessor, and matches
 
+    /* 
+    creaets an object for teams  
+    if there are no teams selected then show all teams
+    else use the selected teams array to display that team(s)' stattype through getstat method
+    */
     const createTeamObjArr = () => {
         if(selectedTeams.length === 0) {
             const dataArr =  availableTeams.map(x => {
@@ -58,8 +68,12 @@ function LineGraph (props) {
     
     }
 
+    /* Reference for graph to be displayed */
     const ref = useRef()
-
+    /* 
+    Consolidates the charts required labels and datasets props for the graph
+    check chartjs docs for more info
+    */
     const lineData = {
         labels: xAxis.sort(),
         datasets: createTeamObjArr()

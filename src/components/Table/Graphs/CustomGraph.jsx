@@ -5,12 +5,13 @@ import LineGraph from "./LineGraph"
 
 
 function CustomGraph(props) {
-    const regional = props.regional || props.regionalEvent
-    const tableData = props.information
-    const selectedTeams = props.selectedTeams
+    const regional = props.regional || props.regionalEvent //regional (changed in aws)
+    const tableData = props.information //data consolidated after form entries and calculations
+    const selectedTeams = props.selectedTeams //array of tracked teams that are clicked
 
-    const [apiData, setApiData] = useState([])
+    const [apiData, setApiData] = useState([]) //state to hold matches
 
+    /* Runs in sync with external function that grabs our database's matches based on every entry */
     useEffect(() => {
         apigetMatchesForRegional(regional)
         .then(data => {
@@ -18,6 +19,7 @@ function CustomGraph(props) {
         })
     },[])
 
+    /* Constant that consolidates props used in LineGraph*/
     const graphState = {
         matches: apiData,
         regional: regional,

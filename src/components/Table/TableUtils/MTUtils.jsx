@@ -1,7 +1,8 @@
 import { apigetMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
-import { arrMode, calcAvg, getCan, getReliability, getMatchesOfPenalty, getMax, uniqueArr, getSummary } from "./CalculationUtils"
+import { arrMode, calcAvg, getReliability, getMatchesOfPenalty, getMax, getSummary } from "./CalculationUtils"
 
+/* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
 async function getTeams (regional) {
   try {
   const data = await getTeamsInRegional(regional)
@@ -19,7 +20,9 @@ async function getTeams (regional) {
    console.log(err)
   }
 }
-
+/* 
+consolidates all calculations, averages, and sets the object for each team(row) and their properties(stats) 
+*/
 async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     try {
     const data = await apigetMatchesForRegional(regional)
@@ -127,7 +130,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
        // Matches: team.Matches,
-        //OPR: 1, //oprList[team.TeamNum] ? (oprList[team.TeamNum]).toFixed(2) : null,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
@@ -155,8 +157,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
         
         Evaluations: evaluations, 
-        SumPriorities: team.SumPriorities, //grade
-
+        /* Grade */
+        SumPriorities: team.SumPriorities,
         NCoral: isNaN(rCoral) ? 0 : rCoral,
         NAlgae: isNaN(rAlgae) ? 0 : rAlgae,
         NCycles: isNaN(rCycles) ? 0 : rCycles,

@@ -1,7 +1,7 @@
 import React from 'react';
 import Checkbox from './Checkbox'
 import tableStyling from '../Table.module.css';
-
+/* Horizontal list of checkboxes used for grade */
 class List extends React.Component{
     constructor(props){
         super(props);

@@ -1,6 +1,6 @@
 import React from 'react';
 import tableStyles from "../Table.module.css";
-
+/* Global filter used in stats(summary) */
 const GlobalFilter = ({filter, set}) => { //search bar
  return (
     <div className={tableStyles.FilterDiv}>

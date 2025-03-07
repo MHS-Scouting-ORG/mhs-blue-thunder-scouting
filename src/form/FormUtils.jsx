@@ -34,14 +34,12 @@ export function copyArray(Array) {
  * @param {*} props the entire form component (i was too lazy to send through each and individual state through a newly created instance of an object)
  */
 
-export async function submitState(
+export async function submitState( //params are states of data from form
   regional,
   teamNumber,
   matchKey,
   apiMatchData,
   matchType,
-  //elmNum,
-  matchNumber,
   left,
   autoCoralL1,
   autoCoralL2,
@@ -223,20 +221,21 @@ export async function submitState(
 
     /* currently submits and updates the new form completely */
 
-    if (apiMatchData.find(x => x.id === matchKey) === undefined) {
+    if (apiMatchData.find(x => x.id === matchKey) === undefined) { //checks if match is already in array of matches in our database
       await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
     }
-    await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry);
+    await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry); //updates data if there already is
 
     //for testing
     await apiGetTeamMatch(matchKey, regional, teamNumber)
 
   }
   window.alert("Form Submitted");
-  return false;
+  return false; //return to help track whether or not to call reset form
 }
 
-export function toggleIncremental(state, type){
+/* function for form to change image based on toggle */
+export function toggleIncremental(state, type){ 
   /* When True */
   if(state) {
     if(type === "autoLeave") {
@@ -289,6 +288,7 @@ export function toggleIncremental(state, type){
   }
 }
 
+/* incremetnal function to change images based on increments */
 export function buttonIncremental(num, type, element) {
   if (element === "coral") {
     /* Check for default and level */

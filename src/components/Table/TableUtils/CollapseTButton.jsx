@@ -1,6 +1,6 @@
 import React from 'react'
 import tableStyling from '../Table.module.css';
-
+/* used for Table overall headers */
 class CollapseTButton extends React.Component {
     constructor(props) {
         super(props)

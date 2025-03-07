@@ -4,22 +4,25 @@ import CollapseTButton from "../TableUtils/CollapseTButton";
 import tableStyles from "../Table.module.css";
 
 function TeamStats(props) {
+  /* Prop for global filter and selected teams */
   const filter = props.gFilter
-  const selectedTeams = props.selectedTeams
+  const selectedTeams = props.selectedTeams //teams selected (same as teams clicked in default table)
 
-  const [tableState, setTableState] = useState('')
+  const [tableState, setTableState] = useState('') //toggle state for table display
+  /* Table Columns state instatiating the team number object to be updated with other header objects */
   const [tableColumns, setTableColumns] = useState([{Header: "Team", accessor: "TeamNumber", Cell: ({ row }) => (<div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}> {row.values.TeamNumber} </div>)}])
 
-  const [ptsState, setPtsState] = useState('none')
-  const [amtState, setAmtState] = useState('none')
-  const [robotInfo, setRobotInfo] = useState('none')
-  const [penalties, setPenalties] = useState('none')
+  const [ptsState, setPtsState] = useState('none') //toggle for pts buttons
+  const [amtState, setAmtState] = useState('none') //toggle for amt buttons
+  const [robotInfo, setRobotInfo] = useState('none') //toggle for robot info
+  const [penalties, setPenalties] = useState('none') //toggle for penalties
 
+    /* Run in sync with global filter */
     useEffect(() => {
       setGlobalFilter(filter)
-      
     }, [filter])
 
+    /* Function for toggle of table display */
   const toggleTable = () => {
       if(tableState === ''){
       setTableState('none')
@@ -28,7 +31,8 @@ function TeamStats(props) {
         setTableState('')
       }
     }
-
+  
+    /* function for toggle of pts buttons display */
   const togglePts = () => {
     if(ptsState === 'none'){
       setPtsState('')
@@ -37,7 +41,7 @@ function TeamStats(props) {
       setPtsState('none')
     }
   }
-
+    /* function for toggle of amt buttons display */
   const toggleAmt = () => {
     if(amtState === 'none'){
       setAmtState('')
@@ -46,7 +50,7 @@ function TeamStats(props) {
       setAmtState('none')
     }
   }
-
+    /* function for toggle of robot info buttons display */
   const toggleRobotInfo = () => {
     if(robotInfo === 'none'){
       setRobotInfo('')
@@ -55,7 +59,7 @@ function TeamStats(props) {
       setRobotInfo('none')
     }
   }
-
+    /* function for toggle of penalties buttons display */
   const togglePenalties = () => {
     if(penalties === 'none'){
       setPenalties('')
@@ -65,11 +69,12 @@ function TeamStats(props) {
     }
   }
   
+  /* data is an array of teams that are selected(rows) */
   const data = React.useMemo(
     () => selectedTeams
     ,[selectedTeams]
   )
-
+  /* Based upon the headers objects in the columns state from the buttons clicked */
   const columns = React.useMemo(
       () => tableColumns
       ,[tableColumns]

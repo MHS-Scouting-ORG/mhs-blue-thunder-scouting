@@ -6,16 +6,15 @@ import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
 
 // styling
-import classes from './Form.module.css';
 import { submitState } from './FormUtils'
 import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
 
-function Form(props) {
+function Form() {
   /* Regional Key */
-  const regional = apiGetRegional()
-  const type = "form"
+  const regional = apiGetRegional() // updated in aws
+  const type = "form" //used for styling
 
-  console.log(regional)
+  console.log(regional) //regional check
 
   /* MATCH */
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
@@ -80,6 +79,7 @@ function Form(props) {
   useEffect(() => {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
+    /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
         let match_key = regional + "_" + matchType + "m" + matchNumber
 
@@ -94,6 +94,7 @@ function Form(props) {
 
         /* Finds match data from bluealliance based on user input */
         const match = data.find((x) => x.key === match_key)
+        /* sets the team keys for each allaince color */
         if (match) {
           setMatchData(match)
           setRed(match.alliances.red.team_keys)
@@ -107,24 +108,24 @@ function Form(props) {
       })
       .catch(err => console.log(err))
   }, [matchType, matchNumber])
+
   useEffect(() => {
     /* Check for pre-existing match data in our api */
     apigetMatchesForRegional(regional)
       .then((data) => {
         let matches = data.data.teamMatchesByRegional.items
-        let team = matches.find((x) => x.Team === teamNumber)
-        if (team !== undefined && apiMatchData.find((x) => x.Team === teamNumber) === undefined)
+        let team = matches.find((x) => x.Team === teamNumber) // finds matches for the team in our database
+        if (team !== undefined && apiMatchData.find((x) => x.Team === teamNumber) === undefined)//checks if the team is found in our database
           setApiMatchData(apiMatchData.concat(team))
       })
       .catch(err => console.log(err))
   }, [teamNumber]
   )
 
+  /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
     setApiMatchData([])
-    //setMatchType('')
-    //setElmNum('')
     setMatchNumber('')
     setTeamNumber('')
     setColor(false)
@@ -159,6 +160,8 @@ function Form(props) {
     setConfirm(false)
 
   }
+
+  /* toggle functions for display of form sections */
 
   const toggleInfo = () => {
     if (infoState === 'none') {
@@ -232,17 +235,6 @@ function Form(props) {
               <option value='f'>Final</option>
             </select>
             <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
-
-            {/* {
-              matchType === 'sf' ?
-                <input placeholder="match#" type="number" value={elmNum} onChange={(e) => setElmNum(e.target.value)}></input>
-                : null
-            }
-            {
-              matchType === 'q' || matchType === 'f' ?
-              <input style={{height: "50px"}} placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
-              : null
-            } */}
         </div>
 
         <br></br>
@@ -387,14 +379,12 @@ function Form(props) {
 
       {/* Submit & Send */}
       {confirm ? <button style={{backgroundColor:"White"}} onClick={() => {
-        submitState(
+        submitState( //passes all data (states) of the form into the build in formutils
           regional,
           teamNumber,
           matchKey,
           apiMatchData,
           matchType,
-          //elmNum,
-          matchNumber,
           left,
           autoCoralL1,
           autoCoralL2,
@@ -422,15 +412,15 @@ function Form(props) {
           robotBrokenComments
       )
       .then(_ => {
-        if(_ === false){
+        if(_ === false){ //checks if the form utils return true or false which based on if the user filled all required
           resetStates()
         }
       })
         .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
         }
-      }
+      }/* Double checks and confirms for submission, in case of accidental press */
       >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
-
+  
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import tableStyling from '../Table.module.css';
-
+/* styled checkbox used in both table and form */
 class Checkbox extends React.Component{
     constructor(props){
         super(props);

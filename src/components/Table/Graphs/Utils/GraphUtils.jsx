@@ -1,9 +1,22 @@
-const getStat = (team, phase, accessor, apiData) => {
-    const teamMatches = apiData.filter(x => x.Team === team)
 
+/* Graph methods to be used in line graph */
+
+
+/* 
+getStat = uses individual team, when in the match(auto/tele) or overall, 
+what kind of stat and the matches we currently have as parameters
+to find the matches of the individual team
+*/
+
+const getStat = (team, phase, accessor, apiData) => {
+    const teamMatches = apiData.filter(x => x.Team === team) 
+
+    /* Uses the individual team's matches to access all of the matches' "TotalPoints" */
     const totalPts = teamMatches.map((match) => {
         return match.TotalPoints 
     })
+
+    /* Returns specfic accessors of each form match entry of the individual team */
 
     /* Tele */
 

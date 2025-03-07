@@ -6,19 +6,21 @@ import TableStyles from "../Table.module.css";
 
 
 function DefaultTable(props) {
-  const filter = props.gFilter
-  const regional = props.regional || props.regionalEvent
-  const tableData = props.sortData
-  const teamsClickedFunc = props.teamHandler
-  const info = props.information
+  /* props from summary */
+  const filter = props.gFilter //for global filter
+  const regional = props.regional || props.regionalEvent //updated in aws
+  const tableData = props.sortData //for grade function
+  const teamsClickedFunc = props.teamHandler //function to pass props as teams are clicked
+  const info = props.information //data from table after match entries and calculations
 
-  console.log("info", info)
+  console.log("info", info) //check table data
 
-  const [rankingState, setRankingState] = useState([])
-  const [simpleTeams, setSimpleTeams] = useState([])
-  const [tableState, setTableState] = useState('')
-  const [activeIndex, setActiveIndex] = useState([])
+  const [rankingState, setRankingState] = useState([]) //rankings of bluealliance 
+  const [simpleTeams, setSimpleTeams] = useState([]) //simple teams data from bluealliance
+  const [tableState, setTableState] = useState('') //toggle table state
+  const [activeIndex, setActiveIndex] = useState([]) //active/selected teams
 
+  /* Runs in sync with blue alliance to set rankings of a regional */
   useEffect(() => {
     getRankingsForRegional(regional)
       .then(data => {
@@ -27,18 +29,19 @@ function DefaultTable(props) {
       .catch(err => console.log(err))
   }, [])
 
+  /* Runs in sync with blue alliance to set the simple data of teams */
   useEffect(() => {
     getSimpleTeamsForRegional(regional) 
     .then(data => {
       setSimpleTeams(data)
     })
   }, [])
-
+  /* Changes in sync with global filter */
   useEffect(() => {
     setGlobalFilter(filter)
   }, [filter])
 
-
+  /* switches table state for display */
   const toggleTable = () => {
     if (tableState === '') {
       setTableState('none ')
@@ -48,6 +51,13 @@ function DefaultTable(props) {
     }
   }
   
+  /* 
+  Table's data based on each team using the ranking state 
+  finds team from teams in the table and set it into the table team constat
+  based on info, maps each of the teams from the regional in the array and changes it into only the team's name
+  sumSort is for table's grade function
+  returns, if the object is there, the team's number, name, notes, and grade 
+  */
   const data = React.useMemo(
     () => rankingState.map(team => {
       let simTeam = 'error';
@@ -71,6 +81,12 @@ function DefaultTable(props) {
     }), [rankingState,tableData]
   )
 
+  /* 
+  function to update the teams that are selected
+  uses the index of the row and finds the id taht is clicked
+  if the row is not found in the active indexes(returns undefined) then return the idClicked with the array
+  if the row is already found in the active indexes then returns the old array
+  */
   const updateIndex = (idClicked) => {
     setActiveIndex(id => {
       if(id.find(x => x === idClicked) === undefined){
@@ -112,10 +128,12 @@ function DefaultTable(props) {
   )
   const tableInstance = useTable({ columns, data }, useGlobalFilter, useSortBy)
 
+  /* Table State */
   const {
     state,
   } = tableInstance
 
+  /* Table props, does not really change */
   const {
     getTableProps,
     getTableBodyProps,
@@ -125,7 +143,7 @@ function DefaultTable(props) {
     prepareRow,
   } = tableInstance
 
-  const { globalFilter } = state
+  const { globalFilter } = state //state for global filter
 
 
 
@@ -166,8 +184,9 @@ function DefaultTable(props) {
                 prepareRow(row)
                 return (<React.Fragment>
                   <tr {...row.getRowProps()} 
+                  /* the changed style of the selected rows */
                   style={{background: activeIndex.includes(row.id) ? "#77B6E2" : "white" }}
-                  
+                  /* passes the functions for onClick of row*/
                   onClick={() => {
                     updateIndex(row.id)
                     teamsClickedFunc(row.original.TeamNumber)

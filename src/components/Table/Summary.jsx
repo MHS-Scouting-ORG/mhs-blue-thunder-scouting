@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
-import { getOprs } from "../../api/bluealliance";
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
 import { apigetMatchesForRegional } from "../../api";
@@ -16,32 +15,14 @@ import { apiGetRegional } from "../../api"
 //CSS
 import tableStyles from "./Table.module.css";
 
-function Summary(props) {
-  const regional = apiGetRegional()
+function Summary() {
+  const regional = apiGetRegional() //updated in aws
 
   const [tableData, setTableData] = useState([]); //data on table
-  const [sortBy, setSortBy] = useState([]);
-  const [apiData, setApiData] = useState([])
-  const [teamsClicked, setTeamsClicked] = useState([]);
+  const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
+  const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
 
-  useEffect(() => {
-    apigetMatchesForRegional(regional)
-      .then(data => {
-        const nApiData = data.data.teamMatchesByRegional.items
-
-        console.log(regional + " regional")
-        const matchEntries = nApiData.map((matchEntry) => {
-          matchEntry.bookMark = false;
-          return matchEntry
-        })
-
-        setApiData(matchEntries)
-        console.log("current matches", matchEntries)
-
-      })
-      .catch(err => console.log(err))
-  }, [])
-
+  /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
       .then(data => {
@@ -50,8 +31,9 @@ function Summary(props) {
         setTableData(holdTableData)
       })
       .catch(console.log.bind(console))
-  }, [apiData, sortBy, teamsClicked])
+  }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
 
+  /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
@@ -76,7 +58,10 @@ function Summary(props) {
       NoShow: indivTeam.NoShow,
       key: team,
     }
-    
+    /* 
+    sets the teams clicked by capturing the team clicked 
+    and adding to the array if the find does not find it already in the array 
+    */
   setTeamsClicked(teamsClicked => {
     if(teamsClicked.find((x) => x.TeamNumber === team) === undefined){
       return [...teamsClicked, teamObj]
@@ -87,7 +72,7 @@ function Summary(props) {
     }
     })
   }
-
+  /* runs grade function to sort the default table by selected priorities by our database */
   const data = React.useMemo(
     () => {
       if (tableData) {
@@ -116,7 +101,7 @@ function Summary(props) {
       }     
     }, [tableData, sortBy]
   )
-
+  /*  used in default table*/
   const columns = React.useMemo(
     () => [
       {
@@ -135,6 +120,7 @@ function Summary(props) {
 
   const { globalFilter } = state
 
+  /* constant that holds the properties used in various different components (reduces repetitiveness) */
   const filterState = {
     information: tableData,
     gFilter: globalFilter || '',
