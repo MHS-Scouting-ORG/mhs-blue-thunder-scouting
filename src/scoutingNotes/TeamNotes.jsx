@@ -58,7 +58,7 @@ function TeamNotes() {
         {
           TeamNumber: team.team_key.substring(3),
           Name: simTeam.nickname,
-          Notes: "put notes here ",
+          Notes: "fake notes test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test test  ",
         } : null
 
     }), [rankingState]
@@ -79,13 +79,6 @@ function TeamNotes() {
               </div>
           </div>
           </div>
-        ),
-      },
-      {
-         Header: "Notes",
-         accessor: "Notes",
-         Cell: ({ row }) => (
-          <div style={{fontSize: "17px"}}>{row.original.Notes}</div>
         ),
       },
     ], [data]
