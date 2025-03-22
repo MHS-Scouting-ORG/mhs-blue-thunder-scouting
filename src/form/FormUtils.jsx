@@ -350,7 +350,7 @@ export function buttonIncremental(num, type, element) {
       return (<img src="./images/netDefault.png" style={{width: "110px"}}/>)
     }
 
-    /* Check for increment */
+    /* Check for increments */ 
 
     if( num === 1){
       return (<img src="./images/incremental/algae1.png" style={{width: "110px"}}/>)
