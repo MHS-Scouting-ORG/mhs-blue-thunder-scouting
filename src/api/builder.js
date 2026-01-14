@@ -1,31 +1,19 @@
 const initAutoAmountScored = _ => {
   return {
-    CoralL1: 0,
-    CoralL2: 0,
-    CoralL3: 0,
-    CoralL4: 0,
-    Processor: 0,
-    Net: 0
+    Fuel: 0
   }
 
 }
 
 const initAutoPointsScored = _ => {
   return {
-    Points: 0,
-    CoralPoints: 0,
-    AlgaePoints: 0,  
+    Points: 0
   }
 }
 
 const initTeleAmountScored = _ => {
   return {
-    CoralL1: 0,
-    CoralL2: 0,
-    CoralL3: 0,
-    CoralL4: 0,
-    Processor: 0,
-    Net: 0,
+    Fuel: 0,
     Cycles: 0,
   }
 }
@@ -34,8 +22,6 @@ const initTelePointsScored = _ => {
   return {
     Points: 0,
     EndgamePoints: 0,
-    CoralPoints: 0,
-    AlgaePoints: 0,
   }
 }
 
@@ -83,9 +69,9 @@ const PenaltyOpts = {
 }
 
 const EndgameOpts = {
-  Deep: "Deep",
-  Shallow: "Shallow",
-  PARKED: "Parked",
+  Level3: "Level3",
+  Level2: "Level2",
+  Level1: "Level1",
   NONE: "None"
 }
 
@@ -143,10 +129,10 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     Regional: regionalId,
     TotalPoints: 0,
     Autonomous: {
-      StartingPosition: 0,
       AmountScored: initAutoAmountScored(),
       PointsScored: initAutoPointsScored(),
       Left: false,
+      Hang: '',
     },
     Teleop: {
       AmountScored: initTeleAmountScored(),
@@ -161,6 +147,7 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
     },
     RobotInfo: {
       RobotSpeed: SpeedOpts.NONE,
+      ShootingSpeed: SpeedOpts.NONE,
       WhatBrokeDesc: "",
       Comments: ""
     },

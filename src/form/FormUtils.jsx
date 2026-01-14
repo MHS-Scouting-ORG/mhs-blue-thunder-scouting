@@ -41,18 +41,9 @@ export async function submitState( //params are states of data from form
   apiMatchData,
   matchType,
   left,
-  autoCoralL1,
-  autoCoralL2,
-  autoCoralL3,
-  autoCoralL4,
-  autoProcessorScored,
-  autoNetScored,
-  teleCoralL1,
-  teleCoralL2,
-  teleCoralL3,
-  teleCoralL4,
-  processorScored,
-  netScored,
+  autoFuel,
+  autoHang,
+  teleFuel,
   hangType,
   yellowCard,
   redCard,
@@ -63,6 +54,7 @@ export async function submitState( //params are states of data from form
   minFouls,
   majFouls,
   robotSpeed,
+  shootingSpeed,
   robotInsight,
   robotBrokenComments
 
@@ -76,11 +68,7 @@ export async function submitState( //params are states of data from form
   let endGamePoints = 0;
   let telePoints = 0;
 
-  let autoCoralPoints = 0;
-  let teleCoralPoints = 0;
-
-  let teleAlgaePoints = 0;
-  let autoAlgaePoints = 0;
+  let fuelPoints = 0;
 
 
   /* Checks Match Selects */
@@ -106,18 +94,18 @@ export async function submitState( //params are states of data from form
   else if(hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false){
     endGamePoints += 0;
   }
-  else if (hangType === 'Deep' && (redCard || dq || noShow || disable || botBroke) === false) {
+  else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 12;
   }
-  else if (hangType === 'Shallow' && (redCard || dq || noShow || disable || botBroke) === false) {
+  else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 6;
   }
-  else if (hangType === 'Parked' && (redCard || dq || noShow || disable || botBroke) === false) {
+  else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 2;
   }
   else {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat the endgame result was"
+    windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
   }
 
   /* Robot Info Select */
@@ -138,18 +126,32 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nRobot Speed"
   }
 
+  /* Shooting Speed Select */
+  if((redCard || dq || noShow || disable || botBroke) !== false){
+
+  }
+  else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
+    shootingSpeed = "Slow";
+  }
+  else if (shootingSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
+    shootingSpeed = "Average";
+  }
+  else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
+    shootingSpeed = "Fast"; 
+  }
+  else {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+  }
+
   /* Point Calc */
 
-  autoCoralPoints = (autoCoralL1 * 3) + (autoCoralL2 * 4) + (autoCoralL3 * 6) + (autoCoralL4 * 7);
-  teleCoralPoints = (teleCoralL1 * 2) + (teleCoralL2 * 3) + (teleCoralL3 * 4) + (teleCoralL4 * 5);
+  fuelPoints = (autoFuel * 1) + (teleFuel * 1);  // 1 point per fuel scored
 
-  teleAlgaePoints = (processorScored * 6) + (netScored * 4);
-  autoAlgaePoints = (autoProcessorScored * 6) + (autoNetScored * 4);
+  autoPoints += fuelPoints + autoPoints;
+  telePoints += fuelPoints + telePoints;
 
-  autoPoints += (autoCoralPoints + autoAlgaePoints);
-  telePoints += (teleCoralPoints + teleAlgaePoints);
-
-  let cycles = processorScored + netScored + teleCoralL1 + teleCoralL2 + teleCoralL3 + teleCoralL4;
+  let cycles = autoFuel + teleFuel;
   let totalPoints = autoPoints + telePoints + endGamePoints;
 
   /* Window Msg Check */
@@ -166,39 +168,24 @@ export async function submitState( //params are states of data from form
 
     // AUTO SPECIFIC //
     matchEntry.Autonomous.Left = left
-
-    matchEntry.Autonomous.AmountScored.CoralL1 = autoCoralL1
-    matchEntry.Autonomous.AmountScored.CoralL2 = autoCoralL2
-    matchEntry.Autonomous.AmountScored.CoralL3 = autoCoralL3
-    matchEntry.Autonomous.AmountScored.CoralL4 = autoCoralL4
-
-    matchEntry.Autonomous.AmountScored.Processor = autoProcessorScored
-    matchEntry.Autonomous.AmountScored.Net = autoNetScored
+    matchEntry.Autonomous.Fuel = autoFuel
+    matchEntry.Autonomous.Hang = autoHang
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
-    matchEntry.Autonomous.PointsScored.CoralPoints = autoCoralPoints
-    matchEntry.Autonomous.PointsScored.AlgaePoints = autoAlgaePoints
 
     /* TELEOP SPECIFIC*/
-    matchEntry.Teleop.AmountScored.CoralL1 = teleCoralL1
-    matchEntry.Teleop.AmountScored.CoralL2 = teleCoralL2
-    matchEntry.Teleop.AmountScored.CoralL3 = teleCoralL3
-    matchEntry.Teleop.AmountScored.CoralL4 = teleCoralL4
-
-    matchEntry.Teleop.AmountScored.Processor = processorScored
-    matchEntry.Teleop.AmountScored.Net = netScored
+    matchEntry.Teleop.AmountScored.Fuel = teleFuel
 
     matchEntry.Teleop.AmountScored.Cycles = cycles
 
     matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
-    matchEntry.Teleop.PointsScored.CoralPoints = teleCoralPoints
-    matchEntry.Teleop.PointsScored.AlgaePoints = teleAlgaePoints
 
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed
+    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls
@@ -290,100 +277,46 @@ export function toggleIncremental(state, type){
 
 /* incremetnal function to change images based on increments */
 export function buttonIncremental(num, type, element) {
-  if (element === "coral") {
-    /* Check for default and level */
-    if (num === 0 && type === "coral1") {
-      return (<img src="./images/level1.png" style={{width: "110px"}}/>)
-    }
-    else if(num <= 0 && type === "coral2") {
-      return (<img src="./images/level2.png" style={{width: "110px"}}/>)
-    }
-    else if(num === 0 && type === "coral3") {
-      return (<img src="./images/level3.png" style={{width: "110px"}}/>)
-    }
-    else if(num === 0 && type === "coral4") {
-      return (<img src="./images/level4.png" style={{width: "110px"}}/>)
-    }
-
-    /* Check for increment */
-
-    if( num === 1){
-      return (<img src="./images/incremental/coralOne.png" style={{width: "110px"}}/>)
-    }
-    if( num === 2){
-      return (<img src="./images/incremental/coralTwo.png" style={{width: "110px"}}/>)
-    }
-    if( num === 3){
-      return (<img src="./images/incremental/coralThree.png" style={{width: "110px"}}/>)
-    }
-    if( num === 4){
-      return (<img src="./images/incremental/coralFour.png" style={{width: "110px"}}/>)
-    }
-    if( num === 5){
-      return (<img src="./images/incremental/coral5.png" style={{width: "110px"}}/>)
-    }
-    if( num === 6){
-      return (<img src="./images/incremental/coral6.png" style={{width: "110px"}}/>)
-    }
-    if( num === 7){
-      return (<img src="./images/incremental/coral7.png" style={{width: "110px"}}/>)
-    }
-    if( num === 8){
-      return (<img src="./images/incremental/coral8.png" style={{width: "110px"}}/>)
-    }
-    if( num === 9){
-      return (<img src="./images/incremental/coral9.png" style={{width: "110px"}}/>)
-    }
-    if( num === 10){
-      return (<img src="./images/incremental/coral10.png" style={{width: "110px"}}/>)
-    }
-    if(num > 10){
-      return (<img src="./images/incremental/coralOver10.png" style={{width: "110px"}}/>)
-    }
-  }
-  else if (element === "algae"){
-    /* Check type */
-    if (num === 0 && type === "processor") {
-      return (<img src="./images/processorDefault.png" style={{width: "110px"}}/>)
-    }
-    else if(num === 0 && type === "net") {
-      return (<img src="./images/netDefault.png" style={{width: "110px"}}/>)
+  if (element === "fuel"){
+    /* Check for default */
+    if (num === 0) {
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
 
     /* Check for increments */ 
 
     if( num === 1){
-      return (<img src="./images/incremental/algae1.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 2){
-      return (<img src="./images/incremental/algae2.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 3){
-      return (<img src="./images/incremental/algae3.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 4){
-      return (<img src="./images/incremental/algae4.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 5){
-      return (<img src="./images/incremental/algae5.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 6){
-      return (<img src="./images/incremental/algae6.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 7){
-      return (<img src="./images/incremental/algae7.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 8){
-      return (<img src="./images/incremental/algae8.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 9){
-      return (<img src="./images/incremental/algae9.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if( num === 10){
-      return (<img src="./images/incremental/algae10.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
     if(num > 10){
-      return (<img src="./images/incremental/algaeOver10.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
   }
 }

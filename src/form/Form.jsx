@@ -30,20 +30,11 @@ function Form() {
 
   /* AUTO SPECIFIC */
   const [left, setLeft] = useState(false);
-  const [autoCoralL1, setAutoCoralL1] = useState(0);
-  const [autoCoralL2, setAutoCoralL2] = useState(0);
-  const [autoCoralL3, setAutoCoralL3] = useState(0);
-  const [autoCoralL4, setAutoCoralL4] = useState(0);
-  const [autoProcessorScored, setAutoProcessorScored] = useState(0);
-  const [autoNetScored, setAutoNetScored] = useState(0);
+  const [autoFuel, setAutoFuel] = useState(0);
+  const [autoHang, setAutoHang] = useState('');
 
   /* TElEOP */
-  const [teleCoralL1, setTeleCoralL1] = useState(0);
-  const [teleCoralL2, setTeleCoralL2] = useState(0);
-  const [teleCoralL3, setTeleCoralL3] = useState(0);
-  const [teleCoralL4, setTeleCoralL4] = useState(0);
-  const [processorScored, setProcessorScored] = useState(0);
-  const [netScored, setNetScored] = useState(0);
+  const [teleFuel, setTeleFuel] = useState(0);
   const [hangType, setHangType] = useState('');
 
   /* PENALTIES */
@@ -59,6 +50,7 @@ function Form() {
 
   /* ROBOT INFO */
   const [robotSpeed, setRobotSpeed] = useState([]);
+  const [shootingSpeed, setShootingSpeed] = useState([]);
   const [robotInsight, setRobotInsight] = useState("");
 
   /* Toggle States */
@@ -133,18 +125,9 @@ function Form() {
     setBlue([])
     setMatchKey('')
     setLeft('')
-    setAutoCoralL1(0)
-    setAutoCoralL2(0)
-    setAutoCoralL3(0)
-    setAutoCoralL4(0)
-    setAutoProcessorScored(0)
-    setAutoNetScored(0)
-    setTeleCoralL1(0)
-    setTeleCoralL2(0)
-    setTeleCoralL3(0)
-    setTeleCoralL4(0)
-    setProcessorScored(0)
-    setNetScored(0)
+    setAutoFuel(0)
+    setAutoHang('')
+    setTeleFuel(0)
     setHangType([])
     setYellowCard(false)
     setRedCard(false)
@@ -156,6 +139,7 @@ function Form() {
     setMajFouls(0)
     setRobotBrokenComments('')
     setRobotSpeed([])
+    setShootingSpeed([])
     setRobotInsight('')
     setConfirm(false)
 
@@ -280,12 +264,18 @@ function Form() {
         {/* Left */}
         <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}<div>Auto Leave</div></button>
 
-        <button onClick={() => {decremental ? setAutoCoralL1(autoCoralL1 - 1) :setAutoCoralL1(autoCoralL1 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL1, "coral1", "coral")}<div>Level 1</div></button>
-        <button onClick={() => {decremental ? setAutoCoralL2(autoCoralL2 - 1) :setAutoCoralL2(autoCoralL2 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL2, "coral2", "coral")}<div>Level 2</div></button>
-        <button onClick={() => {decremental ? setAutoCoralL3(autoCoralL3 - 1) :setAutoCoralL3(autoCoralL3 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL3, "coral3", "coral")}<div>Level 3</div></button>
-        <button onClick={() => {decremental ? setAutoCoralL4(autoCoralL4 - 1) :setAutoCoralL4(autoCoralL4 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoCoralL4, "coral4", "coral")}<div>Level 4</div></button>
-        <button onClick={() => {decremental ? setAutoProcessorScored(autoProcessorScored - 1) :setAutoProcessorScored(autoProcessorScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoProcessorScored, "processor", "algae")}<div>Processor</div></button>
-        <button onClick={() => {decremental ? setAutoNetScored(autoNetScored - 1) :setAutoNetScored(autoNetScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoNetScored, "net", "algae")}<div>Net</div></button>
+        <button onClick={() => {decremental ? setAutoFuel(autoFuel - 1) :setAutoFuel(autoFuel + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoFuel, "fuel", "fuel")}<div>Fuel Scored</div></button>
+        
+        <div>
+          <select style={{height: "50px"}} value={autoHang} onChange={(e) => setAutoHang(e.target.value)}>
+            <option value=''>Auto Hang</option>
+            <option value="None">None</option>
+            <option value='Level1'>Level 1</option>
+            <option value='Level2'>Level 2</option>
+            <option value='Level3'>Level 3</option>
+          </select>
+        </div>
+
         <div>
           <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
         </div>
@@ -297,29 +287,21 @@ function Form() {
         <CollapseTButton label="Teleop" toggleFunction={toggleTele} type={type}/>
         <div style={{ display: teleState}}> 
         
-        <button onClick={() => {decremental ? setTeleCoralL1(teleCoralL1 - 1) :setTeleCoralL1(teleCoralL1 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL1, "coral1", "coral")}<div>Level 1</div></button>
-        <button onClick={() => {decremental ? setTeleCoralL2(teleCoralL2 - 1) :setTeleCoralL2(teleCoralL2 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL2, "coral2", "coral")}<div>Level 2</div></button>
-        <button onClick={() => {decremental ? setTeleCoralL3(teleCoralL3 - 1) :setTeleCoralL3(teleCoralL3 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL3, "coral3", "coral")}<div>Level 3</div></button>
-        <button onClick={() => {decremental ? setTeleCoralL4(teleCoralL4 - 1) :setTeleCoralL4(teleCoralL4 + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleCoralL4, "coral4", "coral")}<div>Level 4</div></button>
-        <div>
-          <button onClick={() => {decremental ? setProcessorScored(processorScored - 1) :setProcessorScored(processorScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(processorScored, "processor", "algae")}<div>Processor</div></button>
-          <button onClick={() => {decremental ? setNetScored(netScored - 1) :setNetScored(netScored + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(netScored, "net", "algae")}<div>Net</div></button>
-          <div>
-            <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
-          </div>
-        </div>
+        <button onClick={() => {decremental ? setTeleFuel(teleFuel - 1) :setTeleFuel(teleFuel + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleFuel, "fuel", "fuel")}<div>Fuel Scored</div></button>
         
-
         <div>
           <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
-            <option value=''>Endgame Type</option>
+            <option value=''>Endgame Hang</option>
             <option value="None">None</option>
-            <option value='Shallow'>Shallow</option>
-            <option value='Deep'>Deep</option>
-            <option value='Parked'>Park</option>
+            <option value='Level1'>Level 1</option>
+            <option value='Level2'>Level 2</option>
+            <option value='Level3'>Level 3</option>
           </select>
         </div>
 
+        <div>
+          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+        </div>
         </div>
 
         <br></br>
@@ -361,6 +343,15 @@ function Form() {
           </select>
         </div>
 
+        <div>
+          <select style={{height: "50px"}} value={shootingSpeed} onChange={(e) => setShootingSpeed(e.target.value)}>
+            <option value="">Shooting Speed</option>
+            <option value="Slow">Slow</option>
+            <option value="Average">Average</option>
+            <option value="Fast">Fast</option>
+          </select>
+        </div>
+
         <input style={{height: "50px"}} type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
         </div>
 
@@ -386,18 +377,9 @@ function Form() {
           apiMatchData,
           matchType,
           left,
-          autoCoralL1,
-          autoCoralL2,
-          autoCoralL3,
-          autoCoralL4,
-          autoProcessorScored,
-          autoNetScored,
-          teleCoralL1,
-          teleCoralL2,
-          teleCoralL3,
-          teleCoralL4,
-          processorScored,
-          netScored,
+          autoFuel,
+          autoHang,
+          teleFuel,
           hangType,
           yellowCard,
           redCard,
@@ -408,6 +390,7 @@ function Form() {
           minFouls,
           majFouls,
           robotSpeed,
+          shootingSpeed,
           robotInsight,
           robotBrokenComments
       )
