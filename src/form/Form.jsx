@@ -289,13 +289,13 @@ function Form() {
 
         <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
-            <button onClick={() => setAutoFuel(autoFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>+</div>
-            </button>
             <button onClick={() => setAutoFuel(Math.max(0, autoFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
               <img src="./images/Fuel.png" style={{width: "80px"}}/>
               <div>-</div>
+            </button>
+            <button onClick={() => setAutoFuel(autoFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>+</div>
             </button>
           </div>
           <input 
@@ -358,13 +358,13 @@ function Form() {
         
         <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
-            <button onClick={() => setTeleFuel(teleFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>+</div>
-            </button>
             <button onClick={() => setTeleFuel(Math.max(0, teleFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
               <img src="./images/Fuel.png" style={{width: "80px"}}/>
               <div>-</div>
+            </button>
+            <button onClick={() => setTeleFuel(teleFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>+</div>
             </button>
           </div>
           <input 
