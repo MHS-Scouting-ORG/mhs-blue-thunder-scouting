@@ -45,6 +45,8 @@ export async function submitState( //params are states of data from form
   autoHang,
   teleFuel,
   hangType,
+  activeStrategy,
+  inactiveStrategy,
   yellowCard,
   redCard,
   disable,
@@ -166,10 +168,10 @@ export async function submitState( //params are states of data from form
 
     matchEntry.TotalPoints = totalPoints
 
-    // AUTO SPECIFIC //
     matchEntry.Autonomous.Left = left
     matchEntry.Autonomous.Fuel = autoFuel
     matchEntry.Autonomous.Hang = autoHang
+    matchEntry.Autonomous.Strategy = activeStrategy
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
 
@@ -180,6 +182,7 @@ export async function submitState( //params are states of data from form
 
     matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
+    matchEntry.Teleop.Strategy = inactiveStrategy
 
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 

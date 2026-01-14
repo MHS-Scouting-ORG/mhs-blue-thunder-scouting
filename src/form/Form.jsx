@@ -56,12 +56,15 @@ function Form() {
   /* Toggle States */
   const [infoState, setInfoState] = useState('none');
   const [autoState, setAutoState] = useState('none');
+  const [activeState, setActiveState] = useState('none');
+  const [inactiveState, setInactiveState] = useState('none');
   const [teleState, setTeleState] = useState('none');
   const [penaltyState, setPenaltyState] = useState('none');
   const [robotState, setRobotState] = useState('none');
 
-  /* Decremental */
-  const [decremental, setDecremental] = useState(false);
+  /* ACTIVE/INACTIVE STRATEGIES */
+  const [activeStrategy, setActiveStrategy] = useState('');
+  const [inactiveStrategy, setInactiveStrategy] = useState('');
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -129,6 +132,8 @@ function Form() {
     setAutoHang('')
     setTeleFuel(0)
     setHangType([])
+    setActiveStrategy('')
+    setInactiveStrategy('')
     setYellowCard(false)
     setRedCard(false)
     setDisable(false)
@@ -162,6 +167,24 @@ function Form() {
     }
     else {
       setAutoState('none')
+    }
+  }
+
+  const toggleActive = () => {
+    if (activeState === 'none') {
+      setActiveState('')
+    }
+    else {
+      setActiveState('none')
+    }
+  }
+
+  const toggleInactive = () => {
+    if (inactiveState === 'none') {
+      setInactiveState('')
+    }
+    else {
+      setInactiveState('none')
     }
   }
 
@@ -264,7 +287,25 @@ function Form() {
         {/* Left */}
         <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}<div>Auto Leave</div></button>
 
-        <button onClick={() => {decremental ? setAutoFuel(autoFuel - 1) :setAutoFuel(autoFuel + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(autoFuel, "fuel", "fuel")}<div>Fuel Scored</div></button>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
+            <button onClick={() => setAutoFuel(autoFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>+</div>
+            </button>
+            <button onClick={() => setAutoFuel(Math.max(0, autoFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>-</div>
+            </button>
+          </div>
+          <input 
+            type="number" 
+            value={autoFuel} 
+            onChange={(e) => setAutoFuel(Math.max(0, parseInt(e.target.value) || 0))}
+            style={{height: "40px", fontSize: "18px", textAlign: "center", width: "100px"}}
+            placeholder="Fuel"
+          />
+        </div>
         
         <div>
           <select style={{height: "50px"}} value={autoHang} onChange={(e) => setAutoHang(e.target.value)}>
@@ -275,19 +316,65 @@ function Form() {
             <option value='Level3'>Level 3</option>
           </select>
         </div>
+        </div>
 
+        <br></br>
+
+        {/* ACTIVE */}
+        <CollapseTButton label="Active" toggleFunction={toggleActive} type={type}/>
+        <div style={{ display: activeState}}> 
+        
         <div>
-          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+          <select style={{height: "50px"}} value={activeStrategy} onChange={(e) => setActiveStrategy(e.target.value)}>
+            <option value=''>Select Strategy</option>
+            <option value="Hoarding">Hoarding</option>
+            <option value='Defense'>Defense</option>
+            <option value='Offensive'>Offensive</option>
+            <option value='Support'>Support</option>
+          </select>
         </div>
         </div>
 
         <br></br>
 
-        {/* TELEOP */}
+        {/* INACTIVE */}
+        <CollapseTButton label="Inactive" toggleFunction={toggleInactive} type={type}/>
+        <div style={{ display: inactiveState}}> 
+        
+        <div>
+          <select style={{height: "50px"}} value={inactiveStrategy} onChange={(e) => setInactiveStrategy(e.target.value)}>
+            <option value=''>Select Strategy</option>
+            <option value="Hoarding">Hoarding</option>
+            <option value='Defense'>Defense</option>
+            <option value='Offensive'>Offensive</option>
+            <option value='Support'>Support</option>
+          </select>
+        </div>
+        </div>
+
+        <br></br>
         <CollapseTButton label="Teleop" toggleFunction={toggleTele} type={type}/>
         <div style={{ display: teleState}}> 
         
-        <button onClick={() => {decremental ? setTeleFuel(teleFuel - 1) :setTeleFuel(teleFuel + 1)}} style={{backgroundColor:"#77B6E2"}}>{buttonIncremental(teleFuel, "fuel", "fuel")}<div>Fuel Scored</div></button>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
+            <button onClick={() => setTeleFuel(teleFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>+</div>
+            </button>
+            <button onClick={() => setTeleFuel(Math.max(0, teleFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
+              <img src="./images/Fuel.png" style={{width: "80px"}}/>
+              <div>-</div>
+            </button>
+          </div>
+          <input 
+            type="number" 
+            value={teleFuel} 
+            onChange={(e) => setTeleFuel(Math.max(0, parseInt(e.target.value) || 0))}
+            style={{height: "40px", fontSize: "18px", textAlign: "center", width: "100px"}}
+            placeholder="Fuel"
+          />
+        </div>
         
         <div>
           <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
@@ -298,10 +385,6 @@ function Form() {
             <option value='Level3'>Level 3</option>
           </select>
         </div>
-
-        <div>
-          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
-        </div>
         </div>
 
         <br></br>
@@ -311,9 +394,10 @@ function Form() {
         <div style={{ display: penaltyState}}> 
         
         <div>
-          <button onClick={() => {decremental ? setMinFouls(minFouls - 1) :setMinFouls(minFouls + 1)}} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul:{minFouls}</div></button>
-          <button onClick={() => {decremental ? setMajFouls(majFouls - 1) :setMajFouls(majFouls + 1)}} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul:{majFouls}</div></button>
-          <button onClick={() => setDecremental(!decremental)} style={{backgroundColor: decremental ? "#ff3131" : "white"}}>{decremental ? <img src="./images/decrementalTrue.png" style={{width: "50px"}}/> : <img src="./images/decrementDefault.png" style={{width: "50px"}}/>}<div>{decremental ? "Decrement" : "Increment"}</div> </button>
+          <button onClick={() => setMinFouls(minFouls + 1)} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul +:{minFouls}</div></button>
+          <button onClick={() => setMinFouls(Math.max(0, minFouls - 1))} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul -</div></button>
+          <button onClick={() => setMajFouls(majFouls + 1)} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul +:{majFouls}</div></button>
+          <button onClick={() => setMajFouls(Math.max(0, majFouls - 1))} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul -</div></button>
         </div>
 
         <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")} <div>Yellow Card</div> </button>
@@ -381,6 +465,8 @@ function Form() {
           autoHang,
           teleFuel,
           hangType,
+          activeStrategy,
+          inactiveStrategy,
           yellowCard,
           redCard,
           disable,
