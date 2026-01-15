@@ -63,8 +63,8 @@ function Form() {
   const [robotState, setRobotState] = useState('none');
 
   /* ACTIVE/INACTIVE STRATEGIES */
-  const [activeStrategy, setActiveStrategy] = useState('');
-  const [inactiveStrategy, setInactiveStrategy] = useState('');
+  const [activeStrategy, setActiveStrategy] = useState([]);
+  const [inactiveStrategy, setInactiveStrategy] = useState([]);
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -81,7 +81,7 @@ function Form() {
         if(matchType === "sf") {
           match_key = regional + "_" + matchType + matchNumber + "m1" 
         }
-        if(matchType === "f"){
+        if(matchType === "f"){x
           match_key = regional + "_" + matchType + "1" + "m" + matchNumber
         }
 
@@ -132,8 +132,8 @@ function Form() {
     setAutoHang('')
     setTeleFuel(0)
     setHangType([])
-    setActiveStrategy('')
-    setInactiveStrategy('')
+    setActiveStrategy([])
+    setInactiveStrategy([])
     setYellowCard(false)
     setRedCard(false)
     setDisable(false)
@@ -221,6 +221,22 @@ function Form() {
     }
     else if (val === 'blueAllianceChosen') {
       setColor(true)
+    }
+  }
+
+  const toggleActiveStrategy = (strategy) => {
+    if (activeStrategy.includes(strategy)) {
+      setActiveStrategy(activeStrategy.filter(s => s !== strategy))
+    } else {
+      setActiveStrategy([...activeStrategy, strategy])
+    }
+  }
+
+  const toggleInactiveStrategy = (strategy) => {
+    if (inactiveStrategy.includes(strategy)) {
+      setInactiveStrategy(inactiveStrategy.filter(s => s !== strategy))
+    } else {
+      setInactiveStrategy([...inactiveStrategy, strategy])
     }
   }
   
@@ -324,14 +340,26 @@ function Form() {
         <CollapseTButton label="Active" toggleFunction={toggleActive} type={type}/>
         <div style={{ display: activeState}}> 
         
-        <div>
-          <select style={{height: "50px"}} value={activeStrategy} onChange={(e) => setActiveStrategy(e.target.value)}>
-            <option value=''>Select Strategy</option>
-            <option value="Hoarding">Hoarding</option>
-            <option value='Defense'>Defense</option>
-            <option value='Offensive'>Offensive</option>
-            <option value='Support'>Support</option>
-          </select>
+        <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+          {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
+            <button
+              key={strategy}
+              onClick={() => toggleActiveStrategy(strategy)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: activeStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
+                color: activeStrategy.includes(strategy) ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "500",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {strategy}
+            </button>
+          ))}
         </div>
         </div>
 
@@ -341,14 +369,26 @@ function Form() {
         <CollapseTButton label="Inactive" toggleFunction={toggleInactive} type={type}/>
         <div style={{ display: inactiveState}}> 
         
-        <div>
-          <select style={{height: "50px"}} value={inactiveStrategy} onChange={(e) => setInactiveStrategy(e.target.value)}>
-            <option value=''>Select Strategy</option>
-            <option value="Hoarding">Hoarding</option>
-            <option value='Defense'>Defense</option>
-            <option value='Offensive'>Offensive</option>
-            <option value='Support'>Support</option>
-          </select>
+        <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+          {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
+            <button
+              key={strategy}
+              onClick={() => toggleInactiveStrategy(strategy)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: inactiveStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
+                color: inactiveStrategy.includes(strategy) ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "500",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {strategy}
+            </button>
+          ))}
         </div>
         </div>
 
