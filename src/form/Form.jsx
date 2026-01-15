@@ -7,12 +7,10 @@ import { toggleIncremental } from "./FormUtils"
 
 // styling
 import { submitState } from './FormUtils'
-import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
 
 function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
-  const type = "form" //used for styling
 
   console.log(regional) //regional check
 
@@ -29,7 +27,6 @@ function Form() {
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [left, setLeft] = useState(false);
   const [autoFuel, setAutoFuel] = useState(0);
   const [autoHang, setAutoHang] = useState('');
 
@@ -52,15 +49,6 @@ function Form() {
   const [robotSpeed, setRobotSpeed] = useState([]);
   const [shootingSpeed, setShootingSpeed] = useState([]);
   const [robotInsight, setRobotInsight] = useState("");
-
-  /* Toggle States */
-  const [infoState, setInfoState] = useState('none');
-  const [autoState, setAutoState] = useState('none');
-  const [activeState, setActiveState] = useState('none');
-  const [inactiveState, setInactiveState] = useState('none');
-  const [teleState, setTeleState] = useState('none');
-  const [penaltyState, setPenaltyState] = useState('none');
-  const [robotState, setRobotState] = useState('none');
 
   /* ACTIVE/INACTIVE STRATEGIES */
   const [activeStrategy, setActiveStrategy] = useState([]);
@@ -127,7 +115,6 @@ function Form() {
     setRed([])
     setBlue([])
     setMatchKey('')
-    setLeft('')
     setAutoFuel(0)
     setAutoHang('')
     setTeleFuel(0)
@@ -152,78 +139,6 @@ function Form() {
 
   /* toggle functions for display of form sections */
 
-  const toggleInfo = () => {
-    if (infoState === 'none') {
-      setInfoState('')
-    }
-    else {
-      setInfoState('none')
-    }
-  }
-
-  const toggleAuto = () => {
-    if (autoState === 'none') {
-      setAutoState('')
-    }
-    else {
-      setAutoState('none')
-    }
-  }
-
-  const toggleActive = () => {
-    if (activeState === 'none') {
-      setActiveState('')
-    }
-    else {
-      setActiveState('none')
-    }
-  }
-
-  const toggleInactive = () => {
-    if (inactiveState === 'none') {
-      setInactiveState('')
-    }
-    else {
-      setInactiveState('none')
-    }
-  }
-
-  const toggleTele = () => {
-    if (teleState === 'none') {
-      setTeleState('')
-    }
-    else {
-      setTeleState('none')
-    }
-  }
-
-  const togglePenalty = () => {
-    if (penaltyState === 'none') {
-      setPenaltyState('')
-    }
-    else {
-      setPenaltyState('none')
-    }
-  }
-
-  const toggleRobot = () => {
-      if (robotState === 'none') {
-        setRobotState('')
-      }
-      else {
-        setRobotState('none')
-      }
-  }
-
-  const radioAlliance = (val) =>{
-    if (val === 'redAllianceChosen') {
-      setColor(false)
-    }
-    else if (val === 'blueAllianceChosen') {
-      setColor(true)
-    }
-  }
-
   const toggleActiveStrategy = (strategy) => {
     if (activeStrategy.includes(strategy)) {
       setActiveStrategy(activeStrategy.filter(s => s !== strategy))
@@ -242,15 +157,15 @@ function Form() {
   
 
   return (
-    <div>
+    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
 
       <img src="./images/FORMHEADER.png" style={{maxWidth: "100%"}}/>
 
-      {/* Match Init */}
-      <CollapseTButton label="Match Info" toggleFunction={toggleInfo} type={type}/>
-        <div style={{ display: infoState}}> 
+      {/* Match Info */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Match Info</h2>
 
-          <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+          <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "10px", marginBottom: "15px"}}>
             <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); resetStates() }}>
               <option value="">Select Match Type</option>
               <option value='q'>Qualification</option>
@@ -260,21 +175,18 @@ function Form() {
             <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
         </div>
 
-        <br></br>
-        <br></br>
-
-        <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+        <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "20px", flexWrap: "wrap"}}>
         <div>
-        <div>Alliance Color</div>
+        <div style={{marginBottom: "8px"}}>Alliance Color</div>
           <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="redAllianceChosen" name="alliance"></input>
-          <label for="red">Red</label>
+          <label for="red" style={{marginRight: "15px"}}>Red</label>
           <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="blueAllianceChosen" name="alliance"></input>
           <label for="blue">Blue</label>
         </div>
 
         {color ?  <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>  : <img src="./images/white-redGrad.png" style={{width: "50px"}}/>}
         
-        <select style={{height: "50px", flex: 1}} onChange={(e) => setTeamNumber(e.target.value)}>
+        <select style={{height: "50px", minWidth: "200px"}} onChange={(e) => setTeamNumber(e.target.value)}>
           <option>robot #</option>
           {color === false ?
 
@@ -291,17 +203,11 @@ function Form() {
           }
         </select>
         </div>
+      </div>
 
-        </div>
-
-        <br></br>
-
-        {/* AUTONOMOUS */}
-        <CollapseTButton label="Autonomous" toggleFunction={toggleAuto} type={type}/>
-        <div style={{ display: autoState}}> 
-
-        {/* Left */}
-        <button onClick={() => setLeft(!left)} style={{ backgroundColor: left === true ? "#77B6E2" : "" }}>{toggleIncremental(left, "autoLeave")}<div>Auto Leave</div></button>
+      {/* AUTONOMOUS */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Autonomous</h2>
 
         <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
@@ -332,13 +238,11 @@ function Form() {
             <option value='Level3'>Level 3</option>
           </select>
         </div>
-        </div>
+      </div>
 
-        <br></br>
-
-        {/* ACTIVE */}
-        <CollapseTButton label="Active" toggleFunction={toggleActive} type={type}/>
-        <div style={{ display: activeState}}> 
+      {/* ACTIVE */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Active Strategy</h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
           {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
@@ -361,13 +265,11 @@ function Form() {
             </button>
           ))}
         </div>
-        </div>
+      </div>
 
-        <br></br>
-
-        {/* INACTIVE */}
-        <CollapseTButton label="Inactive" toggleFunction={toggleInactive} type={type}/>
-        <div style={{ display: inactiveState}}> 
+      {/* INACTIVE */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Inactive Strategy</h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
           {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
@@ -390,11 +292,11 @@ function Form() {
             </button>
           ))}
         </div>
-        </div>
+      </div>
 
-        <br></br>
-        <CollapseTButton label="Teleop" toggleFunction={toggleTele} type={type}/>
-        <div style={{ display: teleState}}> 
+      {/* TELEOP */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Teleop</h2>
         
         <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
@@ -425,111 +327,103 @@ function Form() {
             <option value='Level3'>Level 3</option>
           </select>
         </div>
-        </div>
+      </div>
 
-        <br></br>
-
-        {/* PENALTIES */}
-        <CollapseTButton label="Penalties" toggleFunction={togglePenalty} type={type}/>
-        <div style={{ display: penaltyState}}> 
+      {/* PENALTIES */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Penalties</h2>
         
-        <div>
+        <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", marginBottom: "15px" }}>
           <button onClick={() => setMinFouls(minFouls + 1)} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul +:{minFouls}</div></button>
           <button onClick={() => setMinFouls(Math.max(0, minFouls - 1))} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul -</div></button>
           <button onClick={() => setMajFouls(majFouls + 1)} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul +:{majFouls}</div></button>
           <button onClick={() => setMajFouls(Math.max(0, majFouls - 1))} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul -</div></button>
         </div>
 
-        <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")} <div>Yellow Card</div> </button>
-        <button onClick={() => setRedCard(!redCard)} style={{ backgroundColor: redCard === true ? "#ff3131" : "" }}>{toggleIncremental(redCard, "redCard")} <div>Red Card</div> </button>
-        <button onClick={() => setDisable(!disable)} style={{ backgroundColor: disable === true ? "#ff914d" : "" }}>{toggleIncremental(disable, "disable")} <div>Disable</div> </button>
-        <button onClick={() => setDQ(!dq)} style={{ backgroundColor: dq === true ? "black" : "" }}>{toggleIncremental(dq, "dq")} <div>DQ</div> </button>
-        <button onClick={() => setBotBroke(!botBroke)} style={{ backgroundColor: botBroke === true ? "#77B6E2" : "" }}>{toggleIncremental(botBroke, "broke")} <div>Broke</div> </button>
-        <button onClick={() => setNoShow(!noShow)} style={{ backgroundColor: noShow === true ? "#77B6E2" : "" }}>{toggleIncremental(noShow, "noShow")} <div>No Show</div> </button>
-
-        <div>
-          {botBroke ? <input placeholder="broken comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
-        </div>
+        <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", marginBottom: "15px" }}>
+          <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")} <div>Yellow Card</div> </button>
+          <button onClick={() => setRedCard(!redCard)} style={{ backgroundColor: redCard === true ? "#ff3131" : "" }}>{toggleIncremental(redCard, "redCard")} <div>Red Card</div> </button>
+          <button onClick={() => setDisable(!disable)} style={{ backgroundColor: disable === true ? "#ff914d" : "" }}>{toggleIncremental(disable, "disable")} <div>Disable</div> </button>
+          <button onClick={() => setDQ(!dq)} style={{ backgroundColor: dq === true ? "black" : "" }}>{toggleIncremental(dq, "dq")} <div>DQ</div> </button>
+          <button onClick={() => setBotBroke(!botBroke)} style={{ backgroundColor: botBroke === true ? "#77B6E2" : "" }}>{toggleIncremental(botBroke, "broke")} <div>Broke</div> </button>
+          <button onClick={() => setNoShow(!noShow)} style={{ backgroundColor: noShow === true ? "#77B6E2" : "" }}>{toggleIncremental(noShow, "noShow")} <div>No Show</div> </button>
         </div>
 
-        <br></br>
+        {botBroke ? <input placeholder="broken comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
+      </div>
 
-
-        {/* ROBOT INFO */}
-        <CollapseTButton label="Robot Info" toggleFunction={toggleRobot} type={type}/>
-        <div style={{ display: robotState}}> 
-        <div>
+      {/* ROBOT INFO */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Robot Info</h2>
+        
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <select style={{height: "50px"}} value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
             <option value="">Robot Speed</option>
             <option value="Slow">Slow</option>
             <option value="Average">Average</option>
             <option value="Fast">Fast</option>
           </select>
-        </div>
 
-        <div>
           <select style={{height: "50px"}} value={shootingSpeed} onChange={(e) => setShootingSpeed(e.target.value)}>
             <option value="">Shooting Speed</option>
             <option value="Slow">Slow</option>
             <option value="Average">Average</option>
             <option value="Fast">Fast</option>
           </select>
-        </div>
 
-        <input style={{height: "50px"}} type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
+          <input style={{height: "50px"}} type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
         </div>
+      </div>
 
-        <br></br>
-        <br></br>
       {/* Submit Check */}
-      <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white"}}>
-        {
-        confirm ? 
-        /* Not Yet */
-        <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
-        /* Submit */
-        : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Submit</div></div>
-        }
-      </button>
+      <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
+        <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white", padding: "15px", borderRadius: "8px", cursor: "pointer"}}>
+          {
+          confirm ? 
+          /* Not Yet */
+          <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
+          /* Submit */
+          : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Submit</div></div>
+          }
+        </button>
 
-      {/* Submit & Send */}
-      {confirm ? <button style={{backgroundColor:"White"}} onClick={() => {
-        submitState( //passes all data (states) of the form into the build in formutils
-          regional,
-          teamNumber,
-          matchKey,
-          apiMatchData,
-          matchType,
-          left,
-          autoFuel,
-          autoHang,
-          teleFuel,
-          hangType,
-          activeStrategy,
-          inactiveStrategy,
-          yellowCard,
-          redCard,
-          disable,
-          dq,
-          botBroke,
-          noShow,
-          minFouls,
-          majFouls,
-          robotSpeed,
-          shootingSpeed,
-          robotInsight,
-          robotBrokenComments
-      )
-      .then(_ => {
-        if(_ === false){ //checks if the form utils return true or false which based on if the user filled all required
-          resetStates()
-        }
-      })
-        .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
-        }
-      }/* Double checks and confirms for submission, in case of accidental press */
-      >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
-  
+        {/* Submit & Send */}
+        {confirm ? <button style={{backgroundColor:"White", padding: "15px", borderRadius: "8px", cursor: "pointer"}} onClick={() => {
+          submitState( //passes all data (states) of the form into the build in formutils
+            regional,
+            teamNumber,
+            matchKey,
+            apiMatchData,
+            matchType,
+            autoFuel,
+            autoHang,
+            teleFuel,
+            hangType,
+            activeStrategy,
+            inactiveStrategy,
+            yellowCard,
+            redCard,
+            disable,
+            dq,
+            botBroke,
+            noShow,
+            minFouls,
+            majFouls,
+            robotSpeed,
+            shootingSpeed,
+            robotInsight,
+            robotBrokenComments
+        )
+        .then(_ => {
+          if(_ === false){ //checks if the form utils return true or false which based on if the user filled all required
+            resetStates()
+          }
+        })
+          .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
+          }
+        }/* Double checks and confirms for submission, in case of accidental press */
+        >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
+      </div>
     </div>
   )
 }

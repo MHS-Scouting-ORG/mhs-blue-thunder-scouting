@@ -40,7 +40,6 @@ export async function submitState( //params are states of data from form
   matchKey,
   apiMatchData,
   matchType,
-  left,
   autoFuel,
   autoHang,
   teleFuel,
@@ -84,10 +83,6 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
-
-  if (left) {
-    autoPoints += 3;
-  }
 
   /* EndGame Select */
   if((redCard || dq || noShow || disable || botBroke) !== false){
@@ -168,10 +163,9 @@ export async function submitState( //params are states of data from form
 
     matchEntry.TotalPoints = totalPoints
 
-    matchEntry.Autonomous.Left = left
     matchEntry.Autonomous.Fuel = autoFuel
     matchEntry.Autonomous.Hang = autoHang
-    matchEntry.Autonomous.Strategy = activeStrategy
+    matchEntry.Autonomous.Strategy = activeStrategy.length > 0 ? activeStrategy.join(", ") : ""
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
 
@@ -182,7 +176,7 @@ export async function submitState( //params are states of data from form
 
     matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
-    matchEntry.Teleop.Strategy = inactiveStrategy
+    matchEntry.Teleop.Strategy = inactiveStrategy.length > 0 ? inactiveStrategy.join(", ") : ""
 
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 
