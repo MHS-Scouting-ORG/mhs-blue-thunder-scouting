@@ -99,7 +99,14 @@ function TeamNotes() {
   return (
     <div align='center' style={{maxWidth: '390px',}}>
 
-    <img alt="" style={{ width: '360px' }} src={'./images/FORMHEADER.png'}></img>
+      <div style={{ textAlign: "center", marginBottom: "30px", paddingTop: "20px" }}>
+        <img 
+          src="./images/BLUETHUNDERLOGO_BLUE.png" 
+          alt="2443 Blue Thunder Logo"
+          style={{ maxWidth: "100px", height: "auto", marginBottom: "10px" }}
+        />
+        <h1 style={{ margin: "0", color: "#333", fontSize: "1.8em" }}>NOTES</h1>
+      </div>
 
       {/* <header>TEAM NOTES</header> */}
       {/* Search */}

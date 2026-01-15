@@ -159,7 +159,14 @@ function Form() {
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
 
-      <img src="./images/FORMHEADER.png" style={{maxWidth: "100%"}}/>
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <img 
+          src="./images/BLUETHUNDERLOGO_BLUE.png" 
+          alt="2443 Blue Thunder Logo"
+          style={{ maxWidth: "100px", height: "auto", marginBottom: "10px" }}
+        />
+        <h1 style={{ margin: "0", color: "#333", fontSize: "1.8em" }}>FORM</h1>
+      </div>
 
       {/* Match Info */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px", marginBottom: "20px" }}>

@@ -9,6 +9,7 @@ function Menu() {
                 <div className='menu-button'></div>
             </label>
             <ul className="menu">
+                <li><Link className={linkStyles.Link} to="/">HOME</Link></li>
                 <li><Link className={linkStyles.Link} to="/form">FORM</Link></li>
                 <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>
                 <li><Link className={linkStyles.Link} to="/notes">NOTES</Link></li>

@@ -131,8 +131,14 @@ function Summary() {
 
   return (
     <div>
-      <br></br>
-      <img alt="" style={{ width: '360px' }} src={'./images/STATS-HEADER.png'}></img>
+      <div style={{ textAlign: "center", marginBottom: "30px", paddingTop: "20px" }}>
+        <img 
+          src="./images/BLUETHUNDERLOGO_BLUE.png" 
+          alt="2443 Blue Thunder Logo"
+          style={{ maxWidth: "100px", height: "auto", marginBottom: "10px" }}
+        />
+        <h1 style={{ margin: "0", color: "#333", fontSize: "1.8em" }}>TABLE</h1>
+      </div>
 
       <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
       {<List setList={setSortBy} />}
