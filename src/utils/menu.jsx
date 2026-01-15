@@ -9,7 +9,6 @@ function Menu() {
                 <div className='menu-button'></div>
             </label>
             <ul className="menu">
-                <li className={linkStyles.LogoContainer}>2443 SCOUTING</li>
                 <li><Link className={linkStyles.Link} to="/form">FORM</Link></li>
                 <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>
                 <li><Link className={linkStyles.Link} to="/notes">NOTES</Link></li>

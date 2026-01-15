@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
+import Home from './pages/Home.jsx'
 import Form from './form/Form.jsx'
 import Summary from './components/Table/Summary.jsx'
 import TeamNotes from './scoutingNotes/TeamNotes.jsx'
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: <Home/>
+      },
       {
         path: "/form",
         element: <Form/>
