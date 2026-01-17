@@ -40,9 +40,10 @@ export async function submitState( //params are states of data from form
   matchKey,
   apiMatchData,
   matchType,
-  autoFuel,
+  autoDidAnything,
+  autoActions,
   autoHang,
-  teleFuel,
+  teleTravelCount,
   hangType,
   activeStrategy,
   inactiveStrategy,
@@ -55,6 +56,7 @@ export async function submitState( //params are states of data from form
   minFouls,
   majFouls,
   robotSpeed,
+  fuelCapacity,
   shootingSpeed,
   robotInsight,
   robotBrokenComments
@@ -68,8 +70,6 @@ export async function submitState( //params are states of data from form
   let autoPoints = 0;
   let endGamePoints = 0;
   let telePoints = 0;
-
-  let fuelPoints = 0;
 
 
   /* Checks Match Selects */
@@ -143,12 +143,14 @@ export async function submitState( //params are states of data from form
 
   /* Point Calc */
 
-  fuelPoints = (autoFuel * 1) + (teleFuel * 1);  // 1 point per fuel scored
+  // Calculate fuel points based on autoActions
+  let autoFuelPoints = autoActions.includes("Scored") ? 3 : 0; // Assume scored fuel = 3 points
+  autoPoints = autoFuelPoints;
 
-  autoPoints += fuelPoints + autoPoints;
-  telePoints += fuelPoints + telePoints;
+  // Teleop travel count - assume some points per travel
+  let teleTravelPoints = teleTravelCount > 0 ? teleTravelCount * 2 : 0; // Example: 2 points per travel
+  telePoints = teleTravelPoints;
 
-  let cycles = autoFuel + teleFuel;
   let totalPoints = autoPoints + telePoints + endGamePoints;
 
   /* Window Msg Check */
@@ -163,26 +165,28 @@ export async function submitState( //params are states of data from form
 
     matchEntry.TotalPoints = totalPoints
 
-    matchEntry.Autonomous.Fuel = autoFuel
-    matchEntry.Autonomous.Hang = autoHang
-    matchEntry.Autonomous.Strategy = activeStrategy.length > 0 ? activeStrategy.join(", ") : ""
+    // Set Autonomous fields - only fields that exist in schema
+    matchEntry.Autonomous.Left = autoDidAnything
+    
+    // Set coral scoring based on autoActions
+    if (autoActions.includes("Scored")) {
+      matchEntry.Autonomous.AmountScored.Net = 1  // Record coral scored
+    }
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
 
     /* TELEOP SPECIFIC*/
-    matchEntry.Teleop.AmountScored.Fuel = teleFuel
-
-    matchEntry.Teleop.AmountScored.Cycles = cycles
+    // Set teleop coral scoring
+    matchEntry.Teleop.AmountScored.Net = teleTravelCount
 
     matchEntry.Teleop.PointsScored.Points = telePoints
-    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
-    matchEntry.Teleop.Strategy = inactiveStrategy.length > 0 ? inactiveStrategy.join(", ") : ""
-
+    matchEntry.Teleop.PointsScored.AlgaePoints = endGamePoints
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed
-    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
+    matchEntry.RobotInfo.Comments = `Shooting: ${shootingSpeed}, Fuel Capacity: ${fuelCapacity}, ${robotInsight}`
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls
@@ -193,9 +197,6 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
-
-    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = robotInsight
 
 
     // console.log("matchEntry", matchEntry.Team)

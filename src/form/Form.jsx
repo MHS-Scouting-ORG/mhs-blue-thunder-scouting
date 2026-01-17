@@ -27,11 +27,12 @@ function Form() {
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [autoFuel, setAutoFuel] = useState(0);
+  const [autoDidAnything, setAutoDidAnything] = useState(false);
+  const [autoActions, setAutoActions] = useState([]);
   const [autoHang, setAutoHang] = useState('');
 
   /* TElEOP */
-  const [teleFuel, setTeleFuel] = useState(0);
+  const [teleTravelCount, setTeleTravelCount] = useState(0);
   const [hangType, setHangType] = useState('');
 
   /* PENALTIES */
@@ -47,6 +48,7 @@ function Form() {
 
   /* ROBOT INFO */
   const [robotSpeed, setRobotSpeed] = useState([]);
+  const [fuelCapacity, setFuelCapacity] = useState('');
   const [shootingSpeed, setShootingSpeed] = useState([]);
   const [robotInsight, setRobotInsight] = useState("");
 
@@ -115,9 +117,10 @@ function Form() {
     setRed([])
     setBlue([])
     setMatchKey('')
-    setAutoFuel(0)
+    setAutoDidAnything(false)
+    setAutoActions([])
     setAutoHang('')
-    setTeleFuel(0)
+    setTeleTravelCount(0)
     setHangType([])
     setActiveStrategy([])
     setInactiveStrategy([])
@@ -131,6 +134,7 @@ function Form() {
     setMajFouls(0)
     setRobotBrokenComments('')
     setRobotSpeed([])
+    setFuelCapacity('')
     setShootingSpeed([])
     setRobotInsight('')
     setConfirm(false)
@@ -154,6 +158,14 @@ function Form() {
       setInactiveStrategy([...inactiveStrategy, strategy])
     }
   }
+
+  const toggleAutoAction = (action) => {
+    if (autoActions.includes(action)) {
+      setAutoActions(autoActions.filter(a => a !== action))
+    } else {
+      setAutoActions([...autoActions, action])
+    }
+  }
   
 
   return (
@@ -170,45 +182,112 @@ function Form() {
 
       {/* Match Info */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Match Info</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "20px" }}>Match Info</h2>
 
-          <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "10px", marginBottom: "15px"}}>
-            <select style={{height: "50px"}} value={matchType} onInput={(e) => {setMatchType(e.target.value); resetStates() }}>
-              <option value="">Select Match Type</option>
-              <option value='q'>Qualification</option>
-              <option value='sf'>Semifinal</option>
-              <option value='f'>Final</option>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ flex: "1", minWidth: "150px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Type</label>
+              <select 
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: "pointer"
+                }} 
+                value={matchType} 
+                onInput={(e) => {setMatchType(e.target.value); resetStates() }}
+              >
+                <option value="">Select Type</option>
+                <option value='q'>Qualification</option>
+                <option value='sf'>Semifinal</option>
+                <option value='f'>Final</option>
+              </select>
+            </div>
+
+            <div style={{ flex: "1", minWidth: "150px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Number</label>
+              <input 
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  boxSizing: "border-box"
+                }}
+                placeholder="Enter match #" 
+                type="number" 
+                value={matchNumber} 
+                onChange={(e) => setMatchNumber(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "2px solid #ddd" }}>
+            <label style={{ fontWeight: "600", marginBottom: "5px" }}>Alliance Color</label>
+            <div style={{ display: "flex", flexDirection: "row", gap: "20px", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <input 
+                  style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                  onInput={(e) => radioAlliance(e.target.id)} 
+                  type="radio" 
+                  id="redAllianceChosen" 
+                  name="alliance"
+                />
+                <label htmlFor="redAllianceChosen" style={{ cursor: "pointer", margin: "0" }}>Red</label>
+              </div>
+              
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <input 
+                  style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                  onInput={(e) => radioAlliance(e.target.id)} 
+                  type="radio" 
+                  id="blueAllianceChosen" 
+                  name="alliance"
+                />
+                <label htmlFor="blueAllianceChosen" style={{ cursor: "pointer", margin: "0" }}>Blue</label>
+              </div>
+
+              {color ? (
+                <img src="./images/white-blueGrad.png" style={{ width: "50px", height: "auto" }} />
+              ) : (
+                <img src="./images/white-redGrad.png" style={{ width: "50px", height: "auto" }} />
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
+            <select 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              onChange={(e) => setTeamNumber(e.target.value)}
+            >
+              <option value="">Select robot number</option>
+              {color === false ?
+                matchData != [] ?
+                  red.map((team) => {
+                    return <option value={team} key={team}>{team}</option>
+                  }) : null
+                : matchData != [] ?
+                  blue.map((team) => {
+                    return <option value={team} key={team}>{team}</option>
+                  }) : null
+              }
             </select>
-            <input placeholder="match#" type="number" value={matchNumber} onChange={(e) => setMatchNumber(e.target.value)}></input>
-        </div>
-
-        <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "20px", flexWrap: "wrap"}}>
-        <div>
-        <div style={{marginBottom: "8px"}}>Alliance Color</div>
-          <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="redAllianceChosen" name="alliance"></input>
-          <label for="red" style={{marginRight: "15px"}}>Red</label>
-          <input onInput={(e) => radioAlliance(e.target.id)} type="radio" id="blueAllianceChosen" name="alliance"></input>
-          <label for="blue">Blue</label>
-        </div>
-
-        {color ?  <img src="./images/white-blueGrad.png" style={{width: "50px"}}/>  : <img src="./images/white-redGrad.png" style={{width: "50px"}}/>}
-        
-        <select style={{height: "50px", minWidth: "200px"}} onChange={(e) => setTeamNumber(e.target.value)}>
-          <option>robot #</option>
-          {color === false ?
-
-            matchData != [] ?
-              red.map((team) => {
-                return <option value={team} key={team}>{team}</option>
-              }) : null
-
-            : matchData != [] ?
-              blue.map((team) => {
-                return <option value={team} key={team}>{team}</option>
-              }) : null
-
-          }
-        </select>
+          </div>
         </div>
       </div>
 
@@ -216,34 +295,70 @@ function Form() {
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Autonomous</h2>
 
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
-          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
-            <button onClick={() => setAutoFuel(Math.max(0, autoFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>-</div>
-            </button>
-            <button onClick={() => setAutoFuel(autoFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>+</div>
-            </button>
+        <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
+          <button 
+            onClick={() => setAutoDidAnything(!autoDidAnything)}
+            style={{
+              padding: "12px 24px",
+              backgroundColor: autoDidAnything ? "#77B6E2" : "#e0e0e0",
+              color: autoDidAnything ? "white" : "black",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "600",
+              transition: "all 0.3s ease"
+            }}
+          >
+            {autoDidAnything ? "✓" : ""} Did Anything
+          </button>
+
+          {autoDidAnything && (
+            <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+              {["Went Mid", "Scored", "Crossed Mid"].map((action) => (
+                <button
+                  key={action}
+                  onClick={() => toggleAutoAction(action)}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: autoActions.includes(action) ? "#4CAF50" : "#e0e0e0",
+                    color: autoActions.includes(action) ? "white" : "black",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    transition: "all 0.3s ease"
+                  }}
+                >
+                  {autoActions.includes(action) ? "✓ " : ""}{action}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Auto Hang</label>
+            <select 
+              style={{
+                height: "50px", 
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              value={autoHang} 
+              onChange={(e) => setAutoHang(e.target.value)}
+            >
+              <option value=''>Select Level</option>
+              <option value="None">None</option>
+              <option value='Level1'>Level 1</option>
+              <option value='Level2'>Level 2</option>
+              <option value='Level3'>Level 3</option>
+            </select>
           </div>
-          <input 
-            type="number" 
-            value={autoFuel} 
-            onChange={(e) => setAutoFuel(Math.max(0, parseInt(e.target.value) || 0))}
-            style={{height: "40px", fontSize: "18px", textAlign: "center", width: "100px"}}
-            placeholder="Fuel"
-          />
-        </div>
-        
-        <div>
-          <select style={{height: "50px"}} value={autoHang} onChange={(e) => setAutoHang(e.target.value)}>
-            <option value=''>Auto Hang</option>
-            <option value="None">None</option>
-            <option value='Level1'>Level 1</option>
-            <option value='Level2'>Level 2</option>
-            <option value='Level3'>Level 3</option>
-          </select>
         </div>
       </div>
 
@@ -305,34 +420,82 @@ function Form() {
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Teleop</h2>
         
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "10px"}}>
-          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center"}}>
-            <button onClick={() => setTeleFuel(Math.max(0, teleFuel - 1))} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>-</div>
-            </button>
-            <button onClick={() => setTeleFuel(teleFuel + 1)} style={{backgroundColor:"#77B6E2", padding: "10px"}}>
-              <img src="./images/Fuel.png" style={{width: "80px"}}/>
-              <div>+</div>
-            </button>
+        <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
+            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+              <button 
+                onClick={() => setTeleTravelCount(Math.max(0, teleTravelCount - 1))}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#ff6b6b",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                −
+              </button>
+              <input 
+                type="number" 
+                value={teleTravelCount} 
+                onChange={(e) => setTeleTravelCount(Math.max(0, parseInt(e.target.value) || 0))}
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "600",
+                  minWidth: "70px",
+                  textAlign: "center",
+                  height: "50px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "0 10px"
+                }}
+              />
+              <button 
+                onClick={() => setTeleTravelCount(teleTravelCount + 1)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                +
+              </button>
+            </div>
           </div>
-          <input 
-            type="number" 
-            value={teleFuel} 
-            onChange={(e) => setTeleFuel(Math.max(0, parseInt(e.target.value) || 0))}
-            style={{height: "40px", fontSize: "18px", textAlign: "center", width: "100px"}}
-            placeholder="Fuel"
-          />
-        </div>
-        
-        <div>
-          <select style={{height: "50px"}} value={hangType} onChange={(e) => setHangType(e.target.value)}>
-            <option value=''>Endgame Hang</option>
-            <option value="None">None</option>
-            <option value='Level1'>Level 1</option>
-            <option value='Level2'>Level 2</option>
-            <option value='Level3'>Level 3</option>
-          </select>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Endgame Hang</label>
+            <select 
+              style={{
+                height: "50px", 
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              value={hangType} 
+              onChange={(e) => setHangType(e.target.value)}
+            >
+              <option value=''>Select Level</option>
+              <option value="None">None</option>
+              <option value='Level1'>Level 1</option>
+              <option value='Level2'>Level 2</option>
+              <option value='Level3'>Level 3</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -340,45 +503,313 @@ function Form() {
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Penalties</h2>
         
-        <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", marginBottom: "15px" }}>
-          <button onClick={() => setMinFouls(minFouls + 1)} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul +:{minFouls}</div></button>
-          <button onClick={() => setMinFouls(Math.max(0, minFouls - 1))} style={{backgroundColor:" #ffbd59"}}><img src="./images/minorFoul.png" style={{width: "110px"}}/><div>Minor Foul -</div></button>
-          <button onClick={() => setMajFouls(majFouls + 1)} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul +:{majFouls}</div></button>
-          <button onClick={() => setMajFouls(Math.max(0, majFouls - 1))} style={{backgroundColor:" #ff3131"}}><img src="./images/majorFoul.png" style={{width: "110px"}}/><div>Major Foul -</div></button>
-        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Minor Fouls</label>
+            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+              <button 
+                onClick={() => setMinFouls(Math.max(0, minFouls - 1))}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#ff6b6b",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                −
+              </button>
+              <input 
+                type="number" 
+                value={minFouls} 
+                onChange={(e) => setMinFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "600",
+                  minWidth: "70px",
+                  textAlign: "center",
+                  height: "50px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "0 10px"
+                }}
+              />
+              <button 
+                onClick={() => setMinFouls(minFouls + 1)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#ffbd59",
+                  color: "black",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                +
+              </button>
+            </div>
+          </div>
 
-        <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", marginBottom: "15px" }}>
-          <button onClick={() => setYellowCard(!yellowCard)} style={{ backgroundColor: yellowCard === true ? "#ffbd59" : "" }}>{toggleIncremental(yellowCard, "yellowCard")} <div>Yellow Card</div> </button>
-          <button onClick={() => setRedCard(!redCard)} style={{ backgroundColor: redCard === true ? "#ff3131" : "" }}>{toggleIncremental(redCard, "redCard")} <div>Red Card</div> </button>
-          <button onClick={() => setDisable(!disable)} style={{ backgroundColor: disable === true ? "#ff914d" : "" }}>{toggleIncremental(disable, "disable")} <div>Disable</div> </button>
-          <button onClick={() => setDQ(!dq)} style={{ backgroundColor: dq === true ? "black" : "" }}>{toggleIncremental(dq, "dq")} <div>DQ</div> </button>
-          <button onClick={() => setBotBroke(!botBroke)} style={{ backgroundColor: botBroke === true ? "#77B6E2" : "" }}>{toggleIncremental(botBroke, "broke")} <div>Broke</div> </button>
-          <button onClick={() => setNoShow(!noShow)} style={{ backgroundColor: noShow === true ? "#77B6E2" : "" }}>{toggleIncremental(noShow, "noShow")} <div>No Show</div> </button>
-        </div>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Major Fouls</label>
+            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+              <button 
+                onClick={() => setMajFouls(Math.max(0, majFouls - 1))}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#ff6b6b",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                −
+              </button>
+              <input 
+                type="number" 
+                value={majFouls} 
+                onChange={(e) => setMajFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "600",
+                  minWidth: "70px",
+                  textAlign: "center",
+                  height: "50px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  padding: "0 10px"
+                }}
+              />
+              <button 
+                onClick={() => setMajFouls(majFouls + 1)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#ff3131",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  minWidth: "50px"
+                }}
+              >
+                +
+              </button>
+            </div>
+          </div>
 
-        {botBroke ? <input placeholder="broken comments" type="text" value={robotBrokenComments} onChange={(e) => setRobotBrokenComments(e.target.value)}></input> : null}
+          <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", paddingTop: "10px" }}>
+            <button 
+              onClick={() => setYellowCard(!yellowCard)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: yellowCard ? "#ffbd59" : "#e0e0e0",
+                color: "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {yellowCard ? "✓ " : ""}Yellow Card
+            </button>
+            <button 
+              onClick={() => setRedCard(!redCard)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: redCard ? "#ff3131" : "#e0e0e0",
+                color: redCard ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {redCard ? "✓ " : ""}Red Card
+            </button>
+            <button 
+              onClick={() => setDisable(!disable)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: disable ? "#ff914d" : "#e0e0e0",
+                color: "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {disable ? "✓ " : ""}Disable
+            </button>
+            <button 
+              onClick={() => setDQ(!dq)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: dq ? "black" : "#e0e0e0",
+                color: dq ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {dq ? "✓ " : ""}DQ
+            </button>
+            <button 
+              onClick={() => setBotBroke(!botBroke)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: botBroke ? "#77B6E2" : "#e0e0e0",
+                color: botBroke ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {botBroke ? "✓ " : ""}Broke
+            </button>
+            <button 
+              onClick={() => setNoShow(!noShow)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: noShow ? "#77B6E2" : "#e0e0e0",
+                color: noShow ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {noShow ? "✓ " : ""}No Show
+            </button>
+          </div>
+
+          {botBroke && (
+            <input 
+              placeholder="broken comments" 
+              type="text" 
+              value={robotBrokenComments} 
+              onChange={(e) => setRobotBrokenComments(e.target.value)}
+              style={{
+                padding: "10px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px"
+              }}
+            />
+          )}
+        </div>
       </div>
 
       {/* ROBOT INFO */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Robot Info</h2>
         
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <select style={{height: "50px"}} value={robotSpeed} onChange={(e) => setRobotSpeed(e.target.value)}>
-            <option value="">Robot Speed</option>
-            <option value="Slow">Slow</option>
-            <option value="Average">Average</option>
-            <option value="Fast">Fast</option>
-          </select>
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Speed</label>
+            <select 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              value={robotSpeed} 
+              onChange={(e) => setRobotSpeed(e.target.value)}
+            >
+              <option value="">Select Speed</option>
+              <option value="Slow">Slow</option>
+              <option value="Average">Average</option>
+              <option value="Fast">Fast</option>
+            </select>
+          </div>
 
-          <select style={{height: "50px"}} value={shootingSpeed} onChange={(e) => setShootingSpeed(e.target.value)}>
-            <option value="">Shooting Speed</option>
-            <option value="Slow">Slow</option>
-            <option value="Average">Average</option>
-            <option value="Fast">Fast</option>
-          </select>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Estimated Fuel Capacity</label>
+            <input 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px"
+              }} 
+              type="number" 
+              placeholder="Enter fuel capacity (e.g., 100)"
+              value={fuelCapacity} 
+              onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
+            />
+          </div>
 
-          <input style={{height: "50px"}} type="text" placeholder="Optional Insight" value={robotInsight} onChange={(e) => setRobotInsight(e.target.value)}></input>
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooter Speed</label>
+            <select 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              value={shootingSpeed} 
+              onChange={(e) => setShootingSpeed(e.target.value)}
+            >
+              <option value="">Select Speed</option>
+              <option value="Slow">Slow</option>
+              <option value="Average">Average</option>
+              <option value="Fast">Fast</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Optional Insight</label>
+            <input 
+              style={{
+                padding: "12px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                width: "100%",
+                boxSizing: "border-box"
+              }} 
+              type="text" 
+              placeholder="Add any observations..." 
+              value={robotInsight} 
+              onChange={(e) => setRobotInsight(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -402,9 +833,10 @@ function Form() {
             matchKey,
             apiMatchData,
             matchType,
-            autoFuel,
+            autoDidAnything,
+            autoActions,
             autoHang,
-            teleFuel,
+            teleTravelCount,
             hangType,
             activeStrategy,
             inactiveStrategy,
@@ -417,6 +849,7 @@ function Form() {
             minFouls,
             majFouls,
             robotSpeed,
+            fuelCapacity,
             shootingSpeed,
             robotInsight,
             robotBrokenComments
