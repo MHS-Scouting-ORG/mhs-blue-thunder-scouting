@@ -1,0 +1,12 @@
+{
+  "bucketName": "teamphotos",
+  "auth": true,
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

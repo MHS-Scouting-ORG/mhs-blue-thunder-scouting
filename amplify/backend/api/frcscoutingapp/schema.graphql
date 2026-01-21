@@ -119,6 +119,8 @@ type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
   name: String!
   description: String
   Comment: String
+  photo: String
+  fuelCapacity: Int
 }
 
 type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {

@@ -11,6 +11,8 @@ export const createTeam = /* GraphQL */ `
       name
       description
       Comment
+      photo
+      fuelCapacity
       createdAt
       updatedAt
       __typename
@@ -27,6 +29,8 @@ export const updateTeam = /* GraphQL */ `
       name
       description
       Comment
+      photo
+      fuelCapacity
       createdAt
       updatedAt
       __typename

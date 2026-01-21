@@ -8,6 +8,8 @@ export const getTeam = /* GraphQL */ `
       name
       description
       Comment
+      photo
+      fuelCapacity
       createdAt
       updatedAt
       __typename

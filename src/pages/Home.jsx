@@ -105,7 +105,7 @@ function Home() {
             alt="2443 Blue Thunder Scouting Logo"
           />
           <h1>2443 SCOUTING APP</h1>
-          <p>Blue Thunder Robotics Team Scouting Platform</p>
+          <p>Blue Thunder Robotics Team Scouting App</p>
         </div>
 
         <div className="mobile-nav">

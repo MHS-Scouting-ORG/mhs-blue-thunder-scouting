@@ -53,6 +53,13 @@
       "service": "Cognito"
     }
   },
+  "storage": {
+    "teamphotos": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  },
   "custom": {
     "customResource5b71fb59": {
       "providerPlugin": "awscloudformation",
