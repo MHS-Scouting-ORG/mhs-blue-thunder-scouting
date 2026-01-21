@@ -40,13 +40,13 @@ export async function submitState( //params are states of data from form
   matchKey,
   apiMatchData,
   matchType,
-  autoDidAnything,
   autoActions,
   autoHang,
-  teleTravelCount,
   hangType,
   activeStrategy,
   inactiveStrategy,
+  timesTravelledMidActive,
+  timesTravelledMidInactive,
   yellowCard,
   redCard,
   disable,
@@ -58,6 +58,8 @@ export async function submitState( //params are states of data from form
   robotSpeed,
   fuelCapacity,
   shootingSpeed,
+  estimatedBallsShot,
+  shootingCycles,
   robotInsight,
   robotBrokenComments
 
@@ -148,7 +150,7 @@ export async function submitState( //params are states of data from form
   autoPoints = autoFuelPoints;
 
   // Teleop travel count - assume some points per travel
-  let teleTravelPoints = teleTravelCount > 0 ? teleTravelCount * 2 : 0; // Example: 2 points per travel
+  let teleTravelPoints = (timesTravelledMidActive + timesTravelledMidInactive) > 0 ? (timesTravelledMidActive + timesTravelledMidInactive) * 2 : 0; // Example: 2 points per travel
   telePoints = teleTravelPoints;
 
   let totalPoints = autoPoints + telePoints + endGamePoints;
@@ -166,7 +168,6 @@ export async function submitState( //params are states of data from form
     matchEntry.TotalPoints = totalPoints
 
     // Set Autonomous fields - only fields that exist in schema
-    matchEntry.Autonomous.Left = autoDidAnything
     
     // Set coral scoring based on autoActions
     if (autoActions.includes("Scored")) {
@@ -177,7 +178,7 @@ export async function submitState( //params are states of data from form
 
     /* TELEOP SPECIFIC*/
     // Set teleop coral scoring
-    matchEntry.Teleop.AmountScored.Net = teleTravelCount
+    matchEntry.Teleop.AmountScored.Net = timesTravelledMidActive + timesTravelledMidInactive
 
     matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.PointsScored.AlgaePoints = endGamePoints
@@ -186,7 +187,7 @@ export async function submitState( //params are states of data from form
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = `Shooting: ${shootingSpeed}, Fuel Capacity: ${fuelCapacity}, ${robotInsight}`
+    matchEntry.RobotInfo.Comments = `Shooter Speed: ${shootingSpeed}, Fuel Capacity: ${fuelCapacity}, Balls Shot: ${estimatedBallsShot}, Shooting Cycles: ${shootingCycles}, ${robotInsight}`
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls

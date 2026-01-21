@@ -27,12 +27,10 @@ function Form() {
   const [matchKey, setMatchKey] = useState(''); //match key
 
   /* AUTO SPECIFIC */
-  const [autoDidAnything, setAutoDidAnything] = useState(false);
   const [autoActions, setAutoActions] = useState([]);
   const [autoHang, setAutoHang] = useState('');
 
   /* TElEOP */
-  const [teleTravelCount, setTeleTravelCount] = useState(0);
   const [hangType, setHangType] = useState('');
 
   /* PENALTIES */
@@ -51,10 +49,14 @@ function Form() {
   const [fuelCapacity, setFuelCapacity] = useState('');
   const [shootingSpeed, setShootingSpeed] = useState([]);
   const [robotInsight, setRobotInsight] = useState("");
+  const [estimatedBallsShot, setEstimatedBallsShot] = useState('');
+  const [shootingCycles, setShootingCycles] = useState('');
 
   /* ACTIVE/INACTIVE STRATEGIES */
   const [activeStrategy, setActiveStrategy] = useState([]);
   const [inactiveStrategy, setInactiveStrategy] = useState([]);
+  const [timesTravelledMidActive, setTimesTravelledMidActive] = useState(0);
+  const [timesTravelledMidInactive, setTimesTravelledMidInactive] = useState(0);
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -117,13 +119,13 @@ function Form() {
     setRed([])
     setBlue([])
     setMatchKey('')
-    setAutoDidAnything(false)
     setAutoActions([])
     setAutoHang('')
-    setTeleTravelCount(0)
     setHangType([])
     setActiveStrategy([])
     setInactiveStrategy([])
+    setTimesTravelledMidActive(0)
+    setTimesTravelledMidInactive(0)
     setYellowCard(false)
     setRedCard(false)
     setDisable(false)
@@ -137,6 +139,8 @@ function Form() {
     setFuelCapacity('')
     setShootingSpeed([])
     setRobotInsight('')
+    setEstimatedBallsShot('')
+    setShootingCycles('')
     setConfirm(false)
 
   }
@@ -296,46 +300,27 @@ function Form() {
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Autonomous</h2>
 
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
-          <button 
-            onClick={() => setAutoDidAnything(!autoDidAnything)}
-            style={{
-              padding: "12px 24px",
-              backgroundColor: autoDidAnything ? "#77B6E2" : "#e0e0e0",
-              color: autoDidAnything ? "white" : "black",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "16px",
-              fontWeight: "600",
-              transition: "all 0.3s ease"
-            }}
-          >
-            {autoDidAnything ? "✓" : ""} Did Anything
-          </button>
-
-          {autoDidAnything && (
-            <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-              {["Went Mid", "Scored", "Crossed Mid"].map((action) => (
-                <button
-                  key={action}
-                  onClick={() => toggleAutoAction(action)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: autoActions.includes(action) ? "#4CAF50" : "#e0e0e0",
-                    color: autoActions.includes(action) ? "white" : "black",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "500",
-                    transition: "all 0.3s ease"
-                  }}
-                >
-                  {autoActions.includes(action) ? "✓ " : ""}{action}
-                </button>
-              ))}
-            </div>
-          )}
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+            {["Went Mid", "Scored", "Crossed Mid"].map((action) => (
+              <button
+                key={action}
+                onClick={() => toggleAutoAction(action)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: autoActions.includes(action) ? "#4CAF50" : "#e0e0e0",
+                  color: autoActions.includes(action) ? "white" : "black",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                {autoActions.includes(action) ? "✓ " : ""}{action}
+              </button>
+            ))}
+          </div>
 
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Auto Hang</label>
@@ -371,6 +356,12 @@ function Form() {
             <button
               key={strategy}
               onClick={() => toggleActiveStrategy(strategy)}
+              title={
+                strategy === "Hoarding" ? "Collecting and holding game pieces" :
+                strategy === "Defense" ? "Playing defensively to block opponents" :
+                strategy === "Offensive" ? "Aggressive play to score points" :
+                "Assisting teammates"
+              }
               style={{
                 padding: "10px 20px",
                 backgroundColor: activeStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
@@ -387,6 +378,59 @@ function Form() {
             </button>
           ))}
         </div>
+
+        <div style={{ marginTop: "15px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+            <button 
+              onClick={() => setTimesTravelledMidActive(Math.max(0, timesTravelledMidActive - 1))}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#ff6b6b",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              −
+            </button>
+            <input 
+              type="number" 
+              value={timesTravelledMidActive} 
+              onChange={(e) => setTimesTravelledMidActive(Math.max(0, parseInt(e.target.value) || 0))}
+              style={{
+                fontSize: "24px",
+                fontWeight: "600",
+                minWidth: "70px",
+                textAlign: "center",
+                height: "50px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                padding: "0 10px"
+              }}
+            />
+            <button 
+              onClick={() => setTimesTravelledMidActive(timesTravelledMidActive + 1)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* INACTIVE */}
@@ -398,6 +442,12 @@ function Form() {
             <button
               key={strategy}
               onClick={() => toggleInactiveStrategy(strategy)}
+              title={
+                strategy === "Hoarding" ? "Collecting and holding game pieces" :
+                strategy === "Defense" ? "Playing defensively to block opponents" :
+                strategy === "Offensive" ? "Aggressive play to score points" :
+                "Assisting teammates"
+              }
               style={{
                 padding: "10px 20px",
                 backgroundColor: inactiveStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
@@ -414,6 +464,59 @@ function Form() {
             </button>
           ))}
         </div>
+
+        <div style={{ marginTop: "15px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+            <button 
+              onClick={() => setTimesTravelledMidInactive(Math.max(0, timesTravelledMidInactive - 1))}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#ff6b6b",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              −
+            </button>
+            <input 
+              type="number" 
+              value={timesTravelledMidInactive} 
+              onChange={(e) => setTimesTravelledMidInactive(Math.max(0, parseInt(e.target.value) || 0))}
+              style={{
+                fontSize: "24px",
+                fontWeight: "600",
+                minWidth: "70px",
+                textAlign: "center",
+                height: "50px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                padding: "0 10px"
+              }}
+            />
+            <button 
+              onClick={() => setTimesTravelledMidInactive(timesTravelledMidInactive + 1)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* TELEOP */}
@@ -421,59 +524,6 @@ function Form() {
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Teleop</h2>
         
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
-          <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
-            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
-              <button 
-                onClick={() => setTeleTravelCount(Math.max(0, teleTravelCount - 1))}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#ff6b6b",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
-              >
-                −
-              </button>
-              <input 
-                type="number" 
-                value={teleTravelCount} 
-                onChange={(e) => setTeleTravelCount(Math.max(0, parseInt(e.target.value) || 0))}
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "600",
-                  minWidth: "70px",
-                  textAlign: "center",
-                  height: "50px",
-                  border: "2px solid #ddd",
-                  borderRadius: "8px",
-                  padding: "0 10px"
-                }}
-              />
-              <button 
-                onClick={() => setTeleTravelCount(teleTravelCount + 1)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#4CAF50",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Endgame Hang</label>
             <select 
@@ -754,24 +804,6 @@ function Form() {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Estimated Fuel Capacity</label>
-            <input 
-              style={{
-                height: "50px",
-                width: "100%",
-                padding: "8px",
-                fontSize: "16px",
-                border: "2px solid #ddd",
-                borderRadius: "8px"
-              }} 
-              type="number" 
-              placeholder="Enter fuel capacity (e.g., 100)"
-              value={fuelCapacity} 
-              onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
-            />
-          </div>
-
-          <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooter Speed</label>
             <select 
               style={{
@@ -794,7 +826,61 @@ function Form() {
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Optional Insight</label>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Fuel Capacity</label>
+            <input 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px"
+              }} 
+              type="number" 
+              placeholder="Enter fuel capacity (e.g., 100)"
+              value={fuelCapacity} 
+              onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Balls Shot</label>
+            <input 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px"
+              }} 
+              type="number" 
+              placeholder="Enter estimated balls shot"
+              value={estimatedBallsShot} 
+              onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooting Cycles</label>
+            <input 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px"
+              }} 
+              type="number" 
+              placeholder="Enter shooting cycles"
+              value={shootingCycles} 
+              onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Additional Insights</label>
             <input 
               style={{
                 padding: "12px",
@@ -833,13 +919,13 @@ function Form() {
             matchKey,
             apiMatchData,
             matchType,
-            autoDidAnything,
             autoActions,
             autoHang,
-            teleTravelCount,
             hangType,
             activeStrategy,
             inactiveStrategy,
+            timesTravelledMidActive,
+            timesTravelledMidInactive,
             yellowCard,
             redCard,
             disable,
@@ -851,6 +937,8 @@ function Form() {
             robotSpeed,
             fuelCapacity,
             shootingSpeed,
+            estimatedBallsShot,
+            shootingCycles,
             robotInsight,
             robotBrokenComments
         )
