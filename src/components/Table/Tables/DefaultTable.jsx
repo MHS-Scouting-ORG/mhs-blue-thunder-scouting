@@ -121,7 +121,7 @@ function DefaultTable(props) {
         accessor: "Evaluation"
       },
       {
-        Header: "Grade Julian Tests",
+        Header: "Grade",
         accessor: "SumPriorities"
       },
     ], [data]

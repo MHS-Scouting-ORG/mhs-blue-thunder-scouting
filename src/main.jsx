@@ -7,6 +7,7 @@ import Form from './form/Form.jsx'
 import Summary from './components/Table/Summary.jsx'
 import TeamNotes from './scoutingNotes/TeamNotes.jsx'
 import UploadScouting from './scoutingNotes/UploadScouting.jsx'
+//import Practice from './practice/Practice.jsx'
 // import * as Auth from 'aws-amplify/auth'
 // import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import { apiGetRegional } from './api/index.js'
@@ -32,7 +33,11 @@ const router = createBrowserRouter([
       {
         path: "/upload",
         element: <UploadScouting/>
-      }
+      },
+      {
+        path: "/practice",
+        element: <Practice/>
+      }  
     ]
   }
 ])
