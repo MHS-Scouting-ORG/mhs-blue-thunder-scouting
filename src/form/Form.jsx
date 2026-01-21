@@ -40,6 +40,7 @@ function Form() {
   const [dq, setDQ] = useState(false);
   const [botBroke, setBotBroke] = useState(false);
   const [noShow, setNoShow] = useState(false);
+  const [tipped, setTipped] = useState(false);
   const [minFouls, setMinFouls] = useState(0);
   const [majFouls, setMajFouls] = useState(0);
   const [robotBrokenComments, setRobotBrokenComments] = useState("");
@@ -757,6 +758,22 @@ function Form() {
             >
               {noShow ? "✓ " : ""}No Show
             </button>
+            <button 
+              onClick={() => setTipped(!tipped)} 
+              style={{ 
+                padding: "12px 24px",
+                backgroundColor: tipped ? "#77B6E2" : "#e0e0e0",
+                color: tipped ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {tipped ? "✓ " : ""}Tipped
+            </button>
           </div>
 
           {botBroke && (
@@ -932,6 +949,7 @@ function Form() {
             dq,
             botBroke,
             noShow,
+            tipped,
             minFouls,
             majFouls,
             robotSpeed,
