@@ -23,6 +23,7 @@ function UploadScouting(props) {
 
   const [teams, setTeams] = useState([])
   const [findTeam, setFindTeam] = useState("")
+  const [teamNumberInput, setTeamNumberInput] = useState("")
   const [nickname, setNickname] = useState(false)
 
   /* Team Info */
@@ -68,6 +69,8 @@ function UploadScouting(props) {
 
   const resetStates = () => {
     setConfirm(false)
+    setFindTeam("")
+    setTeamNumberInput("")
     setTeamName("")
     setFuelCapacity("")
     setNotes("")
@@ -86,9 +89,9 @@ function UploadScouting(props) {
     teams.find(x => x.key.substring(3) === findTeam) !== undefined ? setNickname(true) : setNickname(false)
   }
 
-  const handleTeamChange = async (teamNum) => {
+  const loadTeamData = async () => {
+    const teamNum = teamNumberInput
     setFindTeam(teamNum)
-    nicknameBool()
     if (teamNum) {
       try {
         const teamData = await client.graphql({
@@ -249,45 +252,66 @@ function UploadScouting(props) {
           <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
             <div style={{ flex: "1", minWidth: "150px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Number</label>
-              <input 
-                style={{
-                  height: "50px",
-                  width: "100%",
-                  padding: "8px",
-                  fontSize: "16px",
-                  border: "2px solid #ddd",
-                  borderRadius: "8px",
-                  boxSizing: "border-box"
-                }}
-                placeholder="Enter team #" 
-                type="number" 
-                value={findTeam} 
-                onChange={(e) => handleTeamChange(e.target.value)}
-              />
-            </div>
-
-            <div style={{ flex: "1", minWidth: "150px" }}>
-              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
-              <input 
-                style={{
-                  height: "50px",
-                  width: "100%",
-                  padding: "8px",
-                  fontSize: "16px",
-                  border: "2px solid #ddd",
-                  borderRadius: "8px",
-                  boxSizing: "border-box"
-                }}
-                placeholder="Enter team name" 
-                type="text" 
-                value={teamName} 
-                onChange={(e) => setTeamName(e.target.value)}
-              />
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <input 
+                  style={{
+                    height: "50px",
+                    flex: "1",
+                    padding: "8px",
+                    fontSize: "16px",
+                    border: "2px solid #ddd",
+                    borderRadius: "8px",
+                    boxSizing: "border-box"
+                  }}
+                  placeholder="Enter team #" 
+                  type="number" 
+                  value={teamNumberInput} 
+                  onChange={(e) => setTeamNumberInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') loadTeamData() }}
+                />
+                <button
+                  onClick={loadTeamData}
+                  style={{
+                    height: "50px",
+                    padding: "0 20px",
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    fontWeight: "500",
+                    border: "none"
+                  }}
+                >
+                  Load
+                </button>
+              </div>
             </div>
           </div>
 
           {findTeam && (
             <>
+              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
+                  <input 
+                    style={{
+                      height: "50px",
+                      width: "100%",
+                      padding: "8px",
+                      fontSize: "16px",
+                      border: "2px solid #ddd",
+                      borderRadius: "8px",
+                      boxSizing: "border-box"
+                    }}
+                    placeholder="Enter team name" 
+                    type="text" 
+                    value={teamName} 
+                    onChange={(e) => setTeamName(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Declared Fuel Capacity</label>
