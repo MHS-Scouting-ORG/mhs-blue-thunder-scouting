@@ -21,43 +21,7 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
   const handleTeamClick = (teamNumber) => {
     if (!teamNumber) return;
-
     setSelectedTeam(teamNumber);
-    // Update teamsClicked for compatibility with existing components
-    const teamData = tableData.find(t => t.TeamNumber === parseInt(teamNumber));
-    if (teamData) {
-      const teamObj = {
-        TeamNumber: teamNumber,
-        AvgPoints: teamData.AvgPoints,
-        AvgAutoPts: teamData.AvgAutoPts,
-        AvgEndgamePts: teamData.AvgEndgamePts,
-        AvgCoralPts: teamData.AvgCoralPts,
-        AvgAlgaePts: teamData.AvgAlgaePts,
-        AvgCycles: teamData.AvgCycles,
-        AvgCoral: teamData.AvgCoral,
-        AvgAlgae: teamData.AvgAlgae,
-        RobotSpeed: teamData.RobotSpeed,
-        RobotHang: teamData.RobotHang,
-        Fouls: teamData.Fouls,
-        Tech: teamData.Tech,
-        YellowCard: teamData.YellowCard,
-        RedCard: teamData.RedCard,
-        BrokenRobot: teamData.BrokenRobot,
-        Disabled: teamData.Disabled,
-        DQ: teamData.DQ,
-        NoShow: teamData.NoShow,
-        key: teamNumber,
-      };
-
-      setTeamsClicked(prev => {
-        const existing = prev.find(x => x.TeamNumber === teamNumber);
-        if (existing) {
-          return prev.filter(x => x.TeamNumber !== teamNumber);
-        } else {
-          return [...prev, teamObj];
-        }
-      });
-    }
   };
 
   const renderTeamInput = (alliance, index) => {
@@ -134,7 +98,7 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
               gFilter=""
               regionalEvent={regional}
               teamHandler={handleTeamClick}
-              selectedTeams={teamsClicked}
+              selectedTeam={selectedTeam}
             />
           </div>
         </div>
