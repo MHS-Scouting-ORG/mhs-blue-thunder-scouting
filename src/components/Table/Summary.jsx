@@ -8,6 +8,9 @@ import List from "./TableUtils/List";
 import TeamStats from "./Tables/TeamStats";
 import DefaultTable from "./Tables/DefaultTable"
 import CustomGraph from "./Graphs/CustomGraph"
+import QualsView from "./Views/QualsView";
+import AllianceSelectionView from "./Views/AllianceSelectionView";
+import ElimsView from "./Views/ElimsView";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api"
@@ -21,7 +24,7 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-
+  const [currentView, setCurrentView] = useState('quals'); // current view: 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
@@ -140,29 +143,75 @@ function Summary() {
         <h1 style={{ margin: "0", color: "#333", fontSize: "1.8em" }}>TABLE</h1>
       </div>
 
-      <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
-      {<List setList={setSortBy} />}
-      <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
-      <br />
-      {/* first row container */}
-      <div className={tableStyles.TableRow}>
-
-        <div className={tableStyles.TableContainer}>
-          <DefaultTable sortData={data} {...filterState} />
-        </div>
-
-        <div>
-          {/* Custom Graph */}
-          <CustomGraph {...filterState}></CustomGraph>
-        </div>
-
+      {/* View Tabs */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <button 
+          onClick={() => setCurrentView('quals')}
+          style={{ 
+            padding: '10px 20px', 
+            margin: '0 5px', 
+            backgroundColor: currentView === 'quals' ? '#007bff' : '#f8f9fa',
+            color: currentView === 'quals' ? 'white' : 'black',
+            border: '1px solid #dee2e6',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Quals
+        </button>
+        <button 
+          onClick={() => setCurrentView('alliance')}
+          style={{ 
+            padding: '10px 20px', 
+            margin: '0 5px', 
+            backgroundColor: currentView === 'alliance' ? '#007bff' : '#f8f9fa',
+            color: currentView === 'alliance' ? 'white' : 'black',
+            border: '1px solid #dee2e6',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Alliance Selection
+        </button>
+        <button 
+          onClick={() => setCurrentView('elims')}
+          style={{ 
+            padding: '10px 20px', 
+            margin: '0 5px', 
+            backgroundColor: currentView === 'elims' ? '#007bff' : '#f8f9fa',
+            color: currentView === 'elims' ? 'white' : 'black',
+            border: '1px solid #dee2e6',
+            borderRadius: '5px',
+            cursor: 'pointer'
+          }}
+        >
+          Elims
+        </button>
       </div>
 
-      <div className={tableStyles.TableRow}>
-        <div className={tableStyles.TableContainer}>
-          <TeamStats {...filterState} />
-        </div>
-      </div>
+      {/* Render Current View */}
+      {currentView === 'quals' && (
+        <QualsView 
+          tableData={tableData} 
+          regional={regional} 
+          teamsClicked={teamsClicked}
+          setTeamsClicked={setTeamsClicked}
+        />
+      )}
+      {currentView === 'alliance' && (
+        <AllianceSelectionView 
+          tableData={tableData} 
+          regional={regional} 
+        />
+      )}
+      {currentView === 'elims' && (
+        <ElimsView 
+          tableData={tableData} 
+          regional={regional} 
+          teamsClicked={teamsClicked}
+          setTeamsClicked={setTeamsClicked}
+        />
+      )}
     </div>
   )
 }

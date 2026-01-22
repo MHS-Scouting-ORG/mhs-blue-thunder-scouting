@@ -1,5 +1,6 @@
 import { apigetMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
+import { apiGetTeam } from "../../../api";
 import { arrMode, calcAvg, getReliability, getMatchesOfPenalty, getMax, getSummary } from "./CalculationUtils"
 
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
@@ -7,14 +8,26 @@ async function getTeams (regional) {
   try {
   const data = await getTeamsInRegional(regional)
 
-     return data.map(obj => {
+     const teamsWithPhotos = await Promise.all(data.map(async obj => {
        const teamNumObj = {
         TeamNumber: obj.team_number,
         TeamNum: `frc${obj.team_number}`,
        }
 
+       // Try to get photo from database
+       try {
+         const dbTeam = await apiGetTeam(obj.team_number.toString());
+         if (dbTeam.data.getTeam?.photo) {
+           teamNumObj.photo = dbTeam.data.getTeam.photo;
+         }
+       } catch (err) {
+         console.log(`No photo found for team ${obj.team_number}`);
+       }
+
        return teamNumObj
-     })
+     }))
+
+     return teamsWithPhotos;
   }
   catch(err){
    console.log(err)
@@ -129,6 +142,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
+        photo: team.photo,
        // Matches: team.Matches,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),

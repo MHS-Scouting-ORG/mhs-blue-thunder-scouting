@@ -1,7 +1,47 @@
 import React, {useEffect, useState} from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
+import { getUrl } from 'aws-amplify/storage';
 import tableStyles from "../Table.module.css";
+
+// Component for team cell with photo
+function TeamCell({ row }) {
+  const [photoUrl, setPhotoUrl] = useState(null);
+
+  useEffect(() => {
+    const loadPhoto = async () => {
+      if (row.original.photo) {
+        if (row.original.photo.startsWith('http')) {
+          setPhotoUrl(row.original.photo);
+        } else {
+          try {
+            const url = await getUrl({ key: row.original.photo });
+            setPhotoUrl(url.url.href);
+          } catch (err) {
+            console.log('Failed to load photo for team', row.values.TeamNumber);
+          }
+        }
+      }
+    };
+    loadPhoto();
+  }, [row.original.photo, row.values.TeamNumber]);
+
+  return (
+    <div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}> 
+      {row.values.TeamNumber} 
+      {photoUrl && (
+        <div style={{ marginTop: '5px' }}>
+          <img 
+            src={photoUrl}
+            alt={`Team ${row.values.TeamNumber}`} 
+            style={{ width: '60px', height: '45px', objectFit: 'cover', borderRadius: '4px' }}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function TeamStats(props) {
   /* Prop for global filter and selected teams */
@@ -10,7 +50,7 @@ function TeamStats(props) {
 
   const [tableState, setTableState] = useState('') //toggle state for table display
   /* Table Columns state instatiating the team number object to be updated with other header objects */
-  const [tableColumns, setTableColumns] = useState([{Header: "Team", accessor: "TeamNumber", Cell: ({ row }) => (<div style={{fontWeight: 'bold', fontSize: '17px', maxWidth: '20px' }}> {row.values.TeamNumber} </div>)}])
+  const [tableColumns, setTableColumns] = useState([{Header: "Team", accessor: "TeamNumber", Cell: TeamCell}])
 
   const [ptsState, setPtsState] = useState('none') //toggle for pts buttons
   const [amtState, setAmtState] = useState('none') //toggle for amt buttons
