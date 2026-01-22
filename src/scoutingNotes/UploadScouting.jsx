@@ -36,6 +36,17 @@ function UploadScouting(props) {
   const [imageUrl, setImageUrl] = useState("")
   const [showCamera, setShowCamera] = useState(false)
   const [stream, setStream] = useState(null)
+  
+  /* New Fields */
+  const [hangTime, setHangTime] = useState("")
+  const [cyclesPerMatch, setCyclesPerMatch] = useState("")
+  const [fuelPerCycle, setFuelPerCycle] = useState("")
+  const [bump, setBump] = useState(false)
+  const [trench, setTrench] = useState(false)
+  const [numAutos, setNumAutos] = useState("")
+  const [maxHangHeight, setMaxHangHeight] = useState("None")
+  const [canDoubleHang, setCanDoubleHang] = useState(false)
+  const [canTripleHang, setCanTripleHang] = useState(false)
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -79,6 +90,15 @@ function UploadScouting(props) {
     setPhotoPreview("")
     setImageUrl("")
     setShowCamera(false)
+    setHangTime("")
+    setCyclesPerMatch("")
+    setFuelPerCycle("")
+    setBump(false)
+    setTrench(false)
+    setNumAutos("")
+    setMaxHangHeight("None")
+    setCanDoubleHang(false)
+    setCanTripleHang(false)
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
       setStream(null)
@@ -103,11 +123,29 @@ function UploadScouting(props) {
           setFuelCapacity(teamData.data.getTeam.fuelCapacity || "")
           setNotes(teamData.data.getTeam.Comment || "")
           setPhotoUrl(teamData.data.getTeam.photo || "")
+          setHangTime(teamData.data.getTeam.hangTime || "")
+          setCyclesPerMatch(teamData.data.getTeam.cyclesPerMatch || "")
+          setFuelPerCycle(teamData.data.getTeam.fuelPerCycle || "")
+          setBump(teamData.data.getTeam.bump || false)
+          setTrench(teamData.data.getTeam.trench || false)
+          setNumAutos(teamData.data.getTeam.numAutos || "")
+          setMaxHangHeight(teamData.data.getTeam.maxHangHeight || "None")
+          setCanDoubleHang(teamData.data.getTeam.canDoubleHang || false)
+          setCanTripleHang(teamData.data.getTeam.canTripleHang || false)
         } else {
           setTeamName("")
           setFuelCapacity("")
           setNotes("")
           setPhotoUrl("")
+          setHangTime("")
+          setCyclesPerMatch("")
+          setFuelPerCycle("")
+          setBump(false)
+          setTrench(false)
+          setNumAutos("")
+          setMaxHangHeight("None")
+          setCanDoubleHang(false)
+          setCanTripleHang(false)
         }
       } catch (err) {
         console.log("Team not found", err)
@@ -115,12 +153,30 @@ function UploadScouting(props) {
         setFuelCapacity("")
         setNotes("")
         setPhotoUrl("")
+        setHangTime("")
+        setCyclesPerMatch("")
+        setFuelPerCycle("")
+        setBump(false)
+        setTrench(false)
+        setNumAutos("")
+        setMaxHangHeight("None")
+        setCanDoubleHang(false)
+        setCanTripleHang(false)
       }
     } else {
       setTeamName("")
       setFuelCapacity("")
       setNotes("")
       setPhotoUrl("")
+      setHangTime("")
+      setCyclesPerMatch("")
+      setFuelPerCycle("")
+      setBump(false)
+      setTrench(false)
+      setNumAutos("")
+      setMaxHangHeight("None")
+      setCanDoubleHang(false)
+      setCanTripleHang(false)
     }
   }
 
@@ -203,7 +259,16 @@ function UploadScouting(props) {
       name: teamName,
       Comment: notes,
       fuelCapacity: fuelCapacity ? parseInt(fuelCapacity) : null,
-      photo: photoKey
+      photo: photoKey,
+      hangTime: hangTime ? parseFloat(hangTime) : null,
+      cyclesPerMatch: cyclesPerMatch ? parseInt(cyclesPerMatch) : null,
+      fuelPerCycle: fuelPerCycle ? parseInt(fuelPerCycle) : null,
+      bump: bump,
+      trench: trench,
+      numAutos: numAutos ? parseInt(numAutos) : null,
+      maxHangHeight: maxHangHeight,
+      canDoubleHang: canDoubleHang,
+      canTripleHang: canTripleHang
     }
 
     try {
@@ -313,8 +378,128 @@ function UploadScouting(props) {
               </div>
 
               <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: "1", minWidth: "120px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Declared Fuel Capacity</label>
+                  <input 
+                    style={{
+                      height: "40px",
+                      width: "100%",
+                      padding: "6px",
+                      fontSize: "14px",
+                      border: "2px solid #ddd",
+                      borderRadius: "6px",
+                      boxSizing: "border-box"
+                    }}
+                    placeholder="Fuel capacity" 
+                    type="number" 
+                    value={fuelCapacity} 
+                    onChange={(e) => setFuelCapacity(e.target.value)}
+                  />
+                </div>
+                <div style={{ flex: "1", minWidth: "120px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Cycles Per Match</label>
+                  <input 
+                    style={{
+                      height: "40px",
+                      width: "100%",
+                      padding: "6px",
+                      fontSize: "14px",
+                      border: "2px solid #ddd",
+                      borderRadius: "6px",
+                      boxSizing: "border-box"
+                    }}
+                    placeholder="Cycles per match" 
+                    type="number" 
+                    value={cyclesPerMatch} 
+                    onChange={(e) => setCyclesPerMatch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+                <div style={{ flex: "1", minWidth: "120px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Fuel Per Cycle</label>
+                  <input 
+                    style={{
+                      height: "40px",
+                      width: "100%",
+                      padding: "6px",
+                      fontSize: "14px",
+                      border: "2px solid #ddd",
+                      borderRadius: "6px",
+                      boxSizing: "border-box"
+                    }}
+                    placeholder="Fuel per cycle" 
+                    type="number" 
+                    value={fuelPerCycle} 
+                    onChange={(e) => setFuelPerCycle(e.target.value)}
+                  />
+                </div>
+                <div style={{ flex: "1", minWidth: "120px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Number of Autos</label>
+                  <input 
+                    style={{
+                      height: "40px",
+                      width: "100%",
+                      padding: "6px",
+                      fontSize: "14px",
+                      border: "2px solid #ddd",
+                      borderRadius: "6px",
+                      boxSizing: "border-box"
+                    }}
+                    placeholder="Number of autos" 
+                    type="number" 
+                    value={numAutos} 
+                    onChange={(e) => setNumAutos(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Declared Fuel Capacity</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Capabilities</label>
+                  <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+                    <button
+                      onClick={() => setBump(!bump)}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: bump ? "#4CAF50" : "#e0e0e0",
+                        color: bump ? "white" : "black",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        transition: "all 0.3s ease"
+                      }}
+                    >
+                      {bump ? "✓ " : ""}Bump
+                    </button>
+                    <button
+                      onClick={() => setTrench(!trench)}
+                      style={{
+                        padding: "8px 16px",
+                        backgroundColor: trench ? "#4CAF50" : "#e0e0e0",
+                        color: trench ? "white" : "black",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        transition: "all 0.3s ease"
+                      }}
+                    >
+                      {trench ? "✓ " : ""}Trench
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginTop: "10px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Capabilities</label>
+                
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Hang Time (seconds)</label>
                   <input 
                     style={{
                       height: "50px",
@@ -325,12 +510,77 @@ function UploadScouting(props) {
                       borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
-                    placeholder="Enter fuel capacity" 
-                    type="number" 
-                    value={fuelCapacity} 
-                    onChange={(e) => setFuelCapacity(e.target.value)}
+                    placeholder="Enter hang time" 
+                    type="number"
+                    step="0.1"
+                    value={hangTime} 
+                    onChange={(e) => setHangTime(e.target.value)}
                   />
                 </div>
+
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Max Hang Height</label>
+                  <select
+                    value={maxHangHeight}
+                    onChange={(e) => setMaxHangHeight(e.target.value)}
+                    style={{
+                      height: "40px",
+                      width: "100%",
+                      padding: "6px",
+                      fontSize: "14px",
+                      border: "2px solid #ddd",
+                      borderRadius: "6px",
+                      boxSizing: "border-box",
+                      backgroundColor: "white"
+                    }}
+                  >
+                    <option value="None">None</option>
+                    <option value="Level 1">Level 1</option>
+                    <option value="Level 2">Level 2</option>
+                    <option value="Level 3">Level 3</option>
+                  </select>
+                </div>
+
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Hang Teamwork</label>
+                  <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+                    <button
+                      onClick={() => setCanDoubleHang(!canDoubleHang)}
+                      style={{
+                        padding: "10px 20px",
+                        backgroundColor: canDoubleHang ? "#4CAF50" : "#e0e0e0",
+                        color: canDoubleHang ? "white" : "black",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        transition: "all 0.3s ease"
+                      }}
+                    >
+                      {canDoubleHang ? "✓ " : ""}Can Double Hang
+                    </button>
+                    <button
+                      onClick={() => setCanTripleHang(!canTripleHang)}
+                      style={{
+                        padding: "10px 20px",
+                        backgroundColor: canTripleHang ? "#4CAF50" : "#e0e0e0",
+                        color: canTripleHang ? "white" : "black",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        transition: "all 0.3s ease"
+                      }}
+                    >
+                      {canTripleHang ? "✓ " : ""}Can Triple Hang
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
               </div>
 
               <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
