@@ -308,7 +308,7 @@ function Form() {
                 onClick={() => toggleAutoAction(action)}
                 style={{
                   padding: "10px 20px",
-                  backgroundColor: autoActions.includes(action) ? "#4CAF50" : "#e0e0e0",
+                  backgroundColor: autoActions.includes(action) ? "#77B6E2" : "#e0e0e0",
                   color: autoActions.includes(action) ? "white" : "black",
                   border: "none",
                   borderRadius: "8px",
@@ -318,7 +318,7 @@ function Form() {
                   transition: "all 0.3s ease"
                 }}
               >
-                {autoActions.includes(action) ? "✓ " : ""}{action}
+                {action}
               </button>
             ))}
           </div>
@@ -676,7 +676,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {yellowCard ? "✓ " : ""}Yellow Card
+              Yellow Card
             </button>
             <button 
               onClick={() => setRedCard(!redCard)} 
@@ -692,7 +692,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {redCard ? "✓ " : ""}Red Card
+              Red Card
             </button>
             <button 
               onClick={() => setDisable(!disable)} 
@@ -708,7 +708,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {disable ? "✓ " : ""}Disable
+              Disable
             </button>
             <button 
               onClick={() => setDQ(!dq)} 
@@ -724,7 +724,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {dq ? "✓ " : ""}DQ
+              DQ
             </button>
             <button 
               onClick={() => setBotBroke(!botBroke)} 
@@ -740,7 +740,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {botBroke ? "✓ " : ""}Broke
+              Broke
             </button>
             <button 
               onClick={() => setNoShow(!noShow)} 
@@ -756,7 +756,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {noShow ? "✓ " : ""}No Show
+              No Show
             </button>
             <button 
               onClick={() => setTipped(!tipped)} 
@@ -772,7 +772,7 @@ function Form() {
                 transition: "all 0.3s ease"
               }}
             >
-              {tipped ? "✓ " : ""}Tipped
+              Tipped
             </button>
           </div>
 

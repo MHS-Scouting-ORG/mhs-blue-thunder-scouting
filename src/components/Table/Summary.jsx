@@ -24,7 +24,7 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-  const [currentView, setCurrentView] = useState('quals'); // current view: 'quals', 'alliance', 'elims'
+  const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
@@ -133,8 +133,8 @@ function Summary() {
   }
 
   return (
-    <div>
-      <div style={{ textAlign: "center", marginBottom: "30px", paddingTop: "20px" }}>
+    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img 
           src="./images/BLUETHUNDERLOGO_BLUE.png" 
           alt="2443 Blue Thunder Logo"
@@ -144,49 +144,32 @@ function Summary() {
       </div>
 
       {/* View Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-        <button 
-          onClick={() => setCurrentView('quals')}
-          style={{ 
-            padding: '10px 20px', 
-            margin: '0 5px', 
-            backgroundColor: currentView === 'quals' ? '#007bff' : '#f8f9fa',
-            color: currentView === 'quals' ? 'white' : 'black',
-            border: '1px solid #dee2e6',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Quals
-        </button>
-        <button 
-          onClick={() => setCurrentView('alliance')}
-          style={{ 
-            padding: '10px 20px', 
-            margin: '0 5px', 
-            backgroundColor: currentView === 'alliance' ? '#007bff' : '#f8f9fa',
-            color: currentView === 'alliance' ? 'white' : 'black',
-            border: '1px solid #dee2e6',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Alliance Selection
-        </button>
-        <button 
-          onClick={() => setCurrentView('elims')}
-          style={{ 
-            padding: '10px 20px', 
-            margin: '0 5px', 
-            backgroundColor: currentView === 'elims' ? '#007bff' : '#f8f9fa',
-            color: currentView === 'elims' ? 'white' : 'black',
-            border: '1px solid #dee2e6',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
-          Elims
-        </button>
+      <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
+        <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+          {["Quals", "Alliance Selection", "Elims"].map((view) => (
+            <button
+              key={view}
+              onClick={() => {
+                if (view === "Quals") setCurrentView('quals');
+                else if (view === "Alliance Selection") setCurrentView('alliance');
+                else if (view === "Elims") setCurrentView('elims');
+              }}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase()) ? "#77B6E2" : "#e0e0e0",
+                color: currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase()) ? "white" : "black",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "500",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {view}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Render Current View */}

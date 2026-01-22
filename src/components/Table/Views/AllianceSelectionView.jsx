@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
+import { generateClient } from 'aws-amplify/api';
+import { createTeam, updateTeam } from '../../../graphql/mutations';
+import { getTeam } from '../../../graphql/queries';
+
+const client = generateClient();
 
 const pickingOrder = [
   { alliance: 1, type: 'captain' },
@@ -42,11 +47,73 @@ function AllianceSelectionView({ tableData, regional }) {
     alliance8: { captain: null, picks: [null, null] }
   });
   const [currentPickIndex, setCurrentPickIndex] = useState(0);
+  const [confirm, setConfirm] = useState(false);
 
   useEffect(() => {
     const ranked = rankTeamsForAllianceSelection(tableData);
     setRankedTeams(ranked);
   }, [tableData]);
+
+  // Load alliances from database
+  useEffect(() => {
+    const loadAlliances = async () => {
+      try {
+        const allianceId = `alliances-${regional}`;
+        const result = await client.graphql({
+          query: getTeam,
+          variables: { id: allianceId }
+        });
+        if (result.data.getTeam && result.data.getTeam.description) {
+          const savedAlliances = JSON.parse(result.data.getTeam.description);
+          setAlliances(savedAlliances);
+        }
+      } catch (error) {
+        console.log('No saved alliances found for this regional');
+      }
+    };
+    if (regional) {
+      loadAlliances();
+    }
+  }, [regional]);
+
+  // Save alliances to database
+  const saveAlliances = async () => {
+    try {
+      const allianceId = `alliances-${regional}`;
+      const alliancesData = JSON.stringify(alliances);
+      
+      // Try to update existing alliance data
+      try {
+        await client.graphql({
+          query: updateTeam,
+          variables: {
+            input: {
+              id: allianceId,
+              name: `Alliances for ${regional}`,
+              description: alliancesData
+            }
+          }
+        });
+      } catch (updateError) {
+        // If update fails (alliance doesn't exist), create new
+        await client.graphql({
+          query: createTeam,
+          variables: {
+            input: {
+              id: allianceId,
+              name: `Alliances for ${regional}`,
+              description: alliancesData
+            }
+          }
+        });
+      }
+      
+      alert('Alliances saved successfully!');
+    } catch (error) {
+      console.error('Error saving alliances:', error);
+      alert('Error saving alliances. Please try again.');
+    }
+  };
 
   const availableTeams = useMemo(() => {
     const selectedTeams = Object.values(alliances).flatMap(alliance =>
@@ -222,17 +289,43 @@ function AllianceSelectionView({ tableData, regional }) {
 
   return (
     <div>
-      <h2>Alliance Selection</h2>
+      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Alliance Selection</h2>
 
       {/* Alliance Selection Diagram */}
-      {renderAllianceDiagram()}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Alliance Diagram</h3>
+        {renderAllianceDiagram()}
+      </div>
 
       {/* Leaderboard */}
-      {renderLeaderboard()}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Team Leaderboard</h3>
+        {renderLeaderboard()}
+      </div>
+
+      {/* Save Button */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px", textAlign: "center" }}>
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
+          <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white", padding: "15px", borderRadius: "8px", cursor: "pointer"}}>
+            {
+            confirm ? 
+            /* Not Yet */
+            <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
+            /* Save Alliances */
+            : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Save Alliances</div></div>
+            }
+          </button>
+
+          {/* Confirm Save */}
+          {confirm ? <button style={{backgroundColor:"White", padding: "15px", borderRadius: "8px", cursor: "pointer"}} onClick={saveAlliances}>
+            {<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm Save</div>
+          </button> : null}
+        </div>
+      </div>
 
       {/* Instructions */}
-      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
-        <h4>Instructions:</h4>
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h3 style={{ marginTop: 0, marginBottom: "15px" }}>Instructions</h3>
         <p>1. Alliance Selection follows FRC format: Top 8 ranked teams become Alliance Captains</p>
         <p>2. Round 1: Captains pick in order 1-8, each followed by their first pick</p>
         <p>3. Round 2: Second picks are made in reverse order (8-1)</p>

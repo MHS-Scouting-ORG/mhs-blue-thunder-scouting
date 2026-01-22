@@ -70,37 +70,39 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
   return (
     <div>
-      <h2>Elimination Matches</h2>
+      <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Elimination Matches</h2>
 
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '20px' }}>
-        {/* Blue Alliance */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '50px' }}>
-          <h3 style={{ color: '#0066cc' }}>Blue Alliance</h3>
-          {blueTeams.map((_, index) => renderTeamInput('blue', index))}
-        </div>
+      {/* Alliance Setup */}
+      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Alliance Setup</h3>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {/* Blue Alliance */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '50px' }}>
+            <h4 style={{ color: '#0066cc', marginBottom: '10px' }}>Blue Alliance</h4>
+            {blueTeams.map((_, index) => renderTeamInput('blue', index))}
+          </div>
 
-        {/* VS */}
-        <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 20px' }}>VS</div>
+          {/* VS */}
+          <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 20px' }}>VS</div>
 
-        {/* Red Alliance */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '50px' }}>
-          <h3 style={{ color: '#cc0000' }}>Red Alliance</h3>
-          {redTeams.map((_, index) => renderTeamInput('red', index))}
+          {/* Red Alliance */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '50px' }}>
+            <h4 style={{ color: '#cc0000', marginBottom: '10px' }}>Red Alliance</h4>
+            {redTeams.map((_, index) => renderTeamInput('red', index))}
+          </div>
         </div>
       </div>
 
       {/* Team Statistics */}
       {selectedTeam && (
-        <div className={tableStyles.TableRow}>
-          <div className={tableStyles.TableContainer}>
-            <TeamStats
-              information={tableData}
-              gFilter=""
-              regionalEvent={regional}
-              teamHandler={handleTeamClick}
-              selectedTeam={selectedTeam}
-            />
-          </div>
+        <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+          <TeamStats
+            information={tableData}
+            gFilter=""
+            regionalEvent={regional}
+            teamHandler={handleTeamClick}
+            selectedTeam={selectedTeam}
+          />
         </div>
       )}
 
