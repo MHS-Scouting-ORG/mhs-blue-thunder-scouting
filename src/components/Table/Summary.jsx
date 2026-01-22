@@ -133,7 +133,7 @@ function Summary() {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto", minHeight: "100vh", overflowY: "auto" }}>
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img 
           src="./images/BLUETHUNDERLOGO_BLUE.png" 
@@ -195,6 +195,9 @@ function Summary() {
           setTeamsClicked={setTeamsClicked}
         />
       )}
+
+      {/* Blank space for consistent scrolling */}
+      {currentView === '' && <div style={{ height: '1000px', backgroundColor: 'white' }}></div>}
     </div>
   )
 }
