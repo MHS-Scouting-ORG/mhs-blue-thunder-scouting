@@ -17,7 +17,7 @@ import { getTeam } from '../graphql/queries';
 
 const client = generateClient();
 
-function UploadScouting(props) {
+function Notes(props) {
   /* Regional Key */
   const regional = apiGetRegional()
 
@@ -738,4 +738,4 @@ function UploadScouting(props) {
   )
 }
 
-export default UploadScouting;
+export default Notes;
