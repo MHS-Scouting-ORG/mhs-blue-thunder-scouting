@@ -2,20 +2,46 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
 
+const pickingOrder = [
+  { alliance: 1, type: 'captain' },
+  { alliance: 1, type: 'pick1' },
+  { alliance: 2, type: 'captain' },
+  { alliance: 2, type: 'pick1' },
+  { alliance: 3, type: 'captain' },
+  { alliance: 3, type: 'pick1' },
+  { alliance: 4, type: 'captain' },
+  { alliance: 4, type: 'pick1' },
+  { alliance: 5, type: 'captain' },
+  { alliance: 5, type: 'pick1' },
+  { alliance: 6, type: 'captain' },
+  { alliance: 6, type: 'pick1' },
+  { alliance: 7, type: 'captain' },
+  { alliance: 7, type: 'pick1' },
+  { alliance: 8, type: 'captain' },
+  { alliance: 8, type: 'pick1' },
+  { alliance: 8, type: 'pick2' },
+  { alliance: 7, type: 'pick2' },
+  { alliance: 6, type: 'pick2' },
+  { alliance: 5, type: 'pick2' },
+  { alliance: 4, type: 'pick2' },
+  { alliance: 3, type: 'pick2' },
+  { alliance: 2, type: 'pick2' },
+  { alliance: 1, type: 'pick2' },
+];
+
 function AllianceSelectionView({ tableData, regional }) {
   const [rankedTeams, setRankedTeams] = useState([]);
   const [alliances, setAlliances] = useState({
-    alliance1: { captain: null, picks: [] },
-    alliance2: { captain: null, picks: [] },
-    alliance3: { captain: null, picks: [] },
-    alliance4: { captain: null, picks: [] },
-    alliance5: { captain: null, picks: [] },
-    alliance6: { captain: null, picks: [] },
-    alliance7: { captain: null, picks: [] },
-    alliance8: { captain: null, picks: [] }
+    alliance1: { captain: null, picks: [null, null] },
+    alliance2: { captain: null, picks: [null, null] },
+    alliance3: { captain: null, picks: [null, null] },
+    alliance4: { captain: null, picks: [null, null] },
+    alliance5: { captain: null, picks: [null, null] },
+    alliance6: { captain: null, picks: [null, null] },
+    alliance7: { captain: null, picks: [null, null] },
+    alliance8: { captain: null, picks: [null, null] }
   });
-  const [currentPickingAlliance, setCurrentPickingAlliance] = useState(1);
-  const [pickNumber, setPickNumber] = useState(1);
+  const [currentPickIndex, setCurrentPickIndex] = useState(0);
 
   useEffect(() => {
     const ranked = rankTeamsForAllianceSelection(tableData);
@@ -30,71 +56,103 @@ function AllianceSelectionView({ tableData, regional }) {
   }, [rankedTeams, alliances]);
 
   const handleTeamSelect = (teamNumber) => {
-    if (!teamNumber) return;
+    if (!teamNumber || currentPickIndex >= pickingOrder.length) return;
+
+    const currentPick = pickingOrder[currentPickIndex];
+    const allianceKey = `alliance${currentPick.alliance}`;
 
     setAlliances(prev => {
       const newAlliances = { ...prev };
-      const allianceKey = `alliance${currentPickingAlliance}`;
-
-      if (pickNumber === 1) {
-        // Captain pick
+      if (currentPick.type === 'captain') {
         newAlliances[allianceKey].captain = teamNumber;
-      } else {
-        // Regular pick
-        newAlliances[allianceKey].picks.push(teamNumber);
+      } else if (currentPick.type === 'pick1') {
+        newAlliances[allianceKey].picks[0] = teamNumber;
+      } else if (currentPick.type === 'pick2') {
+        newAlliances[allianceKey].picks[1] = teamNumber;
       }
-
       return newAlliances;
     });
 
-    // Move to next pick
-    if (pickNumber < 3) {
-      setPickNumber(pickNumber + 1);
-    } else {
-      // Move to next alliance
-      if (currentPickingAlliance < 8) {
-        setCurrentPickingAlliance(currentPickingAlliance + 1);
-        setPickNumber(1);
+    setCurrentPickIndex(currentPickIndex + 1);
+  };
+
+  const handleInputChange = (allianceKey, type, value, index = null) => {
+    const num = value ? parseInt(value) : null;
+    setAlliances(prev => {
+      const newAlliances = { ...prev };
+      if (type === 'captain') {
+        newAlliances[allianceKey].captain = num;
+      } else if (type === 'pick') {
+        newAlliances[allianceKey].picks[index] = num;
       }
-    }
+      return newAlliances;
+    });
+  };
+
+  const handleRemove = (allianceKey, type, index = null) => {
+    setAlliances(prev => {
+      const newAlliances = { ...prev };
+      if (type === 'captain') {
+        newAlliances[allianceKey].captain = null;
+      } else if (type === 'pick') {
+        newAlliances[allianceKey].picks[index] = null;
+      }
+      return newAlliances;
+    });
   };
 
   const renderAllianceDiagram = () => {
+    const currentPick = pickingOrder[currentPickIndex];
+    const currentAlliance = currentPick ? currentPick.alliance : null;
+    const currentType = currentPick ? currentPick.type : null;
+
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '30px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
         {Object.entries(alliances).map(([key, alliance], index) => (
           <div
             key={key}
             style={{
-              border: `3px solid ${currentPickingAlliance === index + 1 ? '#007bff' : '#dee2e6'}`,
+              border: `3px solid ${currentAlliance === index + 1 ? '#007bff' : '#dee2e6'}`,
               borderRadius: '10px',
               padding: '15px',
-              backgroundColor: currentPickingAlliance === index + 1 ? '#f8f9ff' : 'white'
+              backgroundColor: currentAlliance === index + 1 ? '#f8f9ff' : 'white'
             }}
           >
             <h4 style={{ margin: '0 0 10px 0', textAlign: 'center' }}>
               Alliance {index + 1}
-              {currentPickingAlliance === index + 1 && ` (Picking #${pickNumber})`}
+              {currentAlliance === index + 1 && currentType && ` (Picking ${currentType})`}
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              <div style={{
-                padding: '8px',
-                backgroundColor: alliance.captain ? '#cce5ff' : '#f8f9fa',
-                borderRadius: '5px',
-                textAlign: 'center',
-                fontWeight: alliance.captain ? 'bold' : 'normal'
-              }}>
-                Captain: {alliance.captain || 'Not selected'}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="number"
+                  value={alliance.captain || ''}
+                  onChange={(e) => handleInputChange(key, 'captain', e.target.value)}
+                  placeholder="Captain"
+                  style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+                />
+                <button
+                  onClick={() => handleRemove(key, 'captain')}
+                  style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                >
+                  X
+                </button>
               </div>
-              {[1, 2].map(pickIndex => (
-                <div key={pickIndex} style={{
-                  padding: '8px',
-                  backgroundColor: alliance.picks[pickIndex - 1] ? '#cce5ff' : '#f8f9fa',
-                  borderRadius: '5px',
-                  textAlign: 'center',
-                  fontWeight: alliance.picks[pickIndex - 1] ? 'bold' : 'normal'
-                }}>
-                  Pick {pickIndex}: {alliance.picks[pickIndex - 1] || 'Not selected'}
+              {[0, 1].map(pickIndex => (
+                <div key={pickIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <input
+                    type="number"
+                    value={alliance.picks[pickIndex] || ''}
+                    onChange={(e) => handleInputChange(key, 'pick', e.target.value, pickIndex)}
+                    placeholder={`Pick ${pickIndex + 1}`}
+                    style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+                  />
+                  <button
+                    onClick={() => handleRemove(key, 'pick', pickIndex)}
+                    style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                  >
+                    X
+                  </button>
                 </div>
               ))}
             </div>
@@ -175,10 +233,12 @@ function AllianceSelectionView({ tableData, regional }) {
       {/* Instructions */}
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
         <h4>Instructions:</h4>
-        <p>1. Alliances pick in reverse order of qualification ranking</p>
-        <p>2. The highest ranked team picks first (captain), then the next highest, and so on</p>
-        <p>3. Each alliance captain picks 2 additional teams</p>
+        <p>1. Alliance Selection follows FRC format: Top 8 ranked teams become Alliance Captains</p>
+        <p>2. Round 1: Captains pick in order 1-8, each followed by their first pick</p>
+        <p>3. Round 2: Second picks are made in reverse order (8-1)</p>
         <p>4. Selected teams are removed from the leaderboard</p>
+        <p>5. You can manually type team numbers into the alliance slots or use the leaderboard to select</p>
+        <p>6. Use the X button to remove a selection from an alliance slot</p>
       </div>
     </div>
   );
