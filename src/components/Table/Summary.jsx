@@ -8,6 +8,7 @@ import List from "./TableUtils/List";
 import TeamStats from "./Tables/TeamStats";
 import DefaultTable from "./Tables/DefaultTable"
 import CustomGraph from "./Graphs/CustomGraph"
+import SummaryHeader from "../SummaryHeader";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api"
@@ -140,7 +141,8 @@ function Summary() {
         <h1 style={{ margin: "0", color: "#333", fontSize: "1.8em" }}>TABLE</h1>
       </div>
 
-      <p style={{ fontSize: '18px' }}> Select checkboxes to choose which priorities to sort by. Then click on <strong>Grade</strong>. </p>
+      <p style={{ fontSize: '18px' }}> <strong>Select Part of Competition</strong>. </p>
+      <SummaryHeader />
       {<List setList={setSortBy} />}
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
       <br />
