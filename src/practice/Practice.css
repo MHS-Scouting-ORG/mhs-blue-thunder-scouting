@@ -1,4 +1,28 @@
-#something {
+.something {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
+    pointer-events: none;
+}
+.numberClick {
+    font-size: 4rem;
+    font-weight: bolder;
+}
+.clickButton {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 1rem;
+    background-color: lightcyan;
+}
+.clickButton:hover {
+    background-color:aqua ;
+}
+.resetClickButton {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 30px;
+    border-radius: 1rem;
+    background-color: azure;
+}
+.resetClickButton:hover {
+    background-color:aquamarine ;
 }
