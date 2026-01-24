@@ -51,6 +51,13 @@ function Notes(props) {
   /* Submit */
   const [confirm, setConfirm] = useState(false);
 
+  const gridRowStyle = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "15px",
+    alignItems: "center"
+  };
+
 
 
   useEffect(() => {
@@ -314,7 +321,7 @@ function Notes(props) {
         <h2 style={{ marginTop: 0, marginBottom: "20px" }}>Team Info</h2>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+          <div style={gridRowStyle}>
             <div style={{ flex: "1", minWidth: "150px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Number</label>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
@@ -339,7 +346,7 @@ function Notes(props) {
                   style={{
                     height: "50px",
                     padding: "0 20px",
-                    backgroundColor: "#4CAF50",
+                    backgroundColor: "#77B6E2",
                     color: "white",
                     borderRadius: "8px",
                     cursor: "pointer",
@@ -356,7 +363,7 @@ function Notes(props) {
 
           {findTeam && (
             <>
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
                   <input 
@@ -377,17 +384,17 @@ function Notes(props) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "120px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Declared Fuel Capacity</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Declared Fuel Capacity</label>
                   <input 
                     style={{
-                      height: "40px",
+                      height: "50px",
                       width: "100%",
-                      padding: "6px",
-                      fontSize: "14px",
+                      padding: "8px",
+                      fontSize: "16px",
                       border: "2px solid #ddd",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
                     placeholder="Fuel capacity" 
@@ -397,15 +404,15 @@ function Notes(props) {
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Cycles Per Match</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Cycles Per Match</label>
                   <input 
                     style={{
-                      height: "40px",
+                      height: "50px",
                       width: "100%",
-                      padding: "6px",
-                      fontSize: "14px",
+                      padding: "8px",
+                      fontSize: "16px",
                       border: "2px solid #ddd",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
                     placeholder="Cycles per match" 
@@ -416,17 +423,17 @@ function Notes(props) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "120px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Fuel Per Cycle</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Fuel Per Cycle</label>
                   <input 
                     style={{
-                      height: "40px",
+                      height: "50px",
                       width: "100%",
-                      padding: "6px",
-                      fontSize: "14px",
+                      padding: "8px",
+                      fontSize: "16px",
                       border: "2px solid #ddd",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
                     placeholder="Fuel per cycle" 
@@ -436,15 +443,15 @@ function Notes(props) {
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Number of Autos</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Number of Autos</label>
                   <input 
                     style={{
-                      height: "40px",
+                      height: "50px",
                       width: "100%",
-                      padding: "6px",
-                      fontSize: "14px",
+                      padding: "8px",
+                      fontSize: "16px",
                       border: "2px solid #ddd",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
                     placeholder="Number of autos" 
@@ -455,20 +462,20 @@ function Notes(props) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Capabilities</label>
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
                       onClick={() => setBump(!bump)}
                       style={{
-                        padding: "8px 16px",
-                        backgroundColor: bump ? "#4CAF50" : "#e0e0e0",
+                        padding: "10px 20px",
+                        backgroundColor: bump ? "#77B6E2" : "#e0e0e0",
                         color: bump ? "white" : "black",
                         border: "none",
-                        borderRadius: "6px",
+                        borderRadius: "8px",
                         cursor: "pointer",
-                        fontSize: "12px",
+                        fontSize: "14px",
                         fontWeight: "500",
                         transition: "all 0.3s ease"
                       }}
@@ -478,13 +485,13 @@ function Notes(props) {
                     <button
                       onClick={() => setTrench(!trench)}
                       style={{
-                        padding: "8px 16px",
-                        backgroundColor: trench ? "#4CAF50" : "#e0e0e0",
+                        padding: "10px 20px",
+                        backgroundColor: trench ? "#77B6E2" : "#e0e0e0",
                         color: trench ? "white" : "black",
                         border: "none",
-                        borderRadius: "6px",
+                        borderRadius: "8px",
                         cursor: "pointer",
-                        fontSize: "12px",
+                        fontSize: "14px",
                         fontWeight: "500",
                         transition: "all 0.3s ease"
                       }}
@@ -499,7 +506,7 @@ function Notes(props) {
                 <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Capabilities</label>
                 
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Hang Time (seconds)</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Time (seconds)</label>
                   <input 
                     style={{
                       height: "50px",
@@ -519,17 +526,17 @@ function Notes(props) {
                 </div>
 
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Max Hang Height</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Max Hang Height</label>
                   <select
                     value={maxHangHeight}
                     onChange={(e) => setMaxHangHeight(e.target.value)}
                     style={{
-                      height: "40px",
+                      height: "50px",
                       width: "100%",
-                      padding: "6px",
-                      fontSize: "14px",
+                      padding: "8px",
+                      fontSize: "16px",
                       border: "2px solid #ddd",
-                      borderRadius: "6px",
+                      borderRadius: "8px",
                       boxSizing: "border-box",
                       backgroundColor: "white"
                     }}
@@ -542,13 +549,13 @@ function Notes(props) {
                 </div>
 
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "500", fontSize: "14px" }}>Hang Teamwork</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Teamwork</label>
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
                       onClick={() => setCanDoubleHang(!canDoubleHang)}
                       style={{
                         padding: "10px 20px",
-                        backgroundColor: canDoubleHang ? "#4CAF50" : "#e0e0e0",
+                        backgroundColor: canDoubleHang ? "#77B6E2" : "#e0e0e0",
                         color: canDoubleHang ? "white" : "black",
                         border: "none",
                         borderRadius: "8px",
@@ -564,7 +571,7 @@ function Notes(props) {
                       onClick={() => setCanTripleHang(!canTripleHang)}
                       style={{
                         padding: "10px 20px",
-                        backgroundColor: canTripleHang ? "#4CAF50" : "#e0e0e0",
+                        backgroundColor: canTripleHang ? "#77B6E2" : "#e0e0e0",
                         color: canTripleHang ? "white" : "black",
                         border: "none",
                         borderRadius: "8px",
@@ -583,7 +590,7 @@ function Notes(props) {
               <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Notes</label>
                   <input 
@@ -604,10 +611,10 @@ function Notes(props) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
+              <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Photo</label>
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
                     <input 
                       id="file-upload"
                       style={{ display: "none" }}
@@ -619,7 +626,7 @@ function Notes(props) {
                       htmlFor="file-upload"
                       style={{
                         padding: "10px 20px",
-                        backgroundColor: "#4CAF50",
+                        backgroundColor: "#77B6E2",
                         color: "white",
                         borderRadius: "8px",
                         cursor: "pointer",
@@ -635,7 +642,7 @@ function Notes(props) {
                       onClick={startCamera}
                       style={{
                         padding: "10px 20px",
-                        backgroundColor: "#2196F3",
+                        backgroundColor: "#77B6E2",
                         color: "white",
                         borderRadius: "8px",
                         cursor: "pointer",
@@ -658,7 +665,7 @@ function Notes(props) {
                     onClick={takePhoto}
                     style={{
                       padding: "10px 20px",
-                      backgroundColor: "#FF5722",
+                      backgroundColor: "#4CAF50",
                       color: "white",
                       borderRadius: "8px",
                       cursor: "pointer",
@@ -674,8 +681,8 @@ function Notes(props) {
                     onClick={stopCamera}
                     style={{
                       padding: "10px 20px",
-                      backgroundColor: "#9E9E9E",
-                      color: "white",
+                      backgroundColor: "#e0e0e0",
+                      color: "black",
                       borderRadius: "8px",
                       cursor: "pointer",
                       fontSize: "14px",
@@ -699,7 +706,7 @@ function Notes(props) {
       </div>
 
       {/* Submit Check */}
-      <div style={{ textAlign: "center", marginTop: "30px" }}>
+      <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
         <button onClick={() => {setConfirm(!confirm)}} style={{
           padding: "15px 30px",
           backgroundColor: confirm ? "red" : "white",
@@ -713,9 +720,9 @@ function Notes(props) {
           {
           confirm ? 
           /* Not Yet */
-          <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"50px", height: "45px"}}></img><div style={{fontSize: "14px"}}>Not yet</div></div> 
+          <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Not yet</div></div> 
           /* Submit */
-          : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"50px", height: "45px"}}></img><div style={{fontSize: "14px"}}>Submit</div></div>
+          : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Submit</div></div>
           }
         </button>
 
@@ -727,10 +734,9 @@ function Notes(props) {
           borderRadius: "8px",
           cursor: "pointer",
           fontSize: "16px",
-          fontWeight: "600",
-          marginLeft: "20px"
+          fontWeight: "600"
         }} onClick={submitTeamInfo}>
-          {<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"50px", height: "45px"}}></img>}<div style={{fontSize: "14px"}}>Confirm</div>
+          <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div>
         </button> : null}
       </div>
 

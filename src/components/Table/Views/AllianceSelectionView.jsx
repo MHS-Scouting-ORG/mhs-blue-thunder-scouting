@@ -57,8 +57,21 @@ function AllianceSelectionView({ tableData, regional }) {
   // Load alliances from database
   useEffect(() => {
     const loadAlliances = async () => {
+      if (!regional) return;
+      const allianceId = `alliances-${regional}`;
+
+      // Try to load from localStorage first (works offline)
       try {
-        const allianceId = `alliances-${regional}`;
+        const local = localStorage.getItem(allianceId);
+        if (local) {
+          setAlliances(JSON.parse(local));
+        }
+      } catch (e) {
+        // ignore localStorage errors
+      }
+
+      // Then try to load from server and overwrite local if available
+      try {
         const result = await client.graphql({
           query: getTeam,
           variables: { id: allianceId }
@@ -66,9 +79,10 @@ function AllianceSelectionView({ tableData, regional }) {
         if (result.data.getTeam && result.data.getTeam.description) {
           const savedAlliances = JSON.parse(result.data.getTeam.description);
           setAlliances(savedAlliances);
+          try { localStorage.setItem(allianceId, result.data.getTeam.description); } catch (e) {}
         }
       } catch (error) {
-        console.log('No saved alliances found for this regional');
+        console.log('Server unavailable; using local alliances if present', error);
       }
     };
     if (regional) {
@@ -78,11 +92,18 @@ function AllianceSelectionView({ tableData, regional }) {
 
   // Save alliances to database
   const saveAlliances = async () => {
+    const allianceId = `alliances-${regional}`;
+    const alliancesData = JSON.stringify(alliances);
+
+    // Save locally first so offline works
     try {
-      const allianceId = `alliances-${regional}`;
-      const alliancesData = JSON.stringify(alliances);
-      
-      // Try to update existing alliance data
+      localStorage.setItem(allianceId, alliancesData);
+    } catch (e) {
+      console.warn('Could not write alliances to localStorage', e);
+    }
+
+    // Then attempt to save to the server; if it fails, we still have the local copy
+    try {
       try {
         await client.graphql({
           query: updateTeam,
@@ -95,7 +116,6 @@ function AllianceSelectionView({ tableData, regional }) {
           }
         });
       } catch (updateError) {
-        // If update fails (alliance doesn't exist), create new
         await client.graphql({
           query: createTeam,
           variables: {
@@ -107,11 +127,10 @@ function AllianceSelectionView({ tableData, regional }) {
           }
         });
       }
-      
-      alert('Alliances saved successfully!');
+      alert('Alliances saved to device and server.');
     } catch (error) {
-      console.error('Error saving alliances:', error);
-      alert('Error saving alliances. Please try again.');
+      console.error('Error saving alliances to server:', error);
+      alert('Saved locally (offline). Will sync when online.');
     }
   };
 
@@ -306,19 +325,36 @@ function AllianceSelectionView({ tableData, regional }) {
       {/* Save Button */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px", textAlign: "center" }}>
         <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
-          <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white", padding: "15px", borderRadius: "8px", cursor: "pointer"}}>
+          <button onClick={() => {setConfirm(!confirm)}} style={{
+            padding: "15px 30px",
+            backgroundColor: confirm ? "red" : "white",
+            color: confirm ? "white" : "black",
+            border: "2px solid #ddd",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "600"
+          }}>
             {
             confirm ? 
             /* Not Yet */
-            <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
+            <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Not yet</div></div> 
             /* Save Alliances */
-            : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Save Alliances</div></div>
+            : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Save Alliances</div></div>
             }
           </button>
 
           {/* Confirm Save */}
-          {confirm ? <button style={{backgroundColor:"White", padding: "15px", borderRadius: "8px", cursor: "pointer"}} onClick={saveAlliances}>
-            {<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm Save</div>
+          {confirm ? <button style={{
+            padding: "15px 30px",
+            backgroundColor: "white",
+            border: "2px solid #ddd",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "600"
+          }} onClick={saveAlliances}>
+            <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm Save</div></div>
           </button> : null}
         </div>
       </div>

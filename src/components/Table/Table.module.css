@@ -105,3 +105,56 @@
     height: 27px;
     width: 100%;
 }
+
+/* Shared card and button styles used by views to match form styling */
+.Card {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.SectionHeader {
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.AllianceButton {
+    padding: 12px;
+    margin: 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    width: 140px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 16px;
+}
+
+.AllianceButtonBlue {
+    background-color: #cce5ff;
+    border-color: #0066cc;
+    color: #000;
+}
+
+.AllianceButtonRed {
+    background-color: #ffcccc;
+    border-color: #cc0000;
+    color: #000;
+}
+
+.AllianceButtonSelected {
+    background-color: #007bff !important;
+    color: #fff !important;
+    border-color: #0056b3 !important;
+}
+
+.PrimaryButton {
+    padding: 8px 15px;
+    background-color: #77B6E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}

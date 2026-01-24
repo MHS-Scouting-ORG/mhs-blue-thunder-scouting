@@ -33,23 +33,13 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
   const renderTeamButton = (teamNumber, alliance) => {
     const isSelected = selectedTeam === teamNumber;
+    const cls = [tableStyles.AllianceButton, alliance === 'blue' ? tableStyles.AllianceButtonBlue : tableStyles.AllianceButtonRed];
+    if (isSelected) cls.push(tableStyles.AllianceButtonSelected);
     return (
       <button
         key={teamNumber}
         onClick={() => handleTeamClick(teamNumber)}
-        style={{
-          padding: '15px',
-          margin: '5px',
-          backgroundColor: isSelected ? '#007bff' : alliance === 'blue' ? '#cce5ff' : '#ffcccc',
-          color: isSelected ? 'white' : 'black',
-          border: `2px solid ${alliance === 'blue' ? '#0066cc' : '#cc0000'}`,
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          width: '120px',
-          transition: 'all 0.3s ease'
-        }}
+        className={cls.join(' ')}
       >
         {teamNumber}
       </button>
@@ -61,8 +51,8 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Qualification Matches</h2>
 
       {/* Match Selection */}
-      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "15px" }}>Select Match</h3>
+      <div className={tableStyles.Card}>
+        <h3 className={tableStyles.SectionHeader}>Select Match</h3>
         <form onSubmit={handleMatchSubmit} style={{ textAlign: 'center' }}>
           <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             Match Number:
@@ -81,24 +71,15 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
               min="1"
             />
           </label>
-          <button type="submit" style={{
-            marginLeft: "10px",
-            padding: "8px 15px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "16px"
-          }}>
+          <button type="submit" className={tableStyles.PrimaryButton} style={{ marginLeft: '10px' }}>
             Load Match
           </button>
         </form>
       </div>
 
       {currentMatch && (
-        <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-          <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Match Alliances</h3>
+        <div className={tableStyles.Card}>
+          <h3 className={tableStyles.SectionHeader} style={{ marginBottom: '20px' }}>Match Alliances</h3>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {/* Blue Alliance */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '50px' }}>
@@ -126,7 +107,7 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
       {/* Team Statistics */}
       {selectedTeam && (
-        <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
+        <div className={tableStyles.Card}>
           <TeamStats
             information={tableData}
             gFilter=""

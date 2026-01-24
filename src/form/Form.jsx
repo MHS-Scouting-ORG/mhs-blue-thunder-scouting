@@ -341,8 +341,6 @@ function Form() {
               <option value=''>Select Level</option>
               <option value="None">None</option>
               <option value='Level1'>Level 1</option>
-              <option value='Level2'>Level 2</option>
-              <option value='Level3'>Level 3</option>
             </select>
           </div>
         </div>
@@ -918,18 +916,35 @@ function Form() {
 
       {/* Submit Check */}
       <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
-        <button onClick={() => {setConfirm(!confirm)}} style={{backgroundColor: confirm ? "red" : "white", padding: "15px", borderRadius: "8px", cursor: "pointer"}}>
+        <button onClick={() => {setConfirm(!confirm)}} style={{
+          padding: "15px 30px",
+          backgroundColor: confirm ? "red" : "white",
+          color: confirm ? "white" : "black",
+          border: "2px solid #ddd",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontSize: "16px",
+          fontWeight: "600"
+        }}>
           {
           confirm ? 
           /* Not Yet */
-          <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Not yet</div></div> 
+          <div><img src="./images/BLUETHUNDERLOGO_WHITE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Not yet</div></div> 
           /* Submit */
-          : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img><div style={{fontSize: "20px"}}>Submit</div></div>
+          : <div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Submit</div></div>
           }
         </button>
 
         {/* Submit & Send */}
-        {confirm ? <button style={{backgroundColor:"White", padding: "15px", borderRadius: "8px", cursor: "pointer"}} onClick={() => {
+        {confirm ? <button style={{
+          padding: "15px 30px",
+          backgroundColor: "white",
+          border: "2px solid #ddd",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontSize: "16px",
+          fontWeight: "600"
+        }} onClick={() => {
           submitState( //passes all data (states) of the form into the build in formutils
             regional,
             teamNumber,
@@ -968,7 +983,7 @@ function Form() {
           .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
           }
         }/* Double checks and confirms for submission, in case of accidental press */
-        >{<img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"100px", height: "90px"}}></img>}<div style={{fontSize: "20px"}}>Confirm</div></button> : null}
+        ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
       </div>
     </div>
   )
