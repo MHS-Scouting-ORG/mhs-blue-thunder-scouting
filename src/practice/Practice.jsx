@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; 
 import './Practice.css'; //imports the css file to jsx file
+import { use } from 'react';
 //className is used in jsx file
 function Practice() {
     
@@ -12,12 +13,20 @@ const wrongButton = () => {
 const [count, setCount] = useState(0)
 function setClick(){
 setCount(count + 1);
+if (count == 66) {
+    window.alert("six seven");
+}
 }
 function resetCount(){
-setCount(0)
+setCount(0);
 }
-
-
+/*
+//Calculator 
+const [number, setNumber] = useState(0)
+function setNumber(){
+    setNumber(count + i)
+}
+*/
     return(
     <div>
         <div className="something" style={{ border: "5px solid purple"}}> 
@@ -37,8 +46,34 @@ setCount(0)
     <button onClick={resetCount} className="resetClickButton">
         Reset
     </button>
+    <br></br>
+    <br></br>
     </div>
     
+        <div className="calculator">
+        <br></br>
+        <h1 className="calculated">press buttons below</h1>
+        <button className="calculatorDesign">/</button>
+        <button className="calculatorDesign">7</button>
+        <button className="calculatorDesign">8</button>
+        <button className="calculatorDesign">9</button>
+        <br></br>
+        <button className="calculatorDesign">x</button>
+        <button className="calculatorDesign">4</button>
+        <button className="calculatorDesign">5</button>
+        <button className="calculatorDesign">6</button>
+        <br></br>
+        <button className="calculatorDesign">-</button>
+        <button className="calculatorDesign">1</button>
+        <button className="calculatorDesign">2</button>
+        <button className="calculatorDesign">3</button>
+        <br></br>
+        <button className="calculatorDesign">+</button>
+        <button className="calculatorDesign">0</button>
+        <button className="calculatorDesign">.</button>
+        <button className="calculatorDesign">=</button>
+        </div>
+
     </div>
     )
 }
