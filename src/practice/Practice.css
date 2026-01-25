@@ -1,3 +1,7 @@
+.userName {
+    font-size: 2rem;
+    text-align: center;
+}
 .something {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;

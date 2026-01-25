@@ -3,8 +3,11 @@ import './Practice.css'; //imports the css file to jsx file
 import { use } from 'react';
 //className is used in jsx file
 function Practice() {
-    
-    /*<p>Previous Score was {previousScore}</p>*/
+//UserName
+function userName() {
+    let username = document.getElementById("userInput")
+}
+
 //Incremental Button
 const wrongButton = () => {
     window.alert("Not me, the other guy")
@@ -20,19 +23,20 @@ if (count == 66) {
 function resetCount(){
 setCount(0);
 }
-/*
+
 //Calculator 
-const [number, setNumber] = useState(0)
-function setNumber(){
-    setNumber(count + i)
-}
-*/
+
+const [] = useState(0)
+
     return(
     <div>
+        <h1>Input Name</h1>
+        <input placeholder="type in name here" className="userName" id="userInput"></input>
+        <button className="userName">Enter Name</button>
         <div className="something" style={{ border: "5px solid purple"}}> 
-        <h1>Hey there</h1>
+        <h1>Hey there {}</h1>
         <br></br>
-        <p>Starting from scratch</p>
+        <p>Welcome to the PRACTICE page</p>
     </div>
     
     <br></br>
@@ -79,35 +83,3 @@ function setNumber(){
 }
 
 export default Practice;
-/*
-<>
-<div className="awesome" style={{ border: "1px solid red" }}>
-<label htmlFor="name">Enter your name: </label>
-<input type="text" id="name" />
-</div>
-<p>Enter your HTML here</p>
-</>
-*/
-//TicTacToe Game Code    
-/*function TicTacSquare({ value, onSquareClick}) {
-    return (
-        <button className="square" onClick={onSquareClick}>
-            {value}
-        </button>
-    );
-}
-    function TicTacBoard({ xIsNext, squares, onPlay}) {
-        function handleClick(i) {
-            if (calculateTicTacWinner(squares) || squares[i] ) {
-                return;
-            }
-            const nextSquares = squares.slice();
-            if (xIsNext) {
-                nextSquares[i] = "X";
-            } else {
-                nextSquares[i] = 'O'
-            }
-            onPlay(nextSquares);
-            }
-        }
-}*/
