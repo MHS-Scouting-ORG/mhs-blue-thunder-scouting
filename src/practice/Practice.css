@@ -32,7 +32,7 @@
 }
 .calculator {
     background-color: gray;
-    width: 400px;
+    width: 410px;
     border-radius: 2rem;
     justify-content: center;
     align-items: center;
@@ -42,12 +42,15 @@
 }
 .calculated {
     border-radius: 1rem;
-    border: 3rem;
+    border: 1rem;
     font-weight: bold;
     width: 380px;
     background-color: white;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    pointer-events: none;
 }
-.calculatorDesign {
+.calculatorDesignButton {
     font-family: Arial, Helvetica, sans-serif;
     border-radius: 1rem;
     font-size: 2rem;
@@ -56,7 +59,52 @@
     font-weight: bold;
     background-color: black;
     color: white ;
+    margin: 1px;
+}
+.calculatorDesignButton:hover {
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 1rem;
+    font-size: 2rem;
+    width: 100px;
+    height: 50px;
+    font-weight: bold;
+    background-color: darkgray;
+    color: white ;
+    margin: 1px;
+}
+.calculatorDesignOperator {
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 1rem;
+    font-size: 2rem;
+    width: 100px;
+    height: 50px;
+    font-weight: bold;
+    background-color: black;
+    color: white ;
+    margin: 1px;
+}
+.calculatorDesignOperator:hover {
+    background-color: darkgray;
+}
+.calculatorDesignButtonDel {
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 1rem;
+    font-size: 2rem;
+    width: 405px;
+    height: 50px;
+    font-weight: bold;
+    background-color: black;
+    color: white ;
+    margin: 1px;
+}
+.calculatorDesignButtonDel:hover {
+    background-color: darkgray;
 }
 .calculatorDesign:hover {
     background-color: #3b3b3b;
+}
+.Manufacturer:hover::after {
+    content: attr(manufacturer-Data);
+    position: absolute;
+    bottom: -10rem;
 }
