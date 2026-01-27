@@ -49,13 +49,16 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
       //console.log("teamStats", teamStats)
-      //general
+      //general (might not need avg points/avg auto pts since tba has)
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))
       const avgAutoPoints = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.Points !== null ? team.Autonomous.PointsScored.Points : 0))
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map((team) => team.RobotInfo.RobotSpeed !== null ? team.RobotInfo.RobotSpeed : null ))
       const mcRobotHang = arrMode(teamStats.map((team) => team.Teleop.Endgame.EndGameResult !== null ?  team.Teleop.Endgame.EndGameResult : null))
+      const test=null
+      //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
+
 
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))

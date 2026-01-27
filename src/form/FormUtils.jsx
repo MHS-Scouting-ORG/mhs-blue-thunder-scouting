@@ -94,13 +94,13 @@ export async function submitState( //params are states of data from form
     endGamePoints += 0;
   }
   else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 12;
+    endGamePoints += 10;
   }
   else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 6;
+    endGamePoints += 20;
   }
   else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 2;
+    endGamePoints += 30;
   }
   else {
     incompleteForm = true;
