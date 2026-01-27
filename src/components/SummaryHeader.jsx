@@ -3,24 +3,36 @@ import tableStyling from "./Table/Table.module.css";
 import Tab from './Tab';
 
 function SummaryHeader(props) {
-    const [HeaderState, setHeaderState] = useState('none') //toggle header state]
+    const [QualView, setQualView] = useState('none') //toggle qual view state
+    const [SelectionView, setSelectionView] = useState('none') // toggle selection view state
+    const [QualState, setQualState] = useState(false);
+    const [SelectionState, setSelectionState] = useState(false);
 
-    const toggleHeader = () => { //function to update header display
-        if (HeaderState === 'none') { 
-            setHeaderState(' ')
+    const toggleHeader = (type) => { //function to update header display passed to changeState prop
+        if (QualView === '') { 
+            setQualView('none')
+            setQualState(false)
+            setSelectionView('')
+            setSelectionState(true)
         }
         else {
-            setHeaderState('none')
+            setQualView('')
+            setQualState(true)
+            setSelectionView('none')
+            setSelectionState(false)
         }
     }
+
+    
 
     return (
         <div> 
              <div className={tableStyling.List}>
-                <Tab value = "Qualifications" id={0} OnClick={toggleHeader} />
-                <Tab value = "Alliance Selection" id={1} onClick={toggleHeader} />
+                <Tab value = "Qualifications" state={QualState} changeState={toggleHeader} />
+                <Tab value = "Alliance Selection" state={SelectionState} changeState={toggleHeader} />
             </div>
-            <div style={{display: HeaderState}}> test</div>
+            <div style={{display: QualView}}> qual</div>
+            <div style={{display: SelectionView}}> selection</div>
         </div>
     )
 }
