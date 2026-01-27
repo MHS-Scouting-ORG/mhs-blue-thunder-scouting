@@ -133,20 +133,19 @@
 
 .AllianceButtonBlue {
     background-color: #cce5ff;
-    border-color: #0066cc;
+    border-color: #5168ed;
     color: #000;
 }
 
 .AllianceButtonRed {
     background-color: #ffcccc;
-    border-color: #cc0000;
+    border-color: #fc4242;
     color: #000;
 }
 
 .AllianceButtonSelected {
-    background-color: #007bff !important;
+    background-color: #c2c2c2 !important;
     color: #fff !important;
-    border-color: #0056b3 !important;
 }
 
 .PrimaryButton {

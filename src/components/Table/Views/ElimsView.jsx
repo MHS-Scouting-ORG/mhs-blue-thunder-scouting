@@ -125,14 +125,14 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '80px', marginTop: '20px' }}>
           <div style={{ textAlign: 'center' }}>
-            <h4 style={{ color: '#0066cc' }}>Blue Alliance Teams</h4>
+            <h4 style={{ color: '#5168ed' }}>Blue Alliance Teams</h4>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {blueTeams.map((t, i) => renderTeamButton(t, 'blue'))}
             </div>
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <h4 style={{ color: '#cc0000' }}>Red Alliance Teams</h4>
+            <h4 style={{ color: '#fc4242' }}>Red Alliance Teams</h4>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {redTeams.map((t, i) => renderTeamButton(t, 'red'))}
             </div>
