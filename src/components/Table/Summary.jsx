@@ -142,7 +142,7 @@ function Summary() {
       </div>
 
       <p style={{ fontSize: '18px' }}> <strong>Select Part of Competition</strong>. </p>
-      <SummaryHeader />
+      <SummaryHeader {...filterState} />
       {<List setList={setSortBy} />}
       <GlobalFilter filter={globalFilter} set={setGlobalFilter} />
       <br />

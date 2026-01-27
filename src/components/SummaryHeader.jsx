@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import tableStyling from "./Table/Table.module.css";
 import Tab from './Tab';
+import Qualifications from './Qualifications';
 
 function SummaryHeader(props) {
     const [QualView, setQualView] = useState('none') //toggle qual view state
@@ -31,7 +32,7 @@ function SummaryHeader(props) {
                 <Tab value = "Qualifications" state={QualState} changeState={toggleHeader} />
                 <Tab value = "Alliance Selection" state={SelectionState} changeState={toggleHeader} />
             </div>
-            <div style={{display: QualView}}> qual</div>
+            <div style={{display: QualView}}> <Qualifications /></div>
             <div style={{display: SelectionView}}> selection</div>
         </div>
     )

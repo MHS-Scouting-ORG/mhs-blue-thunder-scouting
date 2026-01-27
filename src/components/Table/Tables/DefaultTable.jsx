@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTable, useSortBy, useGlobalFilter } from 'react-table'
 import CollapseTButton from "../TableUtils/CollapseTButton";
-import { getRankingsForRegional, getSimpleTeamsForRegional } from "../../../api/bluealliance";
+import { getRankingsForRegional, getSimpleTeamsForRegional, getMatchesForRegional } from "../../../api/bluealliance";
 import TableStyles from "../Table.module.css";
 
 
@@ -29,11 +29,21 @@ function DefaultTable(props) {
       .catch(err => console.log(err))
   }, [])
 
+  /* Runs in sync with blue alliance to set rankings of a regional */
+  useEffect(() => {
+    getMatchesForRegional(regional)
+      .then(data => {
+        console.log("matches data", data)
+      })
+      .catch(err => console.log(err))
+  }, [])
+
   /* Runs in sync with blue alliance to set the simple data of teams */
   useEffect(() => {
     getSimpleTeamsForRegional(regional) 
     .then(data => {
       setSimpleTeams(data)
+      console.log("simple teams", data)
     })
   }, [])
   /* Changes in sync with global filter */
