@@ -30,6 +30,20 @@
 .resetClickButton:hover {
     background-color:aquamarine ;
 }
+.addContainer {
+    justify-content: center;
+    align-items: center;
+    max-width: 400px;
+    width: 600;
+}
+.addNumbers {
+    font-weight: bold;
+    font-size: 3rem;
+}
+.addReset {
+    font-size: 3rem;
+    font-weight: bold;
+}
 .calculator {
     background-color: gray;
     width: 410px;
@@ -106,5 +120,5 @@
 .Manufacturer:hover::after {
     content: attr(manufacturer-Data);
     position: absolute;
-    bottom: -10rem;
+    bottom: -15rem;
 }

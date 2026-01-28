@@ -20,29 +20,24 @@ if (count == 66) {
 function resetCount(){
 setCount(0);
 }
-
 //Calculator 
-const [number, setNumber] = useState("");
-const operators = ["/", "*", "-", "+", "."];
+let [number, setNumber] = useState("");
+const value = ["/" || "*" || "-" || "+"  || "."];
 const [calculated, getCalculated] = useState("");
-
 const getUpdCalc = value => {
-    setNumber(calculated + value);
+    setNumber(number + value);
+    calculated = (number + value)
+    getCalculated(calculated)
+} 
+const calculate = (number)  => {
+    const calculater = (number + value)
+    getCalculated(calculater)
 }
 function resetAllCalc(){
     setNumber(0)
 }
-// Faster way to generate the numbers apparently (test)
-/*
-const CreateCalcNum = () => {
-    const calcDigits = [];
 
-    for (let i=1; i<10; i++ );
-        calcDigits.push
-        return calcDigits
-}
-*/
-    return(
+return(
     
     <div> 
         <h1>Input Name</h1>
@@ -69,36 +64,34 @@ const CreateCalcNum = () => {
     <br></br>
     <br></br>
     </div>
-    
+        <h1>number adder only apparently</h1>
         <div className="calculator">
         <br></br>
-        <h1 className="calculated">{number || "press things below"}</h1>
+        <h1 className="calculated">{number || "press things below" || calculated}</h1>
         <br></br>
         <button onClick={() => getUpdCalc("/")} className="calculatorDesignOperator">/</button>
-        <button className="calculatorDesignButton">7</button>
-        <button className="calculatorDesignButton">8</button>
-        <button className="calculatorDesignButton">9</button>
+        <button onClick={() => getUpdCalc(7)} className="calculatorDesignButton">7</button>
+        <button onClick={() => getUpdCalc(8)} className="calculatorDesignButton">8</button>
+        <button onClick={() => getUpdCalc(9)} className="calculatorDesignButton">9</button>
         <br></br>
         <button onClick={() => getUpdCalc("*")} className="calculatorDesignOperator">x</button>
-        <button className="calculatorDesignButton">4</button>
-        <button className="calculatorDesignButton">5</button>
-        <button className="calculatorDesignButton">6</button>
+        <button onClick={() => getUpdCalc(4)} className="calculatorDesignButton">4</button>
+        <button onClick={() => getUpdCalc(5)} className="calculatorDesignButton">5</button>
+        <button onClick={() => getUpdCalc(6)} className="calculatorDesignButton">6</button>
         <br></br>
         <button onClick={() => getUpdCalc("-")} className="calculatorDesignOperator">-</button>
-        <button className="calculatorDesignButton">1</button>
-        <button className="calculatorDesignButton">2</button>
-        <button className="calculatorDesignButton">3</button>
+        <button onClick={() => getUpdCalc(1)} className="calculatorDesignButton">1</button>
+        <button onClick={() => getUpdCalc(2)} className="calculatorDesignButton">2</button>
+        <button onClick={() => getUpdCalc(3)}  className="calculatorDesignButton">3</button>
         <br></br>
         <button onClick={() => getUpdCalc("+")} className="calculatorDesignOperator">+</button>
-        <button className="calculatorDesignButton">0</button>
+        <button onClick={() => getUpdCalc(0)} className="calculatorDesignButton">0</button>
         <button onClick={() => getUpdCalc(".")} className="calculatorDesignButton">.</button>
-        <button className="calculatorDesignButton">=</button>
-        <button className="calculatorDesignButtonDel">Cancel All</button>
+        <button onClick={() => calculate()} className="calculatorDesignButton">=</button>
+        <button onClick={() => resetAllCalc()} className="calculatorDesignButtonDel">Cancel All</button>
         <p className="Manufacturer" manufacturer-Data="This product was made in China"><strong>Made in China</strong></p>
         </div>
-
     </div>
     )
 }
-
 export default Practice;
