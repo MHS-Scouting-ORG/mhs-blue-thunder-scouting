@@ -1,6 +1,7 @@
 import React, { useState } from 'react'; 
 import './Practice.css'; //imports the css file to jsx file
 import { use } from 'react';
+import styles from './Practice.module.css';
 //className is used in jsx file
 function Practice() {
 //UserName
@@ -36,10 +37,27 @@ const calculate = (number)  => {
 function resetAllCalc(){
     setNumber(0)
 }
+// Practice for Calculator v02 
+const [colors, setColors] = useState(["blue", "purple", "blurple"]);
 
+function addColor(){
+    const newColor = document.getElementById('colorInput').value;
+    document.getElementById('colorInput').value = '';
+    setColors(c =>[...c, newColor]);
+}
+function removeColor(index){
+    setColors(foods.filter((element,index)))
+}
 return(
-    
-    <div> 
+    <div>
+        <div>
+            <h1>Color</h1>
+            <ul>
+                {colors.map((color, index) => <li key={index} onClick={() => removeColor(index)}>{color}</li>)}
+            <input type="text" id='colorInput' placeholder='Type favorite primary color'/>
+            <button onClick={addColor} className={styles.color}>Add Your Color</button>
+            </ul>
+        </div>
         <h1>Input Name</h1>
         <input placeholder="type in name here" className="userName" id="userInput" autoComplete='off' type="text"
         username={inputname}
