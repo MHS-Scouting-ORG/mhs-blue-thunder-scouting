@@ -78,7 +78,7 @@ enum SpeedOpts {
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
-  ShooterSpeed: SpeedOPts
+  ShooterSpeed: SpeedOpts
   FuelCapacity: Int
   BallsShot: Int
   ShootingCycles: Int
@@ -124,13 +124,13 @@ type TeamMatchesType {
   Team: ID! @index
   Regional: String! @index
   Autonomous: AutonomousType!
-  Teleop: TeleopType!
-  ActiveStrat: ActiveStratOpt
-  InactiveStrat: InactiveStratOpt
+  Teleop: TeleType!
+  ActiveStrat: ActiveStratOpts
+  InactiveStrat: InactiveStratOpts
   Penalties: PenaltyType
 }
 
-type TeamAttributes {
+type TeamAttributesType {
   name: String
   Regional: String! @index
   DeclaredFuelCap: Int
@@ -139,7 +139,7 @@ type TeamAttributes {
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
   HangTime: Double
-  Photo: img
+  Photo: String
   Notes: String
 }
 

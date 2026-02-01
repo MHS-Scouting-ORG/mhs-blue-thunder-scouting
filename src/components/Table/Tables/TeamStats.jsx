@@ -90,25 +90,25 @@ function TeamStats(props) {
             <strong>Max Level Hang</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Auto Points:</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
+            <strong>Multi Hang</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Endgame Points:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Fuel Capacity:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Coral Points:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Active Strat:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Algae Points:</strong> {stats.AvgAlgaePts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Inactive Strat:</strong> {stats.AvgAlgaePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Cycles:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
+            <strong>Avg Hang Time:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Robot Speed:</strong> {stats.RobotSpeed || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Robot Hang:</strong> {stats.RobotHang || 'N/A'}
+            <strong>Shooter Speed:</strong> {stats.RobotHang || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Total Fouls:</strong> {stats.Fouls || 'N/A'}
