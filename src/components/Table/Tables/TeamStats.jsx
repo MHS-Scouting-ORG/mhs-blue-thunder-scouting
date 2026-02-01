@@ -86,7 +86,8 @@ function TeamStats(props) {
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Performance Statistics</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Average Points:</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}
+            {/* change stats.avg to correct schema call & do the same for all cards below*/}
+            <strong>Max Level Hang</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Average Auto Points:</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
@@ -110,10 +111,10 @@ function TeamStats(props) {
             <strong>Robot Hang:</strong> {stats.RobotHang || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fouls:</strong> {stats.Fouls || 'N/A'}
+            <strong>Total Fouls:</strong> {stats.Fouls || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Tech Fouls:</strong> {stats.Tech || 'N/A'}
+            <strong>Total Major Fouls:</strong> {stats.Tech || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Yellow Cards:</strong> {stats.YellowCard || 'N/A'}

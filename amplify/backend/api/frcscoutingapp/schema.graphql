@@ -2,51 +2,36 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-###############
-### SCORING ###
-###############
-
-# enums
-
-# types
-type TeleScoring {
-  Fuel: Int
-  Cycles: Int
-}
-
-type TelePointsScoring {
-  Points: Int
-  EndgamePoints: Int
-}
-
 ##################
 ### AUTONOMOUS ###
 ##################
 
 # enums
-type AutoScoring {
-  Fuel: Int
+enum AutoStratOpts {
+  WentMid
+  Scored
+  CrossedMid
 }
 
-type AutoPointsScoring {
-  Points: Int
+enum AutoHangOpts {
+  Level1
+  None
 }
 
 # types
 type AutonomousType {
-  AmountScored: AutoScoring
-  PointsScored: AutoPointsScoring
-  Left: Boolean
-  Hang: String
+  AutoStrat: AutoStratOpts
+  TravelMid: Int
+  AutoHang: AutoHangOpts
 }
 
 ##############
 ### TELEOP ###
 ##############
 
-# enums
+#enums
 
-enum EndgameOpts {
+enum HangOpts {
   Level3
   Level2
   Level1
@@ -64,20 +49,10 @@ type PenaltyOpts {
   NoShow: Boolean
 }
 
-type HumPlrScoringType {
-  Made: Int
-  Missed: Int
-}
-
-type EndgameType {
-  EndGameResult: EndgameOpts
-}
-
-type TeleopType {
-  AmountScored: TeleScoring
-  PointsScored: TelePointsScoring
-  Endgame: EndgameType
-  HumPlrScoring: HumPlrScoringType
+type TeleType {
+  TeleStrat: TeleStratOpts
+  TravelMid: Int
+  Endgame: HangOpts
 }
 
 type PenaltyType {
@@ -103,7 +78,10 @@ enum SpeedOpts {
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
-  ShootingSpeed: SpeedOpts
+  ShooterSpeed: SpeedOPts
+  FuelCapacity: Int
+  BallsShot: Int
+  ShootingCycles: Int
   WhatBrokeDesc: String
   Comments: String
 }
@@ -112,26 +90,63 @@ type RobotInfoType {
 ### TEAM INFO ###
 #################
 
-# types
+# enums
 
-type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
-  id: ID! @primaryKey
-  name: String!
-  description: String
-  Comment: String
-  photo: String
-  fuelCapacity: Int
+enum ActiveStratOpts {
+  Hoarding
+  Defense
+  Offensive
+  Support
 }
 
-type TeamMatch @model @auth(rules : [{ allow: private, provider: iam}]) {
-  id: ID! @primaryKey(sortKeyFields: ["Regional","Team"])
+enum InactiveStratOpts {
+  Hoarding
+  Defense
+  Offensive
+  Support
+}
+
+enum HangTeamworkOpts {
+  DoubleHang
+  TripleHang
+}
+
+enum CapabilitiesOpts {
+  Bump
+  Trench
+}
+
+# types
+
+type TeamMatchesType {
   name: String
   description: String
   Team: ID! @index
   Regional: String! @index
-  TotalPoints: Int
   Autonomous: AutonomousType!
   Teleop: TeleopType!
-  RobotInfo: RobotInfoType!
+  ActiveStrat: ActiveStratOpt
+  InactiveStrat: InactiveStratOpt
   Penalties: PenaltyType
+}
+
+type TeamAttributes {
+  name: String
+  Regional: String! @index
+  DeclaredFuelCap: Int
+  CyclesPerMatch: Int
+  Capabilities: CapabilitiesOpts
+  MaxHang: HangOpts
+  HangTeamwork: HangTeamworkOpts
+  HangTime: Double
+  Photo: img
+  Notes: String
+}
+
+type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
+  id: ID! @primaryKey
+  description: String
+  Comment: String
+  TeamMatches: TeamMatchesType!
+  TeamAttributes: TeamAttributesType!
 }
