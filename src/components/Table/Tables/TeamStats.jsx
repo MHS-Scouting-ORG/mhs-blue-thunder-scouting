@@ -96,6 +96,12 @@ function TeamStats(props) {
             <strong>Fuel Capacity:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>AutoStrat:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+          </div>
+           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Auto Hang:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Most Likely Active Strat:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
@@ -121,6 +127,9 @@ function TeamStats(props) {
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Red Cards:</strong> {stats.RedCard || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Broken:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
         </div>
       </div>
