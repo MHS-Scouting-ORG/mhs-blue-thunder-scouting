@@ -2,8 +2,7 @@ export type AmplifyDependentResourcesAttributes = {
   "api": {
     "frcscoutingapp": {
       "GraphQLAPIEndpointOutput": "string",
-      "GraphQLAPIIdOutput": "string",
-      "GraphQLAPIKeyOutput": "string"
+      "GraphQLAPIIdOutput": "string"
     }
   },
   "auth": {

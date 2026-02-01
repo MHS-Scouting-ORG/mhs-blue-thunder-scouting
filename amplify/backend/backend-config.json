@@ -4,16 +4,7 @@
       "dependsOn": [],
       "output": {
         "authConfig": {
-          "additionalAuthenticationProviders": [
-            {
-              "apiKeyConfig": {
-                "apiKeyExpirationDate": "2024-01-09T01:07:13.910Z",
-                "apiKeyExpirationDays": 7,
-                "description": "frc-scouting-app"
-              },
-              "authenticationType": "API_KEY"
-            }
-          ],
+          "additionalAuthenticationProviders": [],
           "defaultAuthentication": {
             "authenticationType": "AWS_IAM"
           }

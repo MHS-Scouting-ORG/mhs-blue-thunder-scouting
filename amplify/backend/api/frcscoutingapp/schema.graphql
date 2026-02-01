@@ -40,6 +40,10 @@ enum HangOpts {
 
 # types
 
+enum TeleStratOpts {
+  Basic
+}
+
 type PenaltyOpts {
   YellowCard: Boolean
   RedCard: Boolean
@@ -121,8 +125,8 @@ enum CapabilitiesOpts {
 type TeamMatchesType {
   name: String
   description: String
-  Team: ID! @index
-  Regional: String! @index
+  Team: ID!
+  Regional: String!
   Autonomous: AutonomousType!
   Teleop: TeleType!
   ActiveStrat: ActiveStratOpts
@@ -132,13 +136,13 @@ type TeamMatchesType {
 
 type TeamAttributesType {
   name: String
-  Regional: String! @index
+  Regional: String!
   DeclaredFuelCap: Int
   CyclesPerMatch: Int
   Capabilities: CapabilitiesOpts
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
-  HangTime: Double
+  HangTime: Float
   Photo: String
   Notes: String
 }

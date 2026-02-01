@@ -6,13 +6,6 @@
     "defaultAuthType": {
       "mode": "AWS_IAM"
     },
-    "additionalAuthTypes": [
-      {
-        "mode": "API_KEY",
-        "expirationTime": 7,
-        "apiKeyExpirationDate": "2024-01-09T01:07:13.910Z",
-        "keyDescription": "frc-scouting-app"
-      }
-    ]
+    "conflictResolution": {}
   }
 }
