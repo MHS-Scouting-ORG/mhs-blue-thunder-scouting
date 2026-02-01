@@ -37,7 +37,7 @@ const calculate = (number)  => {
 function resetAllCalc(){
     setNumber(0)
 }
-// Practice for Calculator v02 
+// Input colors
 const [colors, setColors] = useState(["blue", "purple", "blurple"]);
 
 function addColor(){
@@ -46,17 +46,140 @@ function addColor(){
     setColors(c =>[...c, newColor]);
 }
 function removeColor(index){
-    setColors(foods.filter((element,index)))
+    setColors(colors.filter((_,ind) => ind !== index))
 }
+//rainbow Finder
+const RAINBOW_COLORS = [
+    {id: "1", name: "Red", },
+    {id: "2", name: "Orange", },
+    {id: "3", name: "Yellow", },
+    {id: "4", name: "Green", },
+    {id: "5", name: "Blue", },
+    {id: "6", name: "Indigo", },
+    {id: "7", name: "Violet", }
+]
+    const [rbColors, setRbColors] = useState(RAINBOW_COLORS)
+    const [searchRbColors, setSearchRbColors] = useState('')
+
+    function addRbColor(){
+    const newRbColor = document.getElementById('rbColorInput').value;
+    document.getElementById('rbColorInput').value = '';
+    setRbColors(r =>[...r, newRbColor]);
+};
+const searchingColor = (event) => {
+    const search = event.target.value;
+    setSearchRbColors(search)
+
+    if (!search) {
+        setRbColors(RAINBOW_COLORS)
+        setSearchRbColors(search)
+        return
+    }
+
+    const filterRbColors = rbColors.filter((raibowcol) => {
+    return raibowcol.name.toLowerCase().indexOf(search.toLowerCase()) !== -1;
+    })
+    setRbColors(filterRbColors)
+}
+
+
+
+
+
+
+
+
+
+//calculator v02
+const CALCULATOR_BUTTONS = [
+    {calcButton: '/'},
+    {calcButton: '7'},
+    {calcButton: '8'},
+    {calcButton: '9'},
+    {calcButton: '*'},
+    {calcButton: '4'},
+    {calcButton: '5'},
+    {calcButton: '6'},
+    {calcButton: '-'},
+    {calcButton: '1'},
+    {calcButton: '2'},
+    {calcButton: '3'},
+    {calcButton: '+'},
+    {calcButton: '0'},
+    {calcButton: '='},
+    {calcButton: '.'},
+    {calcButton: 'C'},
+]
+
+const [calc, setCalc] = useState(CALCULATOR_BUTTONS)
+
+//Sort through robots color 
+const ROBOTS = [
+    {robNum: 1, Color: 'Red', Name:'BMO'},
+    {robNum: 2, Color: 'Red', Name:'Bender'},
+    {robNum: 3, Color: 'Blue', Name:'R2-D2'},
+    {robNum: 4, Color: 'Red', Name:'Baymax'},
+    {robNum: 5, Color: 'Blue', Name:'WALL-E'},
+    {robNum: 6, Color: 'Blue', Name:'Clank'}
+]
+const [robots, setRobots] = useState(ROBOTS)
+const [sortRobots, setSortRobots] = useState('')
+
+const sortThroughRobots = (event) =>{
+    const searchRobots = event.target.value;
+        setSortRobots(searchRobots)
+
+         if (!searchRobots)   {
+        setRobots(ROBOTS);
+        setSortRobots(searchRobots)    
+         return
+    }
+
+
+}
+
 return(
     <div>
+        <div>
+            <h1 className="robSpe"><span>Robot#</span> <span>Robot Name</span>  <span>Robot Color</span></h1>
+            <select onChange className='robotSortingOptions'>
+                <option>Robot # descending</option>
+                <option>Robot # ascending</option>
+                <option>Alphabetical</option>
+                <option>Color Sort</option>
+            </select>
+            <ul className='roberto'>
+            {robots.map((robot, index) => <li key={index}><span>{robot.robNum}</span> <span>{robot.Name}</span> <span>{robot.Color}</span></li>)}
+            </ul>
+            </div>
         <div>
             <h1>Color</h1>
             <ul>
                 {colors.map((color, index) => <li key={index} onClick={() => removeColor(index)}>{color}</li>)}
             <input type="text" id='colorInput' placeholder='Type favorite primary color'/>
-            <button onClick={addColor} className={styles.color}>Add Your Color</button>
+            <button onClick={addColor} className={styles.colorate}>Add Your Color</button>
             </ul>
+        </div>
+
+        <div className="rainbowColors"> 
+            <h1>Rainbow Colors</h1>
+            <div className='listOfRainbowColors'>
+            <ul>
+                <input value={searchRbColors} onChange={searchingColor} type="text" placeholder='Search Favorite Rainbow Color'></input>
+                {/*<select>
+                    <option>Does not function</option>
+                    <option >Rainbow Order Descending</option>
+                    <option>Rainbow Order Ascending</option>                
+                    </select>
+                */}
+                {rbColors.map((rbColor, index) => <li key={index}>{rbColor.id} {rbColor.name}</li>)}
+                {/*<input type="text" id='rbColorInput' placeholder="Type in more colors"/>
+                <button onClick={addRbColor}>Add additional colors</button>
+                <p className='underConstruction'>not working currently*</p>
+                */}
+            </ul>
+            </div>
+
         </div>
         <h1>Input Name</h1>
         <input placeholder="type in name here" className="userName" id="userInput" autoComplete='off' type="text"
@@ -109,6 +232,41 @@ return(
         <button onClick={() => resetAllCalc()} className="calculatorDesignButtonDel">Cancel All</button>
         <p className="Manufacturer" manufacturer-Data="This product was made in China"><strong>Made in China</strong></p>
         </div>
+        
+        <div className='newCalculator'>
+            <ul>    
+                    <div className='newCalcBackground'>
+                    <br></br>
+                    <input className='calculatedAns' placeholder='Press below'></input>
+                    <br></br>
+                    <br></br>
+                    <button className='newCalcButtons'>/</button>
+                    <button className='newCalcButtons'>7</button>
+                    <button className='newCalcButtons'>8</button>
+                    <button className='newCalcButtons'>9</button>
+                    <br></br>
+                    <button className='newCalcButtons'>*</button>
+                    <button className='newCalcButtons'>4</button>
+                    <button className='newCalcButtons'>5</button>
+                    <button className='newCalcButtons'>6</button>
+                    <br></br>
+                    <button className='newCalcButtons'>-</button>
+                    <button className='newCalcButtons'>1</button>
+                    <button className='newCalcButtons'>2</button>
+                    <button className='newCalcButtons'>3</button>
+                    <br></br>
+                    <button className='newCalcButtons'>+</button>
+                    <button className='newCalcButtons'>0</button>
+                    <button className='newCalcButtons'>.</button>
+                    <button className='newCalcButtons'>=</button>
+                    <br></br>
+                    <button className='newCalcCancel'>Cancel</button>
+                    <br></br>
+                    <p>New Calc</p>
+                    </div>
+            </ul>
+        </div>
+
     </div>
     )
 }

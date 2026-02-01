@@ -1,3 +1,11 @@
+.underConstruction {
+    font-size: 1rem;
+}
+.rainbowColors {
+    font-size: 2rem;
+    align-items: center;
+    justify-content: center;
+}
 .userName {
     font-size: 2rem;
     text-align: center;
@@ -121,4 +129,43 @@
     content: attr(manufacturer-Data);
     position: absolute;
     bottom: -15rem;
+}
+.newCalculator {
+    max-width: 450px;
+}
+.calculatedAns{
+    font-size: 2rem;
+    width: 390px;
+}
+.newCalcBackground {
+    background-color: darkgray;
+    border-radius: 2rem;
+}
+.newCalcButtons {
+    background-color: black;
+    color: white;
+    font-size: 3rem;
+    width: 100px;
+    border-radius: 1rem;
+}
+.newCalcCancel {
+    width:400px;
+    background-color: black;
+    color: white;
+    font-size: 3rem;
+    border-radius: 1rem;
+}
+.roberto{
+    font-size: 3rem;
+}
+.robSpe{
+    border-width:10px;
+    border: 5px;
+    grid-column: 3;
+    display: flex;
+    justify-content: space-between;
+}
+.robotSortingOptions {
+    font-size: 2rem;
+    width: 500px;
 }
