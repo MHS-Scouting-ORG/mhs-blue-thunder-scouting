@@ -2,6 +2,7 @@ import { apigetMatchesForRegional} from "../../../api";
 import { getTeamsInRegional, } from "../../../api/bluealliance";
 import { apiGetTeam } from "../../../api";
 import { arrMode, calcAvg, getReliability, getMatchesOfPenalty, getMax, getSummary } from "./CalculationUtils"
+import { isSameTeam } from "../../../utils/teamId"
 
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
 async function getTeams (regional) {
@@ -9,10 +10,10 @@ async function getTeams (regional) {
   const data = await getTeamsInRegional(regional)
 
      const teamsWithPhotos = await Promise.all(data.map(async obj => {
-       const teamNumObj = {
-        TeamNumber: obj.team_number,
-        TeamNum: `frc${obj.team_number}`,
-       }
+      const teamNumObj = {
+       TeamNumber: obj.team_number,
+       TeamNum: `frc${obj.team_number}`,
+      }
 
        // Try to get photo from database
        try {
@@ -47,7 +48,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;
-      const teamStats = teamMatchData.filter(x => x.Team === team.TeamNum)
+      const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
       //console.log("teamStats", teamStats)
       //general (might not need avg points/avg auto pts since tba has)
       const avgPoints = calcAvg(teamStats.map((team) => team.TotalPoints !== null ? team.TotalPoints : 0))

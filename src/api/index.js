@@ -5,6 +5,7 @@ import { teamMatchesByRegional, getTeam, listTeams, getTeamMatch } from '../grap
 import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
 import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
+import { normalizeTeamId } from '../utils/teamId'
 
 import * as Auth from 'aws-amplify/auth'
 
@@ -22,12 +23,11 @@ let regionalKey
  * @param {*} errorFn
  */
 const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
-
-  getClient().graphql({ query: onCreateTeam }).subscribe({
+  getClient().graphql({ query: onCreateTeamMatch }).subscribe({
     next: ({ value }) => updateFn(value),
     error: (errorFn || (err => console.log(err)))
   })
-  getClient().graphql({ query: onUpdateTeam }).subscribe({
+  getClient().graphql({ query: onUpdateTeamMatch }).subscribe({
     next: updateFn,
     error: (errorFn || (err => console.log(err)))
   })
@@ -37,14 +37,16 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  * Get a Team by their TeamNumber  that are currently in our database
  */
 const apiGetTeam = async function (teamNumber) {
-  return await getClient().graphql({ query: getTeam, variables: { id: teamNumber } })
+  const normalizedTeamId = normalizeTeamId(teamNumber)
+  return await getClient().graphql({ query: getTeam, variables: { id: normalizedTeamId } })
 }
 
 /*
 * Get a Team's match by the matchId, regionalId, and teamId
 */
 const apiGetTeamMatch = async function (matchId, regionalId, teamNumber) {
-  return await getClient().graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: teamNumber } })
+  const normalizedTeamId = normalizeTeamId(teamNumber)
+  return await getClient().graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: normalizedTeamId } })
 }
 
 /*
@@ -79,7 +81,8 @@ const apiListTeams = async function () {
  * - teamNumber (optional) - the teamNumber
  */
 const apigetMatchesForRegional = async function (regionalId, teamNumber) {
-  if (!teamNumber) {
+  const normalizedTeamId = normalizeTeamId(teamNumber)
+  if (!normalizedTeamId) {
     return getClient().graphql({
       query: teamMatchesByRegional, variables: {
         Regional: regionalId,
@@ -91,7 +94,7 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
       Regional: regionalId,
       filter: {
         Team: {
-          eq: teamNumber
+          eq: normalizedTeamId
         }
       }
     }
@@ -105,7 +108,7 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
  * - teamId - the team id
  * - matchid - the match id
  */
-const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId) {
+const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, matchType, matchNumber, alliance) {
   if (regionalId === undefined) {
     throw new Error("Regional not provided")
   }
@@ -118,9 +121,11 @@ const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId) {
 
   console.log("building match entry")
 
+  const normalizedTeamId = normalizeTeamId(teamId)
+
   return getClient().graphql({
     query: createTeamMatch, variables: {
-      input: buildMatchEntry(regionalId, teamId, matchId),
+      input: buildMatchEntry(regionalId, normalizedTeamId, matchId, matchType, matchNumber, alliance),
     }
   })
 }
@@ -139,11 +144,12 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
 
   console.log("the data: ", data)
 
+  const normalizedTeamId = normalizeTeamId(teamId)
+
   const input = {
     ...data,
     id: matchId,
-    name: "",
-    Team: teamId,
+    Team: normalizedTeamId,
     Regional: regionalId,
   }
 
@@ -159,11 +165,12 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
 }
 
 const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
+  const normalizedTeamId = normalizeTeamId(teamId)
   await getClient().graphql({
     query: deleteTeamMatch, variables: {
       input: {
         id: matchId,
-        Team: teamId,
+        Team: normalizedTeamId,
         Regional: regionalId
       }
     }

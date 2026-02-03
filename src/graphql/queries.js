@@ -5,55 +5,113 @@ export const getTeam = /* GraphQL */ `
   query GetTeam($id: ID!) {
     getTeam(id: $id) {
       id
+      name
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TeleStrat
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
+      photo
+      fuelCapacity
+      hangTime
+      cyclesPerMatch
+      fuelPerCycle
+      bump
+      trench
+      numAutos
+      maxHangHeight
+      canDoubleHang
+      canTripleHang
+      matches {
+        items {
+          id
+          Team
+          Regional
+          MatchType
+          MatchNumber
+          MatchKey
+          Alliance
+          TotalPoints
+          Autonomous {
+            AmountScored {
+              CoralL1
+              CoralL1Missed
+              CoralL2
+              CoralL2Missed
+              CoralL3
+              CoralL3Missed
+              CoralL4
+              CoralL4Missed
+              Processor
+              ProcessorMissed
+              Net
+              NetMissed
+              Cycles
+            }
+            PointsScored {
+              Points
+              AlgaePoints
+              CoralPoints
+              EndgamePoints
+            }
+            StartingPosition
+            Left
+            Hang
           }
-          FoulDesc
+          Teleop {
+            AmountScored {
+              CoralL1
+              CoralL1Missed
+              CoralL2
+              CoralL2Missed
+              CoralL3
+              CoralL3Missed
+              CoralL4
+              CoralL4Missed
+              Processor
+              ProcessorMissed
+              Net
+              NetMissed
+              Cycles
+            }
+            PointsScored {
+              Points
+              AlgaePoints
+              CoralPoints
+              EndgamePoints
+            }
+            Endgame {
+              EndGameResult
+            }
+            HumPlrScoring {
+              Made
+              Missed
+            }
+          }
+          RobotInfo {
+            RobotSpeed
+            ShootingSpeed
+            FuelCapacity
+            BallsShot
+            ShootingCycles
+            WhatBrokeDesc
+            Comments
+          }
+          Penalties {
+            Fouls
+            Tech
+            PenaltiesCommitted {
+              YellowCard
+              RedCard
+              Disabled
+              DQ
+              Broken
+              NoShow
+            }
+            FoulDesc
+          }
+          createdAt
+          updatedAt
           __typename
         }
-        __typename
-      }
-      TeamAttributes {
-        name
-        Regional
-        DeclaredFuelCap
-        CyclesPerMatch
-        Capabilities
-        MaxHang
-        HangTeamwork
-        HangTime
-        Photo
-        Notes
+        nextToken
         __typename
       }
       createdAt
@@ -62,6 +120,7 @@ export const getTeam = /* GraphQL */ `
     }
   }
 `;
+
 export const listTeams = /* GraphQL */ `
   query ListTeams(
     $id: ID
@@ -79,56 +138,233 @@ export const listTeams = /* GraphQL */ `
     ) {
       items {
         id
+        name
         description
         Comment
-        TeamMatches {
-          name
-          description
-          Team
-          Regional
-          Autonomous {
-            AutoStrat
-            TravelMid
-            AutoHang
-            __typename
-          }
-          Teleop {
-            TeleStrat
-            TravelMid
-            Endgame
-            __typename
-          }
-          ActiveStrat
-          InactiveStrat
-          Penalties {
-            Fouls
-            Tech
-            PenaltiesCommitted {
-              YellowCard
-              RedCard
-              Disabled
-              DQ
-              Broken
-              NoShow
-              __typename
-            }
-            FoulDesc
-            __typename
-          }
-          __typename
+        photo
+        fuelCapacity
+        hangTime
+        cyclesPerMatch
+        fuelPerCycle
+        bump
+        trench
+        numAutos
+        maxHangHeight
+        canDoubleHang
+        canTripleHang
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+
+export const getTeamMatch = /* GraphQL */ `
+  query GetTeamMatch($id: ID!, $Team: ID!, $Regional: String!) {
+    getTeamMatch(id: $id, Team: $Team, Regional: $Regional) {
+      id
+      Team
+      Regional
+      MatchType
+      MatchNumber
+      MatchKey
+      Alliance
+      TotalPoints
+      Autonomous {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
         }
-        TeamAttributes {
-          name
-          Regional
-          DeclaredFuelCap
-          CyclesPerMatch
-          Capabilities
-          MaxHang
-          HangTeamwork
-          HangTime
-          Photo
-          Notes
-          __typename
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
+        }
+        StartingPosition
+        Left
+        Hang
+      }
+      Teleop {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
+        }
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
+        }
+        Endgame {
+          EndGameResult
+        }
+        HumPlrScoring {
+          Made
+          Missed
+        }
+      }
+      RobotInfo {
+        RobotSpeed
+        ShootingSpeed
+        FuelCapacity
+        BallsShot
+        ShootingCycles
+        WhatBrokeDesc
+        Comments
+      }
+      Penalties {
+        Fouls
+        Tech
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+        }
+        FoulDesc
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+
+export const teamMatchesByRegional = /* GraphQL */ `
+  query TeamMatchesByRegional(
+    $Regional: String!
+    $MatchType: ModelStringKeyConditionInput
+    $MatchNumber: ModelIntKeyConditionInput
+    $Team: ModelIDKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelTeamMatchFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    teamMatchesByRegional(
+      Regional: $Regional
+      MatchType: $MatchType
+      MatchNumber: $MatchNumber
+      Team: $Team
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        Team
+        Regional
+        MatchType
+        MatchNumber
+        MatchKey
+        Alliance
+        TotalPoints
+        Autonomous {
+          AmountScored {
+            CoralL1
+            CoralL1Missed
+            CoralL2
+            CoralL2Missed
+            CoralL3
+            CoralL3Missed
+            CoralL4
+            CoralL4Missed
+            Processor
+            ProcessorMissed
+            Net
+            NetMissed
+            Cycles
+          }
+          PointsScored {
+            Points
+            AlgaePoints
+            CoralPoints
+            EndgamePoints
+          }
+          StartingPosition
+          Left
+          Hang
+        }
+        Teleop {
+          AmountScored {
+            CoralL1
+            CoralL1Missed
+            CoralL2
+            CoralL2Missed
+            CoralL3
+            CoralL3Missed
+            CoralL4
+            CoralL4Missed
+            Processor
+            ProcessorMissed
+            Net
+            NetMissed
+            Cycles
+          }
+          PointsScored {
+            Points
+            AlgaePoints
+            CoralPoints
+            EndgamePoints
+          }
+          Endgame {
+            EndGameResult
+          }
+          HumPlrScoring {
+            Made
+            Missed
+          }
+        }
+        RobotInfo {
+          RobotSpeed
+          ShootingSpeed
+          FuelCapacity
+          BallsShot
+          ShootingCycles
+          WhatBrokeDesc
+          Comments
+        }
+        Penalties {
+          Fouls
+          Tech
+          PenaltiesCommitted {
+            YellowCard
+            RedCard
+            Disabled
+            DQ
+            Broken
+            NoShow
+          }
+          FoulDesc
         }
         createdAt
         updatedAt

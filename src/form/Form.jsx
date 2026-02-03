@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
 import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
+import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
 
@@ -104,8 +105,8 @@ function Form() {
     apigetMatchesForRegional(regional)
       .then((data) => {
         let matches = data.data.teamMatchesByRegional.items
-        let team = matches.find((x) => x.Team === teamNumber) // finds matches for the team in our database
-        if (team !== undefined && apiMatchData.find((x) => x.Team === teamNumber) === undefined)//checks if the team is found in our database
+        let team = matches.find((x) => isSameTeam(x.Team, teamNumber)) // finds matches for the team in our database
+        if (team !== undefined && apiMatchData.find((x) => isSameTeam(x.Team, teamNumber)) === undefined)//checks if the team is found in our database
           setApiMatchData(apiMatchData.concat(team))
       })
       .catch(err => console.log(err))
@@ -280,17 +281,17 @@ function Form() {
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={(e) => setTeamNumber(e.target.value)}
+              onChange={(e) => setTeamNumber(normalizeTeamId(e.target.value))}
             >
               <option value="">Select robot number</option>
               {color === false ?
                 matchData != [] ?
                   red.map((team) => {
-                    return <option value={team} key={team}>{team}</option>
+                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
                   }) : null
                 : matchData != [] ?
                   blue.map((team) => {
-                    return <option value={team} key={team}>{team}</option>
+                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
                   }) : null
               }
             </select>
@@ -857,6 +858,8 @@ function Form() {
             matchKey,
             apiMatchData,
             matchType,
+            matchNumber,
+            color,
             autoActions,
             autoHang,
             hangType,

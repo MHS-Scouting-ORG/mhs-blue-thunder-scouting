@@ -1,19 +1,45 @@
 const initAutoAmountScored = _ => {
   return {
-    Fuel: 0
+    CoralL1: 0,
+    CoralL1Missed: 0,
+    CoralL2: 0,
+    CoralL2Missed: 0,
+    CoralL3: 0,
+    CoralL3Missed: 0,
+    CoralL4: 0,
+    CoralL4Missed: 0,
+    Processor: 0,
+    ProcessorMissed: 0,
+    Net: 0,
+    NetMissed: 0,
+    Cycles: 0,
   }
 
 }
 
 const initAutoPointsScored = _ => {
   return {
-    Points: 0
+    Points: 0,
+    AlgaePoints: 0,
+    CoralPoints: 0,
+    EndgamePoints: 0,
   }
 }
 
 const initTeleAmountScored = _ => {
   return {
-    Fuel: 0,
+    CoralL1: 0,
+    CoralL1Missed: 0,
+    CoralL2: 0,
+    CoralL2Missed: 0,
+    CoralL3: 0,
+    CoralL3Missed: 0,
+    CoralL4: 0,
+    CoralL4Missed: 0,
+    Processor: 0,
+    ProcessorMissed: 0,
+    Net: 0,
+    NetMissed: 0,
     Cycles: 0,
   }
 }
@@ -21,7 +47,16 @@ const initTeleAmountScored = _ => {
 const initTelePointsScored = _ => {
   return {
     Points: 0,
+    AlgaePoints: 0,
+    CoralPoints: 0,
     EndgamePoints: 0,
+  }
+}
+
+const initHumanPlayerScoring = _ => {
+  return {
+    Made: 0,
+    Missed: 0,
   }
 }
 
@@ -111,7 +146,7 @@ const zeroAccuracy = function () {
 
 }
 
-const buildMatchEntry = (regionalId, teamId, matchId) => {
+const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, alliance) => {
   if (regionalId === undefined)
     throw new Error("RegionalId Not provided")
   if (teamId === undefined)
@@ -123,14 +158,17 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
 
   return {
     id: matchId,
-    name: "",
-    description: "",
     Team: teamId,
     Regional: regionalId,
+    MatchType: matchType,
+    MatchNumber: matchNumber,
+    MatchKey: matchId,
+    Alliance: alliance,
     TotalPoints: 0,
     Autonomous: {
       AmountScored: initAutoAmountScored(),
       PointsScored: initAutoPointsScored(),
+      StartingPosition: 0,
       Left: false,
       Hang: '',
     },
@@ -140,14 +178,14 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
       Endgame: {
         EndGameResult: EndgameOpts.NONE,
       },
-      HumPlrScoring: {
-        Made: 0,
-        Missed: 0
-      }
+      HumPlrScoring: initHumanPlayerScoring(),
     },
     RobotInfo: {
       RobotSpeed: SpeedOpts.NONE,
       ShootingSpeed: SpeedOpts.NONE,
+      FuelCapacity: 0,
+      BallsShot: 0,
+      ShootingCycles: 0,
       WhatBrokeDesc: "",
       Comments: ""
     },
@@ -161,9 +199,14 @@ const buildMatchEntry = (regionalId, teamId, matchId) => {
         DQ: false,
         Broken: false,
         NoShow: false,
+        Tipped: false,
       },
       FoulDesc: ""
     },
+    ActiveStrat: [],
+    InactiveStrat: [],
+    TravelMidActive: 0,
+    TravelMidInactive: 0,
   }
 
 }

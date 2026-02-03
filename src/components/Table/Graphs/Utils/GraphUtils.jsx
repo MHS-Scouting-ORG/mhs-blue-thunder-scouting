@@ -8,8 +8,10 @@ what kind of stat and the matches we currently have as parameters
 to find the matches of the individual team
 */
 
+import { isSameTeam } from "../../../../utils/teamId"
+
 const getStat = (team, phase, accessor, apiData) => {
-    const teamMatches = apiData.filter(x => x.Team === team) 
+    const teamMatches = apiData.filter(x => isSameTeam(x.Team, team)) 
 
     /* Uses the individual team's matches to access all of the matches' "TotalPoints" */
     const totalPts = teamMatches.map((match) => {

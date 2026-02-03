@@ -8,63 +8,27 @@ export const createTeam = /* GraphQL */ `
   ) {
     createTeam(input: $input, condition: $condition) {
       id
+      name
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TeleStrat
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
-      }
-      TeamAttributes {
-        name
-        Regional
-        DeclaredFuelCap
-        CyclesPerMatch
-        Capabilities
-        MaxHang
-        HangTeamwork
-        HangTime
-        Photo
-        Notes
-        __typename
-      }
+      photo
+      fuelCapacity
+      hangTime
+      cyclesPerMatch
+      fuelPerCycle
+      bump
+      trench
+      numAutos
+      maxHangHeight
+      canDoubleHang
+      canTripleHang
       createdAt
       updatedAt
       __typename
     }
   }
 `;
+
 export const updateTeam = /* GraphQL */ `
   mutation UpdateTeam(
     $input: UpdateTeamInput!
@@ -72,63 +36,27 @@ export const updateTeam = /* GraphQL */ `
   ) {
     updateTeam(input: $input, condition: $condition) {
       id
+      name
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TeleStrat
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
-      }
-      TeamAttributes {
-        name
-        Regional
-        DeclaredFuelCap
-        CyclesPerMatch
-        Capabilities
-        MaxHang
-        HangTeamwork
-        HangTime
-        Photo
-        Notes
-        __typename
-      }
+      photo
+      fuelCapacity
+      hangTime
+      cyclesPerMatch
+      fuelPerCycle
+      bump
+      trench
+      numAutos
+      maxHangHeight
+      canDoubleHang
+      canTripleHang
       createdAt
       updatedAt
       __typename
     }
   }
 `;
+
 export const deleteTeam = /* GraphQL */ `
   mutation DeleteTeam(
     $input: DeleteTeamInput!
@@ -136,57 +64,239 @@ export const deleteTeam = /* GraphQL */ `
   ) {
     deleteTeam(input: $input, condition: $condition) {
       id
+      name
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
+      photo
+      fuelCapacity
+      hangTime
+      cyclesPerMatch
+      fuelPerCycle
+      bump
+      trench
+      numAutos
+      maxHangHeight
+      canDoubleHang
+      canTripleHang
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+
+export const createTeamMatch = /* GraphQL */ `
+  mutation CreateTeamMatch(
+    $input: CreateTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
+  ) {
+    createTeamMatch(input: $input, condition: $condition) {
+      id
+      Team
+      Regional
+      MatchType
+      MatchNumber
+      MatchKey
+      Alliance
+      TotalPoints
+      Autonomous {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
         }
-        Teleop {
-          TeleStrat
-          TravelMid
-          Endgame
-          __typename
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
         }
-        ActiveStrat
-        InactiveStrat
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
+        StartingPosition
+        Left
+        Hang
       }
-      TeamAttributes {
-        name
-        Regional
-        DeclaredFuelCap
-        CyclesPerMatch
-        Capabilities
-        MaxHang
-        HangTeamwork
-        HangTime
-        Photo
-        Notes
-        __typename
+      Teleop {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
+        }
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
+        }
+        Endgame {
+          EndGameResult
+        }
+        HumPlrScoring {
+          Made
+          Missed
+        }
       }
+      RobotInfo {
+        RobotSpeed
+        ShootingSpeed
+        FuelCapacity
+        BallsShot
+        ShootingCycles
+        WhatBrokeDesc
+        Comments
+      }
+      Penalties {
+        Fouls
+        Tech
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+        }
+        FoulDesc
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+
+export const updateTeamMatch = /* GraphQL */ `
+  mutation UpdateTeamMatch(
+    $input: UpdateTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
+  ) {
+    updateTeamMatch(input: $input, condition: $condition) {
+      id
+      Team
+      Regional
+      MatchType
+      MatchNumber
+      MatchKey
+      Alliance
+      TotalPoints
+      Autonomous {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
+        }
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
+        }
+        StartingPosition
+        Left
+        Hang
+      }
+      Teleop {
+        AmountScored {
+          CoralL1
+          CoralL1Missed
+          CoralL2
+          CoralL2Missed
+          CoralL3
+          CoralL3Missed
+          CoralL4
+          CoralL4Missed
+          Processor
+          ProcessorMissed
+          Net
+          NetMissed
+          Cycles
+        }
+        PointsScored {
+          Points
+          AlgaePoints
+          CoralPoints
+          EndgamePoints
+        }
+        Endgame {
+          EndGameResult
+        }
+        HumPlrScoring {
+          Made
+          Missed
+        }
+      }
+      RobotInfo {
+        RobotSpeed
+        ShootingSpeed
+        FuelCapacity
+        BallsShot
+        ShootingCycles
+        WhatBrokeDesc
+        Comments
+      }
+      Penalties {
+        Fouls
+        Tech
+        PenaltiesCommitted {
+          YellowCard
+          RedCard
+          Disabled
+          DQ
+          Broken
+          NoShow
+        }
+        FoulDesc
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+
+export const deleteTeamMatch = /* GraphQL */ `
+  mutation DeleteTeamMatch(
+    $input: DeleteTeamMatchInput!
+    $condition: ModelTeamMatchConditionInput
+  ) {
+    deleteTeamMatch(input: $input, condition: $condition) {
+      id
+      Team
+      Regional
+      MatchType
+      MatchNumber
+      MatchKey
+      Alliance
+      TotalPoints
       createdAt
       updatedAt
       __typename

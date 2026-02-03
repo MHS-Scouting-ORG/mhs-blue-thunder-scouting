@@ -4,6 +4,7 @@ import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '.
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";
 import { generateRandomEntry } from "../api/builder";
+import { normalizeTeamId } from "../utils/teamId";
 
 /* GET MATCH TEAMS */
 
@@ -40,6 +41,8 @@ export async function submitState( //params are states of data from form
   matchKey,
   apiMatchData,
   matchType,
+  matchNumber,
+  allianceColor,
   autoActions,
   autoHang,
   hangType,
@@ -53,6 +56,7 @@ export async function submitState( //params are states of data from form
   dq,
   botBroke,
   noShow,
+  tipped,
   minFouls,
   majFouls,
   robotSpeed,
@@ -74,15 +78,32 @@ export async function submitState( //params are states of data from form
   let telePoints = 0;
 
 
+  const normalizedTeamNumber = normalizeTeamId(teamNumber)
+  const parsedMatchNumber = Number.parseInt(matchNumber, 10)
+  const parsedFuelCapacity = Number.parseInt(fuelCapacity, 10)
+  const parsedBallsShot = Number.parseInt(estimatedBallsShot, 10)
+  const parsedShootingCycles = Number.parseInt(shootingCycles, 10)
+
+  const mapMatchType = (type) => {
+    if (type === 'q') return 'Qual'
+    if (type === 'sf' || type === 'f') return 'Elim'
+    return 'Practice'
+  }
+
   /* Checks Match Selects */
   if (matchType === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals or Finals)"
   }
 
-  if (teamNumber === '') {
+  if (normalizedTeamNumber === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
+  }
+
+  if (Number.isNaN(parsedMatchNumber)) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nMatch Number"
   }
 
 
@@ -161,9 +182,19 @@ export async function submitState( //params are states of data from form
     return true;
   }
   else if (!incompleteForm) {
-    const matchEntry = buildMatchEntry(regional, teamNumber, matchKey)
+    const matchEntry = buildMatchEntry(regional, normalizedTeamNumber, matchKey)
 
     console.log("init", matchEntry)
+
+    matchEntry.Team = normalizedTeamNumber
+    matchEntry.MatchType = mapMatchType(matchType)
+    matchEntry.MatchNumber = parsedMatchNumber
+    matchEntry.MatchKey = matchKey
+    matchEntry.Alliance = allianceColor ? "Blue" : "Red"
+    matchEntry.ActiveStrat = activeStrategy
+    matchEntry.InactiveStrat = inactiveStrategy
+    matchEntry.TravelMidActive = timesTravelledMidActive
+    matchEntry.TravelMidInactive = timesTravelledMidInactive
 
     matchEntry.TotalPoints = totalPoints
 
@@ -175,19 +206,31 @@ export async function submitState( //params are states of data from form
     }
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
+    matchEntry.Autonomous.PointsScored.AlgaePoints = 0
+    matchEntry.Autonomous.PointsScored.CoralPoints = 0
+    matchEntry.Autonomous.PointsScored.EndgamePoints = 0
+    matchEntry.Autonomous.Hang = autoHang
 
     /* TELEOP SPECIFIC*/
     // Set teleop coral scoring
-    matchEntry.Teleop.AmountScored.Net = timesTravelledMidActive + timesTravelledMidInactive
+    const totalTravelMid = timesTravelledMidActive + timesTravelledMidInactive
+    matchEntry.Teleop.AmountScored.Net = totalTravelMid
+    matchEntry.Teleop.AmountScored.Cycles = totalTravelMid
 
     matchEntry.Teleop.PointsScored.Points = telePoints
-    matchEntry.Teleop.PointsScored.AlgaePoints = endGamePoints
+    matchEntry.Teleop.PointsScored.AlgaePoints = 0
+    matchEntry.Teleop.PointsScored.CoralPoints = 0
+    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed
+    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed
+    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
+    matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
+    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = `Shooter Speed: ${shootingSpeed}, Fuel Capacity: ${fuelCapacity}, Balls Shot: ${estimatedBallsShot}, Shooting Cycles: ${shootingCycles}, ${robotInsight}`
+    matchEntry.RobotInfo.Comments = robotInsight
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls
@@ -198,6 +241,7 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
+    matchEntry.Penalties.PenaltiesCommitted.Tipped = tipped
 
 
     // console.log("matchEntry", matchEntry.Team)
@@ -208,12 +252,19 @@ export async function submitState( //params are states of data from form
     /* currently submits and updates the new form completely */
 
     if (apiMatchData.find(x => x.id === matchKey) === undefined) { //checks if match is already in array of matches in our database
-      await apiCreateTeamMatchEntry(regional, teamNumber, matchKey);
+      await apiCreateTeamMatchEntry(
+        regional,
+        normalizedTeamNumber,
+        matchKey,
+        matchEntry.MatchType,
+        matchEntry.MatchNumber,
+        matchEntry.Alliance
+      );
     }
-    await apiUpdateTeamMatch(regional, teamNumber, matchKey, matchEntry); //updates data if there already is
+    await apiUpdateTeamMatch(regional, normalizedTeamNumber, matchKey, matchEntry); //updates data if there already is
 
     //for testing
-    await apiGetTeamMatch(matchKey, regional, teamNumber)
+    await apiGetTeamMatch(matchKey, regional, normalizedTeamNumber)
 
   }
   window.alert("Form Submitted");

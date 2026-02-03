@@ -4,6 +4,7 @@ import { getTeamsInRegional} from "../../../api/bluealliance"
 import { apigetMatchesForRegional } from "../../../api"
 import { getStat } from "./Utils/GraphUtils"
 import { uniqueArr } from "../TableUtils/CalculationUtils"
+import { normalizeTeamId } from "../../../utils/teamId"
 
 function LineGraph (props) {
     /* props from custom graph */
@@ -28,7 +29,7 @@ function LineGraph (props) {
             setApiData(holdMatches)
             const xLegend = uniqueArr(holdMatches.map(x => x.id.substring(x.id.indexOf("_") + 1)))
             setXAxis(xLegend)
-            const availTeams = uniqueArr(holdMatches.map(x => x.Team))
+            const availTeams = uniqueArr(holdMatches.map(x => normalizeTeamId(x.Team)))
             setAvailableTeams(availTeams)
         })
     },[selectedTeams, statType, accessor, apiData]); //runs dependin on the change of selected teams, stattype, accessor, and matches
@@ -53,7 +54,7 @@ function LineGraph (props) {
         }
         else {
             const dataArr = selectedTeams.map(x => {
-                const team = `frc${x.TeamNumber}` 
+                const team = normalizeTeamId(x.TeamNumber)
                 const stat = getStat(team, statType, accessor, apiData)
                 return {
                     label: x.TeamNumber,

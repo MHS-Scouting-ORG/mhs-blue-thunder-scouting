@@ -42,30 +42,51 @@ enum SpeedOpts {
 ### SCORING ###
 ###############
 
-type TeleScoring {
-  Fuel: Int
+type ScoringAmount {
+  CoralL1: Int
+  CoralL1Missed: Int
+  CoralL2: Int
+  CoralL2Missed: Int
+  CoralL3: Int
+  CoralL3Missed: Int
+  CoralL4: Int
+  CoralL4Missed: Int
+  Processor: Int
+  ProcessorMissed: Int
+  Net: Int
+  NetMissed: Int
   Cycles: Int
 }
 
-type TelePointsScoring {
+type PointsScoring {
   Points: Int
+  AlgaePoints: Int
+  CoralPoints: Int
   EndgamePoints: Int
 }
 
-type AutoScoring {
-  Fuel: Int
+type HumanPlayerScoring {
+  Made: Int
+  Missed: Int
 }
 
-enum AutoHangOpts {
-  Level1
-  None
+type EndgameType {
+  EndGameResult: EndgameOpts
 }
 
 type AutonomousType {
-  AmountScored: AutoScoring
-  PointsScored: AutoPointsScoring
+  AmountScored: ScoringAmount
+  PointsScored: PointsScoring
+  StartingPosition: Int
   Left: Boolean
   Hang: AutoHangOpts
+}
+
+type TeleopType {
+  AmountScored: ScoringAmount
+  PointsScored: PointsScoring
+  Endgame: EndgameType
+  HumPlrScoring: HumanPlayerScoring
 }
 
 type PenaltyOpts {
@@ -75,12 +96,7 @@ type PenaltyOpts {
   DQ: Boolean
   Broken: Boolean
   NoShow: Boolean
-}
-
-type TeleType {
-  TeleStrat: TeleStratOpts
-  TravelMid: Int
-  Endgame: HangOpts
+  Tipped: Boolean
 }
 
 type PenaltyType {
@@ -92,7 +108,7 @@ type PenaltyType {
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
-  ShooterSpeed: SpeedOpts
+  ShootingSpeed: SpeedOpts
   FuelCapacity: Int
   BallsShot: Int
   ShootingCycles: Int
@@ -135,6 +151,7 @@ type Team
   @auth(rules: [{ allow: private, provider: iam }])
 {
   id: ID! @primaryKey
+  name: String
   description: String
   Comment: String
   photo: String
@@ -190,4 +207,9 @@ type TeamMatch
   Teleop: TeleopType!
   RobotInfo: RobotInfoType!
   Penalties: PenaltyType
+
+  ActiveStrat: [ActiveStratOpts]
+  InactiveStrat: [InactiveStratOpts]
+  TravelMidActive: Int
+  TravelMidInactive: Int
 }
