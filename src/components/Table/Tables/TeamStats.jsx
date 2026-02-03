@@ -3,7 +3,11 @@ import { getUrl } from 'aws-amplify/storage';
 import { generateClient } from 'aws-amplify/api';
 import { getTeam } from '../../../graphql/queries';
 
-const client = generateClient();
+let client
+const getClient = () => {
+  if (!client) client = generateClient()
+  return client
+}
 
 function TeamStats(props) {
   const information = props.information;
@@ -16,7 +20,7 @@ function TeamStats(props) {
   useEffect(() => {
     if (selectedTeam) {
       // Fetch team data from database
-      client.graphql({
+      getClient().graphql({
         query: getTeam,
         variables: { id: selectedTeam }
       }).then(result => {

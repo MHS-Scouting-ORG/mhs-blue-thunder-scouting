@@ -154,17 +154,11 @@ function Summary() {
                 else if (view === "Alliance Selection") setCurrentView('alliance');
                 else if (view === "Elims") setCurrentView('elims');
               }}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase()) ? "#77B6E2" : "#e0e0e0",
-                color: currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase()) ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "500",
-                transition: "all 0.3s ease"
-              }}
+                className={`${tableStyles.ToggleButton} ${
+                  currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase())
+                    ? tableStyles.ToggleButtonOn
+                    : tableStyles.ToggleButtonOff
+                }`}
             >
               {view}
             </button>

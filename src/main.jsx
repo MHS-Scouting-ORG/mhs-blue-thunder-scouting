@@ -1,3 +1,5 @@
+import './amplifyConfig.js'
+
 import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
@@ -7,10 +9,6 @@ import Home from './pages/Home.jsx'
 import Form from './form/Form.jsx'
 import Summary from './components/Table/Summary.jsx'
 import Notes from './scoutingNotes/Notes.jsx'
-// import * as Auth from 'aws-amplify/auth'
-// import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
-import { apiGetRegional } from './api/index.js'
-import { Table } from '@aws-amplify/ui-react'
 
 const router = createBrowserRouter([
   {

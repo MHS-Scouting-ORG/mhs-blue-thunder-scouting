@@ -2,15 +2,58 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-##################
-### AUTONOMOUS ###
-##################
+###############
+### ENUMS   ###
+###############
 
-# enums
-enum AutoStratOpts {
-  WentMid
-  Scored
-  CrossedMid
+enum MatchType {
+  Practice
+  Qual
+  Elim
+}
+
+enum AllianceColor {
+  Red
+  Blue
+}
+
+enum AutoHangOpts {
+  None
+  Level1
+  Level2
+  Level3
+}
+
+enum EndgameOpts {
+  Level3
+  Level2
+  Level1
+  None
+}
+
+enum SpeedOpts {
+  None
+  Slow
+  Average
+  Fast
+}
+
+###############
+### SCORING ###
+###############
+
+type TeleScoring {
+  Fuel: Int
+  Cycles: Int
+}
+
+type TelePointsScoring {
+  Points: Int
+  EndgamePoints: Int
+}
+
+type AutoScoring {
+  Fuel: Int
 }
 
 enum AutoHangOpts {
@@ -18,30 +61,11 @@ enum AutoHangOpts {
   None
 }
 
-# types
 type AutonomousType {
-  AutoStrat: AutoStratOpts
-  TravelMid: Int
-  AutoHang: AutoHangOpts
-}
-
-##############
-### TELEOP ###
-##############
-
-#enums
-
-enum HangOpts {
-  Level3
-  Level2
-  Level1
-  None
-}
-
-# types
-
-enum TeleStratOpts {
-  Basic
+  AmountScored: AutoScoring
+  PointsScored: AutoPointsScoring
+  Left: Boolean
+  Hang: AutoHangOpts
 }
 
 type PenaltyOpts {
@@ -65,20 +89,6 @@ type PenaltyType {
   PenaltiesCommitted: PenaltyOpts
   FoulDesc: String
 }
-
-##################
-### ROBOT INFO ###
-##################
-
-# enums
-enum SpeedOpts {
-  None
-  Slow
-  Average
-  Fast
-}
-
-# types
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
@@ -120,37 +130,64 @@ enum CapabilitiesOpts {
   Trench
 }
 
-# types
-
-type TeamMatchesType {
-  name: String
-  description: String
-  Team: ID!
-  Regional: String!
-  Autonomous: AutonomousType!
-  Teleop: TeleType!
-  ActiveStrat: ActiveStratOpts
-  InactiveStrat: InactiveStratOpts
-  Penalties: PenaltyType
-}
-
-type TeamAttributesType {
-  name: String
-  Regional: String!
-  DeclaredFuelCap: Int
-  CyclesPerMatch: Int
-  Capabilities: CapabilitiesOpts
-  MaxHang: HangOpts
-  HangTeamwork: HangTeamworkOpts
-  HangTime: Float
-  Photo: String
-  Notes: String
-}
-
-type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
+type Team
+  @model
+  @auth(rules: [{ allow: private, provider: iam }])
+{
   id: ID! @primaryKey
   description: String
   Comment: String
-  TeamMatches: TeamMatchesType!
-  TeamAttributes: TeamAttributesType!
+  photo: String
+  fuelCapacity: Int
+
+  # --- Notes form fields (src/scoutingNotes/Notes.jsx) ---
+  hangTime: Float
+  cyclesPerMatch: Int
+  fuelPerCycle: Int
+  bump: Boolean
+  trench: Boolean
+  numAutos: Int
+  maxHangHeight: String
+  canDoubleHang: Boolean
+  canTripleHang: Boolean
+
+  # Team-centric relationship: all matches for this team (sorted by Regional/MatchType/MatchNumber via TeamMatch @index)
+  matches: [TeamMatch] @hasMany(indexName: "byTeam", fields: ["id"])
+}
+
+##################
+### TEAM MATCH  ###
+##################
+
+type TeamMatch
+  @model
+  @auth(rules: [{ allow: private, provider: iam }])
+{
+  id: ID! @primaryKey
+
+  # Team-centric foreign key (partition for the byTeam index)
+  Team: ID!
+    @index(
+      name: "byTeam"
+      sortKeyFields: ["Regional", "MatchType", "MatchNumber"]
+    )
+
+  # Regional-centric index for event-wide graphs/tables
+  Regional: String!
+    @index(
+      name: "byRegional"
+      sortKeyFields: ["MatchType", "MatchNumber", "Team"]
+    )
+
+  MatchType: MatchType!
+  MatchNumber: Int!
+  MatchKey: String
+  Alliance: AllianceColor
+
+  TotalPoints: Int
+
+  Autonomous: AutonomousType!
+  Teleop: TeleopType!
+  RobotInfo: RobotInfoType!
+  Penalties: PenaltyType
 }

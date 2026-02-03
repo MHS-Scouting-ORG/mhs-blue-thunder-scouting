@@ -8,6 +8,7 @@ import { toggleIncremental } from "../form/FormUtils"
 // styling
 import { submitState } from '../form/FormUtils'
 import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
+import tableStyling from "../components/Table/Table.module.css";
 
 // Amplify imports
 import { generateClient } from 'aws-amplify/api';
@@ -15,7 +16,11 @@ import { uploadData, getUrl } from 'aws-amplify/storage';
 import { createTeam, updateTeam } from '../graphql/mutations';
 import { getTeam } from '../graphql/queries';
 
-const client = generateClient();
+let client
+const getClient = () => {
+  if (!client) client = generateClient()
+  return client
+}
 
 function Notes(props) {
   /* Regional Key */
@@ -121,7 +126,7 @@ function Notes(props) {
     setFindTeam(teamNum)
     if (teamNum) {
       try {
-        const teamData = await client.graphql({
+        const teamData = await getClient().graphql({
           query: getTeam,
           variables: { id: teamNum }
         })
@@ -279,7 +284,7 @@ function Notes(props) {
     }
 
     try {
-      await client.graphql({
+      await getClient().graphql({
         query: updateTeam,
         variables: {
           input: teamInput
@@ -289,7 +294,7 @@ function Notes(props) {
       resetStates()
     } catch (updateErr) {
       try {
-        await client.graphql({
+        await getClient().graphql({
           query: createTeam,
           variables: {
             input: teamInput
@@ -468,42 +473,22 @@ function Notes(props) {
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
                       onClick={() => setBump(!bump)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: bump ? "#77B6E2" : "#e0e0e0",
-                        color: bump ? "white" : "black",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        transition: "all 0.3s ease"
-                      }}
+                      className={`${tableStyling.ToggleButton} ${bump ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
-                      {bump ? "✓ " : ""}Bump
+                      Bump
                     </button>
                     <button
                       onClick={() => setTrench(!trench)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: trench ? "#77B6E2" : "#e0e0e0",
-                        color: trench ? "white" : "black",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        transition: "all 0.3s ease"
-                      }}
+                      className={`${tableStyling.ToggleButton} ${trench ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
-                      {trench ? "✓ " : ""}Trench
+                      Trench
                     </button>
                   </div>
                 </div>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginTop: "10px" }}>
-                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Capabilities</label>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "1.3em"  }}>Hang Capabilities</label>
                 
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Time (seconds)</label>
@@ -553,35 +538,15 @@ function Notes(props) {
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
                       onClick={() => setCanDoubleHang(!canDoubleHang)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: canDoubleHang ? "#77B6E2" : "#e0e0e0",
-                        color: canDoubleHang ? "white" : "black",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        transition: "all 0.3s ease"
-                      }}
+                      className={`${tableStyling.ToggleButton} ${canDoubleHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
-                      {canDoubleHang ? "✓ " : ""}Can Double Hang
+                      Can Double Hang
                     </button>
                     <button
                       onClick={() => setCanTripleHang(!canTripleHang)}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: canTripleHang ? "#77B6E2" : "#e0e0e0",
-                        color: canTripleHang ? "white" : "black",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        fontWeight: "500",
-                        transition: "all 0.3s ease"
-                      }}
+                      className={`${tableStyling.ToggleButton} ${canTripleHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
-                      {canTripleHang ? "✓ " : ""}Can Triple Hang
+                      Can Triple Hang
                     </button>
                   </div>
                 </div>

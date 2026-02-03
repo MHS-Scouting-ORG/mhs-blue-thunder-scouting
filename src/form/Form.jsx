@@ -5,6 +5,8 @@ import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
 
+import tableStyling from "../components/Table/Table.module.css";
+
 // styling
 import { submitState } from './FormUtils'
 
@@ -306,17 +308,7 @@ function Form() {
               <button
                 key={action}
                 onClick={() => toggleAutoAction(action)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: autoActions.includes(action) ? "#77B6E2" : "#e0e0e0",
-                  color: autoActions.includes(action) ? "white" : "black",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  transition: "all 0.3s ease"
-                }}
+                className={`${tableStyling.ToggleButton} ${autoActions.includes(action) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
               >
                 {action}
               </button>
@@ -361,17 +353,7 @@ function Form() {
                 strategy === "Offensive" ? "Aggressive play to score points" :
                 "Assisting teammates"
               }
-              style={{
-                padding: "10px 20px",
-                backgroundColor: activeStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
-                color: activeStrategy.includes(strategy) ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "500",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${activeStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               {strategy}
             </button>
@@ -447,17 +429,7 @@ function Form() {
                 strategy === "Offensive" ? "Aggressive play to score points" :
                 "Assisting teammates"
               }
-              style={{
-                padding: "10px 20px",
-                backgroundColor: inactiveStrategy.includes(strategy) ? "#77B6E2" : "#e0e0e0",
-                color: inactiveStrategy.includes(strategy) ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "500",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${inactiveStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               {strategy}
             </button>
@@ -659,116 +631,50 @@ function Form() {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap", paddingTop: "10px" }}>
+          <div style={{ display: "flex", flexDirection: "row", gap: "6px", justifyContent: "center", flexWrap: "wrap", paddingTop: "6px" }}>
             <button 
               onClick={() => setYellowCard(!yellowCard)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: yellowCard ? "#ffbd59" : "#e0e0e0",
-                color: "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${yellowCard ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+              style={{ '--toggle-on-bg': '#ffbd59', '--toggle-on-fg': 'black' }}
             >
               Yellow Card
             </button>
             <button 
               onClick={() => setRedCard(!redCard)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: redCard ? "#ff3131" : "#e0e0e0",
-                color: redCard ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${redCard ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+              style={{ '--toggle-on-bg': '#ff3131', '--toggle-on-fg': 'white' }}
             >
               Red Card
             </button>
             <button 
               onClick={() => setDisable(!disable)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: disable ? "#ff914d" : "#e0e0e0",
-                color: "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${disable ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+              style={{ '--toggle-on-bg': '#ff914d', '--toggle-on-fg': 'black' }}
             >
               Disable
             </button>
             <button 
               onClick={() => setDQ(!dq)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: dq ? "black" : "#e0e0e0",
-                color: dq ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${dq ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+              style={{ '--toggle-on-bg': 'black', '--toggle-on-fg': 'white' }}
             >
               DQ
             </button>
             <button 
               onClick={() => setBotBroke(!botBroke)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: botBroke ? "#77B6E2" : "#e0e0e0",
-                color: botBroke ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${botBroke ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               Broke
             </button>
             <button 
               onClick={() => setNoShow(!noShow)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: noShow ? "#77B6E2" : "#e0e0e0",
-                color: noShow ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${noShow ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               No Show
             </button>
             <button 
               onClick={() => setTipped(!tipped)} 
-              style={{ 
-                padding: "12px 24px",
-                backgroundColor: tipped ? "#77B6E2" : "#e0e0e0",
-                color: tipped ? "white" : "black",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "600",
-                transition: "all 0.3s ease"
-              }}
+              className={`${tableStyling.ToggleButton} ${tipped ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               Tipped
             </button>

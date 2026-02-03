@@ -5,7 +5,11 @@ import { generateClient } from 'aws-amplify/api';
 import { createTeam, updateTeam } from '../../../graphql/mutations';
 import { getTeam } from '../../../graphql/queries';
 
-const client = generateClient();
+let client
+const getClient = () => {
+  if (!client) client = generateClient()
+  return client
+}
 
 const pickingOrder = [
   { alliance: 1, type: 'captain' },
@@ -72,7 +76,7 @@ function AllianceSelectionView({ tableData, regional }) {
 
       // Then try to load from server and overwrite local if available
       try {
-        const result = await client.graphql({
+        const result = await getClient().graphql({
           query: getTeam,
           variables: { id: allianceId }
         });
@@ -105,7 +109,7 @@ function AllianceSelectionView({ tableData, regional }) {
     // Then attempt to save to the server; if it fails, we still have the local copy
     try {
       try {
-        await client.graphql({
+        await getClient().graphql({
           query: updateTeam,
           variables: {
             input: {
@@ -116,7 +120,7 @@ function AllianceSelectionView({ tableData, regional }) {
           }
         });
       } catch (updateError) {
-        await client.graphql({
+        await getClient().graphql({
           query: createTeam,
           variables: {
             input: {
