@@ -1,6 +1,9 @@
 .underConstruction {
     font-size: 1rem;
 }
+.customRobotLayout {
+    display: grid;
+}
 .rainbowColors {
     font-size: 2rem;
     align-items: center;
@@ -136,6 +139,7 @@
 .calculatedAns{
     font-size: 2rem;
     width: 390px;
+    pointer-events: none;
 }
 .newCalcBackground {
     background-color: darkgray;
@@ -168,4 +172,9 @@
 .robotSortingOptions {
     font-size: 2rem;
     width: 500px;
+}
+.speGridRobot {
+    border: 3px;
+    padding: 20px;
+    text-align: center;
 }

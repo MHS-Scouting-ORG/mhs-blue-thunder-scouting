@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Practice.css'; //imports the css file to jsx file
 import { use } from 'react';
 import styles from './Practice.module.css';
+import {ROBOTS} from './Robots.jsx'
 //className is used in jsx file
 function Practice() {
 //UserName
@@ -81,77 +82,51 @@ const searchingColor = (event) => {
     })
     setRbColors(filterRbColors)
 }
-
-
-
-
-
-
-
-
-
-//calculator v02
-const CALCULATOR_BUTTONS = [
-    {calcButton: '/'},
-    {calcButton: '7'},
-    {calcButton: '8'},
-    {calcButton: '9'},
-    {calcButton: '*'},
-    {calcButton: '4'},
-    {calcButton: '5'},
-    {calcButton: '6'},
-    {calcButton: '-'},
-    {calcButton: '1'},
-    {calcButton: '2'},
-    {calcButton: '3'},
-    {calcButton: '+'},
-    {calcButton: '0'},
-    {calcButton: '='},
-    {calcButton: '.'},
-    {calcButton: 'C'},
+//NEW WAYS OF SORTING LEARNING
+const CLOTHES = [
+    {placement:'top', name:'Jacket'},
+    {placement:'bottom', name:'Socks'},
+    {placement:'bottom', name:'Shoes'},
+    {placement:'top', name:'Shirt'},
+    {placement:'bottom', name:'Pants'},
+    {placement:'top', name:'Hat'},
 ]
+const [clothing, setClothing] = useState(CLOTHES);
+const [filterClothing, setFilterClothing] = useState();
+const [revOrd, setRevOrd] = useState();
 
-const [calc, setCalc] = useState(CALCULATOR_BUTTONS)
-
-//Sort through robots color 
-const ROBOTS = [
-    {robNum: 1, Color: 'Red', Name:'BMO'},
-    {robNum: 2, Color: 'Red', Name:'Bender'},
-    {robNum: 3, Color: 'Blue', Name:'R2-D2'},
-    {robNum: 4, Color: 'Red', Name:'Baymax'},
-    {robNum: 5, Color: 'Blue', Name:'WALL-E'},
-    {robNum: 6, Color: 'Blue', Name:'Clank'}
-]
-const [robots, setRobots] = useState(ROBOTS)
-const [sortRobots, setSortRobots] = useState('')
-
-const sortThroughRobots = (event) =>{
-    const searchRobots = event.target.value;
-        setSortRobots(searchRobots)
-
-         if (!searchRobots)   {
-        setRobots(ROBOTS);
-        setSortRobots(searchRobots)    
-         return
+const sortingClothing = (e) => {
+    const sort = e.target.value; 
+    setFilterClothing(sort)      
+    
+    if (!sort) {
+        setClothing(CLOTHES);
+        setFilterClothing(sort);
+        return
     }
-
-
+    const sortsClothes = clothing.filter((apparel)  => {
+    return apparel.name.toLowerCase().indexOf(sort.toLowerCase()) !== -1;
+    })
+    setClothing(sortsClothes)
 }
+
 
 return(
     <div>
-        <div>
-            <h1 className="robSpe"><span>Robot#</span> <span>Robot Name</span>  <span>Robot Color</span></h1>
-            <select onChange className='robotSortingOptions'>
-                <option>Robot # descending</option>
-                <option>Robot # ascending</option>
-                <option>Alphabetical</option>
-                <option>Color Sort</option>
+            <div>
+        <h1>Number Sorting</h1>
+        <ul>
+            <input value={filterClothing} onChange={sortingClothing} type="text" placeholder='Clothing search'></input>
+            <select>
+                <option>Default</option>
+                <option>Reverse Order</option>
+                <option>Top</option>
+                <option>Bottom</option>
             </select>
-            <ul className='roberto'>
-            {robots.map((robot, index) => <li key={index}><span>{robot.robNum}</span> <span>{robot.Name}</span> <span>{robot.Color}</span></li>)}
-            </ul>
-            </div>
+            {clothing.map((cloth, index) => <li key={index}>{cloth.name} {cloth.placement}</li>)}
+            {clothing.length === 0 && <h2>NO DRIP</h2>}
+        </ul>
+        </div>
         <div>
             <h1>Color</h1>
             <ul>
@@ -173,6 +148,7 @@ return(
                     </select>
                 */}
                 {rbColors.map((rbColor, index) => <li key={index}>{rbColor.id} {rbColor.name}</li>)}
+                {rbColors.length === 0 && <h2>NO RAINBOW COLOR AAAAAAAAAAAAAAAA!!!</h2>}
                 {/*<input type="text" id='rbColorInput' placeholder="Type in more colors"/>
                 <button onClick={addRbColor}>Add additional colors</button>
                 <p className='underConstruction'>not working currently*</p>
