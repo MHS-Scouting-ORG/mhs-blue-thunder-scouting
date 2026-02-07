@@ -3,7 +3,7 @@ import buildMatchEntry, { EndgameOpts, PenaltyOpts, SpeedOpts } from '../api/bui
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";
-import { generateRandomEntry } from "../api/builder";
+//import { generateRandomEntry } from "../api/builder";
 import { normalizeTeamId } from "../utils/teamId";
 
 /* GET MATCH TEAMS */
@@ -109,6 +109,13 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nMatch Number"
   }
 
+  /* Autonomous Hang */
+  if(autoHang === "None" && (redCard || dq || noShow || disable || botBroke) === false){
+    autoPoints += 0;
+  }
+  else if (autoHang === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
+    autoPoints += 15;
+  }
 
   /* EndGame Select */
   if((redCard || dq || noShow || disable || botBroke) !== false){
@@ -170,7 +177,7 @@ export async function submitState( //params are states of data from form
   /* Point Calc */
 
   // Calculate fuel points based on autoActions
-  let autoFuelPoints = autoActions.includes("Scored") ? 3 : 0; // Assume scored fuel = 3 points
+  let autoFuelPoints = autoActions.includes("Scored") ? 8 : 0; // Assume scored fuel = 8 points because of 8 preload max
   autoPoints = autoFuelPoints;
 
   // Teleop travel count - assume some points per travel
@@ -273,6 +280,7 @@ export async function submitState( //params are states of data from form
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form
 }
+
 
 /* function for form to change image based on toggle */
 export function toggleIncremental(state, type){ 

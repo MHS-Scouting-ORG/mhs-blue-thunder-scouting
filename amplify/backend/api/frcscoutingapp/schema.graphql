@@ -11,6 +11,7 @@ enum AutoStratOpts {
   WentMid
   Scored
   CrossedMid
+  None
 }
 
 enum AutoHangOpts {
@@ -35,7 +36,6 @@ enum HangOpts {
   Level3
   Level2
   Level1
-  None
 }
 
 # types
@@ -96,7 +96,7 @@ type RobotInfoType {
 
 # enums
 
-enum ActiveStratOpts {
+enum StratOpts {
   Hoarding
   Defense
   Offensive
@@ -129,8 +129,8 @@ type TeamMatchesType {
   Regional: String!
   Autonomous: AutonomousType!
   Teleop: TeleType!
-  ActiveStrat: ActiveStratOpts
-  InactiveStrat: InactiveStratOpts
+  ActiveStrat: StratOpts
+  InactiveStrat: StratOpts
   Penalties: PenaltyType
 }
 

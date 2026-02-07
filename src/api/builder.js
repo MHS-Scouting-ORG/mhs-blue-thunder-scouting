@@ -1,4 +1,4 @@
-const initAutoAmountScored = _ => {
+/*const initAutoAmountScored = _ => {
   return {
     CoralL1: 0,
     CoralL1Missed: 0,
@@ -51,17 +51,33 @@ const initTelePointsScored = _ => {
     CoralPoints: 0,
     EndgamePoints: 0,
   }
+} 
+ */
+
+const AutoStratOpts = {
+  WentMid: "WentMid",
+  Scored: "Scored",
+  CrossedMid: "CrossedMid",
+  NONE: "None"
 }
 
-const initHumanPlayerScoring = _ => {
+const StratOpts = {
+  Hoarding: "Hoarding",
+  Defense: "Defense",
+  Offensive: "Offensive",
+  Support: "Support",
+  NONE: "None"
+}
+
+/*const initHumanPlayerScoring = _ => {
   return {
     Made: 0,
     Missed: 0,
   }
-}
+} */
 
 
-const generateRandomScoring = function (cap) {
+/*const generateRandomScoring = function (cap) {
   if (!cap) {
     cap = {
       Cones: {
@@ -92,7 +108,8 @@ const generateRandomScoring = function (cap) {
 
   }
 
-}
+} */
+
 const PenaltyOpts = {
   YELLOW_CARD: "YellowCard",
   RED_CARD: "RedCard",
@@ -110,6 +127,11 @@ const EndgameOpts = {
   NONE: "None"
 }
 
+const AutoHangOpts = {
+  Level1: "Level1",
+  NONE: "None"
+}
+
 const SpeedOpts = {
   NONE: "None",
   SLOW: "Slow",
@@ -117,6 +139,7 @@ const SpeedOpts = {
   FAST: "Fast"
 }
 
+/*
 const selectPropsFromEnum = function (enumVals) {
   const vals = []
   for (let i in enumVals) {
@@ -142,9 +165,8 @@ const zeroAccuracy = function () {
     Low: 0,
     Overall: 0
   }
-
-
 }
+*/
 
 const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, alliance) => {
   if (regionalId === undefined)
@@ -166,21 +188,25 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
     Alliance: alliance,
     TotalPoints: 0,
     Autonomous: {
-      AmountScored: initAutoAmountScored(),
-      PointsScored: initAutoPointsScored(),
-      StartingPosition: 0,
-      Left: false,
-      Hang: '',
+      //AmountScored: initAutoAmountScored(),
+      //PointsScored: initAutoPointsScored(),
+      //StartingPosition: 0,
+      //Left: false,
+      //Hang: '',
+      AutoStrat: AutoStratOpts.NONE,
+      TravelMid: 0,
+      AutoHang: AutoHangOpts.NONE
     },
     Teleop: {
-      AmountScored: initTeleAmountScored(),
-      PointsScored: initTelePointsScored(),
-      Endgame: {
-        EndGameResult: EndgameOpts.NONE,
-      },
-      HumPlrScoring: initHumanPlayerScoring(),
+      // AmountScored: initTeleAmountScored(),
+      // PointsScored: initTelePointsScored(),
+      TravelMid: 0,
+      Endgame: EndgameOpts.NONE,
+      //HumPlrScoring: initHumanPlayerScoring(),
     },
-    RobotInfo: {
+    ActiveStrat: StratOpts.NONE,
+    InactiveStrat: StratOpts.NONE, 
+    /*RobotInfo: {
       RobotSpeed: SpeedOpts.NONE,
       ShootingSpeed: SpeedOpts.NONE,
       FuelCapacity: 0,
@@ -189,6 +215,7 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
       WhatBrokeDesc: "",
       Comments: ""
     },
+    */ 
     Penalties: {
       Fouls: 0,
       Tech: 0,
@@ -203,15 +230,13 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
       },
       FoulDesc: ""
     },
-    ActiveStrat: [],
-    InactiveStrat: [],
-    TravelMidActive: 0,
-    TravelMidInactive: 0,
   }
 
 }
 
-const generateRandomEntry = function (regionId, teamId, matchId) {
+
+
+/* const generateRandomEntry = function (regionId, teamId, matchId) {
   const matchEntry = buildMatchEntry(regionId, teamId, matchId)
   matchEntry.Penalties = {
     Fouls: Math.floor(Math.random() * 4),
@@ -258,11 +283,11 @@ const generateRandomEntry = function (regionId, teamId, matchId) {
 
   }
   return matchEntry
-}
+} */ //commented out to prevent accidental use, as it generates random entries that may be hard to delete
 
 
 /*
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { EndgameOpts, PenaltyOpts, SpeedOpts, generateRandomEntry, buildMatchEntry as default }
+export { EndgameOpts, PenaltyOpts, SpeedOpts, StratOpts, /*generateRandomEntry */ buildMatchEntry as default }
