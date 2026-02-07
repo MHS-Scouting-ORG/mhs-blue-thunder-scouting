@@ -243,7 +243,7 @@ function Form() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <input 
                   style={{ cursor: "pointer", width: "20px", height: "20px" }}
-                  onInput={(e) => radioAlliance(e.target.id)} 
+                  onInput={(e) => setColor(false)} 
                   type="radio" 
                   id="redAllianceChosen" 
                   name="alliance"
@@ -254,7 +254,7 @@ function Form() {
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <input 
                   style={{ cursor: "pointer", width: "20px", height: "20px" }}
-                  onInput={(e) => radioAlliance(e.target.id)} 
+                  onInput={(e) => setColor(true)} 
                   type="radio" 
                   id="blueAllianceChosen" 
                   name="alliance"

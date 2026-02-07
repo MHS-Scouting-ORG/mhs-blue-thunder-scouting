@@ -1,5 +1,5 @@
 import React from "react";
-import buildMatchEntry, { EndgameOpts, PenaltyOpts, SpeedOpts } from '../api/builder';
+import buildMatchEntry, { PenaltyOpts, SpeedOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 import { getTeamMatch } from "../graphql/queries";

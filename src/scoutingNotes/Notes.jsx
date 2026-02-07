@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional, getSimpleTeamsForRegional } from '../api/bluealliance';
 
-import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
+import { apiGetRegional, apigetMatchesForRegional, apiListTeams} from '../api/index';
 import { buttonIncremental } from "../form/FormUtils";
 import { toggleIncremental } from "../form/FormUtils"
 
@@ -63,7 +63,13 @@ function Notes(props) {
     alignItems: "center"
   };
 
-
+  useEffect(() => {
+    apiListTeams()
+      .then((data) => {
+       console.log("Teams data: ", data  )
+      })
+      .catch(err => console.log(err))
+  }, [])
 
   useEffect(() => {
     if (stream && showCamera) {

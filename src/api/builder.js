@@ -120,14 +120,9 @@ const PenaltyOpts = {
   NONE: "None"
 }
 
-const EndgameOpts = {
+const HangOpts = {
   Level3: "Level3",
   Level2: "Level2",
-  Level1: "Level1",
-  NONE: "None"
-}
-
-const AutoHangOpts = {
   Level1: "Level1",
   NONE: "None"
 }
@@ -137,6 +132,18 @@ const SpeedOpts = {
   SLOW: "Slow",
   AVERAGE: "Average",
   FAST: "Fast"
+}
+
+const CapabilitiesOpts = {
+  Bump: "Bump",
+  Trench: "Trench",
+  NONE: "None"
+}
+
+const HangTeamworkOpts = {
+  CanDoubleHang: "CanDoublehang",
+  CanTripleHang: "CanTripleHang",
+  NONE: "None"
 }
 
 /*
@@ -195,13 +202,13 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
       //Hang: '',
       AutoStrat: AutoStratOpts.NONE,
       TravelMid: 0,
-      AutoHang: AutoHangOpts.NONE
+      AutoHang: HangOpts.NONE
     },
     Teleop: {
       // AmountScored: initTeleAmountScored(),
       // PointsScored: initTelePointsScored(),
       TravelMid: 0,
-      Endgame: EndgameOpts.NONE,
+      Endgame: HangOpts.NONE,
       //HumPlrScoring: initHumanPlayerScoring(),
     },
     ActiveStrat: StratOpts.NONE,
@@ -232,6 +239,25 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
     },
   }
 
+}
+// buildTeamAttribute Entry for initializing team attributes when a new team is added to the database, separate from match entries
+const buildTeamAttributeEntry = (teamId) => {
+  if (teamId === undefined)
+    throw new Error("TeamId Not provided")
+
+  console.log("building team attribute entry")
+
+  return {
+    Team: teamId,
+    DeclaredFuelCap: 0,
+    CyclesPerMatch: 0,
+    Capabilities: CapabilitiesOpts.NONE,
+    MaxHang: HangOpts.NONE,
+    HangTeamwork: HangTeamworkOpts.NONE,
+    HangTime: 0.0,
+    Photo: "",
+    Notes: "",
+  }
 }
 
 
@@ -290,4 +316,4 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { EndgameOpts, PenaltyOpts, SpeedOpts, StratOpts, /*generateRandomEntry */ buildMatchEntry as default }
+export { PenaltyOpts, SpeedOpts, StratOpts, AutoStratOpts, HangOpts, /*generateRandomEntry */ buildMatchEntry as default,}
