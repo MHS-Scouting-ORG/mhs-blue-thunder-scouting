@@ -1,9 +1,9 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
-import { teamMatchesByRegional, getTeam, listTeams, getTeamMatch } from '../graphql/queries'
-import { deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam } from '../graphql/mutations'
-import { onCreateTeamMatch, onUpdateTeamMatch } from '../graphql/subscriptions'
+import { /* teamMatchesByRegional, getTeam, listTeams, /*getTeamMatch */ } from '../graphql/queries'
+//import { /*deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam */} from '../graphql/mutations'
+import { /*onCreateTeamMatch, onUpdateTeamMatch */ } from '../graphql/subscriptions'
 import buildMatchEntry from './builder'
 import { normalizeTeamId } from '../utils/teamId'
 

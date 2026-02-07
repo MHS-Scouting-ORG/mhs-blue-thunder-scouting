@@ -105,6 +105,7 @@ function Form() {
     /* Check for pre-existing match data in our api */
     apigetMatchesForRegional(regional)
       .then((data) => {
+        console.log("Match data for regional: ", data)
         let matches = data.data.teamMatchesByRegional.items
         let team = matches.find((x) => isSameTeam(x.Team, teamNumber)) // finds matches for the team in our database
         if (team !== undefined && apiMatchData.find((x) => isSameTeam(x.Team, teamNumber)) === undefined)//checks if the team is found in our database

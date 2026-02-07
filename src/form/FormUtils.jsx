@@ -2,7 +2,7 @@ import React from "react";
 import buildMatchEntry, { PenaltyOpts, SpeedOpts } from '../api/builder';
 import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
-import { getTeamMatch } from "../graphql/queries";
+//import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
 import { normalizeTeamId } from "../utils/teamId";
 
