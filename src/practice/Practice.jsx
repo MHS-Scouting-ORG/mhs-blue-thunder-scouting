@@ -113,6 +113,8 @@ const sortingClothing = (e) => {
 
 return(
     <div>
+        <div>
+        </div>
             <div>
         <h1>Number Sorting</h1>
         <ul>
@@ -181,6 +183,7 @@ return(
     <br></br>
     <br></br>
     </div>
+        {/*
         <h1>number adder only apparently</h1>
         <div className="calculator">
         <br></br>
@@ -242,7 +245,7 @@ return(
                     </div>
             </ul>
         </div>
-
+        */}
     </div>
     )
 }
