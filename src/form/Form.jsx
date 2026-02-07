@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
-import { apiGetRegional, apigetMatchesForRegional } from '../api/index';
+import { apiGetRegional, apigetMatchesForRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -110,6 +110,16 @@ function Form() {
         let team = matches.find((x) => isSameTeam(x.Team, teamNumber)) // finds matches for the team in our database
         if (team !== undefined && apiMatchData.find((x) => isSameTeam(x.Team, teamNumber)) === undefined)//checks if the team is found in our database
           setApiMatchData(apiMatchData.concat(team))
+      })
+      .catch(err => console.log(err))
+  }, [teamNumber]
+  )
+
+  useEffect(() => {
+    /* Check for pre-existing match data in our api */
+    apiListTeams(teamNumber)
+      .then((data) => {
+        console.log("ListTeam data : ", data)
       })
       .catch(err => console.log(err))
   }, [teamNumber]
@@ -891,10 +901,13 @@ function Form() {
             resetStates()
           }
         })
-          .catch(err => alert(`Form Incomplete: ignore submission alert and fix, ${JSON.stringify(err)}`))
+          .catch(err => alert(`Form Incomplete: fix, ${JSON.stringify(err)}`))
           }
         }/* Double checks and confirms for submission, in case of accidental press */
         ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
+      </div>
+      <div>
+        <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button>
       </div>
     </div>
   )

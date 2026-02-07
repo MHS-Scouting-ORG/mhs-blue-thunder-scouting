@@ -141,8 +141,8 @@ const CapabilitiesOpts = {
 }
 
 const HangTeamworkOpts = {
-  CanDoubleHang: "CanDoublehang",
-  CanTripleHang: "CanTripleHang",
+  CanDoubleHang: "Doublehang",
+  CanTripleHang: "TripleHang",
   NONE: "None"
 }
 
@@ -260,6 +260,60 @@ const buildTeamAttributeEntry = (teamId) => {
   }
 }
 
+const buildTeamEntry = (teamId) => {
+  if (teamId === undefined)
+    throw new Error("TeamId Not provided")
+
+  console.log("building team entry")
+
+  return {
+    id: teamId,
+    description: "",
+    Comment : "test",
+    TeamMatches: {
+      name: "",
+      description: "",
+      Team: teamId,
+      Regional: "",
+      Autonomous: {
+      AutoStrat: AutoStratOpts.NONE,
+      TravelMid: 0,
+      AutoHang: HangOpts.NONE
+    },
+    Teleop: {
+      TravelMid: 0,
+      Endgame: HangOpts.Level1,
+    },
+    ActiveStrat: StratOpts.Level1, //need to add none options for all enums
+    InactiveStrat: StratOpts.Level1, 
+    Penalties: {
+      Fouls: 0,
+      Tech: 0,
+      PenaltiesCommitted: {
+        YellowCard: false,
+        RedCard: false,
+        Disabled: false,
+        DQ: false,
+        Broken: false,
+        NoShow: false,
+      },
+      FoulDesc: ""
+    },
+    },
+    TeamAttributes: {
+      name: teamId,
+      Regional: "",
+      DeclaredFuelCap: 0,
+      CyclesPerMatch: 0,
+      Capabilities: CapabilitiesOpts.Bump,
+      MaxHang: HangOpts.Level1,
+      HangTeamwork: HangTeamworkOpts.DoubleHang,
+      HangTime: 0.0,
+      Photo: "",
+      Notes: "",
+    },
+  }
+}
 
 
 /* const generateRandomEntry = function (regionId, teamId, matchId) {
@@ -316,4 +370,4 @@ const buildTeamAttributeEntry = (teamId) => {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export { PenaltyOpts, SpeedOpts, StratOpts, AutoStratOpts, HangOpts, /*generateRandomEntry */ buildMatchEntry as default,}
+export  {buildMatchEntry, buildTeamEntry}

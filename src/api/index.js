@@ -1,10 +1,10 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
-import { /* teamMatchesByRegional, getTeam, listTeams, /*getTeamMatch */ } from '../graphql/queries'
-//import { /*deleteTeamMatch, updateTeamMatch, createTeamMatch, createTeam, updateTeam */} from '../graphql/mutations'
+import { /* teamMatchesByRegional, */ getTeam, listTeams, /*getTeamMatch */ } from '../graphql/queries'
+import { /*deleteTeamMatch, updateTeamMatch, createTeamMatch,*/ createTeam, updateTeam} from '../graphql/mutations'
 import { /*onCreateTeamMatch, onUpdateTeamMatch */ } from '../graphql/subscriptions'
-import buildMatchEntry from './builder'
+import {buildMatchEntry, buildTeamEntry} from './builder'
 import { normalizeTeamId } from '../utils/teamId'
 
 import * as Auth from 'aws-amplify/auth'
@@ -99,7 +99,7 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
       }
     }
   })
-}
+} 
 
 /*
  * create a new team match entry
@@ -124,13 +124,25 @@ const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, mat
   const normalizedTeamId = normalizeTeamId(teamId)
 
   return getClient().graphql({
-    query: createTeamMatch, variables: {
+    query: createTeam, variables: { //changed from createTeamMatch to createTeam since the match entry is created as part of the team entry
       input: buildMatchEntry(regionalId, normalizedTeamId, matchId, matchType, matchNumber, alliance),
     }
   })
 }
 
+const apiCreateTeamEntry = async function (teamId) {
+  if (teamId === undefined) {
+    throw new Error("Team Id not provided")
+  } 
 
+  return getClient().graphql({
+    query: createTeam, variables: {
+      input: buildTeamEntry(teamId),
+    }
+  })
+}
+
+/*
 const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
   if (!regionalId) {
     throw new Error("Regional not provided")
@@ -161,21 +173,21 @@ const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
     }
   })
 
+ 
+} */
 
-}
-
-const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
-  const normalizedTeamId = normalizeTeamId(teamId)
-  await getClient().graphql({
-    query: deleteTeamMatch, variables: {
-      input: {
-        id: matchId,
-        Team: normalizedTeamId,
-        Regional: regionalId
-      }
-    }
-  })
-}
+// const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
+//   const normalizedTeamId = normalizeTeamId(teamId)
+//   await getClient().graphql({
+//     query: deleteTeamMatch, variables: {
+//       input: {
+//         id: matchId,
+//         Team: normalizedTeamId,
+//         Regional: regionalId
+//       }
+//     }
+//   })
+// }
 
 const apiUpdateRegional = async function () {
   //console.log(import.meta.env.MODE)
@@ -192,4 +204,4 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export { apiDeleteTeamMatch, apiSubscribeToMatchUpdates, apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiUpdateTeam, apiUpdateRegional, apiGetRegional }
+export { /*apiDeleteTeamMatch, apiSubscribeToMatchUpdates,*/  apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiCreateTeamMatchEntry, /*apiUpdateTeamMatch, */ apiUpdateTeam, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }

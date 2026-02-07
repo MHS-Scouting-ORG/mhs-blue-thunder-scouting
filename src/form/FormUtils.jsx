@@ -1,6 +1,6 @@
-import React from "react";
-import buildMatchEntry, { PenaltyOpts, SpeedOpts } from '../api/builder';
-import { apiCreateTeamMatchEntry, apiUpdateTeamMatch, apiGetTeamMatch, } from '../api';
+import React from "react"
+import {buildMatchEntry} from '../api/builder';
+import { apiCreateTeamEntry, /*apiUpdateTeamMatch,*/ apiGetTeamMatch, apiListTeams, } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 //import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
@@ -194,7 +194,7 @@ export async function submitState( //params are states of data from form
   else if (!incompleteForm) {
     const matchEntry = buildMatchEntry(regional, normalizedTeamNumber, matchKey)
 
-    console.log("init", matchEntry)
+    console.log("matchentry", matchEntry)
 
     matchEntry.Team = normalizedTeamNumber
     matchEntry.MatchType = mapMatchType(matchType)
@@ -208,24 +208,21 @@ export async function submitState( //params are states of data from form
 
     matchEntry.TotalPoints = totalPoints
 
-    // Set Autonomous fields - only fields that exist in schema
+    /*  AUTONOMOUS SPECIFIC */ 
     
-    // Set coral scoring based on autoActions
-    if (autoActions.includes("Scored")) {
-      matchEntry.Autonomous.AmountScored.Net = 1  // Record coral scored
-    }
+    // if (autoActions.includes("Scored")) {
+    //   matchEntry.Autonomous.AmountScored.Net = 1  // Record coral scored
+    // }
 
     matchEntry.Autonomous.PointsScored.Points = autoPoints
-    matchEntry.Autonomous.PointsScored.AlgaePoints = 0
-    matchEntry.Autonomous.PointsScored.CoralPoints = 0
-    matchEntry.Autonomous.PointsScored.EndgamePoints = 0
-    matchEntry.Autonomous.Hang = autoHang
+    matchEntry.Autonomous.AutoHang = autoHang
+    //matchEntry.Autonomous.timesTravelledMid = 0 no need this
+    //matchEntry.Autonomous.PointsScored.EndgamePoints = 0
+
 
     /* TELEOP SPECIFIC*/
-    // Set teleop coral scoring
     const totalTravelMid = timesTravelledMidActive + timesTravelledMidInactive
-    matchEntry.Teleop.AmountScored.Net = totalTravelMid
-    matchEntry.Teleop.AmountScored.Cycles = totalTravelMid
+    matchEntry.Teleop.TravelMid = totalTravelMid
 
     matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.PointsScored.AlgaePoints = 0
@@ -234,16 +231,16 @@ export async function submitState( //params are states of data from form
     matchEntry.Teleop.Endgame.EndGameResult = hangType
 
     /* Robot Info */
-    matchEntry.RobotInfo.RobotSpeed = robotSpeed
-    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed
-    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
-    matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
-    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
-    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.RobotInfo.Comments = robotInsight
+    matchEntry.RobotInfo.RobotSpeed = robotSpeed //need to add in schema
+    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed //need to add in schema 
+    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity //need to add in schema
+    matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot //need to add in schema
+    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles //need to add in schema 
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments //need to add in schema
+    matchEntry.RobotInfo.Comments = robotInsight //need to add in schema
 
     // PENALTIES //
-    matchEntry.Penalties.Fouls = minFouls
+    matchEntry.Penalties.Fouls = minFouls //need to add in schema
     matchEntry.Penalties.Tech = majFouls
     matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
     matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
@@ -262,7 +259,7 @@ export async function submitState( //params are states of data from form
     /* currently submits and updates the new form completely */
 
     if (apiMatchData.find(x => x.id === matchKey) === undefined) { //checks if match is already in array of matches in our database
-      await apiCreateTeamMatchEntry(
+      await apiCreateTeamEntry(
         regional,
         normalizedTeamNumber,
         matchKey,
@@ -270,11 +267,13 @@ export async function submitState( //params are states of data from form
         matchEntry.MatchNumber,
         matchEntry.Alliance
       );
+
+      apiListTeams("apilist teams, ", teamNumber) //for testing
     }
-    await apiUpdateTeamMatch(regional, normalizedTeamNumber, matchKey, matchEntry); //updates data if there already is
+    //await apiUpdateTeamMatch(regional, normalizedTeamNumber, matchKey, matchEntry); //updates data if there already is
 
     //for testing
-    await apiGetTeamMatch(matchKey, regional, normalizedTeamNumber)
+    //await apiGetTeamMatch(matchKey, regional, normalizedTeamNumber).then(data => console.log("get team match, ", data))
 
   }
   window.alert("Form Submitted");
