@@ -9,13 +9,14 @@ import { toggleIncremental } from "./FormUtils"
 import tableStyling from "../components/Table/Table.module.css";
 
 // styling
-import { submitState } from './FormUtils'
+
+import { submitState } from './FormUtils' //from formUtils submits to builder
 
 function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
 
-  console.log(regional) //regional check
+  console.log(regional, ' formUtils check') //regional check
 
   /* MATCH */
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info

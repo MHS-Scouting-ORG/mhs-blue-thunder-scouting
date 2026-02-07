@@ -67,7 +67,10 @@ export async function submitState( //params are states of data from form
   robotInsight,
   robotBrokenComments
 
-) {
+) 
+
+//actual function below
+{
 
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
