@@ -41,13 +41,6 @@ const apiGetTeam = async function (teamNumber) {
   return await getClient().graphql({ query: getTeam, variables: { id: normalizedTeamId } })
 }
 
-/*
-* Get a Team's match by the matchId, regionalId, and teamId
-*/
-const apiGetTeamMatch = async function (matchId, regionalId, teamNumber) {
-  const normalizedTeamId = normalizeTeamId(teamNumber)
-  return await getClient().graphql({ query: getTeamMatch, variables: { id: matchId, Regional: regionalId, Team: normalizedTeamId } })
-}
 
 /*
  * Add a team to our database
@@ -56,7 +49,8 @@ const apiAddTeam = async function (team) {
   await getClient().graphql({ query: createTeam, variables: { input: team } })
 }
 
-const apiUpdateTeam = async function (team, data) {
+
+const apiUpdateTeamEntry = async function (team, data) {
   await getClient().graphql({
     query: updateTeam, variables: {
       input: {
@@ -108,7 +102,7 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
  * - teamId - the team id
  * - matchid - the match id
  */
-const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, matchType, matchNumber, alliance) {
+/*const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, matchType, matchNumber, alliance) {
   if (regionalId === undefined) {
     throw new Error("Regional not provided")
   }
@@ -128,8 +122,10 @@ const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, mat
       input: buildMatchEntry(regionalId, normalizedTeamId, matchId, matchType, matchNumber, alliance),
     }
   })
-}
+}*/
 
+
+/* Creates team entry for our database*/
 const apiCreateTeamEntry = async function (teamId) {
   if (teamId === undefined) {
     throw new Error("Team Id not provided")
@@ -204,4 +200,4 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export { /*apiDeleteTeamMatch, apiSubscribeToMatchUpdates,*/  apiGetTeam, apiGetTeamMatch, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiCreateTeamMatchEntry, /*apiUpdateTeamMatch, */ apiUpdateTeam, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }
+export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, /*apiUpdateTeamMatch, */ apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }

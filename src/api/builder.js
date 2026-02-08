@@ -183,7 +183,7 @@ const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, al
   if (matchId === undefined)
     throw new Error("MatchId Not provided")
 
-  console.log("building da entry")
+  console.log("building match entry")
 
   return {
     id: matchId,
@@ -260,17 +260,18 @@ const buildTeamAttributeEntry = (teamId) => {
   }
 }
 
-const buildTeamEntry = (teamId) => {
+const buildTeamEntry = (teamId, type) => {
   if (teamId === undefined)
     throw new Error("TeamId Not provided")
 
   console.log("building team entry")
 
-  return {
-    id: teamId,
-    description: "",
-    Comment : "test",
-    TeamMatches: {
+  if(type === "match"){
+    return {
+      id: teamId,
+      description: "",
+      Comment : "testmatchentry",
+      TeamMatches: {
       name: "",
       description: "",
       Team: teamId,
@@ -299,7 +300,47 @@ const buildTeamEntry = (teamId) => {
       },
       FoulDesc: ""
     },
-    },
+      }
+    }
+  }
+
+  else if(type === "attributes"){
+
+  }
+  return {
+    id: teamId,
+    description: "",
+    Comment : "test",
+    // TeamMatches: {
+    //   name: "",
+    //   description: "",
+    //   Team: teamId,
+    //   Regional: "",
+    //   Autonomous: {
+    //   AutoStrat: AutoStratOpts.NONE,
+    //   TravelMid: 0,
+    //   AutoHang: HangOpts.NONE
+    // },
+    // Teleop: {
+    //   TravelMid: 0,
+    //   Endgame: HangOpts.Level1,
+    // },
+    // ActiveStrat: StratOpts.Level1, //need to add none options for all enums
+    // InactiveStrat: StratOpts.Level1, 
+    // Penalties: {
+    //   Fouls: 0,
+    //   Tech: 0,
+    //   PenaltiesCommitted: {
+    //     YellowCard: false,
+    //     RedCard: false,
+    //     Disabled: false,
+    //     DQ: false,
+    //     Broken: false,
+    //     NoShow: false,
+    //   },
+    //   FoulDesc: ""
+    // },
+    // },
     TeamAttributes: {
       name: teamId,
       Regional: "",

@@ -1,6 +1,6 @@
 import React from "react"
-import {buildMatchEntry} from '../api/builder';
-import { apiCreateTeamEntry, /*apiUpdateTeamMatch,*/ apiGetTeamMatch, apiListTeams, } from '../api';
+import {buildMatchEntry, buildTeamEntry} from '../api/builder';
+import { apiCreateTeamEntry, apiUpdateTeamEntry } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 //import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
@@ -39,7 +39,7 @@ export async function submitState( //params are states of data from form
   regional,
   teamNumber,
   matchKey,
-  apiMatchData,
+  apiListTeamData,
   matchType,
   matchNumber,
   allianceColor,
@@ -80,12 +80,13 @@ export async function submitState( //params are states of data from form
   let endGamePoints = 0;
   let telePoints = 0;
 
-
+  /* idk what this is - not mine (dom) */ 
   const normalizedTeamNumber = normalizeTeamId(teamNumber)
   const parsedMatchNumber = Number.parseInt(matchNumber, 10)
   const parsedFuelCapacity = Number.parseInt(fuelCapacity, 10)
   const parsedBallsShot = Number.parseInt(estimatedBallsShot, 10)
   const parsedShootingCycles = Number.parseInt(shootingCycles, 10)
+  /* */
 
   const mapMatchType = (type) => {
     if (type === 'q') return 'Qual'
@@ -191,8 +192,8 @@ export async function submitState( //params are states of data from form
     window.alert(windowAlertMsg);
     return true;
   }
-  else if (!incompleteForm) {
-    const matchEntry = buildMatchEntry(regional, normalizedTeamNumber, matchKey)
+  else if (!incompleteForm) { //if form is complete
+    const matchEntry = buildTeamEntry(teamNumber, "match")
 
     console.log("matchentry", matchEntry)
 
@@ -209,26 +210,15 @@ export async function submitState( //params are states of data from form
     matchEntry.TotalPoints = totalPoints
 
     /*  AUTONOMOUS SPECIFIC */ 
-    
-    // if (autoActions.includes("Scored")) {
-    //   matchEntry.Autonomous.AmountScored.Net = 1  // Record coral scored
-    // }
 
-    matchEntry.Autonomous.PointsScored.Points = autoPoints
     matchEntry.Autonomous.AutoHang = autoHang
-    //matchEntry.Autonomous.timesTravelledMid = 0 no need this
-    //matchEntry.Autonomous.PointsScored.EndgamePoints = 0
-
 
     /* TELEOP SPECIFIC*/
     const totalTravelMid = timesTravelledMidActive + timesTravelledMidInactive
     matchEntry.Teleop.TravelMid = totalTravelMid
 
     matchEntry.Teleop.PointsScored.Points = telePoints
-    matchEntry.Teleop.PointsScored.AlgaePoints = 0
-    matchEntry.Teleop.PointsScored.CoralPoints = 0
-    matchEntry.Teleop.PointsScored.EndgamePoints = endGamePoints
-    matchEntry.Teleop.Endgame.EndGameResult = hangType
+    matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed //need to add in schema
@@ -240,7 +230,7 @@ export async function submitState( //params are states of data from form
     matchEntry.RobotInfo.Comments = robotInsight //need to add in schema
 
     // PENALTIES //
-    matchEntry.Penalties.Fouls = minFouls //need to add in schema
+    matchEntry.Penalties.Fouls = minFouls 
     matchEntry.Penalties.Tech = majFouls
     matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
     matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
@@ -248,33 +238,17 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
-    matchEntry.Penalties.PenaltiesCommitted.Tipped = tipped
-
-
-    // console.log("matchEntry", matchEntry.Team)
-    // console.log("apiMatchData", apiMatchData)
-    // console.log(apiMatchData.find(x => x.Team === matchEntry.Team))
-
 
     /* currently submits and updates the new form completely */
 
-    if (apiMatchData.find(x => x.id === matchKey) === undefined) { //checks if match is already in array of matches in our database
-      await apiCreateTeamEntry(
-        regional,
-        normalizedTeamNumber,
-        matchKey,
-        matchEntry.MatchType,
-        matchEntry.MatchNumber,
-        matchEntry.Alliance
-      );
-
-      apiListTeams("apilist teams, ", teamNumber) //for testing
+    if (apiListTeamData.find(x => x.id === teamNumber) === undefined) { //checks if match is already in array of matches in our database
+      await apiCreateTeamEntry(normalizedTeamNumber);
     }
-    //await apiUpdateTeamMatch(regional, normalizedTeamNumber, matchKey, matchEntry); //updates data if there already is
-
-    //for testing
-    //await apiGetTeamMatch(matchKey, regional, normalizedTeamNumber).then(data => console.log("get team match, ", data))
-
+    
+    //update team entry if it already exists
+    else {
+      await apiUpdateTeamEntry(normalizedTeamNumber, matchEntry)
+    }
   }
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form

@@ -16,11 +16,11 @@ function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
 
-  console.log(regional, ' formUtils check') //regional check
+  console.log(regional, ' regional check') //regional check
 
-  /* MATCH */
+  /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
-  const [apiMatchData, setApiMatchData] = useState([]) //match data in our database
+  const [apiTeamListData, setApiTeamListData] = useState([]) //team list data in our database
   const [matchType, setMatchType] = useState(''); //match type
   // const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
@@ -67,7 +67,7 @@ function Form() {
   const [confirm, setConfirm] = useState(false);
 
 
-
+ /* API List Teams */
   useEffect(() => {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
@@ -102,24 +102,12 @@ function Form() {
   }, [matchType, matchNumber])
 
   useEffect(() => {
-    /* Check for pre-existing match data in our api */
-    apigetMatchesForRegional(regional)
+    /* Check for pre-existing team entry data in our api */
+    apiListTeams()
       .then((data) => {
-        console.log("Match data for regional: ", data)
-        let matches = data.data.teamMatchesByRegional.items
-        let team = matches.find((x) => isSameTeam(x.Team, teamNumber)) // finds matches for the team in our database
-        if (team !== undefined && apiMatchData.find((x) => isSameTeam(x.Team, teamNumber)) === undefined)//checks if the team is found in our database
-          setApiMatchData(apiMatchData.concat(team))
-      })
-      .catch(err => console.log(err))
-  }, [teamNumber]
-  )
-
-  useEffect(() => {
-    /* Check for pre-existing match data in our api */
-    apiListTeams(teamNumber)
-      .then((data) => {
-        console.log("ListTeam data : ", data)
+        const teamList = data.data.listTeams.items
+        console.log("Existing teams in our data : ", teamList)
+        setApiTeamListData(teamList)
       })
       .catch(err => console.log(err))
   }, [teamNumber]
@@ -128,7 +116,7 @@ function Form() {
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
-    setApiMatchData([])
+    setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
     setColor(false)
@@ -868,7 +856,7 @@ function Form() {
             regional,
             teamNumber,
             matchKey,
-            apiMatchData,
+            apiTeamListData,
             matchType,
             matchNumber,
             color,
