@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
-import { apiGetRegional, apigetMatchesForRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -67,12 +67,14 @@ function Form() {
   const [confirm, setConfirm] = useState(false);
 
 
- /* API List Teams */
+ /* Blue Alliance API List Teams */
   useEffect(() => {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
+        console.log(data, ' blue alliance api check') //blue alliance api check
+
         let match_key = regional + "_" + matchType + "m" + matchNumber
 
         if(matchType === "sf") {
@@ -108,6 +110,17 @@ function Form() {
         const teamList = data.data.listTeams.items
         console.log("Existing teams in our data : ", teamList)
         setApiTeamListData(teamList)
+      })
+      .catch(err => console.log(err))
+  }, [teamNumber]
+  )
+
+  //for testing
+  useEffect(() => {
+    /* Check for pre-existing team entry data in our api */
+    apiGetTeam(teamNumber)
+      .then((data) => {
+        console.log(teamNumber, "api get team data : ", data)
       })
       .catch(err => console.log(err))
   }, [teamNumber]

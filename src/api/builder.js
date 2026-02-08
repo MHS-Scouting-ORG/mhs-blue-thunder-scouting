@@ -307,6 +307,8 @@ const buildTeamEntry = (teamId, type) => {
   else if(type === "attributes"){
 
   }
+  
+  //below is kinda useless for now
   return {
     id: teamId,
     description: "",

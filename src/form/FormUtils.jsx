@@ -1,6 +1,6 @@
 import React from "react"
 import {buildMatchEntry, buildTeamEntry} from '../api/builder';
-import { apiCreateTeamEntry, apiUpdateTeamEntry } from '../api';
+import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 //import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
@@ -196,6 +196,7 @@ export async function submitState( //params are states of data from form
     const matchEntry = buildTeamEntry(teamNumber, "match")
 
     console.log("matchentry", matchEntry)
+    
 
     matchEntry.Team = normalizedTeamNumber
     matchEntry.MatchType = mapMatchType(matchType)
@@ -221,13 +222,13 @@ export async function submitState( //params are states of data from form
     matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
-    matchEntry.RobotInfo.RobotSpeed = robotSpeed //need to add in schema
-    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed //need to add in schema 
-    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity //need to add in schema
-    matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot //need to add in schema
-    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles //need to add in schema 
-    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments //need to add in schema
-    matchEntry.RobotInfo.Comments = robotInsight //need to add in schema
+    // matchEntry.RobotInfo.RobotSpeed = robotSpeed //need to add in schema
+    // matchEntry.RobotInfo.ShootingSpeed = shootingSpeed //need to add in schema 
+    // matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity //need to add in schema
+    // matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot //need to add in schema
+    // matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles //need to add in schema 
+    // matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments //need to add in schema
+    // matchEntry.RobotInfo.Comments = robotInsight //need to add in schema
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls 
@@ -241,14 +242,17 @@ export async function submitState( //params are states of data from form
 
     /* currently submits and updates the new form completely */
 
+
     if (apiListTeamData.find(x => x.id === teamNumber) === undefined) { //checks if match is already in array of matches in our database
       await apiCreateTeamEntry(normalizedTeamNumber);
     }
     
-    //update team entry if it already exists
-    else {
+      await apiGetTeam(normalizedTeamNumber).then(data => 
+        console.log("data from get team: ", data)
+      )
+
+    //update team entry if it already exists and with new match data (if match already exists, update with new data)
       await apiUpdateTeamEntry(normalizedTeamNumber, matchEntry)
-    }
   }
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form
