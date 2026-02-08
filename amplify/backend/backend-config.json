@@ -51,7 +51,7 @@
     }
   },
   "storage": {
-    "teamphotos": {
+    "teamPhotos": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
