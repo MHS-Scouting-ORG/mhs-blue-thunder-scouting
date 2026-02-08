@@ -10,7 +10,7 @@ const getClient = () => {
 }
 
 function TeamStats(props) {
-  const information = props.information;
+  const information = useState([]) //const information = props.information
   const selectedTeam = props.selectedTeam;
 
   const [teamData, setTeamData] = useState(null);

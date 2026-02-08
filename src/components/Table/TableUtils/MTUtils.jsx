@@ -37,14 +37,14 @@ async function getTeams (regional) {
 /* 
 consolidates all calculations, averages, and sets the object for each team(row) and their properties(stats) 
 */
-async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
-    try {
+async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {  
+  try {
     const data = await apigetMatchesForRegional(regional)
 
     console.log("getTeamMatchesAndTableDataFunc", data)
     
     const tableData = mtable
-
+    
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;

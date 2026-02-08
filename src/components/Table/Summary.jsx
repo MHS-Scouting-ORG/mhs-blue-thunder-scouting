@@ -44,11 +44,6 @@ function Summary() {
       AvgPoints: indivTeam.AvgPoints,
       AvgAutoPts: indivTeam.AvgAutoPts,
       AvgEndgamePts: indivTeam.AvgEndgamePts,
-      AvgCoralPts: indivTeam.AvgCoralPts,
-      AvgAlgaePts: indivTeam.AvgAlgaePts,
-      AvgCycles: indivTeam.AvgCycles,
-      AvgCoral: indivTeam.AvgCoral,
-      AvgAlgae: indivTeam.AvgAlgae,
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
       Fouls: indivTeam.Fouls,
@@ -80,7 +75,7 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
+          const grade = calcColumnSort(sortBy, team.NHangTime, team.NHangLevel, team.NFuelCap, team.NCrossMid, team.NPts, team.NAutoPts, team.NEndgamePts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
@@ -88,14 +83,7 @@ function Summary() {
 
             SumPriorities: grade !== 0.000 ? grade : 0,
 
-            NCoral: team.NCoral,
-            NAlgae: team.NAlgae,
-            NCycles: team.NCycles,
-            NPts: team.NPts,
-            NAutoPts: team.NAutoPts,
-            NEndgamePts: team.NEndgamePts,
-            NCoralPts: team.NCoralPts,
-            NAlgaePts: team.NAlgaePts,
+
           }
         })
       }
