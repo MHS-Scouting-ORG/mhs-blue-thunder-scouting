@@ -16,7 +16,7 @@ function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
 
-  console.log(regional, ' regional check') //regional check
+  //console.log(regional, ' regional check') //regional check
 
   /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
@@ -120,7 +120,7 @@ function Form() {
     /* Check for pre-existing team entry data in our api */
     apiGetTeam(teamNumber)
       .then((data) => {
-        console.log(teamNumber, "api get team data : ", data)
+        console.log(teamNumber, "for test api get team data : ", data)
       })
       .catch(err => console.log(err))
   }, [teamNumber]
@@ -908,7 +908,7 @@ function Form() {
         ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
       </div>
       <div>
-        <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button>
+        {/* <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button> */}
       </div>
     </div>
   )

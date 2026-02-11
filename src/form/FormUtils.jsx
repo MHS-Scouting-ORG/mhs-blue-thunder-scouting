@@ -192,23 +192,17 @@ export async function submitState( //params are states of data from form
     window.alert(windowAlertMsg);
     return true;
   }
+
   else if (!incompleteForm) { //if form is complete
-    const matchEntry = buildTeamEntry(teamNumber, "match")
+    const matchEntry = buildMatchEntry(teamNumber)
 
     console.log("matchentry", matchEntry)
-    
 
-    matchEntry.Team = normalizedTeamNumber
-    matchEntry.MatchType = mapMatchType(matchType)
-    matchEntry.MatchNumber = parsedMatchNumber
-    matchEntry.MatchKey = matchKey
-    matchEntry.Alliance = allianceColor ? "Blue" : "Red"
+    matchEntry.id = teamNumber
     matchEntry.ActiveStrat = activeStrategy
     matchEntry.InactiveStrat = inactiveStrategy
     matchEntry.TravelMidActive = timesTravelledMidActive
     matchEntry.TravelMidInactive = timesTravelledMidInactive
-
-    matchEntry.TotalPoints = totalPoints
 
     /*  AUTONOMOUS SPECIFIC */ 
 
@@ -218,7 +212,6 @@ export async function submitState( //params are states of data from form
     const totalTravelMid = timesTravelledMidActive + timesTravelledMidInactive
     matchEntry.Teleop.TravelMid = totalTravelMid
 
-    matchEntry.Teleop.PointsScored.Points = telePoints
     matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
@@ -228,7 +221,7 @@ export async function submitState( //params are states of data from form
     // matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot //need to add in schema
     // matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles //need to add in schema 
     // matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments //need to add in schema
-    // matchEntry.RobotInfo.Comments = robotInsight //need to add in schema
+    matchEntry.Comment = robotInsight // <- temporary fix orgnize later
 
     // PENALTIES //
     matchEntry.Penalties.Fouls = minFouls 
@@ -242,9 +235,9 @@ export async function submitState( //params are states of data from form
 
     /* currently submits and updates the new form completely */
 
-
+    console.log(apiListTeamData, "api list team data")
     if (apiListTeamData.find(x => x.id === teamNumber) === undefined) { //checks if match is already in array of matches in our database
-      await apiCreateTeamEntry(normalizedTeamNumber);
+      await apiCreateTeamEntry(teamNumber, matchEntry, "match");
     }
     
       await apiGetTeam(normalizedTeamNumber).then(data => 
@@ -252,7 +245,7 @@ export async function submitState( //params are states of data from form
       )
 
     //update team entry if it already exists and with new match data (if match already exists, update with new data)
-      await apiUpdateTeamEntry(normalizedTeamNumber, matchEntry)
+      await apiUpdateTeamEntry(teamNumber, matchEntry)
   }
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form

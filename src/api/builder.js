@@ -58,7 +58,7 @@ const AutoStratOpts = {
   WentMid: "WentMid",
   Scored: "Scored",
   CrossedMid: "CrossedMid",
-  NONE: "None"
+  None: "None"
 }
 
 const StratOpts = {
@@ -124,7 +124,7 @@ const HangOpts = {
   Level3: "Level3",
   Level2: "Level2",
   Level1: "Level1",
-  NONE: "None"
+  None: "None"
 }
 
 const SpeedOpts = {
@@ -141,8 +141,8 @@ const CapabilitiesOpts = {
 }
 
 const HangTeamworkOpts = {
-  CanDoubleHang: "Doublehang",
-  CanTripleHang: "TripleHang",
+  DoubleHang: "Doublehang",
+  TripleHang: "TripleHang",
   NONE: "None"
 }
 
@@ -175,111 +175,22 @@ const zeroAccuracy = function () {
 }
 */
 
-const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, alliance) => {
-  if (regionalId === undefined)
-    throw new Error("RegionalId Not provided")
+const buildMatchEntry = (teamId) => {
+  // if (regionalId === undefined)
+  //   throw new Error("RegionalId Not provided")
   if (teamId === undefined)
     throw new Error("TeamId Not provided")
-  if (matchId === undefined)
-    throw new Error("MatchId Not provided")
+  // if (matchId === undefined)
+  //   throw new Error("MatchId Not provided")
 
   console.log("building match entry")
 
-  return {
-    id: matchId,
-    Team: teamId,
-    Regional: regionalId,
-    MatchType: matchType,
-    MatchNumber: matchNumber,
-    MatchKey: matchId,
-    Alliance: alliance,
-    TotalPoints: 0,
-    Autonomous: {
-      //AmountScored: initAutoAmountScored(),
-      //PointsScored: initAutoPointsScored(),
-      //StartingPosition: 0,
-      //Left: false,
-      //Hang: '',
-      AutoStrat: AutoStratOpts.NONE,
-      TravelMid: 0,
-      AutoHang: HangOpts.NONE
-    },
-    Teleop: {
-      // AmountScored: initTeleAmountScored(),
-      // PointsScored: initTelePointsScored(),
-      TravelMid: 0,
-      Endgame: HangOpts.NONE,
-      //HumPlrScoring: initHumanPlayerScoring(),
-    },
-    ActiveStrat: StratOpts.NONE,
-    InactiveStrat: StratOpts.NONE, 
-    /*RobotInfo: {
-      RobotSpeed: SpeedOpts.NONE,
-      ShootingSpeed: SpeedOpts.NONE,
-      FuelCapacity: 0,
-      BallsShot: 0,
-      ShootingCycles: 0,
-      WhatBrokeDesc: "",
-      Comments: ""
-    },
-    */ 
-    Penalties: {
-      Fouls: 0,
-      Tech: 0,
-      PenaltiesCommitted: {
-        YellowCard: false,
-        RedCard: false,
-        Disabled: false,
-        DQ: false,
-        Broken: false,
-        NoShow: false,
-        Tipped: false,
-      },
-      FoulDesc: ""
-    },
-  }
-
-}
-// buildTeamAttribute Entry for initializing team attributes when a new team is added to the database, separate from match entries
-const buildTeamAttributeEntry = (teamId) => {
-  if (teamId === undefined)
-    throw new Error("TeamId Not provided")
-
-  console.log("building team attribute entry")
-
-  return {
-    Team: teamId,
-    DeclaredFuelCap: 0,
-    CyclesPerMatch: 0,
-    Capabilities: CapabilitiesOpts.NONE,
-    MaxHang: HangOpts.NONE,
-    HangTeamwork: HangTeamworkOpts.NONE,
-    HangTime: 0.0,
-    Photo: "",
-    Notes: "",
-  }
-}
-
-const buildTeamEntry = (teamId, type) => {
-  if (teamId === undefined)
-    throw new Error("TeamId Not provided")
-
-  console.log("building team entry")
-
-  if(type === "match"){
     return {
-      id: teamId,
-      description: "",
-      Comment : "testmatchentry",
-      TeamMatches: {
-      name: "",
-      description: "",
       Team: teamId,
-      Regional: "",
       Autonomous: {
-      AutoStrat: AutoStratOpts.NONE,
-      TravelMid: 0,
-      AutoHang: HangOpts.NONE
+        AutoStrat: AutoStratOpts.None,
+        TravelMid: 0,
+        AutoHang: HangOpts.None
     },
     Teleop: {
       TravelMid: 0,
@@ -300,61 +211,75 @@ const buildTeamEntry = (teamId, type) => {
       },
       FoulDesc: ""
     },
+    Comment: "",
+      }
+
+    }
+
+
+// buildTeamAttribute Entry for initializing team attributes when a new team is added to the database, separate from match entries
+const buildTeamAttributeEntry = (teamId) => {
+  if (teamId === undefined)
+    throw new Error("TeamId Not provided")
+
+  console.log("building team attribute entry")
+
+  return {
+    Team: teamId,
+    DeclaredFuelCap: 0,
+    CyclesPerMatch: 0,
+    Capabilities: CapabilitiesOpts.NONE,
+    MaxHang: HangOpts.NONE,
+    HangTeamwork: HangTeamworkOpts.NONE,
+    HangTime: 0.0,
+    Photo: "",
+    Notes: "",
+  }
+}
+
+const buildTeamEntry = (teamId, data, type) => {
+  if (teamId === undefined)
+    throw new Error("TeamId Not provided")
+
+  console.log("building team entry")
+  console.log("the data: ", data)
+  console.log(data.Autonomous.AutoStrat)
+
+  if(type === "match"){
+
+    const matchEntry = data
+
+    return {
+      id: teamId,
+      TeamMatches: {
+        name: "",
+        description: "",
+        Team: teamId,
+        Regional: "",
+        Autonomous: {
+          AutoStrat: AutoStratOpts.Scored, //this needs to change but somehow works (temporary fix)
+          TravelMid: matchEntry.Autonomous.TravelMid,
+          AutoHang: matchEntry.Autonomous.AutoHang,
+      },
+      Teleop: {
+        TeleStrat: matchEntry.Teleop.TeleStrat,
+        TravelMid: matchEntry.Teleop.TravelMid,
+        Endgame: matchEntry.Teleop.Endgame,
+      }
+        },
+      TeamAttributes: {
+        name: "",
+        Regional: "",
+        DeclaredFuelCap: 0,
+        CyclesPerMatch: 0,
+        Capabilities: CapabilitiesOpts.Bump,
+        MaxHang: HangOpts.Level1,
+        HangTeamwork: HangTeamworkOpts.DoubleHang,
+        HangTime: 0.0,
+        Photo: "",
+        Notes: "",
       }
     }
-  }
-
-  else if(type === "attributes"){
-
-  }
-  
-  //below is kinda useless for now
-  return {
-    id: teamId,
-    description: "",
-    Comment : "test",
-    // TeamMatches: {
-    //   name: "",
-    //   description: "",
-    //   Team: teamId,
-    //   Regional: "",
-    //   Autonomous: {
-    //   AutoStrat: AutoStratOpts.NONE,
-    //   TravelMid: 0,
-    //   AutoHang: HangOpts.NONE
-    // },
-    // Teleop: {
-    //   TravelMid: 0,
-    //   Endgame: HangOpts.Level1,
-    // },
-    // ActiveStrat: StratOpts.Level1, //need to add none options for all enums
-    // InactiveStrat: StratOpts.Level1, 
-    // Penalties: {
-    //   Fouls: 0,
-    //   Tech: 0,
-    //   PenaltiesCommitted: {
-    //     YellowCard: false,
-    //     RedCard: false,
-    //     Disabled: false,
-    //     DQ: false,
-    //     Broken: false,
-    //     NoShow: false,
-    //   },
-    //   FoulDesc: ""
-    // },
-    // },
-    TeamAttributes: {
-      name: teamId,
-      Regional: "",
-      DeclaredFuelCap: 0,
-      CyclesPerMatch: 0,
-      Capabilities: CapabilitiesOpts.Bump,
-      MaxHang: HangOpts.Level1,
-      HangTeamwork: HangTeamworkOpts.DoubleHang,
-      HangTime: 0.0,
-      Photo: "",
-      Notes: "",
-    },
   }
 }
 
