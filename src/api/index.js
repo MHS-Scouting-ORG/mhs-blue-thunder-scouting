@@ -55,7 +55,7 @@ const apiUpdateTeamEntry = async function (team, data) {
     query: updateTeam, variables: {
       input: {
         ...data,
-        id: team.id,
+        id: team,
       }
     }
   })

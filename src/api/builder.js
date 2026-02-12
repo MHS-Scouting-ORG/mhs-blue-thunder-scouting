@@ -141,9 +141,9 @@ const CapabilitiesOpts = {
 }
 
 const HangTeamworkOpts = {
-  DoubleHang: "Doublehang",
+  DoubleHang: "DoubleHang",
   TripleHang: "TripleHang",
-  NONE: "None"
+  //NONE: "None"
 }
 
 /*
@@ -272,9 +272,9 @@ const buildTeamEntry = (teamId, data, type) => {
         Regional: "",
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
-        Capabilities: CapabilitiesOpts.Bump,
+        Capabilities: CapabilitiesOpts.Bump, //temp fix 
         MaxHang: HangOpts.Level1,
-        HangTeamwork: HangTeamworkOpts.DoubleHang,
+        HangTeamwork: HangTeamworkOpts.DoubleHang, //temp fix
         HangTime: 0.0,
         Photo: "",
         Notes: "",
