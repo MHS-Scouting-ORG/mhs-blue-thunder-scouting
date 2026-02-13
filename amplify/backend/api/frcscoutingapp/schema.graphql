@@ -100,14 +100,6 @@ enum StratOpts {
   None
 }
 
-enum InactiveStratOpts {
-  Hoarding
-  Defense
-  Offensive
-  Support
-  None
-}
-
 enum HangTeamworkOpts {
   DoubleHang
   TripleHang
