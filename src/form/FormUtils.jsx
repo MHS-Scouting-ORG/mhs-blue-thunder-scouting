@@ -239,10 +239,15 @@ export async function submitState( //params are states of data from form
     if (apiListTeamData.find(x => x.id === teamNumber) === undefined) { //checks if match is already in array of matches in our database
       await apiCreateTeamEntry(teamNumber, matchEntry, "match")
     }
-    
+
       await apiGetTeam(teamNumber).then(data => 
         console.log("data from get team: (past apicreate)", data)
       )
+
+      //run if there is a team entry already and to update that specific match
+      await apiGetTeam(teamNumber).then(data => {
+        const team = data.data.getTeam //bruh actually need to update schema
+      })
 
     //update team entry if it already exists and with new match data (if match already exists, update with new data)
     await apiUpdateTeamEntry(teamNumber, matchEntry)

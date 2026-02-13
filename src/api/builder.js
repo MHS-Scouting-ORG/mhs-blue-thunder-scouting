@@ -243,7 +243,6 @@ const buildTeamEntry = (teamId, data, type) => {
 
   console.log("building team entry")
   console.log("the data: ", data)
-  console.log(data.Autonomous.AutoStrat)
 
   if(type === "match"){
 
