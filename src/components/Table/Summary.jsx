@@ -41,11 +41,13 @@ function Summary() {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
-      AvgPoints: indivTeam.AvgPoints,
-      AvgAutoPts: indivTeam.AvgAutoPts,
-      AvgEndgamePts: indivTeam.AvgEndgamePts,
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
+      MaxLevelHang: indivTeam.MaxLevelHang ,
+      MultiHang:indivTeam.MaxLevelHang ,
+      FuelCap:indivTeam.MaxLevelHang ,
+      AutoStrat:indivTeam.MaxLevelHang ,
+      AutoHang:indivTeam.MaxLevelHang ,
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -75,12 +77,16 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NHangTime, team.NHangLevel, team.NFuelCap, team.NCrossMid, team.NPts, team.NAutoPts, team.NEndgamePts)
+          const grade = calcColumnSort(sortBy, team.NHangLevel, team.NFuelCap, team.NCrossMid, team.NPts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
             OPR: team.OPR,
-
+            NHangLevel: team.NHangLevel,
+            NMultiHang: team.NmultiHang,
+            NFuelCap: team.NfuelCap,
+            NCrossMid: team.NCrossMid,
+            Npts: team.Npts,
             SumPriorities: grade !== 0.000 ? grade : 0,
 
 
