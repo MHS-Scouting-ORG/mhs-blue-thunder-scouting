@@ -215,12 +215,12 @@ export async function submitState( //params are states of data from form
     matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
-    // matchEntry.RobotInfo.RobotSpeed = robotSpeed //need to add in schema
-    // matchEntry.RobotInfo.ShootingSpeed = shootingSpeed //need to add in schema 
-    // matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity //need to add in schema
-    // matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot //need to add in schema
-    // matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles //need to add in schema 
-    // matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments //need to add in schema
+    // matchEntry.RobotInfo.RobotSpeed = robotSpeed 
+    // matchEntry.RobotInfo.ShootingSpeed = shootingSpeed  
+    // matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity 
+    // matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
+    // matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles 
+    // matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments 
     matchEntry.Comment = robotInsight // <- temporary fix orgnize later
 
     // PENALTIES //

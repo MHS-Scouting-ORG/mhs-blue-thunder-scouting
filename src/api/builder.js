@@ -66,7 +66,7 @@ const StratOpts = {
   Defense: "Defense",
   Offensive: "Offensive",
   Support: "Support",
-  NONE: "None"
+  None: "None"
 }
 
 /*const initHumanPlayerScoring = _ => {
