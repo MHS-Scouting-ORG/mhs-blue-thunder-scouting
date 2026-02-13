@@ -1,64 +1,8 @@
-/*const initAutoAmountScored = _ => {
-  return {
-    CoralL1: 0,
-    CoralL1Missed: 0,
-    CoralL2: 0,
-    CoralL2Missed: 0,
-    CoralL3: 0,
-    CoralL3Missed: 0,
-    CoralL4: 0,
-    CoralL4Missed: 0,
-    Processor: 0,
-    ProcessorMissed: 0,
-    Net: 0,
-    NetMissed: 0,
-    Cycles: 0,
-  }
-
-}
-
-const initAutoPointsScored = _ => {
-  return {
-    Points: 0,
-    AlgaePoints: 0,
-    CoralPoints: 0,
-    EndgamePoints: 0,
-  }
-}
-
-const initTeleAmountScored = _ => {
-  return {
-    CoralL1: 0,
-    CoralL1Missed: 0,
-    CoralL2: 0,
-    CoralL2Missed: 0,
-    CoralL3: 0,
-    CoralL3Missed: 0,
-    CoralL4: 0,
-    CoralL4Missed: 0,
-    Processor: 0,
-    ProcessorMissed: 0,
-    Net: 0,
-    NetMissed: 0,
-    Cycles: 0,
-  }
-}
-
-const initTelePointsScored = _ => {
-  return {
-    Points: 0,
-    AlgaePoints: 0,
-    CoralPoints: 0,
-    EndgamePoints: 0,
-  }
-} 
- */
-
 const AutoStratOpts = {
   WentMid: "WentMid",
   Scored: "Scored",
   CrossedMid: "CrossedMid",
-  NONE: "None"
+  None: "None"
 }
 
 const StratOpts = {
@@ -66,7 +10,7 @@ const StratOpts = {
   Defense: "Defense",
   Offensive: "Offensive",
   Support: "Support",
-  NONE: "None"
+  None: "None"
 }
 
 /*const initHumanPlayerScoring = _ => {
@@ -117,18 +61,18 @@ const PenaltyOpts = {
   DQ: "DQ",
   BROKEN_BOT: "BrokenBot",
   NO_SHOW: "NoShow",
-  NONE: "None"
+  None: "None"
 }
 
 const HangOpts = {
   Level3: "Level3",
   Level2: "Level2",
   Level1: "Level1",
-  NONE: "None"
+  None: "None"
 }
 
 const SpeedOpts = {
-  NONE: "None",
+  None: "None",
   SLOW: "Slow",
   AVERAGE: "Average",
   FAST: "Fast"
@@ -137,13 +81,13 @@ const SpeedOpts = {
 const CapabilitiesOpts = {
   Bump: "Bump",
   Trench: "Trench",
-  NONE: "None"
+  None: "None"
 }
 
 const HangTeamworkOpts = {
-  CanDoubleHang: "Doublehang",
-  CanTripleHang: "TripleHang",
-  NONE: "None"
+  DoubleHang: "DoubleHang",
+  TripleHang: "TripleHang",
+  None: "None"
 }
 
 /*
@@ -175,71 +119,57 @@ const zeroAccuracy = function () {
 }
 */
 
-const buildMatchEntry = (regionalId, teamId, matchId, matchType, matchNumber, alliance) => {
-  if (regionalId === undefined)
-    throw new Error("RegionalId Not provided")
+const buildMatchEntry = (teamId, matchKey) => {
+  // if (regionalId === undefined)
+  //   throw new Error("RegionalId Not provided")
   if (teamId === undefined)
     throw new Error("TeamId Not provided")
-  if (matchId === undefined)
-    throw new Error("MatchId Not provided")
+  // if (matchId === undefined)
+  //   throw new Error("MatchId Not provided")
 
-  console.log("building da entry")
+  console.log("building match entry")
 
-  return {
-    id: matchId,
-    Team: teamId,
-    Regional: regionalId,
-    MatchType: matchType,
-    MatchNumber: matchNumber,
-    MatchKey: matchId,
-    Alliance: alliance,
-    TotalPoints: 0,
-    Autonomous: {
-      //AmountScored: initAutoAmountScored(),
-      //PointsScored: initAutoPointsScored(),
-      //StartingPosition: 0,
-      //Left: false,
-      //Hang: '',
-      AutoStrat: AutoStratOpts.NONE,
-      TravelMid: 0,
-      AutoHang: HangOpts.NONE
-    },
-    Teleop: {
-      // AmountScored: initTeleAmountScored(),
-      // PointsScored: initTelePointsScored(),
-      TravelMid: 0,
-      Endgame: HangOpts.NONE,
-      //HumPlrScoring: initHumanPlayerScoring(),
-    },
-    ActiveStrat: StratOpts.NONE,
-    InactiveStrat: StratOpts.NONE, 
-    /*RobotInfo: {
-      RobotSpeed: SpeedOpts.NONE,
-      ShootingSpeed: SpeedOpts.NONE,
-      FuelCapacity: 0,
-      BallsShot: 0,
-      ShootingCycles: 0,
-      WhatBrokeDesc: "",
-      Comments: ""
-    },
-    */ 
-    Penalties: {
-      Fouls: 0,
-      Tech: 0,
-      PenaltiesCommitted: {
-        YellowCard: false,
-        RedCard: false,
-        Disabled: false,
-        DQ: false,
-        Broken: false,
-        NoShow: false,
-        Tipped: false,
+    return {
+      Team: teamId,
+      MatchId: matchKey,
+      Autonomous: {
+        AutoStrat: AutoStratOpts.None,
+        TravelMid: 0,
+        AutoHang: HangOpts.None
       },
-      FoulDesc: ""
-    },
+      Teleop: {
+      TravelMid: 0,
+      Endgame: HangOpts.None,
+      },
+      ActiveStrat: StratOpts.None, //need to add none options for all enums
+      InactiveStrat: StratOpts.None, 
+      Penalties: {
+        Fouls: 0,
+        Tech: 0,
+        PenaltiesCommitted: {
+          YellowCard: false,
+          RedCard: false,
+          Disabled: false,
+          DQ: false,
+          Broken: false,
+          NoShow: false,
+        },
+        FoulDesc: ""
+      },
+      RobotInfo: {
+        RobotSpeed: SpeedOpts.None,
+        ShooterSpeed: SpeedOpts.None,
+        FuelCapacity: 0,
+        BallsShot: 0,
+        ShootingCycles: 0,
+        WhatBrokeDesc: "",
+        Comments: "",
+      },
+    Comment: "",
+    }
   }
 
-}
+/*
 // buildTeamAttribute Entry for initializing team attributes when a new team is added to the database, separate from match entries
 const buildTeamAttributeEntry = (teamId) => {
   if (teamId === undefined)
@@ -251,70 +181,87 @@ const buildTeamAttributeEntry = (teamId) => {
     Team: teamId,
     DeclaredFuelCap: 0,
     CyclesPerMatch: 0,
-    Capabilities: CapabilitiesOpts.NONE,
-    MaxHang: HangOpts.NONE,
-    HangTeamwork: HangTeamworkOpts.NONE,
+    Capabilities: CapabilitiesOpts.None,
+    MaxHang: HangOpts.None,
+    HangTeamwork: HangTeamworkOpts.None,
     HangTime: 0.0,
     Photo: "",
     Notes: "",
   }
 }
+*/
 
-const buildTeamEntry = (teamId) => {
-  if (teamId === undefined)
-    throw new Error("TeamId Not provided")
+const buildTeamEntry = (teamNumber, data, type) => {
+  if (teamNumber === undefined)
+    throw new Error("TeamNumber Not provided")
 
   console.log("building team entry")
+  console.log("the data: ", data)
 
-  return {
-    id: teamId,
-    description: "",
-    Comment : "test",
-    TeamMatches: {
-      name: "",
-      description: "",
-      Team: teamId,
-      Regional: "",
-      Autonomous: {
-      AutoStrat: AutoStratOpts.NONE,
-      TravelMid: 0,
-      AutoHang: HangOpts.NONE
-    },
-    Teleop: {
-      TravelMid: 0,
-      Endgame: HangOpts.Level1,
-    },
-    ActiveStrat: StratOpts.Level1, //need to add none options for all enums
-    InactiveStrat: StratOpts.Level1, 
-    Penalties: {
-      Fouls: 0,
-      Tech: 0,
-      PenaltiesCommitted: {
-        YellowCard: false,
-        RedCard: false,
-        Disabled: false,
-        DQ: false,
-        Broken: false,
-        NoShow: false,
+  if(type === "match"){
+
+    const matchEntry = data
+
+    return {
+      id: teamNumber,
+//======================
+      TeamMatches: {
+        name: "",
+        description: "",
+        Team: teamNumber,
+        Regional: "",
+        MatchId: matchEntry.MatchId,
+        Autonomous: {
+          AutoStrat: matchEntry.AutoStrat, //this needs to change but somehow works (temporary fix)
+          TravelMid: matchEntry.Autonomous.TravelMid,
+          AutoHang: matchEntry.Autonomous.AutoHang,
+        },
+        Teleop: {
+          TravelMid: matchEntry.Teleop.TravelMid,
+          Endgame: matchEntry.Teleop.Endgame,
+        },
+        ActiveStrat: StratOpts.None, //temp fix
+        InactiveStrat: StratOpts.None, //temp fix
+        RobotInfo: {
+          RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
+          ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
+          FuelCapacity: matchEntry.RobotInfo.FuelCapacity, 
+          BallsShot: matchEntry.RobotInfo.BallsShot,
+          ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
+          WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
+          Comments: matchEntry.RobotInfo.Comments,
+        },
+        Penalties: {
+          Fouls: matchEntry.Penalties.Fouls,
+          Tech: matchEntry.Penalties.Tech,
+          PenaltiesCommitted: {
+            YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
+            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+            Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
+            DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
+            Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
+            NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
+          },
+          FoulDesc: matchEntry.Penalties.FoulDesc
+        },
       },
-      FoulDesc: ""
-    },
-    },
-    TeamAttributes: {
-      name: teamId,
-      Regional: "",
-      DeclaredFuelCap: 0,
-      CyclesPerMatch: 0,
-      Capabilities: CapabilitiesOpts.Bump,
-      MaxHang: HangOpts.Level1,
-      HangTeamwork: HangTeamworkOpts.DoubleHang,
-      HangTime: 0.0,
-      Photo: "",
-      Notes: "",
-    },
+
+      TeamAttributes: {
+        name: "",
+        Regional: "",
+        DeclaredFuelCap: 0,
+        CyclesPerMatch: 0,
+        Capabilities: CapabilitiesOpts.None, //temp fix 
+        MaxHang: HangOpts.None,
+        HangTeamwork: HangTeamworkOpts.None, //temp fix
+        HangTime: 0.0,
+        Photo: "",
+        Notes: "",
+      }
+    }
   }
 }
-
 
 /* const generateRandomEntry = function (regionId, teamId, matchId) {
   const matchEntry = buildMatchEntry(regionId, teamId, matchId)

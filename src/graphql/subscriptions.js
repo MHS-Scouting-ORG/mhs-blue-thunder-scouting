@@ -12,6 +12,7 @@ export const onCreateTeam = /* GraphQL */ `
         description
         Team
         Regional
+        MatchId
         Autonomous {
           AutoStrat
           TravelMid
@@ -19,13 +20,22 @@ export const onCreateTeam = /* GraphQL */ `
           __typename
         }
         Teleop {
-          TeleStrat
           TravelMid
           Endgame
           __typename
         }
         ActiveStrat
         InactiveStrat
+        RobotInfo {
+          RobotSpeed
+          ShooterSpeed
+          FuelCapacity
+          BallsShot
+          ShootingCycles
+          WhatBrokeDesc
+          Comments
+          __typename
+        }
         Penalties {
           Fouls
           Tech
@@ -73,6 +83,7 @@ export const onUpdateTeam = /* GraphQL */ `
         description
         Team
         Regional
+        MatchId
         Autonomous {
           AutoStrat
           TravelMid
@@ -80,13 +91,22 @@ export const onUpdateTeam = /* GraphQL */ `
           __typename
         }
         Teleop {
-          TeleStrat
           TravelMid
           Endgame
           __typename
         }
         ActiveStrat
         InactiveStrat
+        RobotInfo {
+          RobotSpeed
+          ShooterSpeed
+          FuelCapacity
+          BallsShot
+          ShootingCycles
+          WhatBrokeDesc
+          Comments
+          __typename
+        }
         Penalties {
           Fouls
           Tech
@@ -134,6 +154,7 @@ export const onDeleteTeam = /* GraphQL */ `
         description
         Team
         Regional
+        MatchId
         Autonomous {
           AutoStrat
           TravelMid
@@ -141,13 +162,22 @@ export const onDeleteTeam = /* GraphQL */ `
           __typename
         }
         Teleop {
-          TeleStrat
           TravelMid
           Endgame
           __typename
         }
         ActiveStrat
         InactiveStrat
+        RobotInfo {
+          RobotSpeed
+          ShooterSpeed
+          FuelCapacity
+          BallsShot
+          ShootingCycles
+          WhatBrokeDesc
+          Comments
+          __typename
+        }
         Penalties {
           Fouls
           Tech

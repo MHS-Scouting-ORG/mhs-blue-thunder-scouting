@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
 
-import { apiGetRegional, apigetMatchesForRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -16,11 +16,11 @@ function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
 
-  console.log(regional, ' formUtils check') //regional check
+  //console.log(regional, ' regional check') //regional check
 
-  /* MATCH */
+  /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
-  const [apiMatchData, setApiMatchData] = useState([]) //match data in our database
+  const [apiTeamListData, setApiTeamListData] = useState([]) //team list data in our database
   const [matchType, setMatchType] = useState(''); //match type
   // const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
@@ -67,12 +67,14 @@ function Form() {
   const [confirm, setConfirm] = useState(false);
 
 
-
+ /* Blue Alliance API List Teams */
   useEffect(() => {
     /* Get Matches for Regional from bluealliance */
     getMatchesForRegional(regional)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
+        console.log(data, ' blue alliance api check') //blue alliance api check
+
         let match_key = regional + "_" + matchType + "m" + matchNumber
 
         if(matchType === "sf") {
@@ -102,24 +104,26 @@ function Form() {
   }, [matchType, matchNumber])
 
   useEffect(() => {
-    /* Check for pre-existing match data in our api */
-    apigetMatchesForRegional(regional)
+    /* Check for pre-existing team entry data in our api */
+    apiListTeams()
       .then((data) => {
-        console.log("Match data for regional: ", data)
-        let matches = data.data.teamMatchesByRegional.items
-        let team = matches.find((x) => isSameTeam(x.Team, teamNumber)) // finds matches for the team in our database
-        if (team !== undefined && apiMatchData.find((x) => isSameTeam(x.Team, teamNumber)) === undefined)//checks if the team is found in our database
-          setApiMatchData(apiMatchData.concat(team))
+        const teamList = data.data.listTeams.items
+        console.log("Existing teams in our data : ", data.data)
+        setApiTeamListData(teamList)
       })
-      .catch(err => console.log(err))
-  }, [teamNumber]
-  )
+      .catch(err => {
+        console.log(err) //temp fix there is current err in data 02/11/26
+        console.log("Existing teams in our data : ", err.data.listTeams.items) //temp fix there is current err in data 02/11/26
+        setApiTeamListData(err.data.listTeams.items)
+      })
+  }, [])
 
+  //for testing
   useEffect(() => {
-    /* Check for pre-existing match data in our api */
-    apiListTeams(teamNumber)
+    /* Check for pre-existing team entry data in our api */
+    apiGetTeam(teamNumber)
       .then((data) => {
-        console.log("ListTeam data : ", data)
+        console.log(teamNumber, "for test api get team data : ", data)
       })
       .catch(err => console.log(err))
   }, [teamNumber]
@@ -128,7 +132,7 @@ function Form() {
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
-    setApiMatchData([])
+    setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
     setColor(false)
@@ -868,7 +872,7 @@ function Form() {
             regional,
             teamNumber,
             matchKey,
-            apiMatchData,
+            apiTeamListData,
             matchType,
             matchNumber,
             color,
@@ -907,7 +911,7 @@ function Form() {
         ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
       </div>
       <div>
-        <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button>
+        {/* <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button> */}
       </div>
     </div>
   )
