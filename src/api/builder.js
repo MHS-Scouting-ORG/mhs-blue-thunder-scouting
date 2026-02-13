@@ -158,7 +158,7 @@ const buildMatchEntry = (teamId, matchKey) => {
       },
       RobotInfo: {
         RobotSpeed: SpeedOpts.None,
-        ShootingSpeed: SpeedOpts.None,
+        ShooterSpeed: SpeedOpts.None,
         FuelCapacity: 0,
         BallsShot: 0,
         ShootingCycles: 0,
@@ -208,43 +208,43 @@ const buildTeamEntry = (teamNumber, data, type) => {
       TeamMatches: {
         name: "",
         description: "",
-        Team: " ",
+        Team: teamNumber,
         Regional: "",
-        MatchId: "matchEntry.MatchId",
+        MatchId: matchEntry.MatchId,
         Autonomous: {
-        //   AutoStrat: AutoStratOpts.Scored, //this needs to change but somehow works (temporary fix)
-        //   TravelMid: matchEntry.Autonomous.TravelMid,
-        //   AutoHang: matchEntry.Autonomous.AutoHang,
+          AutoStrat: matchEntry.AutoStrat, //this needs to change but somehow works (temporary fix)
+          TravelMid: matchEntry.Autonomous.TravelMid,
+          AutoHang: matchEntry.Autonomous.AutoHang,
         },
         Teleop: {
-        //   TravelMid: matchEntry.Teleop.TravelMid,
-        //   Endgame: matchEntry.Teleop.Endgame,
+          TravelMid: matchEntry.Teleop.TravelMid,
+          Endgame: matchEntry.Teleop.Endgame,
         },
-        // ActiveStrat: StratOpts.None, //temp fix
-        // InactiveStrat: StratOpts.None, //temp fix
-        // RobotInfo: {
-        //   RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
-        //   ShootingSpeed: matchEntry.RobotInfo.ShootingSpeed,
-        //   FuelCapacity: matchEntry.RobotInfo.FuelCapacity, 
-        //   BallsShot: matchEntry.RobotInfo.BallsShot,
-        //   ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
-        //   WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
-        //   Comments: matchEntry.RobotInfo.Comments,
-        // },
-        // Penalties: {
-        //   Fouls: matchEntry.Penalties.Fouls,
-        //   Tech: matchEntry.Penalties.Tech,
-        //   PenaltiesCommitted: {
-        //     YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
-        //     RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-        //     RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-        //     Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
-        //     DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
-        //     Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
-        //     NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
-        //   },
-        //   FoulDesc: matchEntry.Penalties.FoulDesc
-        // },
+        ActiveStrat: StratOpts.None, //temp fix
+        InactiveStrat: StratOpts.None, //temp fix
+        RobotInfo: {
+          RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
+          ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
+          FuelCapacity: matchEntry.RobotInfo.FuelCapacity, 
+          BallsShot: matchEntry.RobotInfo.BallsShot,
+          ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
+          WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
+          Comments: matchEntry.RobotInfo.Comments,
+        },
+        Penalties: {
+          Fouls: matchEntry.Penalties.Fouls,
+          Tech: matchEntry.Penalties.Tech,
+          PenaltiesCommitted: {
+            YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
+            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+            Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
+            DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
+            Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
+            NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
+          },
+          FoulDesc: matchEntry.Penalties.FoulDesc
+        },
       },
 
       TeamAttributes: {
@@ -252,9 +252,9 @@ const buildTeamEntry = (teamNumber, data, type) => {
         Regional: "",
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
-        Capabilities: CapabilitiesOpts.Bump, //temp fix 
-        MaxHang: HangOpts.Level1,
-        HangTeamwork: HangTeamworkOpts.DoubleHang, //temp fix
+        Capabilities: CapabilitiesOpts.None, //temp fix 
+        MaxHang: HangOpts.None,
+        HangTeamwork: HangTeamworkOpts.None, //temp fix
         HangTime: 0.0,
         Photo: "",
         Notes: "",

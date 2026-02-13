@@ -75,6 +75,10 @@ export async function submitState( //params are states of data from form
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
 
+  console.log(activeStrategy, "activestrat")
+  console.log(inactiveStrategy, "inactivestrat")
+
+
   /* Points Init */
   let autoPoints = 0;
   let endGamePoints = 0;
@@ -207,6 +211,7 @@ export async function submitState( //params are states of data from form
 
     /*  AUTONOMOUS SPECIFIC */ 
 
+    matchEntry.Autonomous.AutoStrat = autoActions.join(", ") //join array of auto actions into a string for storage
     matchEntry.Autonomous.AutoHang = autoHang
 
     /* TELEOP SPECIFIC*/
@@ -217,7 +222,7 @@ export async function submitState( //params are states of data from form
 
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed 
-    matchEntry.RobotInfo.ShootingSpeed = shootingSpeed  
+    matchEntry.RobotInfo.ShooterSpeed = shootingSpeed  
     matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity 
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles 
@@ -235,24 +240,26 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
 
     /* currently submits and updates the new form completely */
-    console.log(apiListTeamData, "api list team data")
-    if (apiListTeamData.find(x => x.id === teamNumber) === undefined) { //checks if match is already in array of matches in our database
-      await apiCreateTeamEntry(teamNumber, matchEntry, "match")
-    }
+    //run if there is a team entry already and to update that specific match
+      await apiGetTeam(teamNumber).then(async data => {
+        const currentMatchid = data.data.getTeam.TeamMatches.MatchId
+        if(data.data.getTeam === null){
+          console.log(apiListTeamData, "api list team data")
+         //checks if match is already in array of matches in our database
+          await apiCreateTeamEntry(teamNumber, matchEntry, "match")
+        }
+        else {
+          console.log("current match id", currentMatchid)
+          if (currentMatchid === matchKey) {
+            console.log("match already exists, updating match entry with new data")
+            apiUpdateTeamEntry(teamNumber, matchEntry)
+          }
+        }
+      })
 
       await apiGetTeam(teamNumber).then(data => 
         console.log("data from get team: (past apicreate)", data)
       )
-
-      //run if there is a team entry already and to update that specific match
-      await apiGetTeam(teamNumber).then(data => {
-        const currentMatchid = data.data.getTeam.TeamMatches
-        console.log("current match id", currentMatchid)
-        
-      })
-
-    //update team entry if it already exists and with new match data (if match already exists, update with new data)
-    await apiUpdateTeamEntry(teamNumber, matchEntry)
   }
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form
