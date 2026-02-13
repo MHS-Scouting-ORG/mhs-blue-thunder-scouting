@@ -12,6 +12,7 @@ export const getTeam = /* GraphQL */ `
         description
         Team
         Regional
+        MatchId
         Autonomous {
           AutoStrat
           TravelMid
@@ -19,13 +20,22 @@ export const getTeam = /* GraphQL */ `
           __typename
         }
         Teleop {
-          TeleStrat
           TravelMid
           Endgame
           __typename
         }
         ActiveStrat
         InactiveStrat
+        RobotInfo {
+          RobotSpeed
+          ShooterSpeed
+          FuelCapacity
+          BallsShot
+          ShootingCycles
+          WhatBrokeDesc
+          Comments
+          __typename
+        }
         Penalties {
           Fouls
           Tech
@@ -86,6 +96,7 @@ export const listTeams = /* GraphQL */ `
           description
           Team
           Regional
+          MatchId
           Autonomous {
             AutoStrat
             TravelMid
@@ -93,13 +104,22 @@ export const listTeams = /* GraphQL */ `
             __typename
           }
           Teleop {
-            TeleStrat
             TravelMid
             Endgame
             __typename
           }
           ActiveStrat
           InactiveStrat
+          RobotInfo {
+            RobotSpeed
+            ShooterSpeed
+            FuelCapacity
+            BallsShot
+            ShootingCycles
+            WhatBrokeDesc
+            Comments
+            __typename
+          }
           Penalties {
             Fouls
             Tech
