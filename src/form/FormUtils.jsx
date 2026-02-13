@@ -75,9 +75,6 @@ export async function submitState( //params are states of data from form
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
 
-  console.log(activeStrategy, "activestrat")
-  console.log(inactiveStrategy, "inactivestrat")
-
 
   /* Points Init */
   let autoPoints = 0;
@@ -238,21 +235,24 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
-
-    /* currently submits and updates the new form completely */
-    //run if there is a team entry already and to update that specific match
+    
+    //check if team entry is already made then checks if match is already made
       await apiGetTeam(teamNumber).then(async data => {
         const currentMatchid = data.data.getTeam.TeamMatches.MatchId
         if(data.data.getTeam === null){
           console.log(apiListTeamData, "api list team data")
-         //checks if match is already in array of matches in our database
           await apiCreateTeamEntry(teamNumber, matchEntry, "match")
         }
         else {
+          console.log("team exists", matchKey)
           console.log("current match id", currentMatchid)
-          if (currentMatchid === matchKey) {
+          if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
             console.log("match already exists, updating match entry with new data")
-            apiUpdateTeamEntry(teamNumber, matchEntry)
+            const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match")
+            apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
+          }
+          else { //creates new match to add to array of matches
+            
           }
         }
       })

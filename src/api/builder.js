@@ -212,7 +212,7 @@ const buildTeamEntry = (teamNumber, data, type) => {
         Regional: "",
         MatchId: matchEntry.MatchId,
         Autonomous: {
-          AutoStrat: matchEntry.AutoStrat, //this needs to change but somehow works (temporary fix)
+          AutoStrat: matchEntry.AutoStrat, 
           TravelMid: matchEntry.Autonomous.TravelMid,
           AutoHang: matchEntry.Autonomous.AutoHang,
         },
@@ -220,8 +220,8 @@ const buildTeamEntry = (teamNumber, data, type) => {
           TravelMid: matchEntry.Teleop.TravelMid,
           Endgame: matchEntry.Teleop.Endgame,
         },
-        ActiveStrat: StratOpts.None, //temp fix
-        InactiveStrat: StratOpts.None, //temp fix
+        ActiveStrat: StratOpts.None, 
+        InactiveStrat: StratOpts.None, 
         RobotInfo: {
           RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
           ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
@@ -252,9 +252,9 @@ const buildTeamEntry = (teamNumber, data, type) => {
         Regional: "",
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
-        Capabilities: CapabilitiesOpts.None, //temp fix 
+        Capabilities: CapabilitiesOpts.None, 
         MaxHang: HangOpts.None,
-        HangTeamwork: HangTeamworkOpts.None, //temp fix
+        HangTeamwork: HangTeamworkOpts.None, 
         HangTime: 0.0,
         Photo: "",
         Notes: "",
