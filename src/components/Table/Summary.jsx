@@ -44,10 +44,10 @@ function Summary() {
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
       MaxLevelHang: indivTeam.MaxLevelHang ,
-      MultiHang:indivTeam.MaxLevelHang ,
-      FuelCap:indivTeam.MaxLevelHang ,
-      AutoStrat:indivTeam.MaxLevelHang ,
-      AutoHang:indivTeam.MaxLevelHang ,
+      MultiHang:indivTeam.MultiHang ,
+      FuelCap: indivTeam.FuelCap ,
+      AutoStrat: indivTeam.AutoStrat ,
+      AutoHang: indivTeam.AutoHang ,
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -77,7 +77,7 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NHangLevel, team.NFuelCap, team.NCrossMid, team.NPts)
+          const grade = calcColumnSort(sortBy, team.NHangLevel, team.NmultiHang, team.NFuelCap, team.NCrossMid, team.NPts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,

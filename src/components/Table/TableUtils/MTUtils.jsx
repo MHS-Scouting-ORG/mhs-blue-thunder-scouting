@@ -42,11 +42,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     const data = await apigetMatchesForRegional(regional) 
     
     console.log("getTeamMatchesAndTableDataFunc", data)
-
+    
     const tableData = mtable
-
+    
     return teamNumbers.map(team => {
-
+      //teamMatchesByRegional is left undefined
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
       //console.log("teamStats", teamStats)
@@ -91,24 +91,27 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
       //grade
       const maxCoral = getMax(tableData.map(team => team.AvgCoral))
+      const maxPts = getMax(tableData.map(team => team.AvgPoints ))
 
       const rPts = avgPoints / maxPts
-      const rFuel = smoteihgn / other
-      const rHang = fhfhfh / jdjdrhf
+      // const rFuel = smoteihgn / other
+      // const rHang = fhfhfh / jdjdrhf
       //////Fix the top ... whatever it was
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
-        // Matches: team.Matches,
-
+        Matches: team.Matches,
+        
 
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
+       
         //===Stats==/ 
         AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
         AvgFuelPts: isNaN(avgFuel) ? 0 : avgFuel,
+        
         //Made//
         AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
@@ -129,13 +132,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         Evaluations: evaluations, 
         /* Grade */
         SumPriorities: team.SumPriorities,
-
-        NAlgaePts: isNaN(rAlgaePoints) ? 0 : rAlgaePoints,
-
-        // NHangLevel: isNaN(),
-        // NMultiHang:,
-        // NfuelCap:,
-        // NCrossMid:,
+        //Does not match up fix later 
+        // NHangLevel: isNaN() ? 0 : rHangLevel,
+        // NMultiHang: isNaN() ? 0 : rFuel,
+        // NFuelCap: isNaN() ? 0 : rHang,
+        // NCrossMid: isNaN() ? 0 : r,
         NPts: isNaN(rPts) ? 0 : rPts,
 
       }
@@ -147,4 +148,4 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
   }
   }
 
-export { getTeams,getTeamsMatchesAndTableData, }
+export { getTeams,getTeamsMatchesAndTableData}
