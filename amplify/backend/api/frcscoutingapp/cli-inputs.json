@@ -6,6 +6,18 @@
     "defaultAuthType": {
       "mode": "AWS_IAM"
     },
-    "conflictResolution": {}
+    "conflictResolution": {
+      "defaultResolutionStrategy": {
+        "type": "AUTOMERGE"
+      },
+      "perModelResolutionStrategy": [
+        {
+          "resolutionStrategy": {
+            "type": "AUTOMERGE"
+          },
+          "entityName": "Team"
+        }
+      ]
+    }
   }
 }
