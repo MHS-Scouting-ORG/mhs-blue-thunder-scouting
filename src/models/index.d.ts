@@ -5,7 +5,8 @@ import { LazyLoading, LazyLoadingDisabled } from "@aws-amplify/datastore";
 export enum AutoStratOpts {
   WENT_MID = "WentMid",
   SCORED = "Scored",
-  CROSSED_MID = "CrossedMid"
+  CROSSED_MID = "CrossedMid",
+  NONE = "None"
 }
 
 export enum AutoHangOpts {
@@ -20,10 +21,6 @@ export enum HangOpts {
   NONE = "None"
 }
 
-export enum TeleStratOpts {
-  BASIC = "Basic"
-}
-
 export enum SpeedOpts {
   NONE = "None",
   SLOW = "Slow",
@@ -31,28 +28,24 @@ export enum SpeedOpts {
   FAST = "Fast"
 }
 
-export enum ActiveStratOpts {
+export enum StratOpts {
   HOARDING = "Hoarding",
   DEFENSE = "Defense",
   OFFENSIVE = "Offensive",
-  SUPPORT = "Support"
-}
-
-export enum InactiveStratOpts {
-  HOARDING = "Hoarding",
-  DEFENSE = "Defense",
-  OFFENSIVE = "Offensive",
-  SUPPORT = "Support"
+  SUPPORT = "Support",
+  NONE = "None"
 }
 
 export enum HangTeamworkOpts {
   DOUBLE_HANG = "DoubleHang",
-  TRIPLE_HANG = "TripleHang"
+  TRIPLE_HANG = "TripleHang",
+  NONE = "None"
 }
 
 export enum CapabilitiesOpts {
   BUMP = "Bump",
-  TRENCH = "Trench"
+  TRENCH = "Trench",
+  NONE = "None"
 }
 
 type EagerAutonomousType = {
@@ -94,13 +87,11 @@ export declare type PenaltyOpts = LazyLoading extends LazyLoadingDisabled ? Eage
 export declare const PenaltyOpts: (new (init: ModelInit<PenaltyOpts>) => PenaltyOpts)
 
 type EagerTeleType = {
-  readonly TeleStrat?: TeleStratOpts | keyof typeof TeleStratOpts | null;
   readonly TravelMid?: number | null;
   readonly Endgame?: HangOpts | keyof typeof HangOpts | null;
 }
 
 type LazyTeleType = {
-  readonly TeleStrat?: TeleStratOpts | keyof typeof TeleStratOpts | null;
   readonly TravelMid?: number | null;
   readonly Endgame?: HangOpts | keyof typeof HangOpts | null;
 }
@@ -156,10 +147,12 @@ type EagerTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly Regional: string;
+  readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: ActiveStratOpts | keyof typeof ActiveStratOpts | null;
-  readonly InactiveStrat?: InactiveStratOpts | keyof typeof InactiveStratOpts | null;
+  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
 
@@ -168,10 +161,12 @@ type LazyTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly Regional: string;
+  readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: ActiveStratOpts | keyof typeof ActiveStratOpts | null;
-  readonly InactiveStrat?: InactiveStratOpts | keyof typeof InactiveStratOpts | null;
+  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
 

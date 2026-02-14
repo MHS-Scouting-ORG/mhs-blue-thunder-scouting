@@ -5,7 +5,8 @@ import { schema } from './schema';
 const AutoStratOpts = {
   "WENT_MID": "WentMid",
   "SCORED": "Scored",
-  "CROSSED_MID": "CrossedMid"
+  "CROSSED_MID": "CrossedMid",
+  "NONE": "None"
 };
 
 const AutoHangOpts = {
@@ -20,10 +21,6 @@ const HangOpts = {
   "NONE": "None"
 };
 
-const TeleStratOpts = {
-  "BASIC": "Basic"
-};
-
 const SpeedOpts = {
   "NONE": "None",
   "SLOW": "Slow",
@@ -31,28 +28,24 @@ const SpeedOpts = {
   "FAST": "Fast"
 };
 
-const ActiveStratOpts = {
+const StratOpts = {
   "HOARDING": "Hoarding",
   "DEFENSE": "Defense",
   "OFFENSIVE": "Offensive",
-  "SUPPORT": "Support"
-};
-
-const InactiveStratOpts = {
-  "HOARDING": "Hoarding",
-  "DEFENSE": "Defense",
-  "OFFENSIVE": "Offensive",
-  "SUPPORT": "Support"
+  "SUPPORT": "Support",
+  "NONE": "None"
 };
 
 const HangTeamworkOpts = {
   "DOUBLE_HANG": "DoubleHang",
-  "TRIPLE_HANG": "TripleHang"
+  "TRIPLE_HANG": "TripleHang",
+  "NONE": "None"
 };
 
 const CapabilitiesOpts = {
   "BUMP": "Bump",
-  "TRENCH": "Trench"
+  "TRENCH": "Trench",
+  "NONE": "None"
 };
 
 const { Team, AutonomousType, PenaltyOpts, TeleType, PenaltyType, RobotInfoType, TeamMatchesType, TeamAttributesType } = initSchema(schema);
@@ -62,10 +55,8 @@ export {
   AutoStratOpts,
   AutoHangOpts,
   HangOpts,
-  TeleStratOpts,
   SpeedOpts,
-  ActiveStratOpts,
-  InactiveStratOpts,
+  StratOpts,
   HangTeamworkOpts,
   CapabilitiesOpts,
   AutonomousType,

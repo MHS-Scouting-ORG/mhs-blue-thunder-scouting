@@ -100,7 +100,8 @@ export const schema = {
             "values": [
                 "WentMid",
                 "Scored",
-                "CrossedMid"
+                "CrossedMid",
+                "None"
             ]
         },
         "AutoHangOpts": {
@@ -119,12 +120,6 @@ export const schema = {
                 "None"
             ]
         },
-        "TeleStratOpts": {
-            "name": "TeleStratOpts",
-            "values": [
-                "Basic"
-            ]
-        },
         "SpeedOpts": {
             "name": "SpeedOpts",
             "values": [
@@ -134,36 +129,30 @@ export const schema = {
                 "Fast"
             ]
         },
-        "ActiveStratOpts": {
-            "name": "ActiveStratOpts",
+        "StratOpts": {
+            "name": "StratOpts",
             "values": [
                 "Hoarding",
                 "Defense",
                 "Offensive",
-                "Support"
-            ]
-        },
-        "InactiveStratOpts": {
-            "name": "InactiveStratOpts",
-            "values": [
-                "Hoarding",
-                "Defense",
-                "Offensive",
-                "Support"
+                "Support",
+                "None"
             ]
         },
         "HangTeamworkOpts": {
             "name": "HangTeamworkOpts",
             "values": [
                 "DoubleHang",
-                "TripleHang"
+                "TripleHang",
+                "None"
             ]
         },
         "CapabilitiesOpts": {
             "name": "CapabilitiesOpts",
             "values": [
                 "Bump",
-                "Trench"
+                "Trench",
+                "None"
             ]
         }
     },
@@ -248,15 +237,6 @@ export const schema = {
         "TeleType": {
             "name": "TeleType",
             "fields": {
-                "TeleStrat": {
-                    "name": "TeleStrat",
-                    "isArray": false,
-                    "type": {
-                        "enum": "TeleStratOpts"
-                    },
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "TravelMid": {
                     "name": "TravelMid",
                     "isArray": false,
@@ -399,6 +379,13 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "MatchId": {
+                    "name": "MatchId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Autonomous": {
                     "name": "Autonomous",
                     "isArray": false,
@@ -421,7 +408,7 @@ export const schema = {
                     "name": "ActiveStrat",
                     "isArray": false,
                     "type": {
-                        "enum": "ActiveStratOpts"
+                        "enum": "StratOpts"
                     },
                     "isRequired": false,
                     "attributes": []
@@ -430,7 +417,16 @@ export const schema = {
                     "name": "InactiveStrat",
                     "isArray": false,
                     "type": {
-                        "enum": "InactiveStratOpts"
+                        "enum": "StratOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "RobotInfo": {
+                    "name": "RobotInfo",
+                    "isArray": false,
+                    "type": {
+                        "nonModel": "RobotInfoType"
                     },
                     "isRequired": false,
                     "attributes": []
@@ -529,5 +525,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "19da487c431cdaccac18fd7164e1441f"
+    "version": "1dc3b32b8b0863b5747dcc305cc116ed"
 };
