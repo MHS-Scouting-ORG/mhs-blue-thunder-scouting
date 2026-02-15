@@ -41,14 +41,7 @@ function Summary() {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
-      AvgPoints: indivTeam.AvgPoints,
-      AvgAutoPts: indivTeam.AvgAutoPts,
-      AvgEndgamePts: indivTeam.AvgEndgamePts,
-      AvgCoralPts: indivTeam.AvgCoralPts,
-      AvgAlgaePts: indivTeam.AvgAlgaePts,
-      AvgCycles: indivTeam.AvgCycles,
-      AvgCoral: indivTeam.AvgCoral,
-      AvgAlgae: indivTeam.AvgAlgae,
+      AvgFuel: indivTeam.AvgFuel,
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
       Fouls: indivTeam.Fouls,
@@ -80,22 +73,16 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
+          const grade = calcColumnSort(sortBy, team.NFuel, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
             OPR: team.OPR,
 
             SumPriorities: grade !== 0.000 ? grade : 0,
-
-            NCoral: team.NCoral,
-            NAlgae: team.NAlgae,
-            NCycles: team.NCycles,
+            
+            NFuel: team.NFuel,
             NPts: team.NPts,
-            NAutoPts: team.NAutoPts,
-            NEndgamePts: team.NEndgamePts,
-            NCoralPts: team.NCoralPts,
-            NAlgaePts: team.NAlgaePts,
           }
         })
       }

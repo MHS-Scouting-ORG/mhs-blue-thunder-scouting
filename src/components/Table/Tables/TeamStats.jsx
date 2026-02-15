@@ -10,7 +10,7 @@ const getClient = () => {
 }
 
 function TeamStats(props) {
-  const information = props.information;
+  const information = useState([props.information]);
   const selectedTeam = props.selectedTeam;
 
   const [teamData, setTeamData] = useState(null);
@@ -91,28 +91,28 @@ function TeamStats(props) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Level Hang</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}  
+            <strong>Max Level Hang</strong> {stats.MaxLevelHang?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Multi Hang</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
+            <strong>Multi Hang</strong> {stats.MultiHang?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Capacity:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Fuel Capacity:</strong> {stats.FuelCap?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>AutoStrat:</strong> {stats.AutoStrat?.toFixed(2) || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Auto Hang:</strong> {stats.AutoHang?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Active Strat:</strong> {stats.AvgActiveStrat?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Inactive Strat:</strong> {stats.AvgAlgaePts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Inactive Strat:</strong> {stats.AvgInactiveStrat?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Hang Time:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
+            <strong>Avg Hang Time:</strong> {stats.AvgHangTime?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Robot Speed:</strong> {stats.RobotSpeed || 'N/A'}
@@ -133,7 +133,7 @@ function TeamStats(props) {
             <strong>Red Cards:</strong> {stats.RedCard || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Broken:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Broken:</strong> {stats.Broken || 'N/A'}
           </div>
         </div>
       </div>
