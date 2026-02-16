@@ -199,7 +199,7 @@ export async function submitState( //params are states of data from form
 
     console.log("matchentry", matchEntry)
 
-    //matchEntry.id = teamNumber
+    //matchEntry.Team = teamNumber
     matchEntry.MatchId = matchKey
     matchEntry.ActiveStrat = activeStrategy
     matchEntry.InactiveStrat = inactiveStrategy
@@ -252,7 +252,7 @@ export async function submitState( //params are states of data from form
             apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
           }
           else { //creates new match to add to array of matches
-            
+
           }
         }
       })
