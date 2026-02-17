@@ -13,13 +13,11 @@ import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import 'chart.js/auto';
 
-import { apiGetRegional } from "../../api"
 
 //CSS
 import tableStyles from "./Table.module.css";
 
 function Summary() {
-  const regional = apiGetRegional() //updated in aws
 
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
@@ -27,7 +25,7 @@ function Summary() {
   const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
-    ueTableData(tableData, regional)
+    ueTableData(tableData)
       .then(data => {
         console.log("tableData", tableData)
         let holdTableData = data
@@ -73,7 +71,7 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NFuel, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
+          const grade = calcColumnSort(sortBy, team.NFuel, team.NPts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
@@ -114,7 +112,6 @@ function Summary() {
   const filterState = {
     information: tableData,
     gFilter: globalFilter || '',
-    regionalEvent: regional,
     teamHandler: handleTeamClicked,
     selectedTeams: teamsClicked,
   }
@@ -157,7 +154,6 @@ function Summary() {
       {currentView === 'quals' && (
         <QualsView 
           tableData={tableData} 
-          regional={regional} 
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
         />
@@ -165,13 +161,11 @@ function Summary() {
       {currentView === 'alliance' && (
         <AllianceSelectionView 
           tableData={tableData} 
-          regional={regional} 
         />
       )}
       {currentView === 'elims' && (
         <ElimsView 
           tableData={tableData} 
-          regional={regional} 
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
         />

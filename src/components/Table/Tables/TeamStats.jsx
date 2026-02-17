@@ -10,7 +10,7 @@ const getClient = () => {
 }
 
 function TeamStats(props) {
-  const information = useState([props.information]);
+  const information = props.information
   const selectedTeam = props.selectedTeam;
 
   const [teamData, setTeamData] = useState(null);
@@ -91,49 +91,49 @@ function TeamStats(props) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Level Hang</strong> {stats.MaxLevelHang?.toFixed(2) || 'N/A'}  
+            <strong>Max Level Hang</strong> {stats.HangOpts?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Multi Hang</strong> {stats.MultiHang?.toFixed(2) || 'N/A'}
+            <strong>Multi Hang</strong> {stats.HangTeamWorkOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Capacity:</strong> {stats.FuelCap?.toFixed(2) || 'N/A'}
+            <strong>Fuel Capacity:</strong> {stats.RobotInfoType.FuelCapacity?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {stats.AutoStrat?.toFixed(2) || 'N/A'}
+            <strong>AutoStrat:</strong> {stats.AutoStratOpts?.toFixed(2) || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {stats.AutoHang?.toFixed(2) || 'N/A'}
+            <strong>Auto Hang:</strong> {stats.AutoHangOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {stats.AvgActiveStrat?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Active Strat:</strong> {stats.StratOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Inactive Strat:</strong> {stats.AvgInactiveStrat?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Inactive Strat:</strong> {stats.InactiveStratOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Hang Time:</strong> {stats.AvgHangTime?.toFixed(2) || 'N/A'}
+            <strong>Avg Hang Time:</strong> {stats.x?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Robot Speed:</strong> {stats.RobotSpeed || 'N/A'}
+            <strong>Robot Speed:</strong> {stats.RobotInfoType.RobotSpeed || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Shooter Speed:</strong> {stats.RobotHang || 'N/A'}
+            <strong>Shooter Speed:</strong> {stats.RobotInfoType.ShooterSpeed || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Total Fouls:</strong> {stats.Fouls || 'N/A'}
+            <strong>Total Fouls:</strong> {stats.PentaltyType.Fouls || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Total Major Fouls:</strong> {stats.Tech || 'N/A'}
+            <strong>Total Major Fouls:</strong> {stats.PentaltyType.Tech || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Yellow Cards:</strong> {stats.YellowCard || 'N/A'}
+            <strong>Yellow Cards:</strong> {stats.PenaltyOpts.YellowCard || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Red Cards:</strong> {stats.RedCard || 'N/A'}
+            <strong>Red Cards:</strong> {stats.PenaltyOpts.RedCard || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Broken:</strong> {stats.Broken || 'N/A'}
+            <strong>Broken:</strong> {stats.PenaltyOpts.Broken || 'N/A'}
           </div>
         </div>
       </div>
