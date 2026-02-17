@@ -1,5 +1,5 @@
 import React from "react"
-import {buildMatchEntry, buildTeamEntry} from '../api/builder';
+import { buildMatchEntry, buildTeamEntry } from '../api/builder';
 import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam } from '../api';
 import { getMatchesForRegional } from '../api/bluealliance';
 //import { getTeamMatch } from "../graphql/queries";
@@ -67,7 +67,7 @@ export async function submitState( //params are states of data from form
   robotInsight,
   robotBrokenComments
 
-) 
+)
 
 //actual function below
 {
@@ -81,7 +81,7 @@ export async function submitState( //params are states of data from form
   let endGamePoints = 0;
   let telePoints = 0;
 
-  /* idk what this is - not mine (dom) */ 
+  /* idk what this is - not mine (dom) */
   const normalizedTeamNumber = normalizeTeamId(teamNumber)
   const parsedMatchNumber = Number.parseInt(matchNumber, 10)
   const parsedFuelCapacity = Number.parseInt(fuelCapacity, 10)
@@ -112,7 +112,7 @@ export async function submitState( //params are states of data from form
   }
 
   /* Autonomous Hang */
-  if(autoHang === "None" && (redCard || dq || noShow || disable || botBroke) === false){
+  if (autoHang === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
     autoPoints += 0;
   }
   else if (autoHang === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
@@ -120,10 +120,10 @@ export async function submitState( //params are states of data from form
   }
 
   /* EndGame Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
+  if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
-  else if(hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false){
+  else if (hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
     endGamePoints += 0;
   }
   else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
@@ -141,7 +141,7 @@ export async function submitState( //params are states of data from form
   }
 
   /* Robot Info Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
+  if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
   else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
@@ -151,7 +151,7 @@ export async function submitState( //params are states of data from form
     robotSpeed = "Average";
   }
   else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Fast"; 
+    robotSpeed = "Fast";
   }
   else {
     incompleteForm = true;
@@ -159,7 +159,7 @@ export async function submitState( //params are states of data from form
   }
 
   /* Shooting Speed Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
+  if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
   else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
@@ -169,7 +169,7 @@ export async function submitState( //params are states of data from form
     shootingSpeed = "Average";
   }
   else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Fast"; 
+    shootingSpeed = "Fast";
   }
   else {
     incompleteForm = true;
@@ -206,7 +206,7 @@ export async function submitState( //params are states of data from form
     matchEntry.TravelMidActive = timesTravelledMidActive
     matchEntry.TravelMidInactive = timesTravelledMidInactive
 
-    /*  AUTONOMOUS SPECIFIC */ 
+    /*  AUTONOMOUS SPECIFIC */
 
     matchEntry.Autonomous.AutoStrat = autoActions.join(", ") //join array of auto actions into a string for storage
     matchEntry.Autonomous.AutoHang = autoHang
@@ -218,16 +218,16 @@ export async function submitState( //params are states of data from form
     matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
-    matchEntry.RobotInfo.RobotSpeed = robotSpeed 
-    matchEntry.RobotInfo.ShooterSpeed = shootingSpeed  
-    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity 
+    matchEntry.RobotInfo.RobotSpeed = robotSpeed
+    matchEntry.RobotInfo.ShooterSpeed = shootingSpeed
+    matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
-    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles 
-    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments 
+    matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
+    matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
     matchEntry.Comment = robotInsight
 
     // PENALTIES //
-    matchEntry.Penalties.Fouls = minFouls 
+    matchEntry.Penalties.Fouls = minFouls
     matchEntry.Penalties.Tech = majFouls
     matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
     matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
@@ -235,86 +235,91 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
-    
+
+    //console.log("check")
+
     //check if team entry is already made then checks if match is already made
-      await apiGetTeam(teamNumber).then(async data => {
-        const currentMatchid = data.data.getTeam.TeamMatches.MatchId
-        if(data.data.getTeam === null){
-          console.log(apiListTeamData, "api list team data")
-          await apiCreateTeamEntry(teamNumber, matchEntry, "match")
-        }
-        else {
-          console.log("team exists", matchKey)
-          console.log("current match id", currentMatchid)
-          if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
-            console.log("match already exists, updating match entry with new data")
-            const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match")
-            apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
-          }
-          else { //creates new match to add to array of matches
+    let data = await apiGetTeam(teamNumber)
+    console.log(data)
+    
 
-          }
-        }
-      })
+    //const currentMatchid = data.data.getTeam.TeamMatches.MatchId
+    if (data === null) {
+      console.log(apiListTeamData, "api list team data")
+      await apiCreateTeamEntry(teamNumber, matchEntry, "match")
+    }
+    else {
+      console.log("team exists", matchKey)
+      console.log("current match id", currentMatchid)
+      if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
+        console.log("match already exists, updating match entry with new data")
+        const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match")
+        apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
+      }
+      else { //creates new match to add to array of matches
 
-      await apiGetTeam(teamNumber).then(data => 
-        console.log("data from get team: (past apicreate)", data)
-      )
+      }
+    }
   }
+
+  data = await apiGetTeam(teamNumber)
+  console.log("data from get team: (past apicreate)", data)
+
+
   window.alert("Form Submitted");
   return false; //return to help track whether or not to call reset form
 }
 
 
 /* function for form to change image based on toggle */
-export function toggleIncremental(state, type){ 
+export function toggleIncremental(state, type) {
   /* When True */
-  if(state) {
-    if(type === "autoLeave") {
-      return (<img src="./images/autoLeaveTrue.png" style={{width: "110px"}}/>)
+  if (state) {
+    if (type === "autoLeave") {
+      return (<img src="./images/autoLeaveTrue.png" style={{ width: "110px" }} />)
     }
-    else if(type === "yellowCard") {
-      return (<img src="./images/yellowTrue.png" style={{width: "100px"}}/>)
+    else if (type === "yellowCard") {
+      return (<img src="./images/yellowTrue.png" style={{ width: "100px" }} />)
     }
-    else if(type === "redCard") {
-      return (<img src="./images/redTrue.png" style={{width: "100px"}}/>)
+    else if (type === "redCard") {
+      return (<img src="./images/redTrue.png" style={{ width: "100px" }} />)
     }
-    else if(type === "disable") {
-      return (<img src="./images/disableTrue.png" style={{width: "100px"}}/>)
+    else if (type === "disable") {
+      return (<img src="./images/disableTrue.png" style={{ width: "100px" }} />)
     }
-    else if(type === "dq") {
-      return (<img src="./images/dqTrue.png" style={{width: "100px"}}/>)
+    else if (type === "dq") {
+      return (<img src="./images/dqTrue.png" style={{ width: "100px" }} />)
     }
-    else if(type === "broke") {
-      return (<img src="./images/brokeTrue.png" style={{width: "100px"}}/>)
+    else if (type === "broke") {
+      return (<img src="./images/brokeTrue.png" style={{ width: "100px" }} />)
     }
-    else if(type === "noShow") {
-      return (<img src="./images/noShowTrue.png" style={{width: "100px"}}/>)
+    else if (type === "noShow") {
+      return (<img src="./images/noShowTrue.png" style={{ width: "100px" }} />)
     }
-    
+
   }
   /* When False */
   else {
-    if(type === "autoLeave") {
-      return (<img src="./images/autoLeaveFalse.png" style={{width: "110px"}}/>)
+    if (type === "autoLeave") {
+      return (<img src="./images/autoLeaveFalse.png" style={{ width: "110px" }} />)
     }
-    else if(type === "yellowCard") {
-      return (<img src="./images/yellowDefault.png" style={{width: "100px"}}/>)
+    else if (type === "yellowCard") {
+      return (<img src="./images/yellowDefault.png" style={{ width: "100px" }} />)
     }
-    else if(type === "redCard") {
-      return (<img src="./images/redDefault.png" style={{width: "100px"}}/>)
+    else if (type === "redCard") {
+      return (<img src="./images/redDefault.png" style={{ width: "100px" }} />)
     }
-    else if(type === "disable") {
-      return (<img src="./images/disableDefault.png" style={{width: "100px"}}/>)
+    else if (type === "disable") {
+      return (<img src="./images/disableDefault.png" style={{ width: "100px" }} />)
     }
-    else if(type === "dq") {
-      return (<img src="./images/dqDefault.png" style={{width: "100px"}}/>)
+    else if (type === "dq") {
+      return (<img src="./images/dqDefault.png" style={{ width: "100px" }} />)
     }
-    else if(type === "broke") {
-      return (<img src="./images/brokeDefault.png" style={{width: "100px"}}/>)
+    else if (type === "broke") {
+      return (<img src="./images/brokeDefault.png" style={{ width: "100px" }} />)
     }
-    else if(type === "noShow") {
-      return (<img src="./images/noShowDefault.png" style={{width: "100px"}}/>)
+    else if (type === "noShow") {
+      return (<img src="./images/noShowDefault.png" style={{ width: "100px" }} />)
     }
 
   }
@@ -322,46 +327,46 @@ export function toggleIncremental(state, type){
 
 /* incremetnal function to change images based on increments */
 export function buttonIncremental(num, type, element) {
-  if (element === "fuel"){
+  if (element === "fuel") {
     /* Check for default */
     if (num === 0) {
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
 
-    /* Check for increments */ 
+    /* Check for increments */
 
-    if( num === 1){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 1) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 2){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 2) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 3){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 3) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 4){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 4) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 5){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 5) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 6){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 6) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 7){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 7) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 8){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 8) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 9){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 9) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if( num === 10){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num === 10) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
-    if(num > 10){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    if (num > 10) {
+      return (<img src="./images/Fuel.png" style={{ width: "110px" }} />)
     }
   }
 }

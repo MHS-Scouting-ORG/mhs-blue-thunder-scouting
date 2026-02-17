@@ -129,45 +129,45 @@ const buildMatchEntry = (teamId, matchKey) => {
 
   console.log("building match entry")
 
-    return {
-      Team: teamId,
-      MatchId: matchKey,
-      Autonomous: {
-        AutoStrat: AutoStratOpts.None,
-        TravelMid: 0,
-        AutoHang: HangOpts.None
-      },
-      Teleop: {
+  return {
+    Team: teamId,
+    MatchId: matchKey,
+    Autonomous: {
+      AutoStrat: AutoStratOpts.None,
+      TravelMid: 0,
+      AutoHang: HangOpts.None
+    },
+    Teleop: {
       TravelMid: 0,
       Endgame: HangOpts.None,
+    },
+    ActiveStrat: StratOpts.None, //need to add none options for all enums
+    InactiveStrat: StratOpts.None,
+    Penalties: {
+      Fouls: 0,
+      Tech: 0,
+      PenaltiesCommitted: {
+        YellowCard: false,
+        RedCard: false,
+        Disabled: false,
+        DQ: false,
+        Broken: false,
+        NoShow: false,
       },
-      ActiveStrat: StratOpts.None, //need to add none options for all enums
-      InactiveStrat: StratOpts.None, 
-      Penalties: {
-        Fouls: 0,
-        Tech: 0,
-        PenaltiesCommitted: {
-          YellowCard: false,
-          RedCard: false,
-          Disabled: false,
-          DQ: false,
-          Broken: false,
-          NoShow: false,
-        },
-        FoulDesc: ""
-      },
-      RobotInfo: {
-        RobotSpeed: SpeedOpts.None,
-        ShooterSpeed: SpeedOpts.None,
-        FuelCapacity: 0,
-        BallsShot: 0,
-        ShootingCycles: 0,
-        WhatBrokeDesc: "",
-        Comments: "",
-      },
+      FoulDesc: ""
+    },
+    RobotInfo: {
+      RobotSpeed: SpeedOpts.None,
+      ShooterSpeed: SpeedOpts.None,
+      FuelCapacity: 0,
+      BallsShot: 0,
+      ShootingCycles: 0,
+      WhatBrokeDesc: "",
+      Comments: "",
+    },
     Comment: "",
-    }
   }
+}
 
 /*
 // buildTeamAttribute Entry for initializing team attributes when a new team is added to the database, separate from match entries
@@ -198,66 +198,67 @@ const buildTeamEntry = (teamNumber, data, type) => {
   console.log("building team entry")
   console.log("the data: ", data)
 
-  if(type === "match"){
+  if (type === "match") {
 
     const matchEntry = data
 
     return {
       id: teamNumber,
-//======================
-      TeamMatches: {
-        name: "",
-        description: "",
-        Team: teamNumber,
-        Regional: "",
-        MatchId: matchEntry.MatchId,
-        Autonomous: {
-          AutoStrat: matchEntry.AutoStrat, 
-          TravelMid: matchEntry.Autonomous.TravelMid,
-          AutoHang: matchEntry.Autonomous.AutoHang,
-        },
-        Teleop: {
-          TravelMid: matchEntry.Teleop.TravelMid,
-          Endgame: matchEntry.Teleop.Endgame,
-        },
-        ActiveStrat: StratOpts.None, 
-        InactiveStrat: StratOpts.None, 
-        RobotInfo: {
-          RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
-          ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
-          FuelCapacity: matchEntry.RobotInfo.FuelCapacity, 
-          BallsShot: matchEntry.RobotInfo.BallsShot,
-          ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
-          WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
-          Comments: matchEntry.RobotInfo.Comments,
-        },
-        Penalties: {
-          Fouls: matchEntry.Penalties.Fouls,
-          Tech: matchEntry.Penalties.Tech,
-          PenaltiesCommitted: {
-            YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
-            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-            RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-            Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
-            DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
-            Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
-            NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
-          },
-          FoulDesc: matchEntry.Penalties.FoulDesc
-        },
-      },
-
+      //======================
       TeamAttributes: {
         name: "",
         Regional: "",
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
-        Capabilities: CapabilitiesOpts.None, 
+        Capabilities: CapabilitiesOpts.None,
         MaxHang: HangOpts.None,
-        HangTeamwork: HangTeamworkOpts.None, 
+        HangTeamwork: HangTeamworkOpts.None,
         HangTime: 0.0,
         Photo: "",
         Notes: "",
+      },
+      Regionals: {
+        TeamMatches: {
+          name: "",
+          description: "",
+          Team: teamNumber,
+          Regional: "",
+          MatchId: matchEntry.MatchId,
+          Autonomous: {
+            AutoStrat: matchEntry.AutoStrat,
+            TravelMid: matchEntry.Autonomous.TravelMid,
+            AutoHang: matchEntry.Autonomous.AutoHang,
+          },
+          Teleop: {
+            TravelMid: matchEntry.Teleop.TravelMid,
+            Endgame: matchEntry.Teleop.Endgame,
+          },
+          ActiveStrat: StratOpts.None,
+          InactiveStrat: StratOpts.None,
+          RobotInfo: {
+            RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
+            ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
+            FuelCapacity: matchEntry.RobotInfo.FuelCapacity,
+            BallsShot: matchEntry.RobotInfo.BallsShot,
+            ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
+            WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
+            Comments: matchEntry.RobotInfo.Comments,
+          },
+          Penalties: {
+            Fouls: matchEntry.Penalties.Fouls,
+            Tech: matchEntry.Penalties.Tech,
+            PenaltiesCommitted: {
+              YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
+              RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+              RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
+              Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
+              DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
+              Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
+              NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
+            },
+            FoulDesc: matchEntry.Penalties.FoulDesc
+          },
+        },
       }
     }
   }
@@ -317,4 +318,4 @@ const buildTeamEntry = (teamNumber, data, type) => {
  * exported methods
  * buildMatchEntry - returns an object initialized with match entries
  */
-export  {buildMatchEntry, buildTeamEntry}
+export { buildMatchEntry, buildTeamEntry }

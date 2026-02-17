@@ -38,7 +38,8 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  */
 const apiGetTeam = async function (teamNumber) {
   const normalizedTeamId = normalizeTeamId(teamNumber)
-  return await getClient().graphql({ query: getTeam, variables: { id: normalizedTeamId } })
+  const data = await getClient().graphql({ query: getTeam, variables: { id: normalizedTeamId } })
+  return data.data.getTeam
 }
 
 
