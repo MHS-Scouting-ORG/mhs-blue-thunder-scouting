@@ -24,15 +24,6 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "TeamMatches": {
-                    "name": "TeamMatches",
-                    "isArray": false,
-                    "type": {
-                        "nonModel": "TeamMatchesType"
-                    },
-                    "isRequired": true,
-                    "attributes": []
-                },
                 "TeamAttributes": {
                     "name": "TeamAttributes",
                     "isArray": false,
@@ -41,6 +32,16 @@ export const schema = {
                     },
                     "isRequired": true,
                     "attributes": []
+                },
+                "Regionals": {
+                    "name": "Regionals",
+                    "isArray": true,
+                    "type": {
+                        "nonModel": "RegionalType"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "createdAt": {
                     "name": "createdAt",
@@ -372,13 +373,6 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "Regional": {
-                    "name": "Regional",
-                    "isArray": false,
-                    "type": "String",
-                    "isRequired": true,
-                    "attributes": []
-                },
                 "MatchId": {
                     "name": "MatchId",
                     "isArray": false,
@@ -522,8 +516,30 @@ export const schema = {
                     "attributes": []
                 }
             }
+        },
+        "RegionalType": {
+            "name": "RegionalType",
+            "fields": {
+                "RegionalId": {
+                    "name": "RegionalId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "TeamMatches": {
+                    "name": "TeamMatches",
+                    "isArray": true,
+                    "type": {
+                        "nonModel": "TeamMatchesType"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                }
+            }
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "1dc3b32b8b0863b5747dcc305cc116ed"
+    "version": "012f6f01e65817d4ea3594b90f90bdd6"
 };

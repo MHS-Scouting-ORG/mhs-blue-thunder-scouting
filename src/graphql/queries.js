@@ -189,52 +189,6 @@ export const syncTeams = /* GraphQL */ `
         id
         description
         Comment
-        TeamMatches {
-          name
-          description
-          Team
-          Regional
-          MatchId
-          Autonomous {
-            AutoStrat
-            TravelMid
-            AutoHang
-            __typename
-          }
-          Teleop {
-            TravelMid
-            Endgame
-            __typename
-          }
-          ActiveStrat
-          InactiveStrat
-          RobotInfo {
-            RobotSpeed
-            ShooterSpeed
-            FuelCapacity
-            BallsShot
-            ShootingCycles
-            WhatBrokeDesc
-            Comments
-            __typename
-          }
-          Penalties {
-            Fouls
-            Tech
-            PenaltiesCommitted {
-              YellowCard
-              RedCard
-              Disabled
-              DQ
-              Broken
-              NoShow
-              __typename
-            }
-            FoulDesc
-            __typename
-          }
-          __typename
-        }
         TeamAttributes {
           name
           Regional
@@ -246,6 +200,55 @@ export const syncTeams = /* GraphQL */ `
           HangTime
           Photo
           Notes
+          __typename
+        }
+        Regionals {
+          RegionalId
+          TeamMatches {
+            name
+            description
+            Team
+            MatchId
+            Autonomous {
+              AutoStrat
+              TravelMid
+              AutoHang
+              __typename
+            }
+            Teleop {
+              TravelMid
+              Endgame
+              __typename
+            }
+            ActiveStrat
+            InactiveStrat
+            RobotInfo {
+              RobotSpeed
+              ShooterSpeed
+              FuelCapacity
+              BallsShot
+              ShootingCycles
+              WhatBrokeDesc
+              Comments
+              __typename
+            }
+            Penalties {
+              Fouls
+              Tech
+              PenaltiesCommitted {
+                YellowCard
+                RedCard
+                Disabled
+                DQ
+                Broken
+                NoShow
+                __typename
+              }
+              FoulDesc
+              __typename
+            }
+            __typename
+          }
           __typename
         }
         createdAt

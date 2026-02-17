@@ -48,7 +48,7 @@ const CapabilitiesOpts = {
   "NONE": "None"
 };
 
-const { Team, AutonomousType, PenaltyOpts, TeleType, PenaltyType, RobotInfoType, TeamMatchesType, TeamAttributesType } = initSchema(schema);
+const { Team, AutonomousType, PenaltyOpts, TeleType, PenaltyType, RobotInfoType, TeamMatchesType, TeamAttributesType, RegionalType } = initSchema(schema);
 
 export {
   Team,
@@ -65,5 +65,6 @@ export {
   PenaltyType,
   RobotInfoType,
   TeamMatchesType,
-  TeamAttributesType
+  TeamAttributesType,
+  RegionalType
 };
