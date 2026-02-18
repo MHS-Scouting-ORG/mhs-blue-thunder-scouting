@@ -13,53 +13,53 @@ function TeamStats(props) {
   const information = props.information
   const selectedTeam = props.selectedTeam;
 
-  const [teamData, setTeamData] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState(null);
-  const [stats, setStats] = useState(null);
+  // const [teamData, setTeamData] = useState(null);
+  // const [photoUrl, setPhotoUrl] = useState(null);
+  // const [stats, setStats] = useState(null);
 
-  useEffect(() => {
-    if (selectedTeam) {
-      // Fetch team data from database
-      getClient().graphql({
-        query: getTeam,
-        variables: { id: selectedTeam }
-      }).then(result => {
-        setTeamData(result.data.getTeam);
-      }).catch(err => console.log('Error fetching team data:', err));
+  // useEffect(() => {
+  //   if (selectedTeam) {
+  //     // Fetch team data from database
+  //     getClient().graphql({
+  //       query: getTeam,
+  //       variables: { id: selectedTeam }
+  //     }).then(result => {
+  //       setTeamData(result.data.getTeam);
+  //     }).catch(err => console.log('Error fetching team data:', err));
 
-      // Get stats from information
-      const teamStats = information.find(t => t.TeamNumber === parseInt(selectedTeam));
-      setStats(teamStats);
-    }
-  }, [selectedTeam, information]);
+  //     // Get stats from information
+  //     const teamStats = information.find(t => t.TeamNumber === parseInt(selectedTeam));
+  //     setStats(teamStats);
+  //   }
+  // }, [selectedTeam, information]);
 
-  useEffect(() => {
-    if (teamData && teamData.photo) {
-      const loadPhoto = async () => {
-        if (teamData.photo.startsWith('http')) {
-          setPhotoUrl(teamData.photo);
-        } else {
-          try {
-            const url = await getUrl({ key: teamData.photo });
-            setPhotoUrl(url.url.href);
-          } catch (err) {
-            console.log('Failed to load photo for team', selectedTeam);
-          }
-        }
-      };
-      loadPhoto();
-    }
-  }, [teamData, selectedTeam]);
+  // useEffect(() => {
+  //   if (teamData && teamData.photo) {
+  //     const loadPhoto = async () => {
+  //       if (teamData.photo.startsWith('http')) {
+  //         setPhotoUrl(teamData.photo);
+  //       } else {
+  //         try {
+  //           const url = await getUrl({ key: teamData.photo });
+  //           setPhotoUrl(url.url.href);
+  //         } catch (err) {
+  //           console.log('Failed to load photo for team', selectedTeam);
+  //         }
+  //       }
+  //     };
+  //     loadPhoto();
+  //   }
+  // }, [teamData, selectedTeam]);
 
-  if (!selectedTeam || !stats) {
-    return null;
-  }
+  // if (!selectedTeam || !stats) {
+  //   return null;
+  // }
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}>Team {selectedTeam} Statistics</h2>
 
-      {/* Team Info */}
+      {/* Team Info
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Team Information</h3>
         <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
@@ -75,65 +75,64 @@ function TeamStats(props) {
             />
           )}
         </div>
-      </div>
+      </div> */}
 
       {/* Notes */}
-      {teamData?.notes && (
+      {/* {teamData?.notes && (
         <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
           <h3 style={{ marginTop: 0, marginBottom: "15px" }}>Scouting Notes</h3>
           <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.5" }}>{teamData.notes}</p>
         </div>
-      )}
-
+      )} */}
       {/* Statistics */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Performance Statistics</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Level Hang</strong> {stats.HangOpts?.toFixed(2) || 'N/A'}  
+            <strong>Max Level Hang</strong> {getTeam.HangOpts?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Multi Hang</strong> {stats.HangTeamWorkOpts?.toFixed(2) || 'N/A'}
+            <strong>Multi Hang</strong> {getTeam.HangTeamWorkOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Capacity:</strong> {stats.RobotInfoType.FuelCapacity?.toFixed(2) || 'N/A'}
+            <strong>Fuel Capacity:</strong> {getTeam.RobotInfoType?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {stats.AutoStratOpts?.toFixed(2) || 'N/A'}
+            <strong>AutoStrat:</strong> {getTeam.AutoStratOpts?.toFixed(2) || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {stats.AutoHangOpts?.toFixed(2) || 'N/A'}
+            <strong>Auto Hang:</strong> {getTeam.AutoHangOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {stats.StratOpts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Active Strat:</strong> {getTeam.StratOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Inactive Strat:</strong> {stats.InactiveStratOpts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Inactive Strat:</strong> {getTeam.InactiveStratOpts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Hang Time:</strong> {stats.x?.toFixed(2) || 'N/A'}
+            <strong>Avg Hang Time:</strong> {getTeam.HangTime?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Robot Speed:</strong> {stats.RobotInfoType.RobotSpeed || 'N/A'}
+            <strong>Robot Speed:</strong> {getTeam.RobotInfoType || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Shooter Speed:</strong> {stats.RobotInfoType.ShooterSpeed || 'N/A'}
+            <strong>Shooter Speed:</strong> {getTeam.RobotInfoType || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Total Fouls:</strong> {stats.PentaltyType.Fouls || 'N/A'}
+            <strong>Total Fouls:</strong> {getTeam.PentaltyType || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Total Major Fouls:</strong> {stats.PentaltyType.Tech || 'N/A'}
+            <strong>Total Major Fouls:</strong> {getTeam.PentaltyType || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Yellow Cards:</strong> {stats.PenaltyOpts.YellowCard || 'N/A'}
+            <strong>Yellow Cards:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Red Cards:</strong> {stats.PenaltyOpts.RedCard || 'N/A'}
+            <strong>Red Cards:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Broken:</strong> {stats.PenaltyOpts.Broken || 'N/A'}
+            <strong>Broken:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
         </div>
       </div>

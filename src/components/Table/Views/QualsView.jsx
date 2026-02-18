@@ -77,7 +77,8 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
         </form>
       </div>
 
-      {currentMatch && (
+      {currentMatch && 
+      (
         <div className={tableStyles.Card}>
           <h3 className={tableStyles.SectionHeader} style={{ marginBottom: '20px' }}>Match Alliances</h3>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -106,7 +107,8 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       )}
 
       {/* Team Statistics */}
-      {selectedTeam && (
+      {//selectedTeam && 
+      (
         <div className={tableStyles.Card}>
           <TeamStats
             information={tableData}

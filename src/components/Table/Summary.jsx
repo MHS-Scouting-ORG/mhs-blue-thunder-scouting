@@ -13,11 +13,13 @@ import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import 'chart.js/auto';
 
+import { apiGetRegional } from "../../api";
 
 //CSS
 import tableStyles from "./Table.module.css";
 
 function Summary() {
+  const regional = apiGetRegional()
 
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
@@ -156,6 +158,7 @@ function Summary() {
           tableData={tableData} 
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
+          regional={regional}
         />
       )}
       {currentView === 'alliance' && (

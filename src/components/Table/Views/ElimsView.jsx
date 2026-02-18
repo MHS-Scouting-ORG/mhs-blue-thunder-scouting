@@ -3,6 +3,7 @@ import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
 import { generateClient } from 'aws-amplify/api';
 import { getTeam } from '../../../graphql/queries';
+import { apiGetRegional } from '../../../api';
 
 let client
 const getClient = () => {
@@ -17,7 +18,7 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [blueTeams, setBlueTeams] = useState([]);
   const [redTeams, setRedTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
-
+regional = apiGetRegional
   // Load saved alliances from server
   useEffect(() => {
     const loadAlliances = async () => {
