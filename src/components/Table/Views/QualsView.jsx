@@ -111,10 +111,7 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       (
         <div className={tableStyles.Card}>
           <TeamStats
-            information={tableData}
-            gFilter=""
-            regionalEvent={regional}
-            teamHandler={handleTeamClick}
+           
             selectedTeam={selectedTeam}
           />
         </div>

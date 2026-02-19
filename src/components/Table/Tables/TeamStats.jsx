@@ -10,7 +10,6 @@ const getClient = () => {
 }
 
 function TeamStats(props) {
-  const information = props.information
   const selectedTeam = props.selectedTeam;
 
   // const [teamData, setTeamData] = useState(null);
@@ -90,25 +89,31 @@ function TeamStats(props) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Level Hang</strong> {getTeam.HangOpts?.toFixed(2) || 'N/A'}  
+            <strong>Max Hang Level</strong> {getTeam.HangOpts || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Multi Hang</strong> {getTeam.HangTeamWorkOpts?.toFixed(2) || 'N/A'}
+            <strong>Cycles</strong> {getTeam.cycles || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Capacity:</strong> {getTeam.RobotInfoType?.toFixed(2) || 'N/A'}
+            <strong>Amt Travelled to Mid:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {getTeam.AutoStratOpts?.toFixed(2) || 'N/A'}
+            <strong>Multi Hang</strong> {getTeam.HangTeamWorkOpts || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Fuel Capacity:</strong> {getTeam.RobotInfoType || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>AutoStrat:</strong> {getTeam.AutoStratOpts || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {getTeam.AutoHangOpts?.toFixed(2) || 'N/A'}
+            <strong>Auto Hang:</strong> {getTeam.AutoHangOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {getTeam.StratOpts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Active Strat:</strong> {getTeam.StratOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Inactive Strat:</strong> {getTeam.InactiveStratOpts?.toFixed(2) || 'N/A'}
+            <strong>Most Likely Inactive Strat:</strong> {getTeam.InactiveStratOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Avg Hang Time:</strong> {getTeam.HangTime?.toFixed(2) || 'N/A'}
@@ -132,7 +137,19 @@ function TeamStats(props) {
             <strong>Red Cards:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Disabled:</strong> {getTeam.PenaltyOpts || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>DQ:</strong> {getTeam.PenaltyOpts || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Broken:</strong> {getTeam.PenaltyOpts || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>No Show:</strong> {getTeam.PenaltyOpts || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Tipped:</strong> {getTeam.PenaltyOpts || 'N/A'}
           </div>
         </div>
       </div>

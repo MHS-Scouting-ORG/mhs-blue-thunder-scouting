@@ -26,15 +26,15 @@ function Summary() {
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
   const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
-  useEffect(() => {
-    ueTableData(tableData)
-      .then(data => {
-        console.log("tableData", tableData)
-        let holdTableData = data
-        setTableData(holdTableData)
-      })
-      .catch(console.log.bind(console))
-  }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
+  // useEffect(() => {
+  //   ueTableData(tableData)
+  //     .then(data => {
+  //       console.log("tableData", tableData)
+  //       let holdTableData = data
+  //       setTableData(holdTableData)
+  //     })
+  //     .catch(console.log.bind(console))
+  // }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {
