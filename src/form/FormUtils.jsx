@@ -70,7 +70,10 @@ export async function submitState( //params are states of data from form
 ) 
 
 //actual function below
+
 {
+  {
+  const robotWasBroken = redCard || dq || noShow || disable || botBroke;
 
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
@@ -120,62 +123,73 @@ export async function submitState( //params are states of data from form
   }
 
   /* EndGame Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
-
+  if((robotWasBroken) !== false){
+  
   }
-  else if(hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false){
-    endGamePoints += 0;
+  else{
+  switch (hangType) {
+    case "None":
+      endGamePoints += 0;
+      break
+    case "Level3":
+      endGamePoints += 10;
+      break
+    case "Level2":
+      endGamePoints += 20;
+      break
+    case "Level1":
+      endGamePoints += 30;
+      break
+    default:
+      incompleteForm = true;
+      windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
   }
-  else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 10;
+}
   }
-  else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 20;
-  }
-  else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 30;
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
-  }
-
   /* Robot Info Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
+  if ((robotWasBroken) !== false){
 
   }
-  else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Slow";
+  else{
+    switch (robotSpeed){
+      case "Slow": {
+        robotSpeed = "Slow"
+        break;
+      }
+      case "Average": {
+        robotSpeed = "Average"
+        break;
+      }
+      case "Fast": {
+        robotSpeed = "Fast"
+        break;
+      }
+      default: {
+        incompleteForm = true;
+        windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+      }
+    }
   }
-  else if (robotSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Average";
-  }
-  else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Fast"; 
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-  }
-
   /* Shooting Speed Select */
-  if((redCard || dq || noShow || disable || botBroke) !== false){
+  if((robotWasBroken) !== false){
 
-  }
-  else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Slow";
-  }
-  else if (shootingSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Average";
-  }
-  else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Fast"; 
   }
   else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+    switch (shootingSpeed){
+      case "Slow":
+        shootingSpeed = "Slow"
+        break;
+      case "Average":
+        shootingSpeed = "Average"
+        break
+      case "Fast":
+        shootingSpeed = "Fast"
+        break
+      default:
+        incompleteForm = true;
+        windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+    }
   }
-
   /* Point Calc */
 
   // Calculate fuel points based on autoActions
@@ -291,7 +305,7 @@ export function toggleIncremental(state, type){
     else if(type === "noShow") {
       return (<img src="./images/noShowTrue.png" style={{width: "100px"}}/>)
     }
-    
+
   }
   /* When False */
   else {
@@ -320,7 +334,7 @@ export function toggleIncremental(state, type){
   }
 }
 
-/* incremetnal function to change images based on increments */
+/* incremental function to change images based on increments */
 export function buttonIncremental(num, type, element) {
   if (element === "fuel"){
     /* Check for default */
