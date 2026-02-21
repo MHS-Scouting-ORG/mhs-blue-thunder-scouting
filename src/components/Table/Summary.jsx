@@ -26,24 +26,32 @@ function Summary() {
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
   const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
-  // useEffect(() => {
-  //   ueTableData(tableData)
-  //     .then(data => {
-  //       console.log("tableData", tableData)
-  //       let holdTableData = data
-  //       setTableData(holdTableData)
-  //     })
-  //     .catch(console.log.bind(console))
-  // }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
+  useEffect(() => {
+    ueTableData(tableData)
+      .then(data => {
+        console.log("tableData", tableData)
+        let holdTableData = data
+        setTableData(holdTableData)
+      })
+      .catch(console.log.bind(console))
+  }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
-      AvgFuel: indivTeam.AvgFuel,
+      FuelCap: indivTeam.FuelCap,
+      ShootingCycles: indivTeam.ShootingCycles,
+      MultiHang: indivTeam.MultiHang,
       RobotSpeed: indivTeam.RobotSpeed,
-      RobotHang: indivTeam.RobotHang,
+      AvgHangTime: indivTeam.AvgHangTime,
+      AutoStrat: indivTeam.AutoStrat,
+      AutoHang: indivTeam.AutoHang,
+      EndgameHangLevel: indivTeam.EndgameHangLevel,
+      ActiveStrat: indivTeam.ActiveStrat,
+      InactiveStrat: indivTeam.InactiveStrat,
+      ShooterSpeed: indivTeam.ShooterSpeed,
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -82,8 +90,7 @@ function Summary() {
             SumPriorities: grade !== 0.000 ? grade : 0,
             
             NFuel: team.NFuel,
-            NHang: team.NHang,
-            NPts: team.NPts,
+            
           }
         })
       }

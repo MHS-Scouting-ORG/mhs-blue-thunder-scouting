@@ -12,6 +12,7 @@ const getClient = () => {
 function TeamStats(props) {
   const selectedTeam = props.selectedTeam;
 
+
   // const [teamData, setTeamData] = useState(null);
   // const [photoUrl, setPhotoUrl] = useState(null);
   // const [stats, setStats] = useState(null);
@@ -92,7 +93,7 @@ function TeamStats(props) {
             <strong>Endgame Hang Level</strong> {getTeam.HangOpts || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Shooting Cycles</strong> {getTeam.Cycles || 'N/A'}
+            <strong>Shooting Cycles</strong> {getTeam.ShootingCycles || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Amt Travelled to Mid:</strong> {getTeam.MidTravelled || 'N/A'}
