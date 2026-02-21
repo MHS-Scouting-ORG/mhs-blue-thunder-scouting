@@ -307,6 +307,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 console.log("data in our thing ", checkData)
                 //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
 
+                //createsd empty shell and pushes up to data when selected team if there is existing team object yet
+
                 const teamShell = buildTeamEntry(teamNumber, regional)
 
                 if (checkData === null) {
