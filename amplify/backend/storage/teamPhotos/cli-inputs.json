@@ -1,0 +1,13 @@
+{
+  "resourceName": "teamPhotos",
+  "policyUUID": "ed205cac",
+  "bucketName": "frcscoutingapp330f03a3ef5a4f74b33127a31b265d8c",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "groupAccess": {}
+}

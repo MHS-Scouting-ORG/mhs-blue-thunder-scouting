@@ -118,7 +118,6 @@ type TeamMatchesType {
   name: String
   description: String
   Team: ID!
-  Regional: String!
   MatchId: String
   Autonomous: AutonomousType!
   Teleop: TeleType!
@@ -141,10 +140,15 @@ type TeamAttributesType {
   Notes: String
 }
 
+type RegionalType {
+  RegionalId: String
+  TeamMatches: [TeamMatchesType]
+}
+
 type Team @model @auth(rules : [{ allow: private, provider: iam}]) {
   id: ID! @primaryKey
   description: String
   Comment: String
-  TeamMatches: TeamMatchesType!
   TeamAttributes: TeamAttributesType!
+  Regionals: [RegionalType]
 }

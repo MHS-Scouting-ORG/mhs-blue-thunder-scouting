@@ -12,11 +12,12 @@ import tableStyling from "../components/Table/Table.module.css";
 
 import { submitState } from './FormUtils' //from formUtils submits to builder
 
-function Form() {
+ function Form() {
   /* Regional Key */
   const regional = apiGetRegional() // updated in aws
+  //console.log(regional)
 
-  //console.log(regional, ' regional check') //regional check
+  console.log(regional, ' regional check') //regional check
 
   /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
