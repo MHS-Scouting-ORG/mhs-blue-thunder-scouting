@@ -118,7 +118,7 @@ function Form() {
       })
   }, [])
 
-  //for testing
+  // for testing
   useEffect(() => {
     /* Check for pre-existing team entry data in our api */
     apiGetTeam(teamNumber)

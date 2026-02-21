@@ -73,7 +73,7 @@ export async function submitState( //params are states of data from form
 
 {
   {
-  const robotWasBroken = redCard || dq || noShow || disable || botBroke;
+  // const robotWasBroken = redCard || dq || noShow || disable || botBroke;
 
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
@@ -123,23 +123,23 @@ export async function submitState( //params are states of data from form
   }
 
   /* EndGame Select */
-  if((robotWasBroken) !== false){
+  if((redCard || dq || noShow || disable || botBroke) !== false){
   
   }
   else{
   switch (hangType) {
     case "None":
       endGamePoints += 0;
-      break
+      break;
     case "Level3":
       endGamePoints += 10;
-      break
+      break;
     case "Level2":
       endGamePoints += 20;
-      break
+      break;
     case "Level1":
       endGamePoints += 30;
-      break
+      break;
     default:
       incompleteForm = true;
       windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
@@ -147,7 +147,7 @@ export async function submitState( //params are states of data from form
 }
   }
   /* Robot Info Select */
-  if ((robotWasBroken) !== false){
+  if ((redCard || dq || noShow || disable || botBroke) !== false){
 
   }
   else{
@@ -171,7 +171,7 @@ export async function submitState( //params are states of data from form
     }
   }
   /* Shooting Speed Select */
-  if((robotWasBroken) !== false){
+  if((redCard || dq || noShow || disable || botBroke) !== false){
 
   }
   else {
@@ -241,6 +241,7 @@ export async function submitState( //params are states of data from form
     matchEntry.Comment = robotInsight
 
     // PENALTIES //
+    matchEntry.Penalties.Tipped = tipped
     matchEntry.Penalties.Fouls = minFouls 
     matchEntry.Penalties.Tech = majFouls
     matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
@@ -337,45 +338,33 @@ export function toggleIncremental(state, type){
 /* incremental function to change images based on increments */
 export function buttonIncremental(num, type, element) {
   if (element === "fuel"){
-    /* Check for default */
-    if (num === 0) {
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-
-    /* Check for increments */ 
-
-    if( num === 1){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 2){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 3){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 4){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 5){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 6){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 7){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 8){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 9){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if( num === 10){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
-    }
-    if(num > 10){
-      return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+    switch (num) {
+      /* Check for default */
+      case 0:
+        return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      /* Check for increments */ 
+      case 1:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 2:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 3:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 4:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 5:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 6:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 7:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 8:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 9:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      case 10:
+          return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
+      default:
+        return (<img src="./images/Fuel.png" style={{width: "110px"}}/>)
     }
   }
 }

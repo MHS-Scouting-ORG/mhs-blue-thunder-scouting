@@ -83,16 +83,16 @@ function TeamStats(props) {
           <p style={{ whiteSpace: "pre-wrap", lineHeight: "1.5" }}>{teamData.notes}</p>
         </div>
       )} */}
-      {/* Statistics */}
+      {/* Statistics */} {/*Remove Stats If Not Needed*/}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Performance Statistics</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Hang Level</strong> {getTeam.HangOpts || 'N/A'}  
+            <strong>Endgame Hang Level</strong> {getTeam.HangOpts || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Cycles</strong> {getTeam.cycles || 'N/A'}
+            <strong>Shooting Cycles</strong> {getTeam.Cycles || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Amt Travelled to Mid:</strong> {getTeam.MidTravelled || 'N/A'}

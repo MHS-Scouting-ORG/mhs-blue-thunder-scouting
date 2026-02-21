@@ -17,7 +17,7 @@ const getCan = (arr) => {
   }
   return can
 }
-//grade
+//grade NEED TO CHANGE THIS IS OLD
 const calcColumnSort = (arr, coral, algae, cycles, pts, autoPts, endgame, coralPts, algaePts) => {
   let sum = 0;
   if (arr.includes("Coral")) {
