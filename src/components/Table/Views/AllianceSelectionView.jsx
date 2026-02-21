@@ -64,17 +64,7 @@ function AllianceSelectionView({ tableData, regional }) {
       if (!regional) return;
       const allianceId = `alliances-${regional}`;
 
-      // Try to load from localStorage first (works offline)
-      try {
-        const local = localStorage.getItem(allianceId);
-        if (local) {
-          setAlliances(JSON.parse(local));
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-
-      // Then try to load from server and overwrite local if available
+      // Load from server
       try {
         const result = await getClient().graphql({
           query: getTeam,
@@ -83,10 +73,9 @@ function AllianceSelectionView({ tableData, regional }) {
         if (result.data.getTeam && result.data.getTeam.description) {
           const savedAlliances = JSON.parse(result.data.getTeam.description);
           setAlliances(savedAlliances);
-          try { localStorage.setItem(allianceId, result.data.getTeam.description); } catch (e) {}
         }
       } catch (error) {
-        console.log('Server unavailable; using local alliances if present', error);
+        console.log('Error loading alliances from server', error);
       }
     };
     if (regional) {
@@ -99,14 +88,7 @@ function AllianceSelectionView({ tableData, regional }) {
     const allianceId = `alliances-${regional}`;
     const alliancesData = JSON.stringify(alliances);
 
-    // Save locally first so offline works
-    try {
-      localStorage.setItem(allianceId, alliancesData);
-    } catch (e) {
-      console.warn('Could not write alliances to localStorage', e);
-    }
-
-    // Then attempt to save to the server; if it fails, we still have the local copy
+    // Save to the server
     try {
       try {
         await getClient().graphql({
@@ -131,10 +113,10 @@ function AllianceSelectionView({ tableData, regional }) {
           }
         });
       }
-      alert('Alliances saved to device and server.');
+      alert('Alliances saved to server.');
     } catch (error) {
       console.error('Error saving alliances to server:', error);
-      alert('Saved locally (offline). Will sync when online.');
+      alert('Error saving alliances. Please try again.');
     }
   };
 

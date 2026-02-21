@@ -24,17 +24,7 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       if (!regional) return;
       const allianceId = `alliances-${regional}`;
 
-      // Try load from localStorage first (offline-capable)
-      try {
-        const local = localStorage.getItem(allianceId);
-        if (local) {
-          setAlliances(JSON.parse(local));
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-
-      // Then try to fetch from server and overwrite local if available
+      // Fetch from server
       try {
         const result = await getClient().graphql({
           query: getTeam,
@@ -43,10 +33,9 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
         if (result.data.getTeam && result.data.getTeam.description) {
           const saved = JSON.parse(result.data.getTeam.description);
           setAlliances(saved);
-          try { localStorage.setItem(allianceId, result.data.getTeam.description); } catch (e) {}
         }
       } catch (err) {
-        console.log('Server unavailable; using local alliances if present', err);
+        console.log('Error loading alliances from server', err);
       }
     };
     loadAlliances();
