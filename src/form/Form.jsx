@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { getMatchesForRegional } from '../api/bluealliance';
-
 import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { buildTeamEntry } from '../api/builder';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -298,7 +298,24 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={(e) => setTeamNumber(normalizeTeamId(e.target.value))}
+              onChange={(e) => {
+
+                setTeamNumber(normalizeTeamId(e.target.value))
+
+                const checkData = apiGetTeam(teamNumber) 
+
+                console.log("data in our thing ", checkData)
+                //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
+
+                const teamShell = buildTeamEntry(teamNumber, regional)
+
+                if (checkData === null) {
+                  console.log("api get team returned null")
+                  console.log(apiTeamListData, "api list team data")
+                  apiCreateTeamEntry(teamNumber, teamShell, "match", regional)
+                  console.log("created team entry with shell data: ", teamShell)
+                }
+              }}
             >
               <option value="">Select robot number</option>
               {color === false ?

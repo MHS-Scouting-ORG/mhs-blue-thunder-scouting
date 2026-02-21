@@ -63,6 +63,19 @@ const apiUpdateTeamEntry = async function (team, data) {
   })
 }
 
+const apiUpdateTeamEntryMatch = async function (team, data) {
+  console.log({...data}, "...data")
+  await getClient().graphql({
+    query: updateTeam,  
+    variables: {
+      input: {
+        ...data,
+        id: team,
+      }
+    }
+  })
+}
+
 /*
  * Get All the teams in our database
  */
@@ -125,4 +138,4 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }
+export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry, apiUpdateTeamEntryMatch }

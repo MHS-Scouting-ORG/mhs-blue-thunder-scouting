@@ -240,14 +240,13 @@ export async function submitState( //params are states of data from form
 
     //check if team entry is already made then checks if match is already made
     let data = await apiGetTeam(teamNumber)
-    console.log("data in our thing ", data)
     
 
     const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
 
     console.log(currentMatchid, "current match id 1")
 
-    if (data === null) {
+    if (data === null) { //move this check to top of function ie in the Form.js file
       console.log(apiListTeamData, "api list team data")
       await apiCreateTeamEntry(teamNumber, matchEntry, "match", regional)
       .catch(err => console.log("error creating team entry: ", err))

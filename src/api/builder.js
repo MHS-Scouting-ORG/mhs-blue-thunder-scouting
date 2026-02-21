@@ -191,19 +191,15 @@ const buildTeamAttributeEntry = (teamId) => {
 }
 */
 
-const buildTeamEntry = (teamNumber, data, type, regional) => {
+const buildTeamEntry = (teamNumber, regional) => {
   if (teamNumber === undefined)
     throw new Error("TeamNumber Not provided")
   if (regional === undefined)
     throw new Error("Regional Not provided")
 
-  console.log("building team entry")
-  console.log("the data: ", data)
-  console.log(regional)
+  // if (type === "match") {
 
-  if (type === "match") {
-
-    const matchEntry = data
+    //const matchEntry = data
 
     return {
       id: teamNumber,
@@ -220,50 +216,50 @@ const buildTeamEntry = (teamNumber, data, type, regional) => {
         Photo: "",
         Notes: "",
       },
-      Regionals: {
+      Regionals: [ {
         RegionalId: regional,
-        TeamMatches: {
+        TeamMatches: [{
           name: "",
           description: "",
           Team: teamNumber,
-          MatchId: matchEntry.MatchId,
+          MatchId: "matchEntry.MatchId",
           Autonomous: {
-            AutoStrat: matchEntry.AutoStrat,
-            TravelMid: matchEntry.Autonomous.TravelMid,
-            AutoHang: matchEntry.Autonomous.AutoHang,
+            AutoStrat: StratOpts.None, //matchEntry.AutoStrat,
+            TravelMid: 0, //matchEntry.Autonomous.TravelMid,
+            AutoHang: HangOpts.None //matchEntry.Autonomous.AutoHang,
           },
           Teleop: {
-            TravelMid: matchEntry.Teleop.TravelMid,
-            Endgame: matchEntry.Teleop.Endgame,
+            TravelMid: 0, //matchEntry.Teleop.TravelMid,
+            Endgame: HangOpts.None, //matchEntry.Teleop.Endgame,
           },
           ActiveStrat: StratOpts.None,
           InactiveStrat: StratOpts.None,
           RobotInfo: {
-            RobotSpeed: matchEntry.RobotInfo.RobotSpeed,
-            ShooterSpeed: matchEntry.RobotInfo.ShooterSpeed,
-            FuelCapacity: matchEntry.RobotInfo.FuelCapacity,
-            BallsShot: matchEntry.RobotInfo.BallsShot,
-            ShootingCycles: matchEntry.RobotInfo.ShootingCycles,
-            WhatBrokeDesc: matchEntry.RobotInfo.WhatBrokeDesc,
-            Comments: matchEntry.RobotInfo.Comments,
+            RobotSpeed: SpeedOpts.None, //matchEntry.RobotInfo.RobotSpeed,
+            ShooterSpeed: SpeedOpts.None, //matchEntry.RobotInfo.ShooterSpeed,
+            FuelCapacity: 0, //matchEntry.RobotInfo.FuelCapacity,
+            BallsShot: 0, //matchEntry.RobotInfo.BallsShot,
+            ShootingCycles: 0, //matchEntry.RobotInfo.ShootingCycles,
+            WhatBrokeDesc: "",
+            Comments: "matchEntry.RobotInfo.Comments",
           },
           Penalties: {
-            Fouls: matchEntry.Penalties.Fouls,
-            Tech: matchEntry.Penalties.Tech,
+            Fouls: 0, //matchEntry.Penalties.Fouls,
+            Tech: 0, //matchEntry.Penalties.Tech,
             PenaltiesCommitted: {
-              YellowCard: matchEntry.Penalties.PenaltiesCommitted.YellowCard,
-              RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-              RedCard: matchEntry.Penalties.PenaltiesCommitted.RedCard,
-              Disabled: matchEntry.Penalties.PenaltiesCommitted.Disabled,
-              DQ: matchEntry.Penalties.PenaltiesCommitted.DQ,
-              Broken: matchEntry.Penalties.PenaltiesCommitted.Broken,
-              NoShow: matchEntry.Penalties.PenaltiesCommitted.NoShow,
+              YellowCard: false, //matchEntry.Penalties.PenaltiesCommitted.YellowCard,
+              RedCard: false, //matchEntry.Penalties.PenaltiesCommitted.RedCard,
+              RedCard: false, //matchEntry.Penalties.PenaltiesCommitted.RedCard,
+              Disabled: false, //matchEntry.Penalties.PenaltiesCommitted.Disabled,
+              DQ: false, //matchEntry.Penalties.PenaltiesCommitted.DQ,
+              Broken: false, //matchEntry.Penalties.PenaltiesCommitted.Broken,
+              NoShow: false, //matchEntry.Penalties.PenaltiesCommitted.NoShow,
             },
-            FoulDesc: matchEntry.Penalties.FoulDesc
-          },
+            FoulDesc: "matchEntry.Penalties.FoulDesc"
+          //},
         },
-      }
-    }
+      }] //1
+    }]
   }
 }
 
