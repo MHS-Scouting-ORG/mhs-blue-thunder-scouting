@@ -53,12 +53,7 @@ const apiAddTeam = async function (team) {
 const apiUpdateTeamEntry = async function (team, data) {
   console.log({...data}, "...data")
   await getClient().graphql({
-    query: updateTeam
-    
-    
-    
-    , 
-    
+    query: updateTeam,  
     variables: {
       input: {
         ...data,

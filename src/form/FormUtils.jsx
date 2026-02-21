@@ -258,11 +258,12 @@ export async function submitState( //params are states of data from form
       if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
         console.log("match already exists, updating match entry with new data")
         const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match", regional)
+        console.log("updated team entry: ", updatedTeamEntry)
         await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
         .catch(err => console.log("error updating team entry: ", err))
       }
       else { //creates new match to add to array of matches
-
+        console.log("team entry exists but match does not, creating new match entry and adding to team entry")
       }
     }
   }
