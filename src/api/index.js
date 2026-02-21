@@ -1,9 +1,8 @@
 //import { graphqlOperation, API } from 'aws-amplify'
 import { generateClient } from 'aws-amplify/api'
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
-import { /* teamMatchesByRegional, */ getTeam, listTeams, /*getTeamMatch */ } from '../graphql/queries'
-import { /*deleteTeamMatch, updateTeamMatch, createTeamMatch,*/ createTeam, updateTeam} from '../graphql/mutations'
-import { /*onCreateTeamMatch, onUpdateTeamMatch */ } from '../graphql/subscriptions'
+import {getTeam, listTeams, } from '../graphql/queries'
+import {createTeam, updateTeam} from '../graphql/mutations'
 import {buildMatchEntry, buildTeamEntry} from './builder'
 import { normalizeTeamId } from '../utils/teamId'
 
@@ -54,7 +53,13 @@ const apiAddTeam = async function (team) {
 const apiUpdateTeamEntry = async function (team, data) {
   console.log({...data}, "...data")
   await getClient().graphql({
-    query: updateTeam, variables: {
+    query: updateTeam
+    
+    
+    
+    , 
+    
+    variables: {
       input: {
         ...data,
         id: team,
@@ -97,95 +102,18 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
   })
 } 
 
-/*
- * create a new team match entry
- * parameters
- * - regionalId - the regional id
- * - teamId - the team id
- * - matchid - the match id
- */
-/*const apiCreateTeamMatchEntry = async function (regionalId, teamId, matchId, matchType, matchNumber, alliance) {
-  if (regionalId === undefined) {
-    throw new Error("Regional not provided")
-  }
-  if (teamId === undefined) {
-    throw new Error("Team Id not provided")
-  }
-  if (matchId === undefined) {
-    throw new Error(`MatchId not provided; matchId ${matchId}`)
-  }
-
-  console.log("building match entry")
-
-  const normalizedTeamId = normalizeTeamId(teamId)
-
-  return getClient().graphql({
-    query: createTeam, variables: { //changed from createTeamMatch to createTeam since the match entry is created as part of the team entry
-      input: buildMatchEntry(regionalId, normalizedTeamId, matchId, matchType, matchNumber, alliance),
-    }
-  })
-}*/
-
-
 /* Creates team entry for our database*/
-const apiCreateTeamEntry = async function (teamNumber, data, type) {
+const apiCreateTeamEntry = async function (teamNumber, data, type, regional) {
   if (teamNumber === undefined) {
     throw new Error("Team Number not provided")
   } 
 
   return getClient().graphql({
     query: createTeam, variables: {
-      input: buildTeamEntry(teamNumber, data, type)
+      input: buildTeamEntry(teamNumber, data, type, regional)
     }
   })
 }
-
-/*
-const apiUpdateTeamMatch = async function (regionalId, teamId, matchId, data) {
-  if (!regionalId) {
-    throw new Error("Regional not provided")
-  }
-  if (!teamId) {
-    throw new Error("Team Id not provided")
-  }
-  if (!matchId) {
-    throw new Error("MatchId not provided")
-  }
-
-  console.log("the data: ", data)
-
-  const normalizedTeamId = normalizeTeamId(teamId)
-
-  const input = {
-    ...data,
-    id: matchId,
-    Team: normalizedTeamId,
-    Regional: regionalId,
-  }
-
-  console.log("provided input: ", input)
-
-  return getClient().graphql({
-    query: updateTeamMatch, variables: {
-      input
-    }
-  })
-
- 
-} */
-
-// const apiDeleteTeamMatch = async function (regionalId, teamId, matchId) {
-//   const normalizedTeamId = normalizeTeamId(teamId)
-//   await getClient().graphql({
-//     query: deleteTeamMatch, variables: {
-//       input: {
-//         id: matchId,
-//         Team: normalizedTeamId,
-//         Regional: regionalId
-//       }
-//     }
-//   })
-// }
 
 const apiUpdateRegional = async function () {
   //console.log(import.meta.env.MODE)
@@ -202,4 +130,4 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, /*apiUpdateTeamMatch, */ apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }
+export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry }

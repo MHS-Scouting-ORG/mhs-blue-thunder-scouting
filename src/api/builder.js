@@ -191,12 +191,15 @@ const buildTeamAttributeEntry = (teamId) => {
 }
 */
 
-const buildTeamEntry = (teamNumber, data, type) => {
+const buildTeamEntry = (teamNumber, data, type, regional) => {
   if (teamNumber === undefined)
     throw new Error("TeamNumber Not provided")
+  if (regional === undefined)
+    throw new Error("Regional Not provided")
 
   console.log("building team entry")
   console.log("the data: ", data)
+  console.log(regional)
 
   if (type === "match") {
 
@@ -207,7 +210,7 @@ const buildTeamEntry = (teamNumber, data, type) => {
       //======================
       TeamAttributes: {
         name: "",
-        Regional: "",
+        Regional: regional,
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
         Capabilities: CapabilitiesOpts.None,
@@ -218,11 +221,11 @@ const buildTeamEntry = (teamNumber, data, type) => {
         Notes: "",
       },
       Regionals: {
+        RegionalId: regional,
         TeamMatches: {
           name: "",
           description: "",
           Team: teamNumber,
-          Regional: "",
           MatchId: matchEntry.MatchId,
           Autonomous: {
             AutoStrat: matchEntry.AutoStrat,
