@@ -298,11 +298,11 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={(e) => {
+              onChange={async (e) => {
 
                 setTeamNumber(normalizeTeamId(e.target.value))
 
-                const checkData = apiGetTeam(teamNumber) 
+                const checkData = await apiGetTeam(teamNumber) 
 
                 console.log("data in our thing ", checkData)
                 //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
