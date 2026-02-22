@@ -4,6 +4,7 @@ import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import {getTeam, listTeams, } from '../graphql/queries'
 import {createTeam, updateTeam} from '../graphql/mutations'
 import {buildMatchEntry, buildTeamEntry} from './builder'
+import { getMatchesForRegional as fetchMatchesForRegional } from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
 
 import * as Auth from 'aws-amplify/auth'
@@ -49,29 +50,51 @@ const apiAddTeam = async function (team) {
   await getClient().graphql({ query: createTeam, variables: { input: team } })
 }
 
+const sanitizeTeamInput = (data, teamIdOverride) => {
+  const input = {
+    id: teamIdOverride || data?.id,
+    description: data?.description ?? null,
+    Comment: data?.Comment ?? null,
+    TeamAttributes: data?.TeamAttributes,
+    Regionals: data?.Regionals,
+  }
+
+  if (data?._version !== undefined && data?._version !== null) {
+    input._version = data._version
+  }
+
+  const stripTypename = (value) => {
+    if (!value) return value
+    if (Array.isArray(value)) return value.map(stripTypename)
+    if (typeof value !== 'object') return value
+    const { __typename, createdAt, updatedAt, _lastChangedAt, _deleted, ...rest } = value
+    return Object.fromEntries(
+      Object.entries(rest).map(([key, val]) => [key, stripTypename(val)])
+    )
+  }
+
+  return stripTypename(input)
+}
+
 
 const apiUpdateTeamEntry = async function (team, data) {
-  console.log({...data}, "...data")
+  const input = sanitizeTeamInput(data, team)
+  console.log({ ...input }, "...data")
   await getClient().graphql({
     query: updateTeam,  
     variables: {
-      input: {
-        ...data,
-        id: team,
-      }
+      input
     }
   })
 }
 
 const apiUpdateTeamEntryMatch = async function (team, data) {
-  console.log({...data}, "...data")
+  const input = sanitizeTeamInput(data, team)
+  console.log({ ...input }, "...data")
   await getClient().graphql({
     query: updateTeam,  
     variables: {
-      input: {
-        ...data,
-        id: team,
-      }
+      input
     }
   })
 }
@@ -110,6 +133,16 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
   })
 } 
 
+/*
+ * Get qualification and elimination matches from Blue Alliance
+ * parameters:
+ * - regionalId - the regional id; this is identified by the same id used in the bluealliance api
+ */
+const apiGetMatchesForRegional = async function (regionalId) {
+  if (!regionalId) return []
+  return fetchMatchesForRegional(regionalId)
+}
+
 /* Creates team entry for our database*/
 const apiCreateTeamEntry = async function (teamNumber, regional) {
   if (teamNumber === undefined) {
@@ -138,4 +171,4 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry, apiUpdateTeamEntryMatch }
+export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiGetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry, apiUpdateTeamEntryMatch }

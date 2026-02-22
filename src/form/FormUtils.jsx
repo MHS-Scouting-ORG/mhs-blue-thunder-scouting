@@ -1,7 +1,6 @@
 import React from "react"
 import { buildMatchEntry, buildTeamEntry } from '../api/builder';
-import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam } from '../api';
-import { getMatchesForRegional } from '../api/bluealliance';
+import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam, apiGetMatchesForRegional } from '../api';
 //import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
 import { normalizeTeamId } from "../utils/teamId";
@@ -13,7 +12,8 @@ import { normalizeTeamId } from "../utils/teamId";
 export async function getMatchTeams(props) {
   let matchKey =  /*put this years event*/ props.regional + "_" + props.matchType + props.elmNum + "m" + props.matchNumber;
 
-  const data = await apigetMatchesForRegional(props.regional)
+  if (!props.regional) return
+  const data = await apiGetMatchesForRegional(props.regional)
   data.map((match) => {
     if (match.key === matchKey) {
       props.changeState(match)
@@ -250,25 +250,95 @@ export async function submitState( //params are states of data from form
 
     if (data === null) { //move this check to top of function ie in the Form.js file
       console.log(apiListTeamData, "api list team data")
-      await apiCreateTeamEntry(teamNumber, regional)
+      await apiCreateTeamEntry(teamNumber, matchEntry, "match", regional)
     }
     else {
+      const updatedTeamEntry = { ...data }
+      const currentRegionals = Array.isArray(updatedTeamEntry.Regionals)
+        ? updatedTeamEntry.Regionals
+        : (updatedTeamEntry.Regionals ? [updatedTeamEntry.Regionals] : [])
+
+      let currentRegional = currentRegionals.find(x => x.RegionalId === regional)
+      if (!currentRegional) {
+        currentRegional = { RegionalId: regional, TeamMatches: [] }
+        currentRegionals.push(currentRegional)
+      }
+
+      const currentTeamMatches = Array.isArray(currentRegional.TeamMatches)
+        ? currentRegional.TeamMatches
+        : (currentRegional.TeamMatches ? [currentRegional.TeamMatches] : [])
+
+      const normalizeAutoStrat = (value) => {
+        const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
+        return allowed.includes(value) ? value : "None"
+      }
+
+      const normalizeStrat = (value) => {
+        const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
+        return allowed.includes(value) ? value : "None"
+      }
+
+      const teamMatch = {
+        name: "",
+        description: "",
+        Team: String(teamNumber),
+        MatchId: matchEntry.MatchId,
+        Autonomous: {
+          AutoStrat: normalizeAutoStrat(matchEntry.Autonomous.AutoStrat),
+          TravelMid: matchEntry.Autonomous.TravelMid,
+          AutoHang: matchEntry.Autonomous.AutoHang,
+        },
+        Teleop: {
+          TravelMid: matchEntry.Teleop.TravelMid,
+          Endgame: matchEntry.Teleop.Endgame,
+        },
+        ActiveStrat: normalizeStrat(matchEntry.ActiveStrat),
+        InactiveStrat: normalizeStrat(matchEntry.InactiveStrat),
+        RobotInfo: matchEntry.RobotInfo,
+        Penalties: matchEntry.Penalties,
+      }
+
+      const sanitizedTeamMatches = currentTeamMatches.map(match => ({
+        ...match,
+        Autonomous: {
+          ...match.Autonomous,
+          AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat)
+        },
+        ActiveStrat: normalizeStrat(match?.ActiveStrat),
+        InactiveStrat: normalizeStrat(match?.InactiveStrat)
+      }))
+
+      const matchIndex = sanitizedTeamMatches.findIndex(x => x.MatchId === matchKey)
+      if (matchIndex >= 0) {
+        sanitizedTeamMatches[matchIndex] = teamMatch
+      } else {
+        sanitizedTeamMatches.push(teamMatch)
+      }
+
+      currentRegional.TeamMatches = sanitizedTeamMatches
+      updatedTeamEntry.Regionals = currentRegionals
+
+      const currentMatchid = matchIndex >= 0 ? matchKey : null
+
+      console.log(currentMatchid, "current match id 1")
+
       console.log("team exists", matchKey)
       console.log("current match id", currentMatchid)
       if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
         console.log("match already exists, updating match entry with new data")
-        const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match", regional)
         console.log("updated team entry: ", updatedTeamEntry)
         await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
       }
       else { //creates new match to add to array of matches
         console.log("team entry exists but match does not, creating new match entry and adding to team entry")
+        console.log("updated team entry: ", updatedTeamEntry)
+        await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
       }
     }
   }
 
-  data = await apiGetTeam(teamNumber)
-  console.log("data from get team: (past apicreate)", data)
+  const refreshedData = await apiGetTeam(teamNumber)
+  console.log("data from get team: (past apicreate)", refreshedData)
 
 
   window.alert("Form Submitted");
