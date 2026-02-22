@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { getMatchesForRegional } from '../api/bluealliance';
-
-import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { buildTeamEntry } from '../api/builder';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -70,8 +69,9 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
  /* Blue Alliance API List Teams */
   useEffect(() => {
+    if (!regional) return
     /* Get Matches for Regional from bluealliance */
-    getMatchesForRegional(regional)
+    apiGetMatchesForRegional(regional)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
         console.log(data, ' blue alliance api check') //blue alliance api check
@@ -81,7 +81,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         if(matchType === "sf") {
           match_key = regional + "_" + matchType + matchNumber + "m1" 
         }
-        if(matchType === "f"){x
+        if(matchType === "f"){
           match_key = regional + "_" + matchType + "1" + "m" + matchNumber
         }
 
@@ -102,7 +102,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         }
       })
       .catch(err => console.log(err))
-  }, [matchType, matchNumber])
+  }, [regional, matchType, matchNumber])
 
   useEffect(() => {
     /* Check for pre-existing team entry data in our api */
@@ -298,7 +298,28 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={(e) => setTeamNumber(normalizeTeamId(e.target.value))}
+              onChange={async (e) => {
+
+                setTeamNumber(normalizeTeamId(e.target.value))
+
+                const checkData = await apiGetTeam(teamNumber) 
+
+                console.log("data in our thing ", checkData)
+                //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
+
+                //createsd empty shell and pushes up to data when selected team if there is existing team object yet
+
+                const teamShell = buildTeamEntry(teamNumber, regional)
+
+                teamShell.MatchId = matchKey
+
+                if (checkData === null) {
+                  console.log("api get team returned null")
+                  console.log(apiTeamListData, "api list team data")
+                  apiCreateTeamEntry(teamNumber, teamShell, "match", regional)
+                  console.log("created team entry with shell data: ", teamShell)
+                }
+              }}
             >
               <option value="">Select robot number</option>
               {color === false ?
@@ -906,7 +927,19 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
             resetStates()
           }
         })
-          .catch(err => alert(`Form Incomplete: fix, ${JSON.stringify(err)}`))
+          .catch(err => {
+            let details = ''
+            if (err instanceof Error) {
+              details = `${err.message}${err.stack ? `\n${err.stack}` : ''}`
+            } else if (err?.errors?.length) {
+              const messages = err.errors.map(e => e?.message || JSON.stringify(e))
+              details = `${messages.join('\n')}\n\nRaw errors:\n${JSON.stringify(err.errors, null, 2)}`
+            } else {
+              details = JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+            }
+            console.error('Form submit failed', err)
+            alert(`Form submit failed:\n${details}`)
+          })
           }
         }/* Double checks and confirms for submission, in case of accidental press */
         ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
