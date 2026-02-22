@@ -111,14 +111,14 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
 } 
 
 /* Creates team entry for our database*/
-const apiCreateTeamEntry = async function (teamNumber, data, type, regional) {
+const apiCreateTeamEntry = async function (teamNumber, regional) {
   if (teamNumber === undefined) {
     throw new Error("Team Number not provided")
   } 
 
   return getClient().graphql({
     query: createTeam, variables: {
-      input: buildTeamEntry(teamNumber, data, type, regional)
+      input: buildTeamEntry(teamNumber, regional)
     }
   })
 }

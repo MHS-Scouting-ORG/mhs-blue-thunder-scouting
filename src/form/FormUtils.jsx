@@ -13,7 +13,7 @@ import { normalizeTeamId } from "../utils/teamId";
 export async function getMatchTeams(props) {
   let matchKey =  /*put this years event*/ props.regional + "_" + props.matchType + props.elmNum + "m" + props.matchNumber;
 
-  const data = await getMatchesForRegional(props.regional)
+  const data = await apigetMatchesForRegional(props.regional)
   data.map((match) => {
     if (match.key === matchKey) {
       props.changeState(match)
@@ -238,18 +238,19 @@ export async function submitState( //params are states of data from form
 
     //console.log("check")
 
-    //check if team entry is already made then checks if match is already made
+    // double check if team entry is already made then checks if match is already made
     let data = await apiGetTeam(teamNumber)
+    console.log("pre-check", data)
     
+    const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches//.find(x => x.MatchId === matchKey).MatchId
 
-    const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
-
-    console.log(currentMatchid, "current match id 1")
+    console.log("check ", currentMatchid)
+    
+    console.log(currentMatchid, "current match id of existing data")
 
     if (data === null) { //move this check to top of function ie in the Form.js file
       console.log(apiListTeamData, "api list team data")
-      await apiCreateTeamEntry(teamNumber, matchEntry, "match", regional)
-      .catch(err => console.log("error creating team entry: ", err))
+      await apiCreateTeamEntry(teamNumber, regional)
     }
     else {
       console.log("team exists", matchKey)
@@ -259,7 +260,6 @@ export async function submitState( //params are states of data from form
         const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match", regional)
         console.log("updated team entry: ", updatedTeamEntry)
         await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
-        .catch(err => console.log("error updating team entry: ", err))
       }
       else { //creates new match to add to array of matches
         console.log("team entry exists but match does not, creating new match entry and adding to team entry")

@@ -81,7 +81,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         if(matchType === "sf") {
           match_key = regional + "_" + matchType + matchNumber + "m1" 
         }
-        if(matchType === "f"){x
+        if(matchType === "f"){
           match_key = regional + "_" + matchType + "1" + "m" + matchNumber
         }
 
@@ -102,7 +102,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         }
       })
       .catch(err => console.log(err))
-  }, [matchType, matchNumber])
+  }, [regional, matchType, matchNumber])
 
   useEffect(() => {
     /* Check for pre-existing team entry data in our api */
@@ -310,6 +310,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 //createsd empty shell and pushes up to data when selected team if there is existing team object yet
 
                 const teamShell = buildTeamEntry(teamNumber, regional)
+
+                teamShell.MatchId = matchKey
 
                 if (checkData === null) {
                   console.log("api get team returned null")
