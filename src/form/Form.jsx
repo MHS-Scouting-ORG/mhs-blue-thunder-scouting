@@ -298,17 +298,16 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={async (e) => {
+              onChange={(e) => {
 
                 setTeamNumber(normalizeTeamId(e.target.value))
 
-                const checkData = await apiGetTeam(teamNumber) 
+                const checkData = apiGetTeam(teamNumber) 
 
                 console.log("data in our thing ", checkData)
                 //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
 
                 //createsd empty shell and pushes up to data when selected team if there is existing team object yet
-
                 const teamShell = buildTeamEntry(teamNumber, regional)
 
                 teamShell.MatchId = matchKey
@@ -316,9 +315,11 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 if (checkData === null) {
                   console.log("api get team returned null")
                   console.log(apiTeamListData, "api list team data")
-                  apiCreateTeamEntry(teamNumber, teamShell, "match", regional)
+                  apiCreateTeamEntry(teamNumber, regional)
                   console.log("created team entry with shell data: ", teamShell)
+                  console.log(apiTeamListData)
                 }
+                
               }}
             >
               <option value="">Select robot number</option>

@@ -248,9 +248,10 @@ export async function submitState( //params are states of data from form
     
     //console.log(currentMatchid, "current match id of existing data")
 
-    if (data === null) { //move this check to top of function ie in the Form.js file
+    if (data === null) { //double check if team object shell is in
+      console.log("data is null")
       console.log(apiListTeamData, "api list team data")
-      await apiCreateTeamEntry(teamNumber, matchEntry, "match", regional)
+      await apiCreateTeamEntry(teamNumber, regional)
     }
     else {
       const updatedTeamEntry = { ...data }
@@ -342,6 +343,7 @@ export async function submitState( //params are states of data from form
 
 
   window.alert("Form Submitted");
+  console.log(apiListTeamData, " api list team data 345")
   return false; //return to help track whether or not to call reset form
 }
 
