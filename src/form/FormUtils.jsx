@@ -242,11 +242,11 @@ export async function submitState( //params are states of data from form
     let data = await apiGetTeam(teamNumber)
     console.log("pre-check", data)
     
-    const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches//.find(x => x.MatchId === matchKey).MatchId
+    //const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches//.find(x => x.MatchId === matchKey).MatchId
 
-    console.log("check ", currentMatchid)
+    //console.log("check ", currentMatchid)
     
-    console.log(currentMatchid, "current match id of existing data")
+    //console.log(currentMatchid, "current match id of existing data")
 
     if (data === null) { //move this check to top of function ie in the Form.js file
       console.log(apiListTeamData, "api list team data")
