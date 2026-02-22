@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { getMatchesForRegional } from '../api/bluealliance';
-import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { buildTeamEntry } from '../api/builder';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
@@ -92,8 +91,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
       return;
     }
 
-    /* Get Matches for Regional from bluealliance */
-    getMatchesForRegional(reg)
+    /* Get Matches for Regional from bluealliance via our API wrapper */
+    apiGetMatchesForRegional(reg)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
         console.log(data, ' blue alliance api check') //blue alliance api check
@@ -343,6 +342,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                   // GraphQL returns object with data/errors; log details
                   console.error("error fetching/creating team", err);
                 }
+                
               }}
             >
               <option value="">Select robot number</option>
