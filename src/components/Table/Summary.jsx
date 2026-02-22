@@ -81,7 +81,7 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NFuel, team.NHang, team.NPts)
+          const grade = calcColumnSort(sortBy, team.NPts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,

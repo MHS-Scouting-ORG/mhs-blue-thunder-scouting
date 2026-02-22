@@ -111,7 +111,6 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       (
         <div className={tableStyles.Card}>
           <TeamStats
-           
             selectedTeam={selectedTeam}
           />
         </div>

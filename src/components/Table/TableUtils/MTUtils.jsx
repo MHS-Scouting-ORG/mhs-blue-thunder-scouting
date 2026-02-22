@@ -17,22 +17,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     
     return teamNumbers.map(team => {
 
-      //Robot Performance
-
-      //custom robot stats
-
-      //Auto
-
-      //penalties
-
-      //reliable 
-
       //grade
       const maxFuel = getMax(tableData.map(team => team.x)) // fix team.x
 
       const rPts = avgPoints / maxPts
 
-      const rFuel = avgFuel / maxFuel
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
@@ -43,19 +32,25 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
         //===Stats==/
-        AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
         AvgFuel: isNaN(avgFuel) ? 0 : avgFuel,
+        AvgHang: isNaN(avgHang) ? 0 : avgHang,
+        ShooterSpeed,
+        
+        
         //===auto==//
         AutoStart: mcAutoStart,
+        AutoHang,
+        AutoStrat,
         //===Penalties===//
         Fouls: isNaN(fouls) ? 0 : fouls, 
         Tech: isNaN(techs) ? 0 : techs,
         YellowCard: yellowCards,
         RedCard: redCards,
-        BrokenRobot: brokenRobots,
         Disabled: disabledRobots,
         DQ: disqualifiedRobots,
+        BrokenRobot: brokenRobots,
         NoShow: noShowRobots,
+        Tipped: tippedRobots,
 
         
         Evaluations: evaluations, 

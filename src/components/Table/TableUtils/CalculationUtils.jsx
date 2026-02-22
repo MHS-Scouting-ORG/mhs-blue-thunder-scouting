@@ -17,32 +17,14 @@ const getCan = (arr) => {
   }
   return can
 }
-//grade NEED TO CHANGE THIS IS OLD
-const calcColumnSort = (arr, coral, algae, cycles, pts, autoPts, endgame, coralPts, algaePts) => {
+//grade
+const calcColumnSort = (arr, fuel, algae, cycles, pts, autoPts, endgame, coralPts, algaePts) => {
   let sum = 0;
-  if (arr.includes("Coral")) {
-    sum = sum + coral;
+  if (arr.includes("Fuel")) {
+    sum = sum + fuel;
   }
-  if (arr.includes("Algae")) {
-    sum = sum + algae;
-  }
-  if (arr.includes("Cycles")) {
+  if (arr.includes("Cycles")) { 
     sum = sum + cycles;
-  }
-  if (arr.includes("Total Points")) {
-    sum = sum + pts;
-  }
-  if (arr.includes("Auto Points")) {
-    sum = sum + autoPts;
-  }
-  if (arr.includes("Endgame Points")) {
-    sum = sum + endgame;
-  }
-  if (arr.includes("Coral Points")) {
-    sum = sum + coralPts;
-  }
-  if (arr.includes("Algae Points")) {
-    sum = sum + algaePts;
   }
 
   return sum.toFixed(3);
