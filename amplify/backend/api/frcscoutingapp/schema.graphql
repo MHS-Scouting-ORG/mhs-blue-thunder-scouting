@@ -121,8 +121,8 @@ type TeamMatchesType {
   MatchId: String
   Autonomous: AutonomousType!
   Teleop: TeleType!
-  ActiveStrat: StratOpts
-  InactiveStrat: StratOpts
+  ActiveStrat: [StratOpts]
+  InactiveStrat: [StratOpts]
   RobotInfo: RobotInfoType
   Penalties: PenaltyType
 }

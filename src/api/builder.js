@@ -141,8 +141,9 @@ const buildMatchEntry = (teamId, matchKey) => {
       TravelMid: 0,
       Endgame: HangOpts.None,
     },
-    ActiveStrat: StratOpts.None, //need to add none options for all enums
-    InactiveStrat: StratOpts.None,
+    // allow multiple strategies; stored as an array of enum values
+    ActiveStrat: [],
+    InactiveStrat: [],
     Penalties: {
       Fouls: 0,
       Tech: 0,
@@ -232,8 +233,9 @@ const buildTeamEntry = (teamNumber, regional) => {
             TravelMid: 0, //matchEntry.Teleop.TravelMid,
             Endgame: HangOpts.None, //matchEntry.Teleop.Endgame,
           },
-          ActiveStrat: StratOpts.None,
-          InactiveStrat: StratOpts.None,
+          // multiple strategies supported
+          ActiveStrat: [],
+          InactiveStrat: [],
           RobotInfo: {
             RobotSpeed: SpeedOpts.None, //matchEntry.RobotInfo.RobotSpeed,
             ShooterSpeed: SpeedOpts.None, //matchEntry.RobotInfo.ShooterSpeed,

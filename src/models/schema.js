@@ -400,7 +400,7 @@ export const schema = {
                 },
                 "ActiveStrat": {
                     "name": "ActiveStrat",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "StratOpts"
                     },
@@ -409,7 +409,7 @@ export const schema = {
                 },
                 "InactiveStrat": {
                     "name": "InactiveStrat",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "StratOpts"
                     },

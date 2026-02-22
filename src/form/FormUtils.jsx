@@ -75,6 +75,9 @@ export async function submitState( //params are states of data from form
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
 
+  // variable used for API lookups; declared here to avoid block scope issues
+  let data;
+
 
   /* Points Init */
   let autoPoints = 0;
@@ -197,12 +200,21 @@ export async function submitState( //params are states of data from form
   else if (!incompleteForm) { //if form is complete
     const matchEntry = buildMatchEntry(teamNumber, matchKey)
 
-    console.log("matchentry", matchEntry)
-
     //matchEntry.Team = teamNumber
     matchEntry.MatchId = matchKey
-    matchEntry.ActiveStrat = activeStrategy
-    matchEntry.InactiveStrat = inactiveStrategy
+
+    // At this point the object still contains the builder defaults; we'll log
+    // the final version after we massage the strategy fields below.
+
+    // previously we joined these arrays into strings because the GraphQL type
+    // was a scalar enum. after updating the schema to accept `[StratOpts]`, we
+    // can just hand the arrays straight through.
+    matchEntry.ActiveStrat = Array.isArray(activeStrategy) ? activeStrategy : []
+    matchEntry.InactiveStrat = Array.isArray(inactiveStrategy) ? inactiveStrategy : []
+
+    // log final object so that callers can inspect what is about to be sent
+    console.log("final matchentry", matchEntry)
+
     matchEntry.TravelMidActive = timesTravelledMidActive
     matchEntry.TravelMidInactive = timesTravelledMidInactive
 
@@ -239,21 +251,30 @@ export async function submitState( //params are states of data from form
     //console.log("check")
 
     //check if team entry is already made then checks if match is already made
-    let data = await apiGetTeam(teamNumber)
-    
+    data = await apiGetTeam(teamNumber)
 
-    const currentMatchid = data.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
+    // protect against missing team/region structures; failing to do so would throw a
+    // TypeError (which ended up in the caller as the `{}` you saw in the alert)
+    let currentMatchid = null
+    let regionalData = null
+    if (data && Array.isArray(data.Regionals)) {
+      regionalData = data.Regionals.find(x => x.RegionalId === regional)
+      if (regionalData && Array.isArray(regionalData.TeamMatches)) {
+        const matchObj = regionalData.TeamMatches.find(x => x.MatchId === matchKey)
+        currentMatchid = matchObj ? matchObj.MatchId : null
+      }
+    }
 
-    console.log(currentMatchid, "current match id 1")
+    console.log("current match id", currentMatchid)
 
-    if (data === null) { //move this check to top of function ie in the Form.js file
+    if (!data) { //team record doesn't exist yet
       console.log(apiListTeamData, "api list team data")
       await apiCreateTeamEntry(teamNumber, matchEntry, "match", regional)
       .catch(err => console.log("error creating team entry: ", err))
     }
     else {
       console.log("team exists", matchKey)
-      console.log("current match id", currentMatchid)
+      // currentMatchid may still be null if regional or match is absent
       if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
         console.log("match already exists, updating match entry with new data")
         const updatedTeamEntry = buildTeamEntry(teamNumber, matchEntry, "match", regional)
@@ -267,6 +288,7 @@ export async function submitState( //params are states of data from form
     }
   }
 
+  // refresh team data after any create/update. `data` was already declared
   data = await apiGetTeam(teamNumber)
   console.log("data from get team: (past apicreate)", data)
 
