@@ -149,8 +149,8 @@ type EagerTeamMatchesType = {
   readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
-  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
+  readonly InactiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
   readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
@@ -162,8 +162,8 @@ type LazyTeamMatchesType = {
   readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
-  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
+  readonly InactiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
   readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
