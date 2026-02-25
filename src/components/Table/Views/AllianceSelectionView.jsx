@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
-import { generateClient } from 'aws-amplify/api';
-import { createTeam, updateTeam } from '../../../graphql/mutations';
-import { getTeam } from '../../../graphql/queries';
-
-let client
-const getClient = () => {
-  if (!client) client = generateClient()
-  return client
-}
+import { apiGetAllianceSelection, apiSaveAllianceSelection } from '../../../api';
 
 const pickingOrder = [
   { alliance: 1, type: 'captain' },
@@ -66,12 +58,8 @@ function AllianceSelectionView({ tableData, regional }) {
 
       // Load from server
       try {
-        const result = await getClient().graphql({
-          query: getTeam,
-          variables: { id: allianceId }
-        });
-        if (result.data.getTeam && result.data.getTeam.description) {
-          const savedAlliances = JSON.parse(result.data.getTeam.description);
+        const savedAlliances = await apiGetAllianceSelection(regional)
+        if (savedAlliances) {
           setAlliances(savedAlliances);
         }
       } catch (error) {
@@ -85,34 +73,9 @@ function AllianceSelectionView({ tableData, regional }) {
 
   // Save alliances to database
   const saveAlliances = async () => {
-    const allianceId = `alliances-${regional}`;
-    const alliancesData = JSON.stringify(alliances);
-
     // Save to the server
     try {
-      try {
-        await getClient().graphql({
-          query: updateTeam,
-          variables: {
-            input: {
-              id: allianceId,
-              name: `Alliances for ${regional}`,
-              description: alliancesData
-            }
-          }
-        });
-      } catch (updateError) {
-        await getClient().graphql({
-          query: createTeam,
-          variables: {
-            input: {
-              id: allianceId,
-              name: `Alliances for ${regional}`,
-              description: alliancesData
-            }
-          }
-        });
-      }
+      await apiSaveAllianceSelection(regional, alliances)
       alert('Alliances saved to server.');
     } catch (error) {
       console.error('Error saving alliances to server:', error);

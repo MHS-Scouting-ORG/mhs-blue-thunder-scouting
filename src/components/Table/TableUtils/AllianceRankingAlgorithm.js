@@ -17,18 +17,25 @@ export function calculateTeamScore(teamData) {
   };
 
   // Calculate reliability score (inverse of issues)
-  const totalMatches = teamData.Matches || 1;
-  const issues = (teamData.BrokenRobot || 0) + (teamData.Disabled || 0) + (teamData.DQ || 0);
+  const totalMatches = Math.max(1, Number(teamData.Matches || 0));
+  const broken = Array.isArray(teamData.BrokenRobot) ? teamData.BrokenRobot.length : Number(teamData.BrokenRobot || 0)
+  const disabled = Array.isArray(teamData.Disabled) ? teamData.Disabled.length : Number(teamData.Disabled || 0)
+  const dq = Array.isArray(teamData.DQ) ? teamData.DQ.length : Number(teamData.DQ || 0)
+  const issues = broken + disabled + dq;
   const reliability = Math.max(0, 1 - (issues / totalMatches));
 
-  // Normalize OPR (assuming OPR ranges from 0-50, adjust if needed)
-  const normalizedOpr = (teamData.OPR || 0) / 50;
+  const normalizedOpr = Number(teamData.OPR || 0) / 50;
+
+  const avgPoints = Number(teamData.AvgPoints || 0)
+  const avgAutoPts = Number(teamData.AvgAutoPts || 0)
+  const avgEndgamePts = Number(teamData.AvgEndgamePts || 0)
+  const avgCycles = Number(teamData.AvgCycles || 0)
 
   const score =
-    (teamData.AvgPoints || 0) * weights.avgPoints +
-    (teamData.AvgAutoPts || 0) * weights.avgAutoPts +
-    (teamData.AvgEndgamePts || 0) * weights.avgEndgamePts +
-    (teamData.AvgCycles || 0) * weights.avgCycles +
+    avgPoints * weights.avgPoints +
+    avgAutoPts * weights.avgAutoPts +
+    avgEndgamePts * weights.avgEndgamePts +
+    avgCycles * weights.avgCycles +
     normalizedOpr * weights.opr +
     reliability * weights.reliability;
 

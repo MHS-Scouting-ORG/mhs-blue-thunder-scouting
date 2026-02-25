@@ -1,7 +1,6 @@
 import React, {useEffect, useState, useRef} from "react"
 import {Line} from "react-chartjs-2"
-import { getTeamsInRegional} from "../../../api/bluealliance"
-import { apigetMatchesForRegional } from "../../../api"
+import { apiGetTeamsInRegional, apigetMatchesForRegional } from "../../../api"
 import { getStat } from "./Utils/GraphUtils"
 import { uniqueArr } from "../TableUtils/CalculationUtils"
 import { normalizeTeamId } from "../../../utils/teamId"

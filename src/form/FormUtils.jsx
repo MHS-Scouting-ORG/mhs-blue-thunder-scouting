@@ -1,7 +1,6 @@
 import React from "react"
-import { buildMatchEntry, buildTeamEntry } from '../api/builder';
+import { buildMatchEntry } from '../api/builder';
 import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam, apiGetMatchesForRegional } from '../api';
-//import { getTeamMatch } from "../graphql/queries";
 //import { generateRandomEntry } from "../api/builder";
 import { normalizeTeamId } from "../utils/teamId";
 
@@ -71,6 +70,35 @@ export async function submitState( //params are states of data from form
 
 //actual function below
 {
+
+  const normalizeAutoStratFromActions = (actions) => {
+    if (!Array.isArray(actions) || actions.length === 0) return "None"
+    if (actions.includes("Scored")) return "Scored"
+    if (actions.includes("Went Mid")) return "WentMid"
+    if (actions.includes("Crossed Mid")) return "CrossedMid"
+    return "None"
+  }
+
+  const normalizeStratList = (value) => {
+    const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
+
+    if (Array.isArray(value)) {
+      const cleaned = value
+        .map(v => (typeof v === "string" ? v.trim() : ""))
+        .filter(v => allowed.includes(v) && v !== "")
+      return cleaned.length > 0 ? cleaned : ["None"]
+    }
+
+    if (typeof value === "string") {
+      const parts = value
+        .split(",")
+        .map(v => v.trim())
+        .filter(v => allowed.includes(v) && v !== "")
+      return parts.length > 0 ? parts : ["None"]
+    }
+
+    return ["None"]
+  }
 
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
@@ -198,7 +226,7 @@ export async function submitState( //params are states of data from form
   }
 
   else if (!incompleteForm) { //if form is complete
-    const matchEntry = buildMatchEntry(teamNumber, matchKey)
+    const matchEntry = buildMatchEntry(normalizedTeamNumber, matchKey)
 
     //matchEntry.Team = teamNumber
     matchEntry.MatchId = matchKey
@@ -220,7 +248,7 @@ export async function submitState( //params are states of data from form
 
     /*  AUTONOMOUS SPECIFIC */
 
-    matchEntry.Autonomous.AutoStrat = autoActions.join(", ") //join array of auto actions into a string for storage
+    matchEntry.Autonomous.AutoStrat = normalizeAutoStratFromActions(autoActions)
     matchEntry.Autonomous.AutoHang = autoHang
 
     /* TELEOP SPECIFIC*/
@@ -251,7 +279,7 @@ export async function submitState( //params are states of data from form
     //console.log("check")
 
     //check if team entry is already made then checks if match is already made
-    data = await apiGetTeam(teamNumber)
+    data = await apiGetTeam(normalizedTeamNumber)
 
     // protect against missing team/region structures; failing to do so would throw a
     // TypeError (which ended up in the caller as the `{}` you saw in the alert)
@@ -269,13 +297,42 @@ export async function submitState( //params are states of data from form
 
     if (!data) { //team record doesn't exist yet
       console.log(apiListTeamData, "api list team data")
-      await apiCreateTeamEntry(teamNumber, regional)
+      await apiCreateTeamEntry(normalizedTeamNumber, regional)
+      data = await apiGetTeam(normalizedTeamNumber)
     }
-    else {
+    if (data) {
       const updatedTeamEntry = { ...data }
-      const currentRegionals = Array.isArray(updatedTeamEntry.Regionals)
+
+      const normalizeRegionalMatches = (regionals) => {
+        return regionals
+          .filter(regionalEntry => regionalEntry && typeof regionalEntry === "object" && !Array.isArray(regionalEntry))
+          .map(regionalEntry => {
+          const normalizedMatches = (Array.isArray(regionalEntry?.TeamMatches) ? regionalEntry.TeamMatches : (regionalEntry?.TeamMatches ? [regionalEntry.TeamMatches] : []))
+            .filter(match => match && typeof match === "object" && !Array.isArray(match))
+            .map(match => ({
+              ...match,
+              Autonomous: {
+                ...match?.Autonomous,
+                AutoStrat: ["WentMid", "Scored", "CrossedMid", "None"].includes(match?.Autonomous?.AutoStrat)
+                  ? match.Autonomous.AutoStrat
+                  : "None"
+              },
+              ActiveStrat: normalizeStratList(match?.ActiveStrat),
+              InactiveStrat: normalizeStratList(match?.InactiveStrat)
+            }))
+
+          return {
+            ...regionalEntry,
+            TeamMatches: normalizedMatches
+          }
+        })
+      }
+
+      const currentRegionalsBase = Array.isArray(updatedTeamEntry.Regionals)
         ? updatedTeamEntry.Regionals
         : (updatedTeamEntry.Regionals ? [updatedTeamEntry.Regionals] : [])
+
+      const currentRegionals = normalizeRegionalMatches(currentRegionalsBase)
 
       let currentRegional = currentRegionals.find(x => x.RegionalId === regional)
       if (!currentRegional) {
@@ -287,23 +344,15 @@ export async function submitState( //params are states of data from form
         ? currentRegional.TeamMatches
         : (currentRegional.TeamMatches ? [currentRegional.TeamMatches] : [])
 
-      const normalizeAutoStrat = (value) => {
-        const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
-        return allowed.includes(value) ? value : "None"
-      }
-
-      const normalizeStrat = (value) => {
-        const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
-        return allowed.includes(value) ? value : "None"
-      }
-
       const teamMatch = {
         name: "",
         description: "",
-        Team: String(teamNumber),
+        Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
         Autonomous: {
-          AutoStrat: normalizeAutoStrat(matchEntry.Autonomous.AutoStrat),
+          AutoStrat: ["WentMid", "Scored", "CrossedMid", "None"].includes(matchEntry.Autonomous.AutoStrat)
+            ? matchEntry.Autonomous.AutoStrat
+            : "None",
           TravelMid: matchEntry.Autonomous.TravelMid,
           AutoHang: matchEntry.Autonomous.AutoHang,
         },
@@ -311,21 +360,13 @@ export async function submitState( //params are states of data from form
           TravelMid: matchEntry.Teleop.TravelMid,
           Endgame: matchEntry.Teleop.Endgame,
         },
-        ActiveStrat: normalizeStrat(matchEntry.ActiveStrat),
-        InactiveStrat: normalizeStrat(matchEntry.InactiveStrat),
+        ActiveStrat: normalizeStratList(matchEntry.ActiveStrat),
+        InactiveStrat: normalizeStratList(matchEntry.InactiveStrat),
         RobotInfo: matchEntry.RobotInfo,
         Penalties: matchEntry.Penalties,
       }
 
-      const sanitizedTeamMatches = currentTeamMatches.map(match => ({
-        ...match,
-        Autonomous: {
-          ...match.Autonomous,
-          AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat)
-        },
-        ActiveStrat: normalizeStrat(match?.ActiveStrat),
-        InactiveStrat: normalizeStrat(match?.InactiveStrat)
-      }))
+      const sanitizedTeamMatches = currentTeamMatches
 
       const matchIndex = sanitizedTeamMatches.findIndex(x => x.MatchId === matchKey)
       if (matchIndex >= 0) {
@@ -346,18 +387,18 @@ export async function submitState( //params are states of data from form
       if (currentMatchid === matchKey) {  //checks if match is already in array of matches in our database
         console.log("match already exists, updating match entry with new data")
         console.log("updated team entry: ", updatedTeamEntry)
-        await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
+        await apiUpdateTeamEntry(normalizedTeamNumber, updatedTeamEntry)
       }
       else { //creates new match to add to array of matches
         console.log("team entry exists but match does not, creating new match entry and adding to team entry")
         console.log("updated team entry: ", updatedTeamEntry)
-        await apiUpdateTeamEntry(teamNumber, updatedTeamEntry)
+        await apiUpdateTeamEntry(normalizedTeamNumber, updatedTeamEntry)
       }
     }
   }
 
   // refresh team data after any create/update. `data` was already declared
-  data = await apiGetTeam(teamNumber)
+  data = await apiGetTeam(normalizedTeamNumber)
   console.log("data from get team: (past apicreate)", data)
 
 

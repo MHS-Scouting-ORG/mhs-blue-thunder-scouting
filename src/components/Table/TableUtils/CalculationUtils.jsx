@@ -69,6 +69,7 @@ const arrMode = (array) => {
 }
 /* averages of an array */
 const calcAvg = (arr) => {
+  if (!Array.isArray(arr) || arr.length === 0) return 0
   let total = 0;
   for(let i = 0; i < arr.length; i++){
     total += arr[i]
@@ -90,11 +91,19 @@ const getReliability = (arr, mode) => {
 /* access each form entry to find the match fo the penalty */
 const getMatchesOfPenalty = (arr,penalty) => {
   const matchesWithPenalty = arr.filter(teamObj => {
-    const teamPenaltiesArr = Object.entries(teamObj.Penalties.PenaltiesCommitted)
+    const committed = teamObj?.Penalties?.PenaltiesCommitted || {}
+    const teamPenaltiesArr = Object.entries(committed)
     const penaltyArr = teamPenaltiesArr.filter(penaltiesArr => penaltiesArr[0] === penalty)
-    return penaltyArr[0][1]
+    return Boolean(penaltyArr?.[0]?.[1])
   })
-  const penaltyMatchNumbers = matchesWithPenalty.map(matchEntry => matchEntry.id.substring(matchEntry.id.indexOf("_") + 1))
+  const penaltyMatchNumbers = matchesWithPenalty
+    .map(matchEntry => {
+      const matchId = matchEntry?.MatchId || matchEntry?.id || ''
+      if (typeof matchId !== 'string' || matchId.length === 0) return null
+      if (!matchId.includes('_')) return matchId
+      return matchId.substring(matchId.indexOf("_") + 1)
+    })
+    .filter(Boolean)
   return penaltyMatchNumbers;
 }
 /* gets the max */
@@ -103,7 +112,13 @@ const getMax = (arr) => {
 } 
 /* gets the notes of robot info in form */
 const getSummary = (arr) => {
-  const newarr = arr.map((match) => {return match.RobotInfo.Comments + ", "})
+  const newarr = arr
+    .map((match) => {
+      const comment = match?.Comment ?? match?.RobotInfo?.Comments
+      if (!comment) return null
+      return `${comment}, `
+    })
+    .filter(Boolean)
   let sumComment = ""
   for(let i = 0; i < newarr.length; i++){
     sumComment += newarr[i];

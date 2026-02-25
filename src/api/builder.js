@@ -219,51 +219,10 @@ const buildTeamEntry = (teamNumber, regional) => {
       },
       Regionals: [ {
         RegionalId: regional,
-        TeamMatches: [{
-          name: "",
-          description: "",
-          Team: teamNumber,
-          MatchId: "matchEntry.MatchId",
-          Autonomous: {
-            AutoStrat: StratOpts.None, //matchEntry.AutoStrat,
-            TravelMid: 0, //matchEntry.Autonomous.TravelMid,
-            AutoHang: HangOpts.None //matchEntry.Autonomous.AutoHang,
-          },
-          Teleop: {
-            TravelMid: 0, //matchEntry.Teleop.TravelMid,
-            Endgame: HangOpts.None, //matchEntry.Teleop.Endgame,
-          },
-          // multiple strategies supported
-          ActiveStrat: [],
-          InactiveStrat: [],
-          RobotInfo: {
-            RobotSpeed: SpeedOpts.None, //matchEntry.RobotInfo.RobotSpeed,
-            ShooterSpeed: SpeedOpts.None, //matchEntry.RobotInfo.ShooterSpeed,
-            FuelCapacity: 0, //matchEntry.RobotInfo.FuelCapacity,
-            BallsShot: 0, //matchEntry.RobotInfo.BallsShot,
-            ShootingCycles: 0, //matchEntry.RobotInfo.ShootingCycles,
-            WhatBrokeDesc: "",
-            Comments: "matchEntry.RobotInfo.Comments",
-          },
-          Penalties: {
-            Fouls: 0, //matchEntry.Penalties.Fouls,
-            Tech: 0, //matchEntry.Penalties.Tech,
-            PenaltiesCommitted: {
-              YellowCard: false, //matchEntry.Penalties.PenaltiesCommitted.YellowCard,
-              RedCard: false, //matchEntry.Penalties.PenaltiesCommitted.RedCard,
-              RedCard: false, //matchEntry.Penalties.PenaltiesCommitted.RedCard,
-              Disabled: false, //matchEntry.Penalties.PenaltiesCommitted.Disabled,
-              DQ: false, //matchEntry.Penalties.PenaltiesCommitted.DQ,
-              Broken: false, //matchEntry.Penalties.PenaltiesCommitted.Broken,
-              NoShow: false, //matchEntry.Penalties.PenaltiesCommitted.NoShow,
-            },
-            FoulDesc: "matchEntry.Penalties.FoulDesc"
-          //},
-        },
+        TeamMatches: []
       }] //1
-    }]
+    }
   }
-}
 
 /* const generateRandomEntry = function (regionId, teamId, matchId) {
   const matchEntry = buildMatchEntry(regionId, teamId, matchId)

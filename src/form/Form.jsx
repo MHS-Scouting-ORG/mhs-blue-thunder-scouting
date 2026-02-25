@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
-import { buildTeamEntry } from '../api/builder';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -331,12 +330,11 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                   const checkData = await apiGetTeam(normalized);
                   console.log("data in our thing ", checkData);
 
-                  const teamShell = buildTeamEntry(normalized, regional);
                   if (checkData === null) {
                     console.log("api get team returned null");
                     console.log(apiTeamListData, "api list team data");
-                    await apiCreateTeamEntry(normalized, teamShell, "match", regional);
-                    console.log("created team entry with shell data: ", teamShell);
+                    await apiCreateTeamEntry(normalized, regional);
+                    console.log("created team entry for team/regional", { team: normalized, regional });
                   }
                 } catch (err) {
                   // GraphQL returns object with data/errors; log details

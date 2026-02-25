@@ -1,16 +1,12 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
-import { apigetMatchesForRegional } from "../../api";
-import GlobalFilter from "./TableUtils/GlobalFilter";
-import List from "./TableUtils/List";
-import TeamStats from "./Tables/TeamStats";
-import DefaultTable from "./Tables/DefaultTable"
-import CustomGraph from "./Graphs/CustomGraph"
 import QualsView from "./Views/QualsView";
 import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
+import SearchView from "./Views/SearchView";
+import AllView from "./Views/AllView";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api"
@@ -24,17 +20,15 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-  const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
+  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'search', 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
       .then(data => {
-        console.log("tableData", tableData)
-        let holdTableData = data
-        setTableData(holdTableData)
+        setTableData(data)
       })
-      .catch(console.log.bind(console))
-  }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
+      .catch(err => console.error('error building table data', err))
+  }, [sortBy, teamsClicked, regional]) //depended on the teams clicked, sortby, and regional readiness
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {
@@ -146,16 +140,25 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Search","Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
-                if (view === "Quals") setCurrentView('quals');
+                if (view === "All") setCurrentView('all');
+                else if (view === "Quals") setCurrentView('quals');
                 else if (view === "Alliance Selection") setCurrentView('alliance');
                 else if (view === "Elims") setCurrentView('elims');
+                else if (view === "Search") setCurrentView('search');
               }}
                 className={`${tableStyles.ToggleButton} ${
-                  currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase())
+                  currentView ===
+                    (view === "All"
+                      ? 'all'
+                      : view === "Alliance Selection"
+                      ? 'alliance'
+                      : view === 'Search'
+                      ? 'search'
+                      : view.toLowerCase())
                     ? tableStyles.ToggleButtonOn
                     : tableStyles.ToggleButtonOff
                 }`}
@@ -167,6 +170,19 @@ function Summary() {
       </div>
 
       {/* Render Current View */}
+      {currentView === 'all' && (
+        <AllView
+          regional={regional}
+        />
+      )}
+      {currentView === 'search' && (
+        <SearchView
+          tableData={tableData}
+          regional={regional}
+          teamsClicked={teamsClicked}
+          setTeamsClicked={setTeamsClicked}
+        />
+      )}
       {currentView === 'quals' && (
         <QualsView 
           tableData={tableData} 
