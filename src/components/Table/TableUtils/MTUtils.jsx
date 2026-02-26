@@ -60,7 +60,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
       //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
 
-      // Todo Change all the old scoring methods to new, also change it in teamStats.jsx as it does not match up in
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
       const avgTeleCoral = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.CoralPoints !== null ? team.Teleop.PointsScored.CoralPoints : 0))
@@ -171,11 +170,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         Evaluations: evaluations, 
         /* Grade */
         SumPriorities: team.SumPriorities,
-        //Does not match up fix later 
-        // NHangLevel: isNaN() ? 0 : rHangLevel,
-        // NMultiHang: isNaN() ? 0 : rFuel,
-        // NFuelCap: isNaN() ? 0 : rHang,
-        // NCrossMid: isNaN() ? 0 : r,
         NPts: isNaN(rPts) ? 0 : rPts,
 
       }
