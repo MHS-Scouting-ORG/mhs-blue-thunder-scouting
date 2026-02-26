@@ -210,6 +210,8 @@ const buildTeamEntry = (teamNumber, regional) => {
         Regional: regional,
         DeclaredFuelCap: 0,
         CyclesPerMatch: 0,
+        FuelPerCycle: 0,
+        NumAutos: 0,
         Capabilities: CapabilitiesOpts.None,
         MaxHang: HangOpts.None,
         HangTeamwork: HangTeamworkOpts.None,

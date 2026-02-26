@@ -198,6 +198,12 @@ function TeamStats(props) {
             <strong>Cycles Per Match (Notes)</strong>: {attrs?.CyclesPerMatch ?? 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Fuel Per Cycle (Notes)</strong>: {attrs?.FuelPerCycle ?? 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Number of Autos (Notes)</strong>: {attrs?.NumAutos ?? 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Max Hang Capability</strong>: {attrs?.MaxHang || 'None'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>

@@ -120,12 +120,6 @@ export async function submitState( //params are states of data from form
   const parsedShootingCycles = Number.parseInt(shootingCycles, 10)
   /* */
 
-  const mapMatchType = (type) => {
-    if (type === 'q') return 'Qual'
-    if (type === 'sf' || type === 'f') return 'Elim'
-    return 'Practice'
-  }
-
   /* Checks Match Selects */
   if (matchType === '') {
     incompleteForm = true;
@@ -271,8 +265,6 @@ export async function submitState( //params are states of data from form
   let teleTravelPoints = (timesTravelledMidActive + timesTravelledMidInactive) > 0 ? (timesTravelledMidActive + timesTravelledMidInactive) * 2 : 0; // Example: 2 points per travel
   telePoints = teleTravelPoints;
 
-  let totalPoints = autoPoints + telePoints + endGamePoints;
-
   /* Window Msg Check */
   if (incompleteForm) {
     window.alert(windowAlertMsg);
@@ -335,22 +327,7 @@ export async function submitState( //params are states of data from form
     //check if team entry is already made then checks if match is already made
     data = await apiGetTeam(normalizedTeamNumber)
 
-    // protect against missing team/region structures; failing to do so would throw a
-    // TypeError (which ended up in the caller as the `{}` you saw in the alert)
-    let currentMatchid = null
-    let regionalData = null
-    if (data && Array.isArray(data.Regionals)) {
-      regionalData = data.Regionals.find(x => x.RegionalId === regional)
-      if (regionalData && Array.isArray(regionalData.TeamMatches)) {
-        const matchObj = regionalData.TeamMatches.find(x => x.MatchId === matchKey)
-        currentMatchid = matchObj ? matchObj.MatchId : null
-      }
-    }
-
-    console.log("current match id", currentMatchid)
-
     if (!data) { //team record doesn't exist yet
-      console.log(apiListTeamData, "api list team data")
       await apiCreateTeamEntry(normalizedTeamNumber, regional)
       data = await apiGetTeam(normalizedTeamNumber)
     }
@@ -457,7 +434,6 @@ export async function submitState( //params are states of data from form
 
 
   window.alert("Form Submitted");
-  console.log(apiListTeamData, " api list team data 345")
   return false; //return to help track whether or not to call reset form
 }
 

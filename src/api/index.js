@@ -23,14 +23,7 @@ const getClient = () => {
 let regionalKey
 
 const runGraphQL = async ({ query, variables }) => {
-  try {
-    return await getClient().graphql({ query, variables })
-  } catch (err) {
-    if (err?.data) {
-      return err
-    }
-    throw err
-  }
+  return getClient().graphql({ query, variables })
 }
 
 const normalizeStratList = (value) => {
@@ -187,7 +180,7 @@ const apiUpdateTeamEntryMatch = async function (team, data) {
  */
 const apiListTeams = async function () {
   const response = await runGraphQL({ query: listTeams })
-  const items = response?.data?.listTeams?.items || []
+  const items = (response?.data?.listTeams?.items || []).map(normalizeTeamRead)
 
   return {
     ...response,
@@ -195,7 +188,7 @@ const apiListTeams = async function () {
       ...response?.data,
       listTeams: {
         ...(response?.data?.listTeams || {}),
-        items: items.map(normalizeTeamRead)
+        items
       }
     }
   }

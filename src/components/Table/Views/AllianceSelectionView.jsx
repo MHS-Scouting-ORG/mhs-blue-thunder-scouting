@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
-import { apiGetAllianceSelection, apiSaveAllianceSelection } from '../../../api';
+import { apiGetAllianceSelection, apiSaveAllianceSelection, apiListTeams, apiGetSimpleTeamsForRegional } from '../../../api';
 
 const pickingOrder = [
   { alliance: 1, type: 'captain' },
@@ -32,6 +32,8 @@ const pickingOrder = [
 
 function AllianceSelectionView({ tableData, regional }) {
   const [rankedTeams, setRankedTeams] = useState([]);
+  const [simpleTeams, setSimpleTeams] = useState([]);
+  const [inputDrafts, setInputDrafts] = useState({});
   const [alliances, setAlliances] = useState({
     alliance1: { captain: null, picks: [null, null] },
     alliance2: { captain: null, picks: [null, null] },
@@ -50,6 +52,20 @@ function AllianceSelectionView({ tableData, regional }) {
     setRankedTeams(ranked);
   }, [tableData]);
 
+  useEffect(() => {
+    if (!regional) {
+      setSimpleTeams([]);
+      return;
+    }
+
+    apiGetSimpleTeamsForRegional(regional)
+      .then(data => setSimpleTeams(data || []))
+      .catch(err => {
+        console.log('failed to load simple teams', err);
+        setSimpleTeams([]);
+      });
+  }, [regional]);
+
   // Load alliances from database
   useEffect(() => {
     const loadAlliances = async () => {
@@ -61,6 +77,32 @@ function AllianceSelectionView({ tableData, regional }) {
         const savedAlliances = await apiGetAllianceSelection(regional)
         if (savedAlliances) {
           setAlliances(savedAlliances);
+          setInputDrafts({
+            alliance1captain: savedAlliances?.alliance1?.captain ? String(savedAlliances.alliance1.captain) : '',
+            alliance1pick0: savedAlliances?.alliance1?.picks?.[0] ? String(savedAlliances.alliance1.picks[0]) : '',
+            alliance1pick1: savedAlliances?.alliance1?.picks?.[1] ? String(savedAlliances.alliance1.picks[1]) : '',
+            alliance2captain: savedAlliances?.alliance2?.captain ? String(savedAlliances.alliance2.captain) : '',
+            alliance2pick0: savedAlliances?.alliance2?.picks?.[0] ? String(savedAlliances.alliance2.picks[0]) : '',
+            alliance2pick1: savedAlliances?.alliance2?.picks?.[1] ? String(savedAlliances.alliance2.picks[1]) : '',
+            alliance3captain: savedAlliances?.alliance3?.captain ? String(savedAlliances.alliance3.captain) : '',
+            alliance3pick0: savedAlliances?.alliance3?.picks?.[0] ? String(savedAlliances.alliance3.picks[0]) : '',
+            alliance3pick1: savedAlliances?.alliance3?.picks?.[1] ? String(savedAlliances.alliance3.picks[1]) : '',
+            alliance4captain: savedAlliances?.alliance4?.captain ? String(savedAlliances.alliance4.captain) : '',
+            alliance4pick0: savedAlliances?.alliance4?.picks?.[0] ? String(savedAlliances.alliance4.picks[0]) : '',
+            alliance4pick1: savedAlliances?.alliance4?.picks?.[1] ? String(savedAlliances.alliance4.picks[1]) : '',
+            alliance5captain: savedAlliances?.alliance5?.captain ? String(savedAlliances.alliance5.captain) : '',
+            alliance5pick0: savedAlliances?.alliance5?.picks?.[0] ? String(savedAlliances.alliance5.picks[0]) : '',
+            alliance5pick1: savedAlliances?.alliance5?.picks?.[1] ? String(savedAlliances.alliance5.picks[1]) : '',
+            alliance6captain: savedAlliances?.alliance6?.captain ? String(savedAlliances.alliance6.captain) : '',
+            alliance6pick0: savedAlliances?.alliance6?.picks?.[0] ? String(savedAlliances.alliance6.picks[0]) : '',
+            alliance6pick1: savedAlliances?.alliance6?.picks?.[1] ? String(savedAlliances.alliance6.picks[1]) : '',
+            alliance7captain: savedAlliances?.alliance7?.captain ? String(savedAlliances.alliance7.captain) : '',
+            alliance7pick0: savedAlliances?.alliance7?.picks?.[0] ? String(savedAlliances.alliance7.picks[0]) : '',
+            alliance7pick1: savedAlliances?.alliance7?.picks?.[1] ? String(savedAlliances.alliance7.picks[1]) : '',
+            alliance8captain: savedAlliances?.alliance8?.captain ? String(savedAlliances.alliance8.captain) : '',
+            alliance8pick0: savedAlliances?.alliance8?.picks?.[0] ? String(savedAlliances.alliance8.picks[0]) : '',
+            alliance8pick1: savedAlliances?.alliance8?.picks?.[1] ? String(savedAlliances.alliance8.picks[1]) : ''
+          });
         }
       } catch (error) {
         console.log('Error loading alliances from server', error);
@@ -95,6 +137,11 @@ function AllianceSelectionView({ tableData, regional }) {
 
     const currentPick = pickingOrder[currentPickIndex];
     const allianceKey = `alliance${currentPick.alliance}`;
+    const draftKey = currentPick.type === 'captain'
+      ? `${allianceKey}captain`
+      : currentPick.type === 'pick1'
+        ? `${allianceKey}pick0`
+        : `${allianceKey}pick1`;
 
     setAlliances(prev => {
       const newAlliances = { ...prev };
@@ -108,20 +155,81 @@ function AllianceSelectionView({ tableData, regional }) {
       return newAlliances;
     });
 
+    setInputDrafts(prev => ({ ...prev, [draftKey]: String(teamNumber) }));
+
     setCurrentPickIndex(currentPickIndex + 1);
   };
 
-  const handleInputChange = (allianceKey, type, value, index = null) => {
-    const num = value ? parseInt(value) : null;
+  const lookupTeamNumber = async (term) => {
+    let num = null;
+
+    if (/^\d+$/.test(term)) {
+      num = term;
+    } else {
+      try {
+        const list = await apiListTeams();
+        const items = list?.data?.listTeams?.items || [];
+        const found = items.find(t =>
+          t.TeamAttributes?.name?.toLowerCase().includes(term.toLowerCase())
+        );
+        if (found) {
+          num = String(found.id || '');
+        }
+      } catch (err) {
+        console.log('failed to list teams for name lookup', err);
+      }
+
+      if (!num) {
+        const foundBA = simpleTeams.find(s =>
+          s.nickname && s.nickname.toLowerCase().includes(term.toLowerCase())
+        );
+        if (foundBA) {
+          num = String(foundBA.team_number || foundBA.TeamNumber || '');
+        }
+      }
+    }
+
+    return num;
+  };
+
+  const handleDraftChange = (key, value) => {
+    setInputDrafts(prev => ({ ...prev, [key]: value }));
+  };
+
+  const commitDraft = async (allianceKey, type, index = null) => {
+    const key = type === 'captain' ? `${allianceKey}captain` : `${allianceKey}pick${index}`;
+    const term = String(inputDrafts[key] || '').trim();
+
+    if (!term) {
+      setAlliances(prev => {
+        const newAlliances = { ...prev };
+        if (type === 'captain') {
+          newAlliances[allianceKey].captain = null;
+        } else {
+          newAlliances[allianceKey].picks[index] = null;
+        }
+        return newAlliances;
+      });
+      return;
+    }
+
+    const teamNum = await lookupTeamNumber(term);
+    if (!teamNum) {
+      alert('Team not found');
+      return;
+    }
+
     setAlliances(prev => {
       const newAlliances = { ...prev };
       if (type === 'captain') {
-        newAlliances[allianceKey].captain = num;
-      } else if (type === 'pick') {
-        newAlliances[allianceKey].picks[index] = num;
+        newAlliances[allianceKey].captain = teamNum;
+      } else {
+        newAlliances[allianceKey].picks[index] = teamNum;
       }
       return newAlliances;
     });
+
+    setInputDrafts(prev => ({ ...prev, [key]: String(teamNum) }));
   };
 
   const handleRemove = (allianceKey, type, index = null) => {
@@ -134,6 +242,9 @@ function AllianceSelectionView({ tableData, regional }) {
       }
       return newAlliances;
     });
+
+    const key = type === 'captain' ? `${allianceKey}captain` : `${allianceKey}pick${index}`;
+    setInputDrafts(prev => ({ ...prev, [key]: '' }));
   };
 
   const renderAllianceDiagram = () => {
@@ -160,9 +271,15 @@ function AllianceSelectionView({ tableData, regional }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <input
-                  type="number"
-                  value={alliance.captain || ''}
-                  onChange={(e) => handleInputChange(key, 'captain', e.target.value)}
+                  type="text"
+                  value={inputDrafts[`${key}captain`] ?? (alliance.captain ? String(alliance.captain) : '')}
+                  onChange={(e) => handleDraftChange(`${key}captain`, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      commitDraft(key, 'captain');
+                    }
+                  }}
                   placeholder="Captain"
                   style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
                 />
@@ -176,9 +293,15 @@ function AllianceSelectionView({ tableData, regional }) {
               {[0, 1].map(pickIndex => (
                 <div key={pickIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <input
-                    type="number"
-                    value={alliance.picks[pickIndex] || ''}
-                    onChange={(e) => handleInputChange(key, 'pick', e.target.value, pickIndex)}
+                    type="text"
+                    value={inputDrafts[`${key}pick${pickIndex}`] ?? (alliance.picks[pickIndex] ? String(alliance.picks[pickIndex]) : '')}
+                    onChange={(e) => handleDraftChange(`${key}pick${pickIndex}`, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        commitDraft(key, 'pick', pickIndex);
+                      }
+                    }}
                     placeholder={`Pick ${pickIndex + 1}`}
                     style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
                   />
@@ -315,7 +438,7 @@ function AllianceSelectionView({ tableData, regional }) {
         <p>2. Round 1: Captains pick in order 1-8, each followed by their first pick</p>
         <p>3. Round 2: Second picks are made in reverse order (8-1)</p>
         <p>4. Selected teams are removed from the leaderboard</p>
-        <p>5. You can manually type team numbers into the alliance slots or use the leaderboard to select</p>
+        <p>5. You can type team number or team name into alliance slots, then press Enter to resolve to a team number</p>
         <p>6. Use the X button to remove a selection from an alliance slot</p>
       </div>
     </div>

@@ -54,6 +54,8 @@ function AllView({ regional }) {
             if (attrs?.Notes) noteParts.push(String(attrs.Notes))
             if (attrs?.DeclaredFuelCap) noteParts.push(`Fuel Cap: ${attrs.DeclaredFuelCap}`)
             if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
+            if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
+            if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
             if (attrs?.Capabilities && attrs.Capabilities !== 'None') noteParts.push(`Capabilities: ${attrs.Capabilities}`)
             if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
             if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)

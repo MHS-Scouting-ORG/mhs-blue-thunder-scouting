@@ -128,14 +128,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
     /* Check for pre-existing team entry data in our api */
     apiListTeams()
       .then((data) => {
-        const teamList = data.data.listTeams.items
-        console.log("Existing teams in our data : ", data.data)
+        const teamList = data?.data?.listTeams?.items || []
+        console.log("Existing teams in our data : ", data?.data)
         setApiTeamListData(teamList)
       })
       .catch(err => {
-        console.log(err) //temp fix there is current err in data 02/11/26
-        console.log("Existing teams in our data : ", err.data.listTeams.items) //temp fix there is current err in data 02/11/26
-        setApiTeamListData(err.data.listTeams.items)
+        console.log(err)
+        setApiTeamListData([])
       })
   }, [])
 

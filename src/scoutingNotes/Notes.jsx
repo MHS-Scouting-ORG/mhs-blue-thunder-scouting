@@ -60,6 +60,10 @@ function Notes(props) {
     alignItems: "center"
   };
 
+  const preventScrollValueChange = (e) => {
+    e.target.blur()
+  }
+
   useEffect(() => {
     apiListTeams()
       .then((data) => {
@@ -153,9 +157,8 @@ function Notes(props) {
         setPhotoUrl(attrs.Photo || "")
         setHangTime(attrs.HangTime ?? "")
         setCyclesPerMatch(attrs.CyclesPerMatch ?? "")
-        // fields that don't exist in schema
-        setFuelPerCycle("")
-        setNumAutos("")
+        setFuelPerCycle(attrs.FuelPerCycle ?? "")
+        setNumAutos(attrs.NumAutos ?? "")
         setBump(attrs.Capabilities === "Bump")
         setTrench(attrs.Capabilities === "Trench")
         setMaxHangHeight(attrs.MaxHang || "None")
@@ -245,9 +248,7 @@ function Notes(props) {
     }
 
     // map UI state into the shape defined by TeamAttributesType in the
-    // GraphQL schema.  note that the old `teamInput` payload used exotic
-    // field names that caused the CreateTeamInput error; the API helpers
-    // below will sanitize the object and only include valid fields.
+    // GraphQL schema.
     const normalizeMaxHang = (value) => {
       const normalized = String(value || '').replace(/\s+/g, '')
       const allowed = new Set(['None', 'Level1', 'Level2', 'Level3'])
@@ -261,6 +262,8 @@ function Notes(props) {
       Photo: photoKey,
       HangTime: hangTime ? parseFloat(hangTime) : null,
       CyclesPerMatch: cyclesPerMatch ? parseInt(cyclesPerMatch) : null,
+      FuelPerCycle: fuelPerCycle ? parseInt(fuelPerCycle) : null,
+      NumAutos: numAutos ? parseInt(numAutos) : null,
       Capabilities: bump ? "Bump" : trench ? "Trench" : "None",
       MaxHang: normalizeMaxHang(maxHangHeight),
       HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None"
@@ -342,6 +345,7 @@ function Notes(props) {
                   type="number" 
                   value={teamNumberInput} 
                   onChange={(e) => setTeamNumberInput(e.target.value)}
+                  onWheel={preventScrollValueChange}
                   onKeyDown={(e) => { if (e.key === 'Enter') loadTeamData() }}
                 />
                 <button
@@ -404,6 +408,7 @@ function Notes(props) {
                     type="number" 
                     value={fuelCapacity} 
                     onChange={(e) => setFuelCapacity(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
@@ -422,6 +427,7 @@ function Notes(props) {
                     type="number" 
                     value={cyclesPerMatch} 
                     onChange={(e) => setCyclesPerMatch(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
               </div>
@@ -443,6 +449,7 @@ function Notes(props) {
                     type="number" 
                     value={fuelPerCycle} 
                     onChange={(e) => setFuelPerCycle(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
@@ -461,6 +468,7 @@ function Notes(props) {
                     type="number" 
                     value={numAutos} 
                     onChange={(e) => setNumAutos(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
               </div>
@@ -505,6 +513,7 @@ function Notes(props) {
                     step="0.1"
                     value={hangTime} 
                     onChange={(e) => setHangTime(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
 
@@ -513,6 +522,7 @@ function Notes(props) {
                   <select
                     value={maxHangHeight}
                     onChange={(e) => setMaxHangHeight(e.target.value)}
+                    onWheel={preventScrollValueChange}
                     style={{
                       height: "50px",
                       width: "100%",
