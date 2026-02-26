@@ -139,9 +139,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const rAlgae = avgMadeAlgae / maxAlgae
       const rCycles = avgCycles / maxCycles
       const rPts = avgPoints / maxPts
-      // const rFuel = smoteihgn / other
-      // const rHang = fhfhfh / jdjdrhf
-      //////Fix the top ... whatever it was
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
@@ -153,8 +150,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
        
         //===Stats==/ 
         AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
-        AvgFuelPts: isNaN(avgFuel) ? 0 : avgFuel,
-        
+
         //Made//
         AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
