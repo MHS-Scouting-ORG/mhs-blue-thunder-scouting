@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
-import { buildTeamEntry } from '../api/builder';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -13,10 +12,25 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
  function Form() {
   /* Regional Key */
-  const regional = apiGetRegional() // updated in aws
-  //console.log(regional)
+  // regional key is populated asynchronously by apiUpdateRegional in App.jsx.
+  // maintain it in state so that when it becomes defined the component rerenders.
+  const [regional, setRegional] = useState(apiGetRegional());
 
-  console.log(regional, ' regional check') //regional check
+  // log for debug
+  console.log(regional, 'regional check')
+
+  // keep polling until the regional key arrives; stops once set
+  useEffect(() => {
+    if (regional) return;
+    const id = setInterval(() => {
+      const reg = apiGetRegional();
+      if (reg) {
+        setRegional(reg);
+        clearInterval(id);
+      }
+    }, 500);
+    return () => clearInterval(id);
+  }, [regional]);
 
   /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
@@ -50,9 +64,9 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   const [robotBrokenComments, setRobotBrokenComments] = useState("");
 
   /* ROBOT INFO */
-  const [robotSpeed, setRobotSpeed] = useState([]);
+  const [robotSpeed, setRobotSpeed] = useState('');
   const [fuelCapacity, setFuelCapacity] = useState('');
-  const [shootingSpeed, setShootingSpeed] = useState([]);
+  const [shootingSpeed, setShootingSpeed] = useState('');
   const [robotInsight, setRobotInsight] = useState("");
   const [estimatedBallsShot, setEstimatedBallsShot] = useState('');
   const [shootingCycles, setShootingCycles] = useState('');
@@ -69,9 +83,15 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
  /* Blue Alliance API List Teams */
   useEffect(() => {
-    if (!regional) return
-    /* Get Matches for Regional from bluealliance */
-    apiGetMatchesForRegional(regional)
+    /* Get latest regional key each time in case it was undefined earlier */
+    const reg = regional || apiGetRegional();
+    if (!reg) {
+      console.warn('regional not provided, skipping blue alliance fetch');
+      return;
+    }
+
+    /* Get Matches for Regional from bluealliance via our API wrapper */
+    apiGetMatchesForRegional(reg)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
         console.log(data, ' blue alliance api check') //blue alliance api check
@@ -102,7 +122,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         }
       })
       .catch(err => console.log(err))
-  }, [regional, matchType, matchNumber])
+  }, [matchType, matchNumber, regional])
 
   useEffect(() => {
     /* Check for pre-existing team entry data in our api */
@@ -156,9 +176,9 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
     setMinFouls(0)
     setMajFouls(0)
     setRobotBrokenComments('')
-    setRobotSpeed([])
+    setRobotSpeed('')
     setFuelCapacity('')
-    setShootingSpeed([])
+    setShootingSpeed('')
     setRobotInsight('')
     setEstimatedBallsShot('')
     setShootingCycles('')
@@ -169,6 +189,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   /* toggle functions for display of form sections */
 
   const toggleActiveStrategy = (strategy) => {
+    // allow multiple active strategies; FormUtils.join will convert to string
     if (activeStrategy.includes(strategy)) {
       setActiveStrategy(activeStrategy.filter(s => s !== strategy))
     } else {
@@ -177,6 +198,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   }
 
   const toggleInactiveStrategy = (strategy) => {
+    // multiple inactive strategies allowed as well
     if (inactiveStrategy.includes(strategy)) {
       setInactiveStrategy(inactiveStrategy.filter(s => s !== strategy))
     } else {
@@ -249,6 +271,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 type="number" 
                 value={matchNumber} 
                 onChange={(e) => setMatchNumber(e.target.value)}
+                onWheel={(e) => e.target.blur()} 
               />
             </div>
           </div>
@@ -299,26 +322,25 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 cursor: "pointer"
               }} 
               onChange={async (e) => {
+                // capture the new team number immediately, avoid relying on state update
+                const normalized = normalizeTeamId(e.target.value);
+                setTeamNumber(normalized);
 
-                setTeamNumber(normalizeTeamId(e.target.value))
+                try {
+                  const checkData = await apiGetTeam(normalized);
+                  console.log("data in our thing ", checkData);
 
-                const checkData = await apiGetTeam(teamNumber) 
-
-                console.log("data in our thing ", checkData)
-                //currentMatchId = checkData.Regionals.find(x => x.RegionalId === regional).TeamMatches.find(x => x.MatchId === matchKey).MatchId
-
-                //createsd empty shell and pushes up to data when selected team if there is existing team object yet
-
-                const teamShell = buildTeamEntry(teamNumber, regional)
-
-                teamShell.MatchId = matchKey
-
-                if (checkData === null) {
-                  console.log("api get team returned null")
-                  console.log(apiTeamListData, "api list team data")
-                  apiCreateTeamEntry(teamNumber, teamShell, "match", regional)
-                  console.log("created team entry with shell data: ", teamShell)
+                  if (checkData === null) {
+                    console.log("api get team returned null");
+                    console.log(apiTeamListData, "api list team data");
+                    await apiCreateTeamEntry(normalized, regional);
+                    console.log("created team entry for team/regional", { team: normalized, regional });
+                  }
+                } catch (err) {
+                  // GraphQL returns object with data/errors; log details
+                  console.error("error fetching/creating team", err);
                 }
+                
               }}
             >
               <option value="">Select robot number</option>
@@ -368,6 +390,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               }} 
               value={autoHang} 
               onChange={(e) => setAutoHang(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value=''>Select Level</option>
               <option value="None">None</option>
@@ -422,6 +445,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               type="number" 
               value={timesTravelledMidActive} 
               onChange={(e) => setTimesTravelledMidActive(Math.max(0, parseInt(e.target.value) || 0))}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 fontSize: "24px",
                 fontWeight: "600",
@@ -498,6 +522,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               type="number" 
               value={timesTravelledMidInactive} 
               onChange={(e) => setTimesTravelledMidInactive(Math.max(0, parseInt(e.target.value) || 0))}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 fontSize: "24px",
                 fontWeight: "600",
@@ -548,6 +573,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               }} 
               value={hangType} 
               onChange={(e) => setHangType(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value=''>Select Level</option>
               <option value="None">None</option>
@@ -587,6 +613,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 type="number" 
                 value={minFouls} 
                 onChange={(e) => setMinFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                onWheel={(e) => e.target.blur()}
                 style={{
                   fontSize: "24px",
                   fontWeight: "600",
@@ -640,6 +667,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 type="number" 
                 value={majFouls} 
                 onChange={(e) => setMajFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                onWheel={(e) => e.target.blur()}
                 style={{
                   fontSize: "24px",
                   fontWeight: "600",
@@ -725,6 +753,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               type="text" 
               value={robotBrokenComments} 
               onChange={(e) => setRobotBrokenComments(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 padding: "10px",
                 fontSize: "16px",
@@ -755,6 +784,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               }} 
               value={robotSpeed} 
               onChange={(e) => setRobotSpeed(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Speed</option>
               <option value="Slow">Slow</option>
@@ -777,6 +807,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               }} 
               value={shootingSpeed} 
               onChange={(e) => setShootingSpeed(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Speed</option>
               <option value="Slow">Slow</option>
@@ -800,6 +831,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               placeholder="Enter fuel capacity (e.g., 100)"
               value={fuelCapacity} 
               onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -818,6 +850,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               placeholder="Enter estimated balls shot"
               value={estimatedBallsShot} 
               onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -836,6 +869,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               placeholder="Enter shooting cycles"
               value={shootingCycles} 
               onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -854,6 +888,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               placeholder="Add any observations..." 
               value={robotInsight} 
               onChange={(e) => setRobotInsight(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
         </div>

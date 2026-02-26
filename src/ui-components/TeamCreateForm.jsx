@@ -8,9 +8,7 @@
 import * as React from "react";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { fetchByPath, getOverrideProps, validateField } from "./utils";
-import { generateClient } from "aws-amplify/api";
-import { createTeam } from "../graphql/mutations";
-const client = generateClient();
+import { apiAddTeam } from "../api";
 export default function TeamCreateForm(props) {
   const {
     clearOnSuccess = true,
@@ -102,13 +100,8 @@ export default function TeamCreateForm(props) {
               modelFields[key] = null;
             }
           });
-          await client.graphql({
-            query: createTeam.replaceAll("__typename", ""),
-            variables: {
-              input: {
-                ...modelFields,
-              },
-            },
+          await apiAddTeam({
+            ...modelFields,
           });
           if (onSuccess) {
             onSuccess(modelFields);

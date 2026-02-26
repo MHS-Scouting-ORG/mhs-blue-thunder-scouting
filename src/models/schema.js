@@ -400,21 +400,23 @@ export const schema = {
                 },
                 "ActiveStrat": {
                     "name": "ActiveStrat",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "StratOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "InactiveStrat": {
                     "name": "InactiveStrat",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "StratOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "RobotInfo": {
                     "name": "RobotInfo",
@@ -541,5 +543,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "012f6f01e65817d4ea3594b90f90bdd6"
+    "version": "0977a4d055a0baf2ca29b047324f2bca"
 };

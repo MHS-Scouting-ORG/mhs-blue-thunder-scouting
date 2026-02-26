@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
-import { generateClient } from 'aws-amplify/api';
-import { getTeam } from '../../../graphql/queries';
-
-let client
-const getClient = () => {
-  if (!client) client = generateClient()
-  return client
-}
+import { apiGetAllianceSelection } from '../../../api';
 
 function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [alliances, setAlliances] = useState(null);
@@ -22,16 +15,11 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   useEffect(() => {
     const loadAlliances = async () => {
       if (!regional) return;
-      const allianceId = `alliances-${regional}`;
 
       // Fetch from server
       try {
-        const result = await getClient().graphql({
-          query: getTeam,
-          variables: { id: allianceId }
-        });
-        if (result.data.getTeam && result.data.getTeam.description) {
-          const saved = JSON.parse(result.data.getTeam.description);
+        const saved = await apiGetAllianceSelection(regional)
+        if (saved) {
           setAlliances(saved);
         }
       } catch (err) {

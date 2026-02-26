@@ -4,7 +4,12 @@ import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import {getTeam, listTeams, } from '../graphql/queries'
 import {createTeam, updateTeam} from '../graphql/mutations'
 import {buildMatchEntry, buildTeamEntry} from './builder'
-import { getMatchesForRegional as fetchMatchesForRegional } from './bluealliance'
+import {
+  getMatchesForRegional as fetchMatchesForRegional,
+  getTeamsInRegional as fetchTeamsInRegional,
+  getSimpleTeamsForRegional as fetchSimpleTeamsForRegional,
+  getRankingsForRegional as fetchRankingsForRegional,
+} from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
 
 import * as Auth from 'aws-amplify/auth'
@@ -16,6 +21,80 @@ const getClient = () => {
 }
 
 let regionalKey
+
+const runGraphQL = async ({ query, variables }) => {
+  try {
+    return await getClient().graphql({ query, variables })
+  } catch (err) {
+    if (err?.data) {
+      return err
+    }
+    throw err
+  }
+}
+
+const normalizeStratList = (value) => {
+  const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
+
+  if (Array.isArray(value)) {
+    const cleaned = value
+      .map(v => (typeof v === 'string' ? v.trim() : ''))
+      .filter(v => allowed.includes(v) && v !== '')
+    return cleaned.length > 0 ? cleaned : ["None"]
+  }
+
+  if (typeof value === 'string') {
+    const cleaned = value
+      .split(',')
+      .map(v => v.trim())
+      .filter(v => allowed.includes(v) && v !== '')
+    return cleaned.length > 0 ? cleaned : ["None"]
+  }
+
+  return ["None"]
+}
+
+const normalizeAutoStrat = (value) => {
+  const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
+  return allowed.includes(value) ? value : "None"
+}
+
+const normalizeRegionals = (regionalsValue) => {
+  const regionals = Array.isArray(regionalsValue)
+    ? regionalsValue
+    : (regionalsValue ? [regionalsValue] : [])
+
+  return regionals
+    .filter(regional => regional && typeof regional === 'object' && !Array.isArray(regional))
+    .map(regional => {
+      const teamMatches = Array.isArray(regional?.TeamMatches)
+        ? regional.TeamMatches
+        : (regional?.TeamMatches ? [regional.TeamMatches] : [])
+
+      return {
+        ...regional,
+        TeamMatches: teamMatches
+          .filter(match => match && typeof match === 'object' && !Array.isArray(match))
+          .map(match => ({
+            ...match,
+            Autonomous: {
+              ...match?.Autonomous,
+              AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat)
+            },
+            ActiveStrat: normalizeStratList(match?.ActiveStrat),
+            InactiveStrat: normalizeStratList(match?.InactiveStrat)
+          }))
+      }
+    })
+}
+
+const normalizeTeamRead = (team) => {
+  if (!team || typeof team !== 'object') return team
+  return {
+    ...team,
+    Regionals: normalizeRegionals(team.Regionals)
+  }
+}
 
 /**
  * Subscribe to create and update events
@@ -38,8 +117,8 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  */
 const apiGetTeam = async function (teamNumber) {
   const normalizedTeamId = normalizeTeamId(teamNumber)
-  const data = await getClient().graphql({ query: getTeam, variables: { id: normalizedTeamId } })
-  return data.data.getTeam
+  const response = await runGraphQL({ query: getTeam, variables: { id: normalizedTeamId } })
+  return normalizeTeamRead(response?.data?.getTeam || null)
 }
 
 
@@ -73,7 +152,11 @@ const sanitizeTeamInput = (data, teamIdOverride) => {
     )
   }
 
-  return stripTypename(input)
+  const normalized = stripTypename(input)
+
+  normalized.Regionals = normalizeRegionals(normalized?.Regionals)
+
+  return normalized
 }
 
 
@@ -103,7 +186,19 @@ const apiUpdateTeamEntryMatch = async function (team, data) {
  * Get All the teams in our database
  */
 const apiListTeams = async function () {
-  return getClient().graphql({ query: listTeams })
+  const response = await runGraphQL({ query: listTeams })
+  const items = response?.data?.listTeams?.items || []
+
+  return {
+    ...response,
+    data: {
+      ...response?.data,
+      listTeams: {
+        ...(response?.data?.listTeams || {}),
+        items: items.map(normalizeTeamRead)
+      }
+    }
+  }
 }
 
 /*
@@ -112,25 +207,44 @@ const apiListTeams = async function () {
  * - regionalId - the regional id;  this is identified by the same id used in the bluealliance api
  * - teamNumber (optional) - the teamNumber
  */
+
+
 const apigetMatchesForRegional = async function (regionalId, teamNumber) {
-  const normalizedTeamId = normalizeTeamId(teamNumber)
-  if (!normalizedTeamId) {
-    return getClient().graphql({
-      query: teamMatchesByRegional, variables: {
-        Regional: regionalId,
-      }
-    })
+
+  const full = await runGraphQL({ query: listTeams });
+  const items = full?.data?.listTeams?.items || [];
+
+  const normalizedTeamId = normalizeTeamId(teamNumber);
+  const matches = [];
+  const isValidMatchId = (value) => {
+    if (typeof value !== 'string') return false
+    const trimmed = value.trim()
+    if (!trimmed) return false
+    if (trimmed === 'matchEntry.MatchId') return false
+    return true
   }
-  return getClient().graphql({
-    query: teamMatchesByRegional, variables: {
-      Regional: regionalId,
-      filter: {
-        Team: {
-          eq: normalizedTeamId
-        }
+
+  items.map(normalizeTeamRead).forEach(team => {
+    const regArray = Array.isArray(team.Regionals) ? team.Regionals : (team.Regionals ? [team.Regionals] : []);
+    regArray.forEach(r => {
+      if (r.RegionalId === regionalId) {
+        const teamMatches = Array.isArray(r.TeamMatches) ? r.TeamMatches : (r.TeamMatches ? [r.TeamMatches] : []);
+        teamMatches.forEach(m => {
+          if (!isValidMatchId(m?.MatchId)) return
+          if (!normalizedTeamId) {
+            matches.push(m);
+          } else {
+            // each match record has a Team field containing the team id
+            if (normalizeTeamId(m.Team) === normalizedTeamId) {
+              matches.push(m);
+            }
+          }
+        });
       }
-    }
-  })
+    });
+  });
+
+  return { data: { teamMatchesByRegional: { items: matches } } };
 } 
 
 /*
@@ -141,6 +255,59 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
 const apiGetMatchesForRegional = async function (regionalId) {
   if (!regionalId) return []
   return fetchMatchesForRegional(regionalId)
+}
+
+const apiGetTeamsInRegional = async function (regionalId) {
+  if (!regionalId) return []
+  return fetchTeamsInRegional(regionalId)
+}
+
+const apiGetSimpleTeamsForRegional = async function (regionalId) {
+  if (!regionalId) return []
+  return fetchSimpleTeamsForRegional(regionalId)
+}
+
+const apiGetRankingsForRegional = async function (regionalId) {
+  if (!regionalId) return []
+  return fetchRankingsForRegional(regionalId)
+}
+
+const apiGetAllianceSelection = async function (regionalId) {
+  if (!regionalId) return null
+  const allianceId = `alliances-${regionalId}`
+
+  const team = await apiGetTeam(allianceId)
+  if (!team?.description) return null
+
+  try {
+    return JSON.parse(team.description)
+  } catch (_) {
+    return null
+  }
+}
+
+const apiSaveAllianceSelection = async function (regionalId, alliances) {
+  if (!regionalId) throw new Error('Regional not provided')
+
+  const allianceId = `alliances-${regionalId}`
+  let team = await apiGetTeam(allianceId)
+
+  if (!team) {
+    await apiCreateTeamEntry(allianceId, regionalId)
+    team = await apiGetTeam(allianceId)
+  }
+
+  if (!team) {
+    throw new Error('Failed to initialize alliance storage team')
+  }
+
+  const merged = {
+    ...team,
+    description: JSON.stringify(alliances)
+  }
+
+  await apiUpdateTeamEntry(allianceId, merged)
+  return true
 }
 
 /* Creates team entry for our database*/
@@ -171,4 +338,20 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
-export {apiGetTeam, apiAddTeam, apiListTeams, apigetMatchesForRegional, apiGetMatchesForRegional, apiUpdateTeamEntry, apiUpdateRegional, apiGetRegional, apiCreateTeamEntry, apiUpdateTeamEntryMatch }
+export {
+  apiGetTeam,
+  apiAddTeam,
+  apiListTeams,
+  apigetMatchesForRegional,
+  apiGetMatchesForRegional,
+  apiGetTeamsInRegional,
+  apiGetSimpleTeamsForRegional,
+  apiGetRankingsForRegional,
+  apiGetAllianceSelection,
+  apiSaveAllianceSelection,
+  apiUpdateTeamEntry,
+  apiUpdateRegional,
+  apiGetRegional,
+  apiCreateTeamEntry,
+  apiUpdateTeamEntryMatch,
+}
