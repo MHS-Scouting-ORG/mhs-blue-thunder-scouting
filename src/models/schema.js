@@ -469,6 +469,20 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "FuelPerCycle": {
+                    "name": "FuelPerCycle",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "NumAutos": {
+                    "name": "NumAutos",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Capabilities": {
                     "name": "Capabilities",
                     "isArray": false,

@@ -15,6 +15,8 @@ export const createTeam = /* GraphQL */ `
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
@@ -95,6 +97,8 @@ export const updateTeam = /* GraphQL */ `
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
@@ -175,6 +179,8 @@ export const deleteTeam = /* GraphQL */ `
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
