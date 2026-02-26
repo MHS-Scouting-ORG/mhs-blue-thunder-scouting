@@ -138,12 +138,22 @@ function Summary() {
             <button
               key={view}
               onClick={() => {
-                if (view === "All") setCurrentView('all');
-                else if (view === "Quals") setCurrentView('quals');
-                else if (view === "Alliance Selection") setCurrentView('alliance');
-                else if (view === "Elims") setCurrentView('elims');
-                else if (view === "Search") setCurrentView('search');
-              }}
+                switch (view){
+                  case "All": 
+                    setCurrentView('all')
+                    break;
+                  case "Quals":
+                    setCurrentView('quals')
+                    break;
+                  case "Alliance Selection":
+                    setCurrentView('alliance')
+                    break;
+                  case "Elims":
+                    setCurrentView('elims')
+                    break;
+                  case "Search":
+                    setCurrentView('search')
+              }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
                     (view === "All"
