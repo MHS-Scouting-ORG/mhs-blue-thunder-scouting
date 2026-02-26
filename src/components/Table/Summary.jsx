@@ -153,6 +153,7 @@ function Summary() {
                     break;
                   case "Search":
                     setCurrentView('search')
+                    break;
               }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
