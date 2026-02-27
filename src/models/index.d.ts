@@ -177,6 +177,8 @@ type EagerTeamAttributesType = {
   readonly Regional: string;
   readonly DeclaredFuelCap?: number | null;
   readonly CyclesPerMatch?: number | null;
+  readonly FuelPerCycle?: number | null;
+  readonly NumAutos?: number | null;
   readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
@@ -190,6 +192,8 @@ type LazyTeamAttributesType = {
   readonly Regional: string;
   readonly DeclaredFuelCap?: number | null;
   readonly CyclesPerMatch?: number | null;
+  readonly FuelPerCycle?: number | null;
+  readonly NumAutos?: number | null;
   readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
