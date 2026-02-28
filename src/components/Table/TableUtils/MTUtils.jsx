@@ -58,16 +58,16 @@ async function getTeams (regional) {
 /* 
 consolidates all calculations, averages, and sets the object for each team(row) and their properties(stats) 
 */
-async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
-    try {
-    const data = await apigetMatchesForRegional(regional)
-
+async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {  
+  try {
+    const data = await apigetMatchesForRegional(regional) 
+    
     console.log("getTeamMatchesAndTableDataFunc", data)
     
     const tableData = mtable
 
     return teamNumbers.map(team => {
-
+      //teamMatchesByRegional is left undefined
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
       const totalMatches = teamStats.length
@@ -83,7 +83,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
       //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
 
-
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.ShootingCycles || 0)))
       const avgTeleCoral = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.BallsShot || 0)))
@@ -96,39 +95,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
       const avgEndgame = calcAvg(teamStats.map(m => getEndgamePoints(m)))
       //amount
-      /* Coral Levels */
-      const avgMadeTeleCoralL1 = avgTeleCoral
-      const avgMadeTeleCoralL2= 0
-      const avgMadeTeleCoralL3 = 0
-      const avgMadeTeleCoralL4 = 0
-
-      const avgMadeAutoCoralL1 = avgAutoCoral
-      const avgMadeAutoCoralL2 = 0
-      const avgMadeAutoCoralL3 = 0
-      const avgMadeAutoCoralL4 = 0
-
-      const avgMadeCoralL1 = (avgMadeTeleCoralL1 + avgMadeAutoCoralL1) / 2
-      const avgMadeCoralL2 = (avgMadeTeleCoralL2 + avgMadeAutoCoralL2) / 2
-      const avgMadeCoralL3 = (avgMadeTeleCoralL3 + avgMadeAutoCoralL3) / 2
-      const avgMadeCoralL4 = (avgMadeTeleCoralL4 + avgMadeAutoCoralL4) / 2
-      const avgMadeCoral = (avgMadeCoralL1 + avgMadeCoralL2 + avgMadeCoralL3 + avgMadeCoralL4) / 4
-
-      /* Algae */
-      const avgMadeTeleProcessor = avgTeleAlgae
-      const avgMadeAutoProcessor = avgAutoAlgae
-
-      const avgMadeProcessor = (avgMadeTeleProcessor + avgMadeAutoProcessor) / 2
-
-      const avgMadeTeleNet = 0
-      const avgMadeAutoNet = 0
-
-      const avgMadeNet = (avgMadeTeleNet + avgMadeAutoNet) / 2
-
-      const avgMadeAlgae = (avgMadeProcessor + avgMadeNet) / 2
-
-
+  
       //Auto
-      const mcAutoStart = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
+      //const mcAutoStart = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
 
       //penalties
       const fouls = calcAvg(teamStats.map(m => m?.Penalties?.Fouls ?? 0))
@@ -148,44 +117,37 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const evaluations = getSummary(teamStats)
 
       //grade
-      const maxCoral = getMax(tableData.map(team => team.AvgCoral)) || 1
-      const maxAlgae = getMax(tableData.map(team => team.AvgAlgae)) || 1
-      const maxCycles = getMax(tableData.map(team => team.AvgCycles)) || 1
-      const maxPts = getMax(tableData.map(team => team.AvgPoints)) || 1
-      const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts)) || 1
-      const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts)) || 1
-      const maxCoralPts = getMax(tableData.map(team => team.AvgCoralPts)) || 1
-      const maxAlgaePts = getMax(tableData.map(team => team.AvgAlgaePts)) || 1
+      const maxCoral = getMax(tableData.map(team => team.AvgCoral))
+      const maxAlgae = getMax(tableData.map(team => team.AvgAlgae))
+      const maxCycles = getMax(tableData.map(team => team.AvgCycles))
+      const maxPts = getMax(tableData.map(team => team.AvgPoints))
+      const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
+      const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
+      const maxCoralPts = getMax(tableData.map(team => team.AvgCoralPts))
+      const maxAlgaePts = getMax(tableData.map(team => team.AvgAlgaePts))
 
-      const rCoral = avgMadeCoral / maxCoral
-      const rAlgae = avgMadeAlgae / maxAlgae
-      const rCycles = avgCycles / maxCycles
-      const rPts = avgPoints / maxPts
-      const rAutoPts = avgAutoPoints / maxAutoPts
-      const rEndgamePts = avgEndgame/ maxEndgamePts
-      const rCoralPoints = avgCoral / maxCoralPts 
-      const rAlgaePoints = avgAlgae / maxAlgaePts
+      // //const rCoral = avgMadeCoral / maxCoral
+      // //const rAlgae = avgMadeAlgae / maxAlgae
+      // const rCycles = avgCycles / maxCycles
+      // const rPts = avgPoints / maxPts
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
-        Matches: totalMatches,
-        OPR: 0,
+       // Matches: team.Matches,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
+       
         //===Stats==/ 
-        AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
-        AvgAutoPts: isNaN(avgAutoPoints) ? 0 :  avgAutoPoints,
-        AvgEndgamePts: isNaN(avgEndgame) ? 0 : avgEndgame,
-        AvgCoralPts: isNaN(avgCoral) ? 0 : avgCoral,
-        AvgAlgaePts: isNaN(avgAlgae) ? 0 : avgAlgae,
+        //AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
+
         //Made//
-        AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
-        AvgCoral: isNaN(avgMadeCoral) ? 0 : avgMadeCoral,
-        AvgAlgae: isNaN(avgMadeAlgae) ? 0 : avgMadeAlgae,
+        //AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
+
         //===auto==//
-        AutoStart: mcAutoStart,
+        //AutoStart: mcAutoStart,
+
         //===Penalties===//
         Fouls: isNaN(fouls) ? 0 : fouls, 
         Tech: isNaN(techs) ? 0 : techs,
@@ -200,14 +162,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         Evaluations: evaluations, 
         /* Grade */
         SumPriorities: team.SumPriorities,
-        NCoral: isNaN(rCoral) ? 0 : rCoral,
-        NAlgae: isNaN(rAlgae) ? 0 : rAlgae,
-        NCycles: isNaN(rCycles) ? 0 : rCycles,
-        NPts: isNaN(rPts) ? 0 : rPts,
-        NAutoPts: isNaN(rAutoPts) ? 0 : rAutoPts,
-        NEndgamePts: isNaN(rEndgamePts) ? 0 : rEndgamePts,
-        NCoralPts: isNaN(rCoralPoints) ? 0 : rCoralPoints,
-        NAlgaePts: isNaN(rAlgaePoints) ? 0 : rAlgaePoints,
+        //NPts: isNaN(rPts) ? 0 : 67,//rPts,
 
       }
       return tableDataObj;
@@ -219,4 +174,4 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
   }
   }
 
-export { getTeams,getTeamsMatchesAndTableData, }
+export { getTeams,getTeamsMatchesAndTableData}

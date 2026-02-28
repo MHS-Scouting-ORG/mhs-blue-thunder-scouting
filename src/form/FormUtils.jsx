@@ -183,58 +183,112 @@ export async function submitState( //params are states of data from form
   if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
-  else if (hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 0;
+  else{
+    switch(hangType){
+      case 'None':
+        endGamePoints += 0
+        break;
+      case 'Level3':
+        endGamePoints += 30
+        break;
+      case 'Level2':
+        endGamePoints += 20
+
+      case 'Level1':
+        endGamePoints += 10
+        break;
+      default: 
+        incompleteForm = true;
+        windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
+        break;
+    }
   }
-  else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 10;
-  }
-  else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 20;
-  }
-  else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
-    endGamePoints += 30;
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
-  }
+  // else if (hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   endGamePoints += 0;
+  // }
+  // else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   endGamePoints += 10;
+  // }
+  // else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   endGamePoints += 20;
+  // }
+  // else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   endGamePoints += 30;
+  // }
+  // else {
+  //   incompleteForm = true;
+  //   windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
+  // }
 
   /* Robot Info Select */
   if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
-  else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Slow";
+  else{
+    switch(robotSpeed){
+      case 'Slow':
+        robotSpeed = "Slow"
+        break;
+      case 'Average':
+        robotSpeed = "Average"
+        break;
+      case 'Fast':
+        robotSpeed = "Fast"
+        break;
+      default:
+        incompleteForm = true;
+        windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+        break;
+    }
   }
-  else if (robotSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Average";
-  }
-  else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    robotSpeed = "Fast";
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-  }
+  // else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   robotSpeed = "Slow";
+  // }
+  // else if (robotSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   robotSpeed = "Average";
+  // }
+  // else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   robotSpeed = "Fast";
+  // }
+  // else {
+  //   incompleteForm = true;
+  //   windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+  // }
 
   /* Shooting Speed Select */
   if ((redCard || dq || noShow || disable || botBroke) !== false) {
 
   }
-  else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Slow";
+  else{
+    switch(shootingSpeed){
+      case 'Slow':
+        shootingSpeed = "Slow"
+        break;
+      case 'Average':
+        shootingSpeed = "Average"
+        break;
+      case 'Fast':
+        shootingSpeed = "Fast"
+        break;
+      default:
+        incompleteForm = true;
+        windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+        break;
+    }
   }
-  else if (shootingSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Average";
-  }
-  else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-    shootingSpeed = "Fast";
-  }
-  else {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nShooting Speed"
-  }
+  // else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   shootingSpeed = "Slow";
+  // }
+  // else if (shootingSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   shootingSpeed = "Average";
+  // }
+  // else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
+  //   shootingSpeed = "Fast";
+  // }
+  // else {
+  //   incompleteForm = true;
+  //   windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+  // }
 
   /* Point Calc */
 

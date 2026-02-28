@@ -35,16 +35,13 @@ function Summary() {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
-      AvgPoints: indivTeam.AvgPoints,
-      AvgAutoPts: indivTeam.AvgAutoPts,
-      AvgEndgamePts: indivTeam.AvgEndgamePts,
-      AvgCoralPts: indivTeam.AvgCoralPts,
-      AvgAlgaePts: indivTeam.AvgAlgaePts,
-      AvgCycles: indivTeam.AvgCycles,
-      AvgCoral: indivTeam.AvgCoral,
-      AvgAlgae: indivTeam.AvgAlgae,
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
+      MaxLevelHang: indivTeam.MaxLevelHang ,
+      MultiHang:indivTeam.MultiHang ,
+      FuelCap: indivTeam.FuelCap ,
+      AutoStrat: indivTeam.AutoStrat ,
+      AutoHang: indivTeam.AutoHang ,
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -74,22 +71,19 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-          const grade = calcColumnSort(sortBy, team.NCoral, team.NAlgae, team.NCycles, team.NPts, team.NAutoPts, team.NEndgamePts, team.NCoralPts, team.NAlgaePts)
+          const grade = calcColumnSort(sortBy, team.NHangLevel, team.NmultiHang, team.NFuelCap, team.NCrossMid, team.NPts)
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
             OPR: team.OPR,
-
+            NHangLevel: team.NHangLevel,
+            NMultiHang: team.NmultiHang,
+            NFuelCap: team.NfuelCap,
+            NCrossMid: team.NCrossMid,
+            Npts: team.Npts,
             SumPriorities: grade !== 0.000 ? grade : 0,
 
-            NCoral: team.NCoral,
-            NAlgae: team.NAlgae,
-            NCycles: team.NCycles,
-            NPts: team.NPts,
-            NAutoPts: team.NAutoPts,
-            NEndgamePts: team.NEndgamePts,
-            NCoralPts: team.NCoralPts,
-            NAlgaePts: team.NAlgaePts,
+
           }
         })
       }
@@ -144,12 +138,23 @@ function Summary() {
             <button
               key={view}
               onClick={() => {
-                if (view === "All") setCurrentView('all');
-                else if (view === "Quals") setCurrentView('quals');
-                else if (view === "Alliance Selection") setCurrentView('alliance');
-                else if (view === "Elims") setCurrentView('elims');
-                else if (view === "Search") setCurrentView('search');
-              }}
+                switch (view){
+                  case "All": 
+                    setCurrentView('all')
+                    break;
+                  case "Quals":
+                    setCurrentView('quals')
+                    break;
+                  case "Alliance Selection":
+                    setCurrentView('alliance')
+                    break;
+                  case "Elims":
+                    setCurrentView('elims')
+                    break;
+                  case "Search":
+                    setCurrentView('search')
+                    break;
+              }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
                     (view === "All"

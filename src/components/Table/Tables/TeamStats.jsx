@@ -3,7 +3,8 @@ import { getUrl } from 'aws-amplify/storage';
 import { apiGetTeam, apigetMatchesForRegional } from '../../../api/index';
 
 function TeamStats(props) {
-  const information = props.information;
+  const information = []
+  //const information = props.information
   const selectedTeam = props.selectedTeam;
   const regional = props.regionalEvent;
 
@@ -73,6 +74,8 @@ function TeamStats(props) {
       : null;
     setStats(teamStats);
   }, [selectedTeam, information, regional]);
+
+  //console.log("teamStats", stats)
 
   useEffect(() => {
     // photo is now nested under TeamAttributes
@@ -160,46 +163,35 @@ function TeamStats(props) {
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Form + Notes Summary</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Estimated Points</strong>: {fmt(stats.AvgPoints)}
+            {/* change stats.avg to correct schema call & do the same for all cards below*/}
+            <strong>Max Level Hang</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Auto Points</strong>: {fmt(stats.AvgAutoPts)}
+            <strong>Multi Hang</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Endgame Points</strong>: {fmt(stats.AvgEndgamePts)}
+            <strong>Fuel Capacity:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Shooting Cycles</strong>: {fmt(stats.AvgCycles)}
+            <strong>AutoStrat:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Common Auto Strat</strong>: {autoMode}
+            <strong>Auto Hang:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Common Auto Hang</strong>: {autoHangMode}
+            <strong>Most Likely Active Strat:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Common Endgame</strong>: {endgameMode}
+            <strong>Most Likely Inactive Strat:</strong> {stats.AvgAlgaePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Active Strategy</strong>: {activeMode}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Inactive Strategy</strong>: {inactiveMode}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Robot Speed Trend</strong>: {stats.RobotSpeed || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Endgame Trend</strong>: {stats.RobotHang || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Penalties</strong>: {penaltiesInfo}
+            <strong>Avg Hang Time:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Cards</strong>: {cardsInfo}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Reliability Flags</strong>: {riskInfo}
+            <strong>Shooter Speed:</strong> {stats.RobotHang || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Declared Fuel Cap</strong>: {attrs?.DeclaredFuelCap ?? 'N/A'}
@@ -220,7 +212,7 @@ function TeamStats(props) {
             <strong>Hang Teamwork</strong>: {attrs?.HangTeamwork || 'None'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Hang Time (Notes)</strong>: {attrs?.HangTime ?? 'N/A'}
+            <strong>Broken:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
         </div>
       </div>
