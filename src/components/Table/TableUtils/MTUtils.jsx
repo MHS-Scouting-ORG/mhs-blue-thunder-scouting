@@ -2,6 +2,29 @@ import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional } from "../
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
 import { isSameTeam } from "../../../utils/teamId"
 
+const getAutoPoints = (match) => {
+  const auto = match?.Autonomous?.AutoStrat || 'None'
+  if (auto === 'Scored') return 8
+  if (auto === 'WentMid' || auto === 'CrossedMid') return 2
+  return 0
+}
+
+const getEndgamePoints = (match) => {
+  const endgame = match?.Teleop?.Endgame || 'None'
+  if (endgame === 'Level1') return 30
+  if (endgame === 'Level2') return 20
+  if (endgame === 'Level3') return 10
+  return 0
+}
+
+const getTravelPoints = (match) => {
+  return (match?.Teleop?.TravelMid || 0) * 2
+}
+
+const getShotPoints = (match) => {
+  return Number(match?.RobotInfo?.BallsShot || 0)
+}
+
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
 async function getTeams (regional) {
   try {
@@ -43,40 +66,17 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
     
     const tableData = mtable
 
-    const scoreAuto = (match) => {
-      const auto = match?.Autonomous?.AutoStrat || 'None'
-      if (auto === 'Scored') return 8
-      if (auto === 'WentMid' || auto === 'CrossedMid') return 2
-      return 0
-    }
-
-    const scoreEndgame = (match) => {
-      const endgame = match?.Teleop?.Endgame || 'None'
-      if (endgame === 'Level1') return 30
-      if (endgame === 'Level2') return 20
-      if (endgame === 'Level3') return 10
-      return 0
-    }
-
-    const scoreTravel = (match) => {
-      return (match?.Teleop?.TravelMid || 0) * 2
-    }
-
-    const scoreBalls = (match) => {
-      return Number(match?.RobotInfo?.BallsShot || 0)
-    }
-
     return teamNumbers.map(team => {
 
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
       const totalMatches = teamStats.length
 
-      const pointsByMatch = teamStats.map(m => scoreAuto(m) + scoreEndgame(m) + scoreTravel(m) + scoreBalls(m))
+      const pointsByMatch = teamStats.map(m => getAutoPoints(m) + getEndgamePoints(m) + getTravelPoints(m) + getShotPoints(m))
       //console.log("teamStats", teamStats)
       //general (might not need avg points/avg auto pts since tba has)
       const avgPoints = calcAvg(pointsByMatch)
-      const avgAutoPoints = calcAvg(teamStats.map(m => scoreAuto(m)))
+      const avgAutoPoints = calcAvg(teamStats.map(m => getAutoPoints(m)))
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map(m => m?.RobotInfo?.RobotSpeed ?? null))
@@ -87,14 +87,14 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.ShootingCycles || 0)))
       const avgTeleCoral = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.BallsShot || 0)))
-      const avgAutoCoral = calcAvg(teamStats.map(m => scoreAuto(m)))
+      const avgAutoCoral = calcAvg(teamStats.map(m => getAutoPoints(m)))
       const avgCoral = avgTeleCoral
 
       const avgTeleAlgae = calcAvg(teamStats.map(m => Number(m?.Teleop?.TravelMid || 0)))
       const avgAutoAlgae = calcAvg(teamStats.map(m => Number(m?.Autonomous?.TravelMid || 0)))
       const avgAlgae = (avgTeleAlgae + avgAutoAlgae) / 2
 
-      const avgEndgame = calcAvg(teamStats.map(m => scoreEndgame(m)))
+      const avgEndgame = calcAvg(teamStats.map(m => getEndgamePoints(m)))
       //amount
       /* Coral Levels */
       const avgMadeTeleCoralL1 = avgTeleCoral
