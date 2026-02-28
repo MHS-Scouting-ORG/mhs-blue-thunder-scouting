@@ -307,7 +307,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               )}
             </div>
           </div>
-
+          {/* Below might need to pop up when the top number is valid*/}
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
             <select 

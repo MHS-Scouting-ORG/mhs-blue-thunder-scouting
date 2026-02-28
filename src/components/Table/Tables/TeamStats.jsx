@@ -3,8 +3,7 @@ import { getUrl } from 'aws-amplify/storage';
 import { apiGetTeam, apigetMatchesForRegional } from '../../../api/index';
 
 function TeamStats(props) {
-  const information = []
-  //const information = props.information
+  const information = props.information
   const selectedTeam = props.selectedTeam;
   const regional = props.regionalEvent;
 
