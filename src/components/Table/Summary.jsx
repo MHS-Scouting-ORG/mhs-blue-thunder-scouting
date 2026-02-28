@@ -9,13 +9,13 @@ import SearchView from "./Views/SearchView";
 import AllView from "./Views/AllView";
 import 'chart.js/auto';
 
-import { apiGetRegional } from "../../api";
+import { apiGetRegional } from "../../api"
 
 //CSS
 import tableStyles from "./Table.module.css";
 
 function Summary() {
-  const regional = apiGetRegional()
+  const regional = apiGetRegional() //updated in aws
 
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
@@ -23,7 +23,7 @@ function Summary() {
   const [currentView, setCurrentView] = useState(''); // current view: 'all', 'search', 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
-    ueTableData(tableData)
+    ueTableData(tableData, regional)
       .then(data => {
         setTableData(data)
       })
@@ -35,19 +35,6 @@ function Summary() {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
-<<<<<<< HEAD
-      FuelCap: indivTeam.FuelCap,
-      ShootingCycles: indivTeam.ShootingCycles,
-      MultiHang: indivTeam.MultiHang,
-      RobotSpeed: indivTeam.RobotSpeed,
-      AvgHangTime: indivTeam.AvgHangTime,
-      AutoStrat: indivTeam.AutoStrat,
-      AutoHang: indivTeam.AutoHang,
-      EndgameHangLevel: indivTeam.EndgameHangLevel,
-      ActiveStrat: indivTeam.ActiveStrat,
-      InactiveStrat: indivTeam.InactiveStrat,
-      ShooterSpeed: indivTeam.ShooterSpeed,
-=======
       RobotSpeed: indivTeam.RobotSpeed,
       RobotHang: indivTeam.RobotHang,
       MaxLevelHang: indivTeam.MaxLevelHang ,
@@ -55,7 +42,6 @@ function Summary() {
       FuelCap: indivTeam.FuelCap ,
       AutoStrat: indivTeam.AutoStrat ,
       AutoHang: indivTeam.AutoHang ,
->>>>>>> tobys-version
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -85,11 +71,7 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
-<<<<<<< HEAD
-          const grade = calcColumnSort(sortBy, team.NPts)
-=======
           const grade = calcColumnSort(sortBy, team.NHangLevel, team.NmultiHang, team.NFuelCap, team.NCrossMid, team.NPts)
->>>>>>> tobys-version
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
@@ -100,14 +82,8 @@ function Summary() {
             NCrossMid: team.NCrossMid,
             Npts: team.Npts,
             SumPriorities: grade !== 0.000 ? grade : 0,
-<<<<<<< HEAD
-            
-            NFuel: team.NFuel,
-            
-=======
 
 
->>>>>>> tobys-version
           }
         })
       }
@@ -139,6 +115,7 @@ function Summary() {
   const filterState = {
     information: tableData,
     gFilter: globalFilter || '',
+    regionalEvent: regional,
     teamHandler: handleTeamClicked,
     selectedTeams: teamsClicked,
   }
@@ -161,19 +138,6 @@ function Summary() {
             <button
               key={view}
               onClick={() => {
-<<<<<<< HEAD
-                switch (view) {
-                  case "Quals":
-                    setCurrentView('quals');
-                    break;
-                  case "Alliance Selection":
-                    setCurrentView('alliance');
-                    break;
-                  case "Elims":
-                    setCurrentView('elims');
-                }
-              }}
-=======
                 switch (view){
                   case "All": 
                     setCurrentView('all')
@@ -191,7 +155,6 @@ function Summary() {
                     setCurrentView('search')
                     break;
               }}}
->>>>>>> tobys-version
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
                     (view === "All"
@@ -228,19 +191,21 @@ function Summary() {
       {currentView === 'quals' && (
         <QualsView 
           tableData={tableData} 
+          regional={regional} 
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
-          regional={regional}
         />
       )}
       {currentView === 'alliance' && (
         <AllianceSelectionView 
           tableData={tableData} 
+          regional={regional} 
         />
       )}
       {currentView === 'elims' && (
         <ElimsView 
           tableData={tableData} 
+          regional={regional} 
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
         />
