@@ -75,6 +75,8 @@ function TeamStats(props) {
     setStats(teamStats);
   }, [selectedTeam, information, regional]);
 
+  //console.log("teamStats", stats)
+
   useEffect(() => {
     // photo is now nested under TeamAttributes
     const key = teamData?.TeamAttributes?.Photo || teamData?.photo
