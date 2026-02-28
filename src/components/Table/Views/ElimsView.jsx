@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
-import { generateClient } from 'aws-amplify/api';
-import { getTeam } from '../../../graphql/queries';
-import { apiGetRegional } from '../../../api';
-
-let client
-const getClient = () => {
-  if (!client) client = generateClient()
-  return client
-}
+import { apiGetAllianceSelection } from '../../../api';
 
 function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [alliances, setAlliances] = useState(null);
@@ -18,36 +10,20 @@ function ElimsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [blueTeams, setBlueTeams] = useState([]);
   const [redTeams, setRedTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
-regional = apiGetRegional
+
   // Load saved alliances from server
   useEffect(() => {
     const loadAlliances = async () => {
       if (!regional) return;
-      const allianceId = `alliances-${regional}`;
 
-      // Try load from localStorage first (offline-capable)
+      // Fetch from server
       try {
-        const local = localStorage.getItem(allianceId);
-        if (local) {
-          setAlliances(JSON.parse(local));
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-
-      // Then try to fetch from server and overwrite local if available
-      try {
-        const result = await getClient().graphql({
-          query: getTeam,
-          variables: { id: allianceId }
-        });
-        if (result.data.getTeam && result.data.getTeam.description) {
-          const saved = JSON.parse(result.data.getTeam.description);
+        const saved = await apiGetAllianceSelection(regional)
+        if (saved) {
           setAlliances(saved);
-          try { localStorage.setItem(allianceId, result.data.getTeam.description); } catch (e) {}
         }
       } catch (err) {
-        console.log('Server unavailable; using local alliances if present', err);
+        console.log('Error loading alliances from server', err);
       }
     };
     loadAlliances();

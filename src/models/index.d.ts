@@ -146,12 +146,11 @@ type EagerTeamMatchesType = {
   readonly name?: string | null;
   readonly description?: string | null;
   readonly Team: string;
-  readonly Regional: string;
   readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
-  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
+  readonly InactiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
   readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
@@ -160,12 +159,11 @@ type LazyTeamMatchesType = {
   readonly name?: string | null;
   readonly description?: string | null;
   readonly Team: string;
-  readonly Regional: string;
   readonly MatchId?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
-  readonly ActiveStrat?: StratOpts | keyof typeof StratOpts | null;
-  readonly InactiveStrat?: StratOpts | keyof typeof StratOpts | null;
+  readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
+  readonly InactiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
   readonly RobotInfo?: RobotInfoType | null;
   readonly Penalties?: PenaltyType | null;
 }
@@ -179,6 +177,8 @@ type EagerTeamAttributesType = {
   readonly Regional: string;
   readonly DeclaredFuelCap?: number | null;
   readonly CyclesPerMatch?: number | null;
+  readonly FuelPerCycle?: number | null;
+  readonly NumAutos?: number | null;
   readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
@@ -192,6 +192,8 @@ type LazyTeamAttributesType = {
   readonly Regional: string;
   readonly DeclaredFuelCap?: number | null;
   readonly CyclesPerMatch?: number | null;
+  readonly FuelPerCycle?: number | null;
+  readonly NumAutos?: number | null;
   readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
@@ -204,6 +206,20 @@ export declare type TeamAttributesType = LazyLoading extends LazyLoadingDisabled
 
 export declare const TeamAttributesType: (new (init: ModelInit<TeamAttributesType>) => TeamAttributesType)
 
+type EagerRegionalType = {
+  readonly RegionalId?: string | null;
+  readonly TeamMatches?: (TeamMatchesType | null)[] | null;
+}
+
+type LazyRegionalType = {
+  readonly RegionalId?: string | null;
+  readonly TeamMatches?: (TeamMatchesType | null)[] | null;
+}
+
+export declare type RegionalType = LazyLoading extends LazyLoadingDisabled ? EagerRegionalType : LazyRegionalType
+
+export declare const RegionalType: (new (init: ModelInit<RegionalType>) => RegionalType)
+
 type EagerTeam = {
   readonly [__modelMeta__]: {
     identifier: OptionallyManagedIdentifier<Team, 'id'>;
@@ -212,8 +228,8 @@ type EagerTeam = {
   readonly id: string;
   readonly description?: string | null;
   readonly Comment?: string | null;
-  readonly TeamMatches: TeamMatchesType;
   readonly TeamAttributes: TeamAttributesType;
+  readonly Regionals?: (RegionalType | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -226,8 +242,8 @@ type LazyTeam = {
   readonly id: string;
   readonly description?: string | null;
   readonly Comment?: string | null;
-  readonly TeamMatches: TeamMatchesType;
   readonly TeamAttributes: TeamAttributesType;
+  readonly Regionals?: (RegionalType | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

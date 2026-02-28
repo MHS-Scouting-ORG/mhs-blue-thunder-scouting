@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getMatchesForRegional } from '../../../api/bluealliance';
+import { apiGetMatchesForRegional } from '../../../api';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
 
@@ -11,7 +11,7 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
 
   useEffect(() => {
     // Load matches for the regional
-    getMatchesForRegional(regional)
+    apiGetMatchesForRegional(regional)
       .then(data => {
         setMatches(data);
       })
@@ -24,6 +24,8 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
     if (match) {
       setCurrentMatch(match);
       setSelectedTeam(null);
+    } else {
+      alert(`Qualification match ${matchNumber} not found for this regional.`);
     }
   };
 

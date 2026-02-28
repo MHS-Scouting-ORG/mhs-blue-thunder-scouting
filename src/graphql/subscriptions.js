@@ -7,63 +7,68 @@ export const onCreateTeam = /* GraphQL */ `
       id
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        MatchId
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        RobotInfo {
-          RobotSpeed
-          ShooterSpeed
-          FuelCapacity
-          BallsShot
-          ShootingCycles
-          WhatBrokeDesc
-          Comments
-          __typename
-        }
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
-      }
       TeamAttributes {
         name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         Photo
         Notes
+        __typename
+      }
+      Regionals {
+        RegionalId
+        TeamMatches {
+          name
+          description
+          Team
+          MatchId
+          Autonomous {
+            AutoStrat
+            TravelMid
+            AutoHang
+            __typename
+          }
+          Teleop {
+            TravelMid
+            Endgame
+            __typename
+          }
+          ActiveStrat
+          InactiveStrat
+          RobotInfo {
+            RobotSpeed
+            ShooterSpeed
+            FuelCapacity
+            BallsShot
+            ShootingCycles
+            WhatBrokeDesc
+            Comments
+            __typename
+          }
+          Penalties {
+            Fouls
+            Tech
+            PenaltiesCommitted {
+              YellowCard
+              RedCard
+              Disabled
+              DQ
+              Broken
+              NoShow
+              __typename
+            }
+            FoulDesc
+            __typename
+          }
+          __typename
+        }
         __typename
       }
       createdAt
@@ -81,63 +86,68 @@ export const onUpdateTeam = /* GraphQL */ `
       id
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        MatchId
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        RobotInfo {
-          RobotSpeed
-          ShooterSpeed
-          FuelCapacity
-          BallsShot
-          ShootingCycles
-          WhatBrokeDesc
-          Comments
-          __typename
-        }
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
-      }
       TeamAttributes {
         name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         Photo
         Notes
+        __typename
+      }
+      Regionals {
+        RegionalId
+        TeamMatches {
+          name
+          description
+          Team
+          MatchId
+          Autonomous {
+            AutoStrat
+            TravelMid
+            AutoHang
+            __typename
+          }
+          Teleop {
+            TravelMid
+            Endgame
+            __typename
+          }
+          ActiveStrat
+          InactiveStrat
+          RobotInfo {
+            RobotSpeed
+            ShooterSpeed
+            FuelCapacity
+            BallsShot
+            ShootingCycles
+            WhatBrokeDesc
+            Comments
+            __typename
+          }
+          Penalties {
+            Fouls
+            Tech
+            PenaltiesCommitted {
+              YellowCard
+              RedCard
+              Disabled
+              DQ
+              Broken
+              NoShow
+              __typename
+            }
+            FoulDesc
+            __typename
+          }
+          __typename
+        }
         __typename
       }
       createdAt
@@ -155,63 +165,68 @@ export const onDeleteTeam = /* GraphQL */ `
       id
       description
       Comment
-      TeamMatches {
-        name
-        description
-        Team
-        Regional
-        MatchId
-        Autonomous {
-          AutoStrat
-          TravelMid
-          AutoHang
-          __typename
-        }
-        Teleop {
-          TravelMid
-          Endgame
-          __typename
-        }
-        ActiveStrat
-        InactiveStrat
-        RobotInfo {
-          RobotSpeed
-          ShooterSpeed
-          FuelCapacity
-          BallsShot
-          ShootingCycles
-          WhatBrokeDesc
-          Comments
-          __typename
-        }
-        Penalties {
-          Fouls
-          Tech
-          PenaltiesCommitted {
-            YellowCard
-            RedCard
-            Disabled
-            DQ
-            Broken
-            NoShow
-            __typename
-          }
-          FoulDesc
-          __typename
-        }
-        __typename
-      }
       TeamAttributes {
         name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
+        FuelPerCycle
+        NumAutos
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         Photo
         Notes
+        __typename
+      }
+      Regionals {
+        RegionalId
+        TeamMatches {
+          name
+          description
+          Team
+          MatchId
+          Autonomous {
+            AutoStrat
+            TravelMid
+            AutoHang
+            __typename
+          }
+          Teleop {
+            TravelMid
+            Endgame
+            __typename
+          }
+          ActiveStrat
+          InactiveStrat
+          RobotInfo {
+            RobotSpeed
+            ShooterSpeed
+            FuelCapacity
+            BallsShot
+            ShootingCycles
+            WhatBrokeDesc
+            Comments
+            __typename
+          }
+          Penalties {
+            Fouls
+            Tech
+            PenaltiesCommitted {
+              YellowCard
+              RedCard
+              Disabled
+              DQ
+              Broken
+              NoShow
+              __typename
+            }
+            FoulDesc
+            __typename
+          }
+          __typename
+        }
         __typename
       }
       createdAt

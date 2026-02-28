@@ -1,16 +1,12 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useExpanded, useTable, useSortBy, useGlobalFilter } from "react-table"
 import { calcColumnSort } from "./TableUtils/CalculationUtils";
 import { ueTableData, } from "./TableUtils/MTEffectFunc"
-import { apigetMatchesForRegional } from "../../api";
-import GlobalFilter from "./TableUtils/GlobalFilter";
-import List from "./TableUtils/List";
-import TeamStats from "./Tables/TeamStats";
-import DefaultTable from "./Tables/DefaultTable"
-import CustomGraph from "./Graphs/CustomGraph"
 import QualsView from "./Views/QualsView";
 import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
+import SearchView from "./Views/SearchView";
+import AllView from "./Views/AllView";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api";
@@ -24,23 +20,22 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-  const [currentView, setCurrentView] = useState(''); // current view: 'quals', 'alliance', 'elims'
+  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'search', 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData)
       .then(data => {
-        console.log("tableData", tableData)
-        let holdTableData = data
-        setTableData(holdTableData)
+        setTableData(data)
       })
-      .catch(console.log.bind(console))
-  }, [sortBy, teamsClicked]) //depended on the teams clicked and sortby
+      .catch(err => console.error('error building table data', err))
+  }, [sortBy, teamsClicked, regional]) //depended on the teams clicked, sortby, and regional readiness
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {
     const indivTeam = tableData.find((x) => x.TeamNumber === parseInt(team))
     const teamObj = {
       TeamNumber: team,
+<<<<<<< HEAD
       FuelCap: indivTeam.FuelCap,
       ShootingCycles: indivTeam.ShootingCycles,
       MultiHang: indivTeam.MultiHang,
@@ -52,6 +47,15 @@ function Summary() {
       ActiveStrat: indivTeam.ActiveStrat,
       InactiveStrat: indivTeam.InactiveStrat,
       ShooterSpeed: indivTeam.ShooterSpeed,
+=======
+      RobotSpeed: indivTeam.RobotSpeed,
+      RobotHang: indivTeam.RobotHang,
+      MaxLevelHang: indivTeam.MaxLevelHang ,
+      MultiHang:indivTeam.MultiHang ,
+      FuelCap: indivTeam.FuelCap ,
+      AutoStrat: indivTeam.AutoStrat ,
+      AutoHang: indivTeam.AutoHang ,
+>>>>>>> tobys-version
       Fouls: indivTeam.Fouls,
       Tech: indivTeam.Tech,
       YellowCard: indivTeam.YellowCard,
@@ -81,16 +85,29 @@ function Summary() {
     () => {
       if (tableData) {
         return tableData.map(team => {
+<<<<<<< HEAD
           const grade = calcColumnSort(sortBy, team.NPts)
+=======
+          const grade = calcColumnSort(sortBy, team.NHangLevel, team.NmultiHang, team.NFuelCap, team.NCrossMid, team.NPts)
+>>>>>>> tobys-version
           return {
             TeamNumber: team.TeamNumber,
             Matches: team.Matches,
             OPR: team.OPR,
-
+            NHangLevel: team.NHangLevel,
+            NMultiHang: team.NmultiHang,
+            NFuelCap: team.NfuelCap,
+            NCrossMid: team.NCrossMid,
+            Npts: team.Npts,
             SumPriorities: grade !== 0.000 ? grade : 0,
+<<<<<<< HEAD
             
             NFuel: team.NFuel,
             
+=======
+
+
+>>>>>>> tobys-version
           }
         })
       }
@@ -140,10 +157,11 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Search","Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
+<<<<<<< HEAD
                 switch (view) {
                   case "Quals":
                     setCurrentView('quals');
@@ -155,8 +173,34 @@ function Summary() {
                     setCurrentView('elims');
                 }
               }}
+=======
+                switch (view){
+                  case "All": 
+                    setCurrentView('all')
+                    break;
+                  case "Quals":
+                    setCurrentView('quals')
+                    break;
+                  case "Alliance Selection":
+                    setCurrentView('alliance')
+                    break;
+                  case "Elims":
+                    setCurrentView('elims')
+                    break;
+                  case "Search":
+                    setCurrentView('search')
+                    break;
+              }}}
+>>>>>>> tobys-version
                 className={`${tableStyles.ToggleButton} ${
-                  currentView === (view === "Alliance Selection" ? 'alliance' : view.toLowerCase())
+                  currentView ===
+                    (view === "All"
+                      ? 'all'
+                      : view === "Alliance Selection"
+                      ? 'alliance'
+                      : view === 'Search'
+                      ? 'search'
+                      : view.toLowerCase())
                     ? tableStyles.ToggleButtonOn
                     : tableStyles.ToggleButtonOff
                 }`}
@@ -168,6 +212,19 @@ function Summary() {
       </div>
 
       {/* Render Current View */}
+      {currentView === 'all' && (
+        <AllView
+          regional={regional}
+        />
+      )}
+      {currentView === 'search' && (
+        <SearchView
+          tableData={tableData}
+          regional={regional}
+          teamsClicked={teamsClicked}
+          setTeamsClicked={setTeamsClicked}
+        />
+      )}
       {currentView === 'quals' && (
         <QualsView 
           tableData={tableData} 

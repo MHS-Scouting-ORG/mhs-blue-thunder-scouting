@@ -8,10 +8,7 @@
 import * as React from "react";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { fetchByPath, getOverrideProps, validateField } from "./utils";
-import { generateClient } from "aws-amplify/api";
-import { getTeam } from "../graphql/queries";
-import { updateTeam } from "../graphql/mutations";
-const client = generateClient();
+import { apiGetTeam, apiUpdateTeamEntry } from "../api";
 export default function TeamUpdateForm(props) {
   const {
     id: idProp,
@@ -48,12 +45,7 @@ export default function TeamUpdateForm(props) {
   React.useEffect(() => {
     const queryData = async () => {
       const record = idProp
-        ? (
-            await client.graphql({
-              query: getTeam.replaceAll("__typename", ""),
-              variables: { id: idProp },
-            })
-          )?.data?.getTeam
+        ? (await apiGetTeam(idProp))
         : teamModelProp;
       setTeamRecord(record);
     };
@@ -123,14 +115,9 @@ export default function TeamUpdateForm(props) {
               modelFields[key] = null;
             }
           });
-          await client.graphql({
-            query: updateTeam.replaceAll("__typename", ""),
-            variables: {
-              input: {
-                id: teamRecord.id,
-                ...modelFields,
-              },
-            },
+          await apiUpdateTeamEntry(teamRecord.id, {
+            ...teamRecord,
+            ...modelFields,
           });
           if (onSuccess) {
             onSuccess(modelFields);

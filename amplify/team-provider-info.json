@@ -22,7 +22,8 @@
         "customResource5b71fb59": {}
       },
       "storage": {
-        "teamPhotos": {}
+        "teamPhotos": {},
+        "teamphotos": {}
       }
     }
   }

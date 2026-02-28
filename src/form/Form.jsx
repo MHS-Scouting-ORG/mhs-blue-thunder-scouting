@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { getMatchesForRegional } from '../api/bluealliance';
-
-import { apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { buttonIncremental } from "./FormUtils";
 import { toggleIncremental } from "./FormUtils"
@@ -12,11 +10,27 @@ import tableStyling from "../components/Table/Table.module.css";
 
 import { submitState } from './FormUtils' //from formUtils submits to builder
 
-function Form() {
+ function Form() {
   /* Regional Key */
-  const regional = apiGetRegional() // updated in aws
+  // regional key is populated asynchronously by apiUpdateRegional in App.jsx.
+  // maintain it in state so that when it becomes defined the component rerenders.
+  const [regional, setRegional] = useState(apiGetRegional());
 
-  //console.log(regional, ' regional check') //regional check
+  // log for debug
+  console.log(regional, 'regional check')
+
+  // keep polling until the regional key arrives; stops once set
+  useEffect(() => {
+    if (regional) return;
+    const id = setInterval(() => {
+      const reg = apiGetRegional();
+      if (reg) {
+        setRegional(reg);
+        clearInterval(id);
+      }
+    }, 500);
+    return () => clearInterval(id);
+  }, [regional]);
 
   /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
@@ -50,9 +64,9 @@ function Form() {
   const [robotBrokenComments, setRobotBrokenComments] = useState("");
 
   /* ROBOT INFO */
-  const [robotSpeed, setRobotSpeed] = useState([]);
+  const [robotSpeed, setRobotSpeed] = useState('');
   const [fuelCapacity, setFuelCapacity] = useState('');
-  const [shootingSpeed, setShootingSpeed] = useState([]);
+  const [shootingSpeed, setShootingSpeed] = useState('');
   const [robotInsight, setRobotInsight] = useState("");
   const [estimatedBallsShot, setEstimatedBallsShot] = useState('');
   const [shootingCycles, setShootingCycles] = useState('');
@@ -69,8 +83,15 @@ function Form() {
 
  /* Blue Alliance API List Teams */
   useEffect(() => {
-    /* Get Matches for Regional from bluealliance */
-    getMatchesForRegional(regional)
+    /* Get latest regional key each time in case it was undefined earlier */
+    const reg = regional || apiGetRegional();
+    if (!reg) {
+      console.warn('regional not provided, skipping blue alliance fetch');
+      return;
+    }
+
+    /* Get Matches for Regional from bluealliance via our API wrapper */
+    apiGetMatchesForRegional(reg)
     /* creates unique matchkey based on the type of match being record(usually quals tho) */
       .then(data => {
         console.log(data, ' blue alliance api check') //blue alliance api check
@@ -80,7 +101,7 @@ function Form() {
         if(matchType === "sf") {
           match_key = regional + "_" + matchType + matchNumber + "m1" 
         }
-        if(matchType === "f"){x
+        if(matchType === "f"){
           match_key = regional + "_" + matchType + "1" + "m" + matchNumber
         }
 
@@ -101,20 +122,19 @@ function Form() {
         }
       })
       .catch(err => console.log(err))
-  }, [matchType, matchNumber])
+  }, [matchType, matchNumber, regional])
 
   useEffect(() => {
     /* Check for pre-existing team entry data in our api */
     apiListTeams()
       .then((data) => {
-        const teamList = data.data.listTeams.items
-        console.log("Existing teams in our data : ", data.data)
+        const teamList = data?.data?.listTeams?.items || []
+        console.log("Existing teams in our data : ", data?.data)
         setApiTeamListData(teamList)
       })
       .catch(err => {
-        console.log(err) //temp fix there is current err in data 02/11/26
-        console.log("Existing teams in our data : ", err.data.listTeams.items) //temp fix there is current err in data 02/11/26
-        setApiTeamListData(err.data.listTeams.items)
+        console.log(err)
+        setApiTeamListData([])
       })
   }, [])
 
@@ -155,9 +175,9 @@ function Form() {
     setMinFouls(0)
     setMajFouls(0)
     setRobotBrokenComments('')
-    setRobotSpeed([])
+    setRobotSpeed('')
     setFuelCapacity('')
-    setShootingSpeed([])
+    setShootingSpeed('')
     setRobotInsight('')
     setEstimatedBallsShot('')
     setShootingCycles('')
@@ -168,6 +188,7 @@ function Form() {
   /* toggle functions for display of form sections */
 
   const toggleActiveStrategy = (strategy) => {
+    // allow multiple active strategies; FormUtils.join will convert to string
     if (activeStrategy.includes(strategy)) {
       setActiveStrategy(activeStrategy.filter(s => s !== strategy))
     } else {
@@ -176,6 +197,7 @@ function Form() {
   }
 
   const toggleInactiveStrategy = (strategy) => {
+    // multiple inactive strategies allowed as well
     if (inactiveStrategy.includes(strategy)) {
       setInactiveStrategy(inactiveStrategy.filter(s => s !== strategy))
     } else {
@@ -248,6 +270,7 @@ function Form() {
                 type="number" 
                 value={matchNumber} 
                 onChange={(e) => setMatchNumber(e.target.value)}
+                onWheel={(e) => e.target.blur()} 
               />
             </div>
           </div>
@@ -297,7 +320,27 @@ function Form() {
                 borderRadius: "8px",
                 cursor: "pointer"
               }} 
-              onChange={(e) => setTeamNumber(normalizeTeamId(e.target.value))}
+              onChange={async (e) => {
+                // capture the new team number immediately, avoid relying on state update
+                const normalized = normalizeTeamId(e.target.value);
+                setTeamNumber(normalized);
+
+                try {
+                  const checkData = await apiGetTeam(normalized);
+                  console.log("data in our thing ", checkData);
+
+                  if (checkData === null) {
+                    console.log("api get team returned null");
+                    console.log(apiTeamListData, "api list team data");
+                    await apiCreateTeamEntry(normalized, regional);
+                    console.log("created team entry for team/regional", { team: normalized, regional });
+                  }
+                } catch (err) {
+                  // GraphQL returns object with data/errors; log details
+                  console.error("error fetching/creating team", err);
+                }
+                
+              }}
             >
               <option value="">Select robot number</option>
               {color === false ?
@@ -346,6 +389,7 @@ function Form() {
               }} 
               value={autoHang} 
               onChange={(e) => setAutoHang(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value=''>Select Level</option>
               <option value="None">None</option>
@@ -400,6 +444,7 @@ function Form() {
               type="number" 
               value={timesTravelledMidActive} 
               onChange={(e) => setTimesTravelledMidActive(Math.max(0, parseInt(e.target.value) || 0))}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 fontSize: "24px",
                 fontWeight: "600",
@@ -476,6 +521,7 @@ function Form() {
               type="number" 
               value={timesTravelledMidInactive} 
               onChange={(e) => setTimesTravelledMidInactive(Math.max(0, parseInt(e.target.value) || 0))}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 fontSize: "24px",
                 fontWeight: "600",
@@ -526,6 +572,7 @@ function Form() {
               }} 
               value={hangType} 
               onChange={(e) => setHangType(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value=''>Select Level</option>
               <option value="None">None</option>
@@ -565,6 +612,7 @@ function Form() {
                 type="number" 
                 value={minFouls} 
                 onChange={(e) => setMinFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                onWheel={(e) => e.target.blur()}
                 style={{
                   fontSize: "24px",
                   fontWeight: "600",
@@ -618,6 +666,7 @@ function Form() {
                 type="number" 
                 value={majFouls} 
                 onChange={(e) => setMajFouls(Math.max(0, parseInt(e.target.value) || 0))}
+                onWheel={(e) => e.target.blur()}
                 style={{
                   fontSize: "24px",
                   fontWeight: "600",
@@ -703,6 +752,7 @@ function Form() {
               type="text" 
               value={robotBrokenComments} 
               onChange={(e) => setRobotBrokenComments(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
               style={{
                 padding: "10px",
                 fontSize: "16px",
@@ -733,6 +783,7 @@ function Form() {
               }} 
               value={robotSpeed} 
               onChange={(e) => setRobotSpeed(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Speed</option>
               <option value="Slow">Slow</option>
@@ -755,6 +806,7 @@ function Form() {
               }} 
               value={shootingSpeed} 
               onChange={(e) => setShootingSpeed(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Speed</option>
               <option value="Slow">Slow</option>
@@ -778,6 +830,7 @@ function Form() {
               placeholder="Enter fuel capacity (e.g., 100)"
               value={fuelCapacity} 
               onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -796,6 +849,7 @@ function Form() {
               placeholder="Enter estimated balls shot"
               value={estimatedBallsShot} 
               onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -814,6 +868,7 @@ function Form() {
               placeholder="Enter shooting cycles"
               value={shootingCycles} 
               onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
 
@@ -832,6 +887,7 @@ function Form() {
               placeholder="Add any observations..." 
               value={robotInsight} 
               onChange={(e) => setRobotInsight(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
             />
           </div>
         </div>
@@ -905,7 +961,19 @@ function Form() {
             resetStates()
           }
         })
-          .catch(err => alert(`Form Incomplete: fix, ${JSON.stringify(err)}`))
+          .catch(err => {
+            let details = ''
+            if (err instanceof Error) {
+              details = `${err.message}${err.stack ? `\n${err.stack}` : ''}`
+            } else if (err?.errors?.length) {
+              const messages = err.errors.map(e => e?.message || JSON.stringify(e))
+              details = `${messages.join('\n')}\n\nRaw errors:\n${JSON.stringify(err.errors, null, 2)}`
+            } else {
+              details = JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+            }
+            console.error('Form submit failed', err)
+            alert(`Form submit failed:\n${details}`)
+          })
           }
         }/* Double checks and confirms for submission, in case of accidental press */
         ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}

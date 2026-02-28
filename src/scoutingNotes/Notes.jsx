@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react"
-import { getMatchesForRegional, getSimpleTeamsForRegional } from '../api/bluealliance';
 
-import { apiGetRegional, apigetMatchesForRegional, apiListTeams} from '../api/index';
+
+import {
+  apiGetRegional,
+  apigetMatchesForRegional,
+  apiListTeams,
+  apiGetTeam,
+  apiUpdateTeamEntry,
+  apiCreateTeamEntry
+} from '../api/index';
 import { buttonIncremental } from "../form/FormUtils";
 import { toggleIncremental } from "../form/FormUtils"
 
 // styling
-import { submitState } from '../form/FormUtils'
 import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
 import tableStyling from "../components/Table/Table.module.css";
 
-// Amplify imports
-import { generateClient } from 'aws-amplify/api';
 import { uploadData, getUrl } from 'aws-amplify/storage';
-import { createTeam, updateTeam } from '../graphql/mutations';
-import { getTeam } from '../graphql/queries';
 
-let client
-const getClient = () => {
-  if (!client) client = generateClient()
-  return client
-}
 
 function Notes(props) {
   /* Regional Key */
@@ -62,6 +59,10 @@ function Notes(props) {
     gap: "15px",
     alignItems: "center"
   };
+
+  const preventScrollValueChange = (e) => {
+    e.target.blur()
+  }
 
   useEffect(() => {
     apiListTeams()
@@ -130,71 +131,45 @@ function Notes(props) {
   const loadTeamData = async () => {
     const teamNum = teamNumberInput
     setFindTeam(teamNum)
-    if (teamNum) {
-      try {
-        const teamData = await getClient().graphql({
-          query: getTeam,
-          variables: { id: teamNum }
-        })
-        if (teamData.data.getTeam) {
-          setTeamName(teamData.data.getTeam.name || "")
-          setFuelCapacity(teamData.data.getTeam.fuelCapacity || "")
-          setNotes(teamData.data.getTeam.Comment || "")
-          setPhotoUrl(teamData.data.getTeam.photo || "")
-          setHangTime(teamData.data.getTeam.hangTime || "")
-          setCyclesPerMatch(teamData.data.getTeam.cyclesPerMatch || "")
-          setFuelPerCycle(teamData.data.getTeam.fuelPerCycle || "")
-          setBump(teamData.data.getTeam.bump || false)
-          setTrench(teamData.data.getTeam.trench || false)
-          setNumAutos(teamData.data.getTeam.numAutos || "")
-          setMaxHangHeight(teamData.data.getTeam.maxHangHeight || "None")
-          setCanDoubleHang(teamData.data.getTeam.canDoubleHang || false)
-          setCanTripleHang(teamData.data.getTeam.canTripleHang || false)
-        } else {
-          setTeamName("")
-          setFuelCapacity("")
-          setNotes("")
-          setPhotoUrl("")
-          setHangTime("")
-          setCyclesPerMatch("")
-          setFuelPerCycle("")
-          setBump(false)
-          setTrench(false)
-          setNumAutos("")
-          setMaxHangHeight("None")
-          setCanDoubleHang(false)
-          setCanTripleHang(false)
+
+    if (!teamNum) {
+      resetStates()
+      return
+    }
+
+    try {
+      let teamData = await apiGetTeam(teamNum)
+      if (!teamData) {
+        const reg = regional || apiGetRegional()
+        if (!reg) {
+          alert('Regional key not loaded yet. Please wait a moment and try again.')
+          return
         }
-      } catch (err) {
-        console.log("Team not found", err)
-        setTeamName("")
-        setFuelCapacity("")
-        setNotes("")
-        setPhotoUrl("")
-        setHangTime("")
-        setCyclesPerMatch("")
-        setFuelPerCycle("")
-        setBump(false)
-        setTrench(false)
-        setNumAutos("")
-        setMaxHangHeight("None")
-        setCanDoubleHang(false)
-        setCanTripleHang(false)
+        await apiCreateTeamEntry(teamNum, reg)
+        teamData = await apiGetTeam(teamNum)
       }
-    } else {
-      setTeamName("")
-      setFuelCapacity("")
-      setNotes("")
-      setPhotoUrl("")
-      setHangTime("")
-      setCyclesPerMatch("")
-      setFuelPerCycle("")
-      setBump(false)
-      setTrench(false)
-      setNumAutos("")
-      setMaxHangHeight("None")
-      setCanDoubleHang(false)
-      setCanTripleHang(false)
+
+      if (teamData) {
+        const attrs = teamData.TeamAttributes || {}
+        setTeamName(attrs.name || "")
+        setFuelCapacity(attrs.DeclaredFuelCap ?? "")
+        setNotes(attrs.Notes || "")
+        setPhotoUrl(attrs.Photo || "")
+        setHangTime(attrs.HangTime ?? "")
+        setCyclesPerMatch(attrs.CyclesPerMatch ?? "")
+        setFuelPerCycle(attrs.FuelPerCycle ?? "")
+        setNumAutos(attrs.NumAutos ?? "")
+        setBump(attrs.Capabilities === "Bump")
+        setTrench(attrs.Capabilities === "Trench")
+        setMaxHangHeight(attrs.MaxHang || "None")
+        setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
+        setCanTripleHang(attrs.HangTeamwork === "TripleHang")
+      } else {
+        alert('Unable to load or create team data. Please try again.')
+      }
+    } catch (err) {
+      console.log("Team load error", err)
+      alert('Failed to load team data.')
     }
   }
 
@@ -252,9 +227,9 @@ function Notes(props) {
       return
     }
 
+    // upload photo if a new file was selected
     let photoKey = photoUrl
     if (photo) {
-      // Upload photo to S3
       const fileName = `team-${findTeam}-${Date.now()}.${photo.name.split('.').pop()}`
       try {
         const result = await uploadData({
@@ -272,45 +247,65 @@ function Notes(props) {
       }
     }
 
-    const teamInput = {
-      id: findTeam,
+    // map UI state into the shape defined by TeamAttributesType in the
+    // GraphQL schema.
+    const normalizeMaxHang = (value) => {
+      const normalized = String(value || '').replace(/\s+/g, '')
+      const allowed = new Set(['None', 'Level1', 'Level2', 'Level3'])
+      return allowed.has(normalized) ? normalized : 'None'
+    }
+
+    const teamAttrs = {
       name: teamName,
-      Comment: notes,
-      fuelCapacity: fuelCapacity ? parseInt(fuelCapacity) : null,
-      photo: photoKey,
-      hangTime: hangTime ? parseFloat(hangTime) : null,
-      cyclesPerMatch: cyclesPerMatch ? parseInt(cyclesPerMatch) : null,
-      fuelPerCycle: fuelPerCycle ? parseInt(fuelPerCycle) : null,
-      bump: bump,
-      trench: trench,
-      numAutos: numAutos ? parseInt(numAutos) : null,
-      maxHangHeight: maxHangHeight,
-      canDoubleHang: canDoubleHang,
-      canTripleHang: canTripleHang
+      DeclaredFuelCap: fuelCapacity ? parseInt(fuelCapacity) : null,
+      Notes: notes,
+      Photo: photoKey,
+      HangTime: hangTime ? parseFloat(hangTime) : null,
+      CyclesPerMatch: cyclesPerMatch ? parseInt(cyclesPerMatch) : null,
+      FuelPerCycle: fuelPerCycle ? parseInt(fuelPerCycle) : null,
+      NumAutos: numAutos ? parseInt(numAutos) : null,
+      Capabilities: bump ? "Bump" : trench ? "Trench" : "None",
+      MaxHang: normalizeMaxHang(maxHangHeight),
+      HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None"
     }
 
     try {
-      await getClient().graphql({
-        query: updateTeam,
-        variables: {
-          input: teamInput
+      const existing = await apiGetTeam(findTeam)
+      if (existing) {
+        // merge new attributes into whatever is already stored so we don't
+        // accidentally null‑out other fields (description, Regionals, etc.)
+        const merged = {
+          ...existing,
+          TeamAttributes: {
+            ...((existing.TeamAttributes) || {}),
+            ...teamAttrs,
+          },
         }
-      })
-      alert('Team info updated successfully')
-      resetStates()
-    } catch (updateErr) {
-      try {
-        await getClient().graphql({
-          query: createTeam,
-          variables: {
-            input: teamInput
+        await apiUpdateTeamEntry(findTeam, merged)
+      } else {
+        // team doesn't exist yet; create it first so the required
+        // non-null `Regional` field is initialized. then fetch the new
+        // entry and merge our attribute updates so nothing important gets
+        // dropped.
+        const reg = apiGetRegional()
+        await apiCreateTeamEntry(findTeam, reg)
+        const created = await apiGetTeam(findTeam)
+        if (created) {
+          const merged = {
+            ...created,
+            TeamAttributes: {
+              ...created.TeamAttributes,
+              ...teamAttrs,
+            },
           }
-        })
-        alert('Team info created successfully')
-        resetStates()
-      } catch (createErr) {
-        alert(`Failed to save team info: ${JSON.stringify(createErr)}`)
+          await apiUpdateTeamEntry(findTeam, merged)
+        }
       }
+      alert('Team info saved successfully')
+      resetStates()
+    } catch (err) {
+      console.error('notes submission error', err)
+      alert(`Failed to save team info: ${JSON.stringify(err)}`)
     }
   }
   
@@ -350,6 +345,7 @@ function Notes(props) {
                   type="number" 
                   value={teamNumberInput} 
                   onChange={(e) => setTeamNumberInput(e.target.value)}
+                  onWheel={preventScrollValueChange}
                   onKeyDown={(e) => { if (e.key === 'Enter') loadTeamData() }}
                 />
                 <button
@@ -412,6 +408,7 @@ function Notes(props) {
                     type="number" 
                     value={fuelCapacity} 
                     onChange={(e) => setFuelCapacity(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
@@ -430,6 +427,7 @@ function Notes(props) {
                     type="number" 
                     value={cyclesPerMatch} 
                     onChange={(e) => setCyclesPerMatch(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
               </div>
@@ -451,6 +449,7 @@ function Notes(props) {
                     type="number" 
                     value={fuelPerCycle} 
                     onChange={(e) => setFuelPerCycle(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
                 <div style={{ flex: "1", minWidth: "120px" }}>
@@ -469,6 +468,7 @@ function Notes(props) {
                     type="number" 
                     value={numAutos} 
                     onChange={(e) => setNumAutos(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
               </div>
@@ -513,6 +513,7 @@ function Notes(props) {
                     step="0.1"
                     value={hangTime} 
                     onChange={(e) => setHangTime(e.target.value)}
+                    onWheel={preventScrollValueChange}
                   />
                 </div>
 
@@ -521,6 +522,7 @@ function Notes(props) {
                   <select
                     value={maxHangHeight}
                     onChange={(e) => setMaxHangHeight(e.target.value)}
+                    onWheel={preventScrollValueChange}
                     style={{
                       height: "50px",
                       width: "100%",
@@ -533,9 +535,9 @@ function Notes(props) {
                     }}
                   >
                     <option value="None">None</option>
-                    <option value="Level 1">Level 1</option>
-                    <option value="Level 2">Level 2</option>
-                    <option value="Level 3">Level 3</option>
+                    <option value="Level1">Level 1</option>
+                    <option value="Level2">Level 2</option>
+                    <option value="Level3">Level 3</option>
                   </select>
                 </div>
 
