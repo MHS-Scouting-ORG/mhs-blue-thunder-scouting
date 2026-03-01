@@ -139,7 +139,7 @@ type TeamAttributesType {
   Regional: String!
   DeclaredFuelCap: Int
   CyclesPerMatch: Int
-  Capabilities: CapabilitiesOpts
+  Capabilities: [CapabilitiesOpts]
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
   HangTime: Float

@@ -20,10 +20,129 @@ const getClient = () => {
   return client
 }
 
+let isSigningOutForAuthError = false
+
+const validateAndRefreshAuthSession = async () => {
+  try {
+    await Auth.getCurrentUser()
+    await Auth.fetchAuthSession({ forceRefresh: true })
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+const forceSignOutForAuthError = async () => {
+  if (isSigningOutForAuthError) return
+  isSigningOutForAuthError = true
+
+  try {
+    await Auth.signOut()
+  } catch (_) {
+    // unimportant errors
+  } finally {
+    if (typeof window !== 'undefined') {
+      window.location.assign('/')
+    }
+  }
+}
+
 let regionalKey
 
+const extractGraphQLErrorMessages = (errors) => {
+  if (!Array.isArray(errors)) return []
+  return errors
+    .map(err => String(err?.message || err?.errorType || '').trim())
+    .filter(Boolean)
+}
+
+const isAuthRelatedMessage = (message) => {
+  const text = String(message || '').toLowerCase()
+  if (!text) return false
+  return (
+    text.includes('security token') ||
+    text.includes('invalid token') ||
+    text.includes('token is invalid') ||
+    text.includes('expired') ||
+    text.includes('unauthorized') ||
+    text.includes('not authorized') ||
+    text.includes('forbidden') ||
+    text.includes('credential') ||
+    text.includes('no current user')
+  )
+}
+
+const hasAuthErrorInGraphQLPayload = (errors) => {
+  const messages = extractGraphQLErrorMessages(errors)
+  return messages.some(isAuthRelatedMessage)
+}
+
+const throwGraphQLError = (responseOrErrors) => {
+  const errors = Array.isArray(responseOrErrors)
+    ? responseOrErrors
+    : (responseOrErrors?.errors || [])
+  const messages = extractGraphQLErrorMessages(errors)
+  const error = new Error(messages[0] || 'GraphQL request failed')
+  error.graphQLErrors = errors
+  throw error
+}
+
 const runGraphQL = async ({ query, variables }) => {
-  return getClient().graphql({ query, variables })
+  let hasRetriedAfterRefresh = false
+
+  try {
+    while (true) {
+      const response = await getClient().graphql({ query, variables })
+
+      if (Array.isArray(response?.errors) && response.errors.length > 0) {
+        const authPayloadError = hasAuthErrorInGraphQLPayload(response.errors)
+
+        if (authPayloadError && !hasRetriedAfterRefresh) {
+          hasRetriedAfterRefresh = true
+          const hasValidSession = await validateAndRefreshAuthSession()
+          if (hasValidSession) continue
+        }
+
+        if (authPayloadError) {
+          await forceSignOutForAuthError()
+          throw new Error('Authentication session is invalid or expired. Signed out user.')
+        }
+
+        throwGraphQLError(response)
+      }
+
+      return response
+    }
+  } catch (err) {
+    if (isAuthRelatedMessage(err?.message)) {
+      if (!hasRetriedAfterRefresh) {
+        hasRetriedAfterRefresh = true
+        const hasValidSession = await validateAndRefreshAuthSession()
+        if (hasValidSession) {
+          const retryResponse = await getClient().graphql({ query, variables })
+          if (Array.isArray(retryResponse?.errors) && retryResponse.errors.length > 0) {
+            if (hasAuthErrorInGraphQLPayload(retryResponse.errors)) {
+              await forceSignOutForAuthError()
+              throw new Error('Authentication session is invalid or expired. Signed out user.')
+            }
+            throwGraphQLError(retryResponse)
+          }
+          return retryResponse
+        }
+      }
+
+      await forceSignOutForAuthError()
+      throw new Error('Authentication session is invalid or expired. Signed out user.')
+    }
+
+    const hasValidSession = await validateAndRefreshAuthSession()
+    if (!hasValidSession) {
+      await forceSignOutForAuthError()
+      throw new Error('Authentication session is invalid or expired. Signed out user.')
+    }
+
+    throw err
+  }
 }
 
 const normalizeStratList = (value) => {
@@ -50,6 +169,25 @@ const normalizeStratList = (value) => {
 const normalizeAutoStrat = (value) => {
   const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
   return allowed.includes(value) ? value : "None"
+}
+
+const normalizeCapabilitiesList = (value) => {
+  const allowed = ["Bump", "Trench", "None"]
+
+  if (Array.isArray(value)) {
+    return value
+      .filter(v => typeof v === 'string')
+      .map(v => v.trim())
+      .filter(v => allowed.includes(v) && v !== 'None')
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed || trimmed === 'None') return []
+    return allowed.includes(trimmed) ? [trimmed] : []
+  }
+
+  return []
 }
 
 const normalizeRegionals = (regionalsValue) => {
@@ -85,6 +223,10 @@ const normalizeTeamRead = (team) => {
   if (!team || typeof team !== 'object') return team
   return {
     ...team,
+    TeamAttributes: {
+      ...(team.TeamAttributes || {}),
+      Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities)
+    },
     Regionals: normalizeRegionals(team.Regionals)
   }
 }
@@ -119,7 +261,7 @@ const apiGetTeam = async function (teamNumber) {
  * Add a team to our database
  */
 const apiAddTeam = async function (team) {
-  await getClient().graphql({ query: createTeam, variables: { input: team } })
+  await runGraphQL({ query: createTeam, variables: { input: team } })
 }
 
 const sanitizeTeamInput = (data, teamIdOverride) => {
@@ -156,23 +298,13 @@ const sanitizeTeamInput = (data, teamIdOverride) => {
 const apiUpdateTeamEntry = async function (team, data) {
   const input = sanitizeTeamInput(data, team)
   console.log({ ...input }, "...data")
-  await getClient().graphql({
-    query: updateTeam,  
-    variables: {
-      input
-    }
-  })
+  await runGraphQL({ query: updateTeam, variables: { input } })
 }
 
 const apiUpdateTeamEntryMatch = async function (team, data) {
   const input = sanitizeTeamInput(data, team)
   console.log({ ...input }, "...data")
-  await getClient().graphql({
-    query: updateTeam,  
-    variables: {
-      input
-    }
-  })
+  await runGraphQL({ query: updateTeam, variables: { input } })
 }
 
 /*
@@ -309,8 +441,9 @@ const apiCreateTeamEntry = async function (teamNumber, regional) {
     throw new Error("Team Number not provided")
   } 
 
-  return getClient().graphql({
-    query: createTeam, variables: {
+  return runGraphQL({
+    query: createTeam,
+    variables: {
       input: buildTeamEntry(teamNumber, regional)
     }
   })

@@ -321,6 +321,12 @@ function AllianceSelectionView({ tableData, regional }) {
   };
 
   const renderLeaderboard = () => {
+    const getRSOutOfFive = (team) => {
+      const confidence = Number(team?.confidence ?? 0);
+      const normalized = Math.max(0, Math.min(1, confidence));
+      return (normalized * 5).toFixed(1);
+    };
+
     return (
       <div className={tableStyles.TableContainer}>
         <h3>Available Teams Leaderboard</h3>
@@ -331,13 +337,12 @@ function AllianceSelectionView({ tableData, regional }) {
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
-                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Avg Points</th>
-                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>OPR</th>
+                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>RS</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Action</th>
               </tr>
             </thead>
             <tbody>
-              {availableTeams.slice(0, 20).map((team, index) => (
+              {availableTeams.map((team, index) => (
                 <tr key={team.TeamNumber} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     {rankedTeams.findIndex(t => t.TeamNumber === team.TeamNumber) + 1}
@@ -349,10 +354,7 @@ function AllianceSelectionView({ tableData, regional }) {
                     {team.allianceScore?.toFixed(2) || '0.00'}
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {team.AvgPoints?.toFixed(1) || '0.0'}
-                  </td>
-                  <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {team.OPR?.toFixed(1) || '0.0'}
+                    {getRSOutOfFive(team)} / 5
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     <button

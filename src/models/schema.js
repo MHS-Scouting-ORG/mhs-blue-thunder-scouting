@@ -485,12 +485,13 @@ export const schema = {
                 },
                 "Capabilities": {
                     "name": "Capabilities",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "CapabilitiesOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "MaxHang": {
                     "name": "MaxHang",
@@ -557,5 +558,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "45120c12dfb86eeb207f085ee091fe8c"
+    "version": "4625764720aea73f75472bebba65e26f"
 };

@@ -316,6 +316,10 @@ export function calculateTeamScore(teamData, options = {}) {
   }
 
   const teamMatches = extractTeamMatches(teamData)
+  if (teamMatches.length === 0) {
+    return 0
+  }
+
   if (teamMatches.length > 0) {
     const ranked = rankTeamsForAllianceSelection([teamData], mergedOptions)
     return ranked[0]?.allianceScore ?? mergedOptions.initialRating
@@ -374,15 +378,27 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
   return teamsData
     .map((team) => {
       const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
+      const teamMatches = extractTeamMatches(team)
+
+      if (teamMatches.length === 0) {
+        return {
+          ...team,
+          allianceScore: 0,
+          skillRating: 0,
+          uncertainty: mergedOptions.maxUncertainty,
+          confidence: 0,
+          matchesRated: 0
+        }
+      }
+
       const rating = finalRatings.get(teamNumber)
 
       if (!rating) {
-        const fallback = calculateTeamScore(team, mergedOptions)
         return {
           ...team,
-          allianceScore: fallback,
-          skillRating: fallback,
-          uncertainty: mergedOptions.initialUncertainty,
+          allianceScore: 0,
+          skillRating: 0,
+          uncertainty: mergedOptions.maxUncertainty,
           confidence: 0,
           matchesRated: 0
         }
