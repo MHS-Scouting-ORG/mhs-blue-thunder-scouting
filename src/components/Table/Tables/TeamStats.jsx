@@ -100,12 +100,17 @@ function TeamStats(props) {
     return null;
   }
 
+ 
+
   const attrs = teamData?.TeamAttributes || {};
   const autoMode = mode(matches.map(m => m?.Autonomous?.AutoStrat || 'None'));
   const autoHangMode = mode(matches.map(m => m?.Autonomous?.AutoHang || 'None'));
   const endgameMode = mode(matches.map(m => m?.Teleop?.Endgame || 'None'));
   const activeMode = topFromListFields(matches, 'ActiveStrat');
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
+
+  console.log("stats ", stats)
+  console.log("attrs ", attrs)
 
   const totalFouls = matches.reduce((sum, m) => sum + Number(m?.Penalties?.Fouls || 0), 0);
   const totalTechs = matches.reduce((sum, m) => sum + Number(m?.Penalties?.Tech || 0), 0);
@@ -166,13 +171,7 @@ function TeamStats(props) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             {/* change stats.avg to correct schema call & do the same for all cards below*/}
-            <strong>Max Level Hang</strong> {stats.AvgPoints?.toFixed(2) || 'N/A'}  
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Multi Hang</strong> {stats.AvgAutoPts?.toFixed(2) || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Capacity:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Max Level Hang</strong> {attrs.MaxHang || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>AutoStrat:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
