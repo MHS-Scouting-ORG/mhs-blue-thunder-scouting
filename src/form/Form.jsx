@@ -48,7 +48,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   const [autoActions, setAutoActions] = useState([]);
   const [autoHang, setAutoHang] = useState('');
 
-  /* TElEOP */
+  /* TELEOP */
   const [hangType, setHangType] = useState('');
 
   /* PENALTIES */
@@ -268,8 +268,12 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 }}
                 placeholder="Enter match #" 
                 type="number" 
+                min="1"
                 value={matchNumber} 
-                onChange={(e) => setMatchNumber(e.target.value)}
+                onChange={(e) => {
+                  e.target.value.replace(/[^0-9]/g, '');
+                  setMatchNumber(e.target.value)}
+                }
                 onWheel={(e) => e.target.blur()} 
               />
             </div>
@@ -785,7 +789,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               onChange={(e) => setRobotSpeed(e.target.value)}
               onWheel={(e) => e.target.blur()} 
             >
-              <option value="">Select Speed</option>
+              <option value="">Select Robot Speed</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
@@ -808,7 +812,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               onChange={(e) => setShootingSpeed(e.target.value)}
               onWheel={(e) => e.target.blur()} 
             >
-              <option value="">Select Speed</option>
+              <option value="">Select Shooting Speed</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
@@ -827,9 +831,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px"
               }} 
               type="number" 
+              min="0"
               placeholder="Enter fuel capacity (e.g., 100)"
               value={fuelCapacity} 
-              onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
+              onChange={(e) => {
+                e.target.value.replace(/[^0-9]/g, '');
+                setFuelCapacity(parseInt(e.target.value) || '')}
+            }
               onWheel={(e) => e.target.blur()} 
             />
           </div>
@@ -846,9 +854,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px"
               }} 
               type="number" 
+              min="0"
               placeholder="Enter estimated balls shot"
               value={estimatedBallsShot} 
-              onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+              onChange={(e) => {
+                e.target.value.replace(/[^0-9]/g, '');
+                setEstimatedBallsShot(parseInt(e.target.value) || '')}
+              }
               onWheel={(e) => e.target.blur()} 
             />
           </div>
@@ -865,9 +877,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px"
               }} 
               type="number" 
+              min="0"
               placeholder="Enter shooting cycles"
               value={shootingCycles} 
-              onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
+              onChange={(e) => {
+                e.target.value.replace(/[^0-9]/g, '');
+                setShootingCycles(parseInt(e.target.value) || '')}
+              }
               onWheel={(e) => e.target.blur()} 
             />
           </div>
