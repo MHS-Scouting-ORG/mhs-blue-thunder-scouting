@@ -203,22 +203,6 @@ export async function submitState( //params are states of data from form
         break;
     }
   }
-  // else if (hangType === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   endGamePoints += 0;
-  // }
-  // else if (hangType === 'Level3' && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   endGamePoints += 10;
-  // }
-  // else if (hangType === 'Level2' && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   endGamePoints += 20;
-  // }
-  // else if (hangType === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   endGamePoints += 30;
-  // }
-  // else {
-  //   incompleteForm = true;
-  //   windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
-  // }
 
   /* Robot Info Select */
   if ((redCard || dq || noShow || disable || botBroke) !== false) {
@@ -241,19 +225,6 @@ export async function submitState( //params are states of data from form
         break;
     }
   }
-  // else if (robotSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   robotSpeed = "Slow";
-  // }
-  // else if (robotSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   robotSpeed = "Average";
-  // }
-  // else if (robotSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   robotSpeed = "Fast";
-  // }
-  // else {
-  //   incompleteForm = true;
-  //   windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-  // }
 
   /* Shooting Speed Select */
   if ((redCard || dq || noShow || disable || botBroke) !== false) {
@@ -276,19 +247,6 @@ export async function submitState( //params are states of data from form
         break;
     }
   }
-  // else if (shootingSpeed === 'Slow' && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   shootingSpeed = "Slow";
-  // }
-  // else if (shootingSpeed === "Average" && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   shootingSpeed = "Average";
-  // }
-  // else if (shootingSpeed == "Fast" && (redCard || dq || noShow || disable || botBroke) === false) {
-  //   shootingSpeed = "Fast";
-  // }
-  // else {
-  //   incompleteForm = true;
-  //   windowAlertMsg = windowAlertMsg + "\nShooting Speed"
-  // }
 
   /* Point Calc */
 

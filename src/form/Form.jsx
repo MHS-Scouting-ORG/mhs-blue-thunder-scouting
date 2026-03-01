@@ -149,6 +149,14 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   }, [teamNumber]
   )
 
+  /* Stop Non Numbers From Going Into Number States */
+  const stopNonNum = (e) => {
+    const banned = ['e', 'E', '-', '+']
+    if (banned.includes(e.key)) {
+      e.preventDefault();
+    }
+  }
+
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
@@ -270,8 +278,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 type="number" 
                 min="1"
                 value={matchNumber} 
+                onKeyDown={stopNonNum}
                 onChange={(e) => {
-                  e.target.value.replace(/[^0-9]/g, '');
                   setMatchNumber(e.target.value)}
                 }
                 onWheel={(e) => e.target.blur()} 
@@ -834,10 +842,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               min="0"
               placeholder="Enter fuel capacity (e.g., 100)"
               value={fuelCapacity} 
-              onChange={(e) => {
-                e.target.value.replace(/[^0-9]/g, '');
-                setFuelCapacity(parseInt(e.target.value) || '')}
-            }
+              onKeyDown={stopNonNum}
+              onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
               onWheel={(e) => e.target.blur()} 
             />
           </div>
@@ -857,10 +863,9 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               min="0"
               placeholder="Enter estimated balls shot"
               value={estimatedBallsShot} 
-              onChange={(e) => {
-                e.target.value.replace(/[^0-9]/g, '');
-                setEstimatedBallsShot(parseInt(e.target.value) || '')}
-              }
+              onKeyDown={stopNonNum}
+              onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+
               onWheel={(e) => e.target.blur()} 
             />
           </div>
@@ -880,10 +885,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               min="0"
               placeholder="Enter shooting cycles"
               value={shootingCycles} 
-              onChange={(e) => {
-                e.target.value.replace(/[^0-9]/g, '');
-                setShootingCycles(parseInt(e.target.value) || '')}
-              }
+              onKeyDown={stopNonNum}
+              onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
               onWheel={(e) => e.target.blur()} 
             />
           </div>
