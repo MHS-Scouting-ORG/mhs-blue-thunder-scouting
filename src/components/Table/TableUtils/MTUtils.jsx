@@ -85,13 +85,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
       //custom robot stats
       const avgCycles = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.ShootingCycles || 0)))
-      const avgTeleCoral = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.BallsShot || 0)))
-      const avgAutoCoral = calcAvg(teamStats.map(m => getAutoPoints(m)))
-      const avgCoral = avgTeleCoral
-
-      const avgTeleAlgae = calcAvg(teamStats.map(m => Number(m?.Teleop?.TravelMid || 0)))
-      const avgAutoAlgae = calcAvg(teamStats.map(m => Number(m?.Autonomous?.TravelMid || 0)))
-      const avgAlgae = (avgTeleAlgae + avgAutoAlgae) / 2
+      
 
       const avgEndgame = calcAvg(teamStats.map(m => getEndgamePoints(m)))
       //amount
@@ -117,33 +111,30 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const evaluations = getSummary(teamStats)
 
       //grade
-      const maxCoral = getMax(tableData.map(team => team.AvgCoral))
-      const maxAlgae = getMax(tableData.map(team => team.AvgAlgae))
+
       const maxCycles = getMax(tableData.map(team => team.AvgCycles))
       const maxPts = getMax(tableData.map(team => team.AvgPoints))
       const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
       const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
-      const maxCoralPts = getMax(tableData.map(team => team.AvgCoralPts))
-      const maxAlgaePts = getMax(tableData.map(team => team.AvgAlgaePts))
 
-      // //const rCoral = avgMadeCoral / maxCoral
-      // //const rAlgae = avgMadeAlgae / maxAlgae
-      // const rCycles = avgCycles / maxCycles
-      // const rPts = avgPoints / maxPts
+
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
-       // Matches: team.Matches,
+        Matches: totalMatches,
+        TeamMatches: teamStats,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
        
         //===Stats==/ 
-        //AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
+        AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
 
         //Made//
-        //AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
+        AvgAutoPts: isNaN(avgAutoPoints) ? 0 : avgAutoPoints,
+        AvgEndgamePts: isNaN(avgEndgame) ? 0 : avgEndgame,
+        AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
         //===auto==//
         //AutoStart: mcAutoStart,
