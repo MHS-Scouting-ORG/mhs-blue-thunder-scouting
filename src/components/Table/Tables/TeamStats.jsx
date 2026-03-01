@@ -174,19 +174,20 @@ function TeamStats(props) {
             <strong>Max Level Hang</strong> {attrs.MaxHang || 'N/A'}  
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>AutoStrat:</strong> {stats.AutoStrat || 'N/A'}
           </div>
            <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
+            <strong>Auto Hang: needs to be implemented in bruh</strong> {stats.AvgEndgamePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {stats.AvgCoralPts?.toFixed(2) || 'N/A'}
+            {/* needs to be fixed */}
+            <strong>Most Likely Active Strat:</strong> {stats.ActiveStrat || 'N/A'} 
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Most Likely Inactive Strat:</strong> {stats.AvgAlgaePts?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Hang Time:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
+            <strong>Hang Time:</strong> {stats.AvgCycles?.toFixed(2) || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Cards</strong>: {cardsInfo}

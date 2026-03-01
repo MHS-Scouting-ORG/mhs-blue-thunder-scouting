@@ -81,6 +81,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map(m => m?.RobotInfo?.RobotSpeed ?? null))
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
+      const mcAutoStrat = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
+      const mcActiveStrat = arrMode(teamStats.map(m => m?.ActiveStrat ?? 'None' ))
       //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
 
       //custom robot stats
@@ -127,6 +129,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
+        //ActiveStrat: mcActiveStrat === 'None' ? '' : mcActiveStrat, needs to be fixed
        
         //===Stats==/ 
         AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
@@ -137,8 +140,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
         //===auto==//
-        //AutoStart: mcAutoStart,
-
+        AutoStrat: mcAutoStrat,
+        
         //===Penalties===//
         Fouls: isNaN(fouls) ? 0 : fouls, 
         Tech: isNaN(techs) ? 0 : techs,
