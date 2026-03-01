@@ -131,6 +131,41 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nTeam Number"
   }
 
+  if (autoHang === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nAutonomous Hang"
+  }
+
+  if (hangType === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nEndgame Hang"
+  }
+
+  if (robotSpeed === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+  }
+
+  if (shootingSpeed === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+  }
+
+  if (Number.isNaN(parsedFuelCapacity)) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nFuel Capacity"
+  }
+
+  if (Number.isNaN(parsedBallsShot)) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nEstimated Balls Shot"
+  }
+  
+  if (Number.isNaN(parsedShootingCycles)) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nShooting Cycles"
+  }
+
   if (Number.isNaN(parsedMatchNumber)) {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nMatch Number"

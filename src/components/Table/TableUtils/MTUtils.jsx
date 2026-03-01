@@ -2,6 +2,29 @@ import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional } from "../
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
 import { isSameTeam } from "../../../utils/teamId"
 
+const getAutoPoints = (match) => {
+  const auto = match?.Autonomous?.AutoStrat || 'None'
+  if (auto === 'Scored') return 8
+  if (auto === 'WentMid' || auto === 'CrossedMid') return 2
+  return 0
+}
+
+const getEndgamePoints = (match) => {
+  const endgame = match?.Teleop?.Endgame || 'None'
+  if (endgame === 'Level1') return 30
+  if (endgame === 'Level2') return 20
+  if (endgame === 'Level3') return 10
+  return 0
+}
+
+const getTravelPoints = (match) => {
+  return (match?.Teleop?.TravelMid || 0) * 2
+}
+
+const getShotPoints = (match) => {
+  return Number(match?.RobotInfo?.BallsShot || 0)
+}
+
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
 async function getTeams (regional) {
   try {
@@ -49,11 +72,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
       const totalMatches = teamStats.length
 
-      const pointsByMatch = teamStats.map(m => scoreAuto(m) + scoreEndgame(m) + scoreTravel(m) + scoreBalls(m))
+      const pointsByMatch = teamStats.map(m => getAutoPoints(m) + getEndgamePoints(m) + getTravelPoints(m) + getShotPoints(m))
       //console.log("teamStats", teamStats)
       //general (might not need avg points/avg auto pts since tba has)
       const avgPoints = calcAvg(pointsByMatch)
-      const avgAutoPoints = calcAvg(teamStats.map(m => scoreAuto(m)))
+      const avgAutoPoints = calcAvg(teamStats.map(m => getAutoPoints(m)))
 
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map(m => m?.RobotInfo?.RobotSpeed ?? null))
@@ -61,51 +84,14 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
 
       //custom robot stats
-      const avgCycles = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Cycles !== null ? team.Teleop.AmountScored.Cycles : 0))
-      const avgTeleCoral = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.CoralPoints !== null ? team.Teleop.PointsScored.CoralPoints : 0))
-      const avgAutoCoral = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.CoralPoints !== null ? team.Autonomous.PointsScored.CoralPoints : 0))
-      const avgCoral = (avgTeleCoral + avgAutoCoral) / 2
+      const avgCycles = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.ShootingCycles || 0)))
+      
 
-      const avgTeleAlgae = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.AlgaePoints !== null ? team.Teleop.PointsScored.AlgaePoints : 0))
-      const avgAutoAlgae = calcAvg(teamStats.map((team) => team.Autonomous.PointsScored.AlgaePoints !== null ? team.Autonomous.PointsScored.AlgaePoints : 0))
-      const avgAlgae = (avgTeleAlgae + avgAutoAlgae) / 2
-
-      const avgEndgame = calcAvg(teamStats.map((team) => team.Teleop.PointsScored.EndgamePoints !== null ? team.Teleop.PointsScored.EndgamePoints : 0))
-
+      const avgEndgame = calcAvg(teamStats.map(m => getEndgamePoints(m)))
       //amount
-      /* Coral Levels */
-      const avgMadeTeleCoralL1 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL1 !== null ? team.Teleop.AmountScored.CoralL1 : 0))
-      const avgMadeTeleCoralL2= calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL2 !== null ? team.Teleop.AmountScored.CoralL2 : 0))
-      const avgMadeTeleCoralL3 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL3 !== null ? team.Teleop.AmountScored.CoralL3 : 0))
-      const avgMadeTeleCoralL4 = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.CoralL4 !== null ? team.Teleop.AmountScored.CoralL4 : 0))
-
-      const avgMadeAutoCoralL1 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL1 !== null ? team.Autonomous.AmountScored.CoralL1 : 0))
-      const avgMadeAutoCoralL2 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL2 !== null ? team.Autonomous.AmountScored.CoralL2 : 0))
-      const avgMadeAutoCoralL3 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL3 !== null ? team.Autonomous.AmountScored.CoralL3 : 0))
-      const avgMadeAutoCoralL4 = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.CoralL4 !== null ? team.Autonomous.AmountScored.CoralL4 : 0))
-
-      const avgMadeCoralL1 = (avgMadeTeleCoralL1 + avgMadeAutoCoralL1) / 2
-      const avgMadeCoralL2 = (avgMadeTeleCoralL2 + avgMadeAutoCoralL2) / 2
-      const avgMadeCoralL3 = (avgMadeTeleCoralL3 + avgMadeAutoCoralL3) / 2
-      const avgMadeCoralL4 = (avgMadeTeleCoralL4 + avgMadeAutoCoralL4) / 2
-      const avgMadeCoral = (avgMadeCoralL1 + avgMadeCoralL2 + avgMadeCoralL3 + avgMadeCoralL4) / 4
-
-      /* Algae */
-      const avgMadeTeleProcessor = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Processor !== null ? team.Teleop.AmountScored.Processor : 0))
-      const avgMadeAutoProcessor = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Processor !== null ? team.Autonomous.AmountScored.Processor : 0))
-
-      const avgMadeProcessor = (avgMadeTeleProcessor + avgMadeAutoProcessor) / 2
-
-      const avgMadeTeleNet = calcAvg(teamStats.map((team) => team.Teleop.AmountScored.Net !== null ? team.Teleop.AmountScored.Net : 0))
-      const avgMadeAutoNet = calcAvg(teamStats.map((team) => team.Autonomous.AmountScored.Processor !== null ? team.Autonomous.AmountScored.Processor : 0))
-
-      const avgMadeNet = (avgMadeTeleNet + avgMadeAutoNet) / 2
-
-      const avgMadeAlgae = (avgMadeProcessor + avgMadeNet) / 2
-
-
+  
       //Auto
-      const mcAutoStart = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
+      //const mcAutoStart = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
 
       //penalties
       const fouls = calcAvg(teamStats.map(m => m?.Penalties?.Fouls ?? 0))
@@ -125,24 +111,19 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const evaluations = getSummary(teamStats)
 
       //grade
-      const maxCoral = getMax(tableData.map(team => team.AvgCoral))
-      const maxAlgae = getMax(tableData.map(team => team.AvgAlgae))
+
       const maxCycles = getMax(tableData.map(team => team.AvgCycles))
       const maxPts = getMax(tableData.map(team => team.AvgPoints))
       const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
       const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
-      const maxCoralPts = getMax(tableData.map(team => team.AvgCoralPts))
-      const maxAlgaePts = getMax(tableData.map(team => team.AvgAlgaePts))
 
-      const rCoral = avgMadeCoral / maxCoral
-      const rAlgae = avgMadeAlgae / maxAlgae
-      const rCycles = avgCycles / maxCycles
-      const rPts = avgPoints / maxPts
+
 
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
-       // Matches: team.Matches,
+        Matches: totalMatches,
+        TeamMatches: teamStats,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
@@ -151,10 +132,12 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         AvgPoints: isNaN(avgPoints) ? 0 : avgPoints,
 
         //Made//
+        AvgAutoPts: isNaN(avgAutoPoints) ? 0 : avgAutoPoints,
+        AvgEndgamePts: isNaN(avgEndgame) ? 0 : avgEndgame,
         AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
         //===auto==//
-        AutoStart: mcAutoStart,
+        //AutoStart: mcAutoStart,
 
         //===Penalties===//
         Fouls: isNaN(fouls) ? 0 : fouls, 
@@ -170,7 +153,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         Evaluations: evaluations, 
         /* Grade */
         SumPriorities: team.SumPriorities,
-        NPts: isNaN(rPts) ? 0 : rPts,
+        //NPts: isNaN(rPts) ? 0 : 67,//rPts,
 
       }
       return tableDataObj;

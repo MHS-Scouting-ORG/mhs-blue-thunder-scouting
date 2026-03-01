@@ -34,31 +34,17 @@ function AllView({ regional }) {
             : (teamUpdatedAt ? Date.parse(teamUpdatedAt) : 0);
 
           const attrs = team?.TeamAttributes || {};
-          const hasMeaningfulNotesData = Boolean(
-            (attrs?.name && String(attrs.name).trim()) ||
-            (attrs?.Notes && String(attrs.Notes).trim()) ||
-            (attrs?.Photo && String(attrs.Photo).trim()) ||
-            Number(attrs?.DeclaredFuelCap || 0) > 0 ||
-            Number(attrs?.CyclesPerMatch || 0) > 0 ||
-            Number(attrs?.HangTime || 0) > 0 ||
-            (attrs?.Capabilities && attrs.Capabilities !== 'None') ||
-            (attrs?.MaxHang && attrs.MaxHang !== 'None') ||
-            (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None')
-          )
-          const hasNoteData = Boolean(
-            hasMeaningfulNotesData
-          );
+          const noteParts = []
+          if (attrs?.Notes) noteParts.push(String(attrs.Notes))
+          if (attrs?.DeclaredFuelCap) noteParts.push(`Fuel Cap: ${attrs.DeclaredFuelCap}`)
+          if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
+          if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
+          if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
+          if (attrs?.Capabilities && attrs.Capabilities !== 'None') noteParts.push(`Capabilities: ${attrs.Capabilities}`)
+          if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
+          if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
 
-          if (hasNoteData) {
-            const noteParts = []
-            if (attrs?.Notes) noteParts.push(String(attrs.Notes))
-            if (attrs?.DeclaredFuelCap) noteParts.push(`Fuel Cap: ${attrs.DeclaredFuelCap}`)
-            if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
-            if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
-            if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
-            if (attrs?.Capabilities && attrs.Capabilities !== 'None') noteParts.push(`Capabilities: ${attrs.Capabilities}`)
-            if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
-            if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
+          if (noteParts.length > 0) {
 
             flat.push({
               id: `note-${teamId}`,
@@ -66,7 +52,7 @@ function AllView({ regional }) {
               team: teamId,
               regional: attrs?.Regional || '',
               title: attrs?.name ? `${attrs.name}` : `Team ${teamId} notes`,
-              detail: noteParts.length > 0 ? noteParts.join(' • ') : 'Team info updated',
+              detail: noteParts.join(' • '),
               timestamp,
               updatedAt: teamUpdatedAt,
             });
