@@ -20,10 +20,57 @@ const getClient = () => {
   return client
 }
 
+let isSigningOutForAuthError = false
+
+const validateAndRefreshAuthSession = async () => {
+  try {
+    await Auth.getCurrentUser()
+    await Auth.fetchAuthSession({ forceRefresh: true })
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+const forceSignOutForAuthError = async () => {
+  if (isSigningOutForAuthError) return
+  isSigningOutForAuthError = true
+
+  try {
+    await Auth.signOut()
+  } catch (_) {
+    // unimportant errors
+  } finally {
+    if (typeof window !== 'undefined') {
+      window.location.assign('/')
+    }
+  }
+}
+
 let regionalKey
 
 const runGraphQL = async ({ query, variables }) => {
-  return getClient().graphql({ query, variables })
+  try {
+    const response = await getClient().graphql({ query, variables })
+
+    if (Array.isArray(response?.errors) && response.errors.length > 0) {
+      const hasValidSession = await validateAndRefreshAuthSession()
+      if (!hasValidSession) {
+        await forceSignOutForAuthError()
+        throw new Error('Authentication session is invalid or expired. Signed out user.')
+      }
+    }
+
+    return response
+  } catch (err) {
+    const hasValidSession = await validateAndRefreshAuthSession()
+    if (!hasValidSession) {
+      await forceSignOutForAuthError()
+      throw new Error('Authentication session is invalid or expired. Signed out user.')
+    }
+
+    throw err
+  }
 }
 
 const normalizeStratList = (value) => {
@@ -50,6 +97,25 @@ const normalizeStratList = (value) => {
 const normalizeAutoStrat = (value) => {
   const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
   return allowed.includes(value) ? value : "None"
+}
+
+const normalizeCapabilitiesList = (value) => {
+  const allowed = ["Bump", "Trench", "None"]
+
+  if (Array.isArray(value)) {
+    return value
+      .filter(v => typeof v === 'string')
+      .map(v => v.trim())
+      .filter(v => allowed.includes(v) && v !== 'None')
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed || trimmed === 'None') return []
+    return allowed.includes(trimmed) ? [trimmed] : []
+  }
+
+  return []
 }
 
 const normalizeRegionals = (regionalsValue) => {
@@ -85,6 +151,10 @@ const normalizeTeamRead = (team) => {
   if (!team || typeof team !== 'object') return team
   return {
     ...team,
+    TeamAttributes: {
+      ...(team.TeamAttributes || {}),
+      Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities)
+    },
     Regionals: normalizeRegionals(team.Regionals)
   }
 }

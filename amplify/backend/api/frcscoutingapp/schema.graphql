@@ -134,7 +134,7 @@ type TeamAttributesType {
   CyclesPerMatch: Int
   FuelPerCycle: Int
   NumAutos: Int
-  Capabilities: CapabilitiesOpts
+  Capabilities: [CapabilitiesOpts]
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
   HangTime: Float

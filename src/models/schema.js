@@ -485,12 +485,13 @@ export const schema = {
                 },
                 "Capabilities": {
                     "name": "Capabilities",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "CapabilitiesOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "MaxHang": {
                     "name": "MaxHang",

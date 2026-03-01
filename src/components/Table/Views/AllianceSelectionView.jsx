@@ -337,7 +337,7 @@ function AllianceSelectionView({ tableData, regional }) {
               </tr>
             </thead>
             <tbody>
-              {availableTeams.slice(0, 20).map((team, index) => (
+              {availableTeams.map((team, index) => (
                 <tr key={team.TeamNumber} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     {rankedTeams.findIndex(t => t.TeamNumber === team.TeamNumber) + 1}
