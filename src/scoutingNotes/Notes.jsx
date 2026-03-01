@@ -5,6 +5,7 @@ import {
   apiGetRegional,
   apigetMatchesForRegional,
   apiListTeams,
+  apiGetSimpleTeamsForRegional,
   apiGetTeam,
   apiUpdateTeamEntry,
   apiCreateTeamEntry
@@ -27,6 +28,7 @@ function Notes(props) {
   const [findTeam, setFindTeam] = useState("")
   const [teamNumberInput, setTeamNumberInput] = useState("")
   const [nickname, setNickname] = useState(false)
+  const [simpleTeams, setSimpleTeams] = useState([])
 
   /* Team Info */
   const [teamName, setTeamName] = useState("")
@@ -71,6 +73,22 @@ function Notes(props) {
       })
       .catch(err => console.log(err))
   }, [])
+
+  useEffect(() => {
+    if (!regional) {
+      setSimpleTeams([])
+      return
+    }
+
+    apiGetSimpleTeamsForRegional(regional)
+      .then(data => {
+        setSimpleTeams(data || [])
+      })
+      .catch(err => {
+        console.log('failed to load simple teams', err)
+        setSimpleTeams([])
+      })
+  }, [regional])
 
   useEffect(() => {
     if (stream && showCamera) {
@@ -128,14 +146,53 @@ function Notes(props) {
     teams.find(x => x.key.substring(3) === findTeam) !== undefined ? setNickname(true) : setNickname(false)
   }
 
-  const loadTeamData = async () => {
-    const teamNum = teamNumberInput
-    setFindTeam(teamNum)
+  const lookupTeamNumber = async (term) => {
+    let num = null
 
-    if (!teamNum) {
+    if (/^\d+$/.test(term)) {
+      num = term
+    } else {
+      try {
+        const list = await apiListTeams()
+        const items = list?.data?.listTeams?.items || []
+        const found = items.find(t =>
+          t.TeamAttributes?.name?.toLowerCase().includes(term.toLowerCase())
+        )
+        if (found) {
+          num = String(found.id || '')
+        }
+      } catch (err) {
+        console.log('failed to list teams for name lookup', err)
+      }
+
+      if (!num) {
+        const foundBA = simpleTeams.find(s =>
+          s.nickname && s.nickname.toLowerCase().includes(term.toLowerCase())
+        )
+        if (foundBA) {
+          num = String(foundBA.team_number || foundBA.TeamNumber || '')
+        }
+      }
+    }
+
+    return num
+  }
+
+  const loadTeamData = async () => {
+    const term = String(teamNumberInput || '').trim()
+    if (!term) {
       resetStates()
       return
     }
+
+    const teamNum = await lookupTeamNumber(term)
+    if (!teamNum) {
+      alert('Team not found')
+      return
+    }
+
+    setTeamNumberInput(teamNum)
+    setFindTeam(teamNum)
 
     try {
       let teamData = await apiGetTeam(teamNum)
@@ -159,8 +216,11 @@ function Notes(props) {
         setCyclesPerMatch(attrs.CyclesPerMatch ?? "")
         setFuelPerCycle(attrs.FuelPerCycle ?? "")
         setNumAutos(attrs.NumAutos ?? "")
-        setBump(attrs.Capabilities === "Bump")
-        setTrench(attrs.Capabilities === "Trench")
+        const selectedCapabilities = Array.isArray(attrs.Capabilities)
+          ? attrs.Capabilities
+          : (attrs.Capabilities ? [attrs.Capabilities] : [])
+        setBump(selectedCapabilities.includes("Bump"))
+        setTrench(selectedCapabilities.includes("Trench"))
         setMaxHangHeight(attrs.MaxHang || "None")
         setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
         setCanTripleHang(attrs.HangTeamwork === "TripleHang")
@@ -264,7 +324,10 @@ function Notes(props) {
       CyclesPerMatch: cyclesPerMatch ? parseInt(cyclesPerMatch) : null,
       FuelPerCycle: fuelPerCycle ? parseInt(fuelPerCycle) : null,
       NumAutos: numAutos ? parseInt(numAutos) : null,
-      Capabilities: bump ? "Bump" : trench ? "Trench" : "None",
+      Capabilities: [
+        bump ? "Bump" : null,
+        trench ? "Trench" : null,
+      ].filter(Boolean),
       MaxHang: normalizeMaxHang(maxHangHeight),
       HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None"
     }
@@ -341,11 +404,10 @@ function Notes(props) {
                     borderRadius: "8px",
                     boxSizing: "border-box"
                   }}
-                  placeholder="Enter team #" 
-                  type="number" 
+                  placeholder="Enter team # or name" 
+                  type="text" 
                   value={teamNumberInput} 
                   onChange={(e) => setTeamNumberInput(e.target.value)}
-                  onWheel={preventScrollValueChange}
                   onKeyDown={(e) => { if (e.key === 'Enter') loadTeamData() }}
                 />
                 <button

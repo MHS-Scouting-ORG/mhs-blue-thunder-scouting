@@ -25,6 +25,15 @@ function AllView({ regional }) {
           return val.join(', ')
         }
 
+        const stringifyCapabilities = (value) => {
+          if (Array.isArray(value)) {
+            const filtered = value.filter(v => v && v !== 'None')
+            return filtered.length > 0 ? filtered.join(', ') : 'None'
+          }
+          if (typeof value === 'string' && value && value !== 'None') return value
+          return 'None'
+        }
+
         teams.forEach(team => {
           const teamId = String(team?.id || '');
           const teamUpdatedAt = team?.updatedAt || null;
@@ -40,7 +49,8 @@ function AllView({ regional }) {
           if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
           if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
           if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
-          if (attrs?.Capabilities && attrs.Capabilities !== 'None') noteParts.push(`Capabilities: ${attrs.Capabilities}`)
+          const capabilities = stringifyCapabilities(attrs?.Capabilities)
+          if (capabilities !== 'None') noteParts.push(`Capabilities: ${capabilities}`)
           if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
           if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
 

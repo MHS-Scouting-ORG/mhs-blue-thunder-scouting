@@ -121,6 +121,9 @@ function TeamStats(props) {
   const cardsInfo = `${yellowCards} yellow / ${redCards} red`;
   const penaltiesInfo = `${totalFouls} fouls / ${totalTechs} tech`;
   const riskInfo = `${brokenCount} broken • ${disabledCount} disabled • ${dqCount} DQ • ${noShowCount} no-show`;
+  const capabilitiesText = Array.isArray(attrs?.Capabilities)
+    ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
+    : (attrs?.Capabilities || 'None');
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
@@ -136,7 +139,7 @@ function TeamStats(props) {
             Team Name: {teamData?.TeamAttributes?.name || teamData?.nickname || 'Unknown'}
           </p>
             <p style={{ margin: "5px 0", fontWeight: "600" }}>Matches Scouted: {stats?.Matches ?? matches.length ?? 0}</p>
-            <p style={{ margin: "5px 0", fontWeight: "600" }}>Capabilities: {attrs?.Capabilities || 'None'}</p>
+            <p style={{ margin: "5px 0", fontWeight: "600" }}>Capabilities: {capabilitiesText}</p>
           </div>
           {photoUrl && (
             <img 
