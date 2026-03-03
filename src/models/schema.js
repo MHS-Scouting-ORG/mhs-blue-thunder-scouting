@@ -518,6 +518,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "CanAutoHang": {
+                    "name": "CanAutoHang",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Photo": {
                     "name": "Photo",
                     "isArray": false,

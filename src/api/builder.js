@@ -216,6 +216,7 @@ const buildTeamEntry = (teamNumber, regional) => {
         MaxHang: HangOpts.None,
         HangTeamwork: HangTeamworkOpts.None,
         HangTime: 0.0,
+        CanAutoHang: false,
         Photo: "",
         Notes: "",
       },

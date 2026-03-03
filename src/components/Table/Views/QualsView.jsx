@@ -62,6 +62,7 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
               type="number"
               value={matchNumber}
               onChange={(e) => setMatchNumber(e.target.value)}
+              onWheel={(e) => e.target.blur()}
               style={{
                 marginLeft: "10px",
                 padding: "8px",

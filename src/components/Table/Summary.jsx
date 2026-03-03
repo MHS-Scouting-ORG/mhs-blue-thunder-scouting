@@ -7,6 +7,7 @@ import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import SearchView from "./Views/SearchView";
 import AllView from "./Views/AllView";
+import OurMatchesView from "./Views/OurMatchesView";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api"
@@ -134,7 +135,7 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["All", "Search","Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
@@ -154,6 +155,9 @@ function Summary() {
                   case "Search":
                     setCurrentView('search')
                     break;
+                  case "Our Matches":
+                    setCurrentView('our-matches')
+                    break;
               }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
@@ -161,6 +165,8 @@ function Summary() {
                       ? 'all'
                       : view === "Alliance Selection"
                       ? 'alliance'
+                      : view === 'Our Matches'
+                      ? 'our-matches'
                       : view === 'Search'
                       ? 'search'
                       : view.toLowerCase())
@@ -186,6 +192,12 @@ function Summary() {
           regional={regional}
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
+        />
+      )}
+      {currentView === 'our-matches' && (
+        <OurMatchesView
+          tableData={tableData}
+          regional={regional}
         />
       )}
       {currentView === 'quals' && (

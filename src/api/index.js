@@ -225,7 +225,8 @@ const normalizeTeamRead = (team) => {
     ...team,
     TeamAttributes: {
       ...(team.TeamAttributes || {}),
-      Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities)
+      Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities),
+      CanAutoHang: team?.TeamAttributes?.CanAutoHang
     },
     Regionals: normalizeRegionals(team.Regionals)
   }

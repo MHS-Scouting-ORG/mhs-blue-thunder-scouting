@@ -51,6 +51,7 @@ function Notes(props) {
   const [maxHangHeight, setMaxHangHeight] = useState("None")
   const [canDoubleHang, setCanDoubleHang] = useState(false)
   const [canTripleHang, setCanTripleHang] = useState(false)
+  const [canAutoHang, setCanAutoHang] = useState(false)
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -136,6 +137,7 @@ function Notes(props) {
     setMaxHangHeight("None")
     setCanDoubleHang(false)
     setCanTripleHang(false)
+    setCanAutoHang(false)
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
       setStream(null)
@@ -224,6 +226,7 @@ function Notes(props) {
         setMaxHangHeight(attrs.MaxHang || "None")
         setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
         setCanTripleHang(attrs.HangTeamwork === "TripleHang")
+        setCanAutoHang(Boolean(attrs.CanAutoHang))
       } else {
         alert('Unable to load or create team data. Please try again.')
       }
@@ -329,7 +332,8 @@ function Notes(props) {
         trench ? "Trench" : null,
       ].filter(Boolean),
       MaxHang: normalizeMaxHang(maxHangHeight),
-      HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None"
+      HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None",
+      CanAutoHang: Boolean(canAutoHang)
     }
 
     try {
@@ -617,6 +621,18 @@ function Notes(props) {
                       className={`${tableStyling.ToggleButton} ${canTripleHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
                       Can Triple Hang
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Auto Hang Capability</label>
+                  <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+                    <button
+                      onClick={() => setCanAutoHang(!canAutoHang)}
+                      className={`${tableStyling.ToggleButton} ${canAutoHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                    >
+                      {canAutoHang ? 'Can Auto Hang' : 'Cannot Auto Hang'}
                     </button>
                   </div>
                 </div>

@@ -183,6 +183,7 @@ type EagerTeamAttributesType = {
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
+  readonly CanAutoHang?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }
@@ -198,6 +199,7 @@ type LazyTeamAttributesType = {
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
+  readonly CanAutoHang?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }

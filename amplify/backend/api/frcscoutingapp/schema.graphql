@@ -138,6 +138,7 @@ type TeamAttributesType {
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
   HangTime: Float
+  CanAutoHang: Boolean
   Photo: String
   Notes: String
 }

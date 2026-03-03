@@ -1,6 +1,9 @@
 .Link {
     text-decoration: none;
     border: none;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     font-size: 20px;
     border-radius: 100px;
     padding: 10px 10px;

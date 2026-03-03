@@ -47,6 +47,8 @@ function AllianceSelectionView({ tableData, regional }) {
   const [currentPickIndex, setCurrentPickIndex] = useState(0);
   const [confirm, setConfirm] = useState(false);
 
+  const normalizeTeamNumber = (value) => String(value ?? '').trim();
+
   useEffect(() => {
     const ranked = rankTeamsForAllianceSelection(tableData);
     setRankedTeams(ranked);
@@ -126,14 +128,20 @@ function AllianceSelectionView({ tableData, regional }) {
   };
 
   const availableTeams = useMemo(() => {
-    const selectedTeams = Object.values(alliances).flatMap(alliance =>
-      [alliance.captain, ...alliance.picks].filter(Boolean)
+    const selectedTeams = new Set(
+      Object.values(alliances)
+        .flatMap(alliance => [alliance.captain, ...alliance.picks])
+        .filter(Boolean)
+        .map(normalizeTeamNumber)
     );
-    return rankedTeams.filter(team => !selectedTeams.includes(team.TeamNumber));
+
+    return rankedTeams.filter(team => !selectedTeams.has(normalizeTeamNumber(team.TeamNumber)));
   }, [rankedTeams, alliances]);
 
   const handleTeamSelect = (teamNumber) => {
     if (!teamNumber || currentPickIndex >= pickingOrder.length) return;
+
+    const normalizedTeamNumber = normalizeTeamNumber(teamNumber);
 
     const currentPick = pickingOrder[currentPickIndex];
     const allianceKey = `alliance${currentPick.alliance}`;
@@ -146,18 +154,18 @@ function AllianceSelectionView({ tableData, regional }) {
     setAlliances(prev => {
       const newAlliances = { ...prev };
       if (currentPick.type === 'captain') {
-        newAlliances[allianceKey].captain = teamNumber;
+        newAlliances[allianceKey].captain = normalizedTeamNumber;
       } else if (currentPick.type === 'pick1') {
-        newAlliances[allianceKey].picks[0] = teamNumber;
+        newAlliances[allianceKey].picks[0] = normalizedTeamNumber;
       } else if (currentPick.type === 'pick2') {
-        newAlliances[allianceKey].picks[1] = teamNumber;
+        newAlliances[allianceKey].picks[1] = normalizedTeamNumber;
       }
       return newAlliances;
     });
 
-    setInputDrafts(prev => ({ ...prev, [draftKey]: String(teamNumber) }));
+    setInputDrafts(prev => ({ ...prev, [draftKey]: normalizedTeamNumber }));
 
-    setCurrentPickIndex(currentPickIndex + 1);
+    setCurrentPickIndex(prev => prev + 1);
   };
 
   const lookupTeamNumber = async (term) => {
@@ -345,7 +353,7 @@ function AllianceSelectionView({ tableData, regional }) {
               {availableTeams.map((team, index) => (
                 <tr key={team.TeamNumber} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {rankedTeams.findIndex(t => t.TeamNumber === team.TeamNumber) + 1}
+                    {rankedTeams.findIndex(t => normalizeTeamNumber(t.TeamNumber) === normalizeTeamNumber(team.TeamNumber)) + 1}
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>
                     {team.TeamNumber}
