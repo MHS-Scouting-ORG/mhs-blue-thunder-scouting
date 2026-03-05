@@ -4,6 +4,9 @@ import linkStyles from './menu.module.css'
 
 const TABLE_NOTES_ALLOWED_EMAILS = [
     'toby.naumov@gmail.com',
+    'shdwberu@gmail.com',
+    'dn1guiwa@gmail.com',
+    'jhmaui2@gmail.com',
 ]
 
 function Menu({ user }) {
