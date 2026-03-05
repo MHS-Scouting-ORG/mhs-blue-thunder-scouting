@@ -49,42 +49,56 @@ export async function submitState( //params are states of data from form
   inactiveStrategy,
   timesTravelledMidActive,
   timesTravelledMidInactive,
-  yellowCard,
-  redCard,
+  shootingCycles,
+  matchResult,
+  teamImpact,
   disable,
   dq,
   botBroke,
   noShow,
-  tipped,
-  minFouls,
-  majFouls,
+  stuckOnBump,
+  stuckOnBalls,
   robotSpeed,
+  driverSkill,
   fuelCapacity,
   shootingSpeed,
   estimatedBallsShot,
-  shootingCycles,
   robotInsight,
   robotBrokenComments
-
-)
-
-//actual function below
-{
+) {
 
   const normalizeAutoStratFromActions = (actions) => {
-    if (!Array.isArray(actions) || actions.length === 0) return "None"
-    if (actions.includes("Scored")) return "Scored"
-    if (actions.includes("Went Mid")) return "WentMid"
-    if (actions.includes("Crossed Mid")) return "CrossedMid"
-    return "None"
+    if (!Array.isArray(actions) || actions.length === 0) return []
+    const autoMap = {
+      "Moved": "Nothing",
+      "Scored": "ScoredInGoal",
+      "Crossed Bump/Trench": "LeftStartingZone",
+    }
+    const normalized = actions
+      .map(action => autoMap[action])
+      .filter(Boolean)
+
+    return [...new Set(normalized)]
   }
 
   const normalizeStratList = (value) => {
-    const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
+    const allowed = ["Hoarding", "Defense", "Aggressive", "Support", "Shooting", "None"]
+    const strategyMap = {
+      "Hoarding": "Hoarding",
+      "Defending": "Defense",
+      "Scoring": "Shooting",
+      "Defending Mid": "Defense",
+      "Blocking": "Support",
+      "Defense": "Defense",
+      "Aggressive": "Aggressive",
+      "Support": "Support",
+      "Shooting": "Shooting",
+      "None": "None",
+    }
 
     if (Array.isArray(value)) {
       const cleaned = value
-        .map(v => (typeof v === "string" ? v.trim() : ""))
+        .map(v => (typeof v === "string" ? strategyMap[v.trim()] : ""))
         .filter(v => allowed.includes(v) && v !== "")
       return cleaned.length > 0 ? cleaned : ["None"]
     }
@@ -92,7 +106,7 @@ export async function submitState( //params are states of data from form
     if (typeof value === "string") {
       const parts = value
         .split(",")
-        .map(v => v.trim())
+        .map(v => strategyMap[v.trim()])
         .filter(v => allowed.includes(v) && v !== "")
       return parts.length > 0 ? parts : ["None"]
     }
@@ -151,6 +165,11 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nShooting Speed"
   }
 
+  if (driverSkill === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nDriver Skill"
+  }
+
   if (Number.isNaN(parsedFuelCapacity)) {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nFuel Capacity"
@@ -160,7 +179,7 @@ export async function submitState( //params are states of data from form
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nEstimated Balls Shot"
   }
-  
+
   if (Number.isNaN(parsedShootingCycles)) {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nShooting Cycles"
@@ -171,81 +190,76 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nMatch Number"
   }
 
-  /* Autonomous Hang */
-  if (autoHang === "None" && (redCard || dq || noShow || disable || botBroke) === false) {
+  if (matchResult === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nMatch Result"
+  }
+
+  if (teamImpact === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nTeam Impact"
+  }
+
+  /* AutoHang */
+  if (autoHang === "None" && (dq || noShow || disable || botBroke) === false) {
     autoPoints += 0;
   }
-  else if (autoHang === 'Level1' && (redCard || dq || noShow || disable || botBroke) === false) {
+  else if (autoHang === 'Level1' && (dq || noShow || disable || botBroke) === false) {
     autoPoints += 15;
   }
 
   /* EndGame Select */
-  if ((redCard || dq || noShow || disable || botBroke) !== false) {
-
-  }
-  else{
-    switch(hangType){
-      case 'None':
-        endGamePoints += 0
-        break;
-      case 'Level3':
-        endGamePoints += 30
-        break;
-      case 'Level2':
-        endGamePoints += 20
-
-      case 'Level1':
-        endGamePoints += 10
-        break;
-      default: 
-        incompleteForm = true;
-        windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
-        break;
-    }
+  switch(hangType){
+    case 'None':
+      endGamePoints += 0
+      break;
+    case 'Level3':
+      endGamePoints += 30
+      break;
+    case 'Level2':
+      endGamePoints += 20
+      break;
+    case 'Level1':
+      endGamePoints += 10
+      break;
+    default: 
+      incompleteForm = true;
+      windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
+      break;
   }
 
   /* Robot Info Select */
-  if ((redCard || dq || noShow || disable || botBroke) !== false) {
-
-  }
-  else{
-    switch(robotSpeed){
-      case 'Slow':
-        robotSpeed = "Slow"
-        break;
-      case 'Average':
-        robotSpeed = "Average"
-        break;
-      case 'Fast':
-        robotSpeed = "Fast"
-        break;
-      default:
-        incompleteForm = true;
-        windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-        break;
-    }
+  switch(robotSpeed){
+    case 'Slow':
+      robotSpeed = "Slow"
+      break;
+    case 'Average':
+      robotSpeed = "Average"
+      break;
+    case 'Fast':
+      robotSpeed = "Fast"
+      break;
+    default:
+      incompleteForm = true;
+      windowAlertMsg = windowAlertMsg + "\nRobot Speed"
+      break;
   }
 
   /* Shooting Speed Select */
-  if ((redCard || dq || noShow || disable || botBroke) !== false) {
-
-  }
-  else{
-    switch(shootingSpeed){
-      case 'Slow':
-        shootingSpeed = "Slow"
-        break;
-      case 'Average':
-        shootingSpeed = "Average"
-        break;
-      case 'Fast':
-        shootingSpeed = "Fast"
-        break;
-      default:
-        incompleteForm = true;
-        windowAlertMsg = windowAlertMsg + "\nShooting Speed"
-        break;
-    }
+  switch(shootingSpeed){
+    case 'Slow':
+      shootingSpeed = "Slow"
+      break;
+    case 'Average':
+      shootingSpeed = "Average"
+      break;
+    case 'Fast':
+      shootingSpeed = "Fast"
+      break;
+    default:
+      incompleteForm = true;
+      windowAlertMsg = windowAlertMsg + "\nShooting Speed"
+      break;
   }
 
   /* Point Calc */
@@ -299,6 +313,7 @@ export async function submitState( //params are states of data from form
     /* Robot Info */
     matchEntry.RobotInfo.RobotSpeed = robotSpeed
     matchEntry.RobotInfo.ShooterSpeed = shootingSpeed
+    matchEntry.RobotInfo.DriverSkill = driverSkill
     matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
@@ -306,14 +321,14 @@ export async function submitState( //params are states of data from form
     matchEntry.Comment = robotInsight
 
     // PENALTIES //
-    matchEntry.Penalties.Fouls = minFouls
-    matchEntry.Penalties.Tech = majFouls
-    matchEntry.Penalties.PenaltiesCommitted.YellowCard = yellowCard
-    matchEntry.Penalties.PenaltiesCommitted.RedCard = redCard
     matchEntry.Penalties.PenaltiesCommitted.Disabled = disable
     matchEntry.Penalties.PenaltiesCommitted.DQ = dq
     matchEntry.Penalties.PenaltiesCommitted.Broken = botBroke
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
+    matchEntry.Penalties.PenaltiesCommitted.StuckOnBump = stuckOnBump
+    matchEntry.Penalties.PenaltiesCommitted.StuckOnBalls = stuckOnBalls
+    matchEntry.MatchResult = matchResult
+    matchEntry.TeamImpact = teamImpact
 
     //console.log("check")
 
@@ -337,9 +352,9 @@ export async function submitState( //params are states of data from form
               ...match,
               Autonomous: {
                 ...match?.Autonomous,
-                AutoStrat: ["WentMid", "Scored", "CrossedMid", "None"].includes(match?.Autonomous?.AutoStrat)
+                AutoStrat: Array.isArray(match?.Autonomous?.AutoStrat) 
                   ? match.Autonomous.AutoStrat
-                  : "None"
+                  : []
               },
               ActiveStrat: normalizeStratList(match?.ActiveStrat),
               InactiveStrat: normalizeStratList(match?.InactiveStrat)
@@ -370,14 +385,15 @@ export async function submitState( //params are states of data from form
 
       const teamMatch = {
         name: "",
-        description: "",
+        description: robotInsight,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
+        MatchResult: matchResult,
+        TeamImpact: teamImpact,
         Autonomous: {
-          AutoStrat: ["WentMid", "Scored", "CrossedMid", "None"].includes(matchEntry.Autonomous.AutoStrat)
+          AutoStrat: Array.isArray(matchEntry.Autonomous.AutoStrat)
             ? matchEntry.Autonomous.AutoStrat
-            : "None",
-          TravelMid: matchEntry.Autonomous.TravelMid,
+            : [],
           AutoHang: matchEntry.Autonomous.AutoHang,
         },
         Teleop: {
@@ -438,12 +454,6 @@ export function toggleIncremental(state, type) {
     if (type === "autoLeave") {
       return (<img src="./images/autoLeaveTrue.png" style={{ width: "110px" }} />)
     }
-    else if (type === "yellowCard") {
-      return (<img src="./images/yellowTrue.png" style={{ width: "100px" }} />)
-    }
-    else if (type === "redCard") {
-      return (<img src="./images/redTrue.png" style={{ width: "100px" }} />)
-    }
     else if (type === "disable") {
       return (<img src="./images/disableTrue.png" style={{ width: "100px" }} />)
     }
@@ -462,12 +472,6 @@ export function toggleIncremental(state, type) {
   else {
     if (type === "autoLeave") {
       return (<img src="./images/autoLeaveFalse.png" style={{ width: "110px" }} />)
-    }
-    else if (type === "yellowCard") {
-      return (<img src="./images/yellowDefault.png" style={{ width: "100px" }} />)
-    }
-    else if (type === "redCard") {
-      return (<img src="./images/redDefault.png" style={{ width: "100px" }} />)
     }
     else if (type === "disable") {
       return (<img src="./images/disableDefault.png" style={{ width: "100px" }} />)

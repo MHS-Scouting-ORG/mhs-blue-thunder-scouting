@@ -1,15 +1,15 @@
 const AutoStratOpts = {
-  WentMid: "WentMid",
-  Scored: "Scored",
-  CrossedMid: "CrossedMid",
-  None: "None"
+  LeftStartingZone: "LeftStartingZone",
+  ScoredInGoal: "ScoredInGoal",
+  Nothing: "Nothing"
 }
 
 const StratOpts = {
   Hoarding: "Hoarding",
   Defense: "Defense",
-  Offensive: "Offensive",
+  Aggressive: "Aggressive",
   Support: "Support",
+  Shooting: "Shooting",
   None: "None"
 }
 
@@ -55,13 +55,32 @@ const StratOpts = {
 } */
 
 const PenaltyOpts = {
-  YELLOW_CARD: "YellowCard",
-  RED_CARD: "RedCard",
   DISABLED: "Disabled",
   DQ: "DQ",
-  BROKEN_BOT: "BrokenBot",
+  BROKEN_BOT: "Broken",
   NO_SHOW: "NoShow",
+  STUCK_ON_BUMP: "StuckOnBump",
+  STUCK_ON_BALLS: "StuckOnBalls",
   None: "None"
+}
+
+const DriverSkillOpts = {
+  Poor: "Poor",
+  Average: "Average",
+  Good: "Good",
+  Excellent: "Excellent",
+}
+
+const MatchResultOpts = {
+  Win: "Win",
+  Lose: "Lose",
+  Tie: "Tie",
+}
+
+const TeamImpactOpts = {
+  High: "High",
+  Medium: "Medium",
+  Low: "Low",
 }
 
 const HangOpts = {
@@ -132,8 +151,10 @@ const buildMatchEntry = (teamId, matchKey) => {
   return {
     Team: teamId,
     MatchId: matchKey,
+    MatchResult: null,
+    TeamImpact: null,
     Autonomous: {
-      AutoStrat: AutoStratOpts.None,
+      AutoStrat: [],
       TravelMid: 0,
       AutoHang: HangOpts.None
     },
@@ -145,21 +166,20 @@ const buildMatchEntry = (teamId, matchKey) => {
     ActiveStrat: [],
     InactiveStrat: [],
     Penalties: {
-      Fouls: 0,
-      Tech: 0,
       PenaltiesCommitted: {
-        YellowCard: false,
-        RedCard: false,
         Disabled: false,
         DQ: false,
         Broken: false,
         NoShow: false,
+        StuckOnBump: false,
+        StuckOnBalls: false,
       },
       FoulDesc: ""
     },
     RobotInfo: {
       RobotSpeed: SpeedOpts.None,
       ShooterSpeed: SpeedOpts.None,
+      DriverSkill: DriverSkillOpts.Average,
       FuelCapacity: 0,
       BallsShot: 0,
       ShootingCycles: 0,

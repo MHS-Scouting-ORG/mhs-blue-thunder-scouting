@@ -8,10 +8,9 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 # enums
 enum AutoStratOpts {
-  WentMid
-  Scored
-  CrossedMid
-  None
+  LeftStartingZone
+  ScoredInGoal
+  Nothing
 }
 
 enum AutoHangOpts {
@@ -21,8 +20,7 @@ enum AutoHangOpts {
 
 # types
 type AutonomousType {
-  AutoStrat: AutoStratOpts
-  TravelMid: Int
+  AutoStrat: [AutoStratOpts]
   AutoHang: AutoHangOpts
 }
 
@@ -42,12 +40,12 @@ enum HangOpts {
 # types
 
 type PenaltyOpts {
-  YellowCard: Boolean
-  RedCard: Boolean
   Disabled: Boolean
   DQ: Boolean
   Broken: Boolean
   NoShow: Boolean
+  StuckOnBump: Boolean
+  StuckOnBalls: Boolean
 }
 
 type TeleType {
@@ -56,8 +54,6 @@ type TeleType {
 }
 
 type PenaltyType {
-  Fouls: Int
-  Tech: Int
   PenaltiesCommitted: PenaltyOpts
   FoulDesc: String
 }
@@ -74,11 +70,19 @@ enum SpeedOpts {
   Fast
 }
 
+enum DriverSkillOpts {
+  Poor
+  Average
+  Good
+  Excellent
+}
+
 # types
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
   ShooterSpeed: SpeedOpts
+  DriverSkill: DriverSkillOpts
   FuelCapacity: Int
   BallsShot: Int
   ShootingCycles: Int
@@ -95,9 +99,22 @@ type RobotInfoType {
 enum StratOpts {
   Hoarding
   Defense
-  Offensive
+  Aggressive
   Support
+  Shooting
   None
+}
+
+enum MatchResultOpts {
+  Win
+  Lose
+  Tie
+}
+
+enum TeamImpactOpts {
+  High
+  Medium
+  Low
 }
 
 enum HangTeamworkOpts {
@@ -119,6 +136,8 @@ type TeamMatchesType {
   description: String
   Team: ID!
   MatchId: String
+  MatchResult: MatchResultOpts
+  TeamImpact: TeamImpactOpts
   Autonomous: AutonomousType!
   Teleop: TeleType!
   ActiveStrat: [StratOpts]

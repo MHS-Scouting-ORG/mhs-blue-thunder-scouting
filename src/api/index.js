@@ -436,6 +436,44 @@ const apiSaveAllianceSelection = async function (regionalId, alliances) {
   return true
 }
 
+const apiGetScoutingAssignments = async function (regionalId) {
+  if (!regionalId) return null
+  const assignmentId = `scouters-${regionalId}`
+
+  const team = await apiGetTeam(assignmentId)
+  if (!team?.description) return null
+
+  try {
+    return JSON.parse(team.description)
+  } catch (_) {
+    return null
+  }
+}
+
+const apiSaveScoutingAssignments = async function (regionalId, assignmentsState) {
+  if (!regionalId) throw new Error('Regional not provided')
+
+  const assignmentId = `scouters-${regionalId}`
+  let team = await apiGetTeam(assignmentId)
+
+  if (!team) {
+    await apiCreateTeamEntry(assignmentId, regionalId)
+    team = await apiGetTeam(assignmentId)
+  }
+
+  if (!team) {
+    throw new Error('Failed to initialize scouting assignments storage team')
+  }
+
+  const merged = {
+    ...team,
+    description: JSON.stringify(assignmentsState)
+  }
+
+  await apiUpdateTeamEntry(assignmentId, merged)
+  return true
+}
+
 /* Creates team entry for our database*/
 const apiCreateTeamEntry = async function (teamNumber, regional) {
   if (teamNumber === undefined) {
@@ -476,6 +514,8 @@ export {
   apiGetRankingsForRegional,
   apiGetAllianceSelection,
   apiSaveAllianceSelection,
+  apiGetScoutingAssignments,
+  apiSaveScoutingAssignments,
   apiUpdateTeamEntry,
   apiUpdateRegional,
   apiGetRegional,
