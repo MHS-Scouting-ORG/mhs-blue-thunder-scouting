@@ -227,15 +227,10 @@ function TeamStats(props) {
   const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
   const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
 
-  const penaltyCount = matches.reduce((sum, m) => {
-    const penalties = m?.Penalties?.PenaltiesCommitted || {};
-    return sum + Object.values(penalties).filter(v => v === true).length;
-  }, 0);
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
   const brokenCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.Broken ? 1 : 0), 0);
 
-  const penaltyInfo = `${penaltyCount} total episodes${dqCount > 0 ? `, ${dqCount} DQ` : ''}`;
   const brokenRate = matches.length > 0 ? ((brokenCount / matches.length) * 100).toFixed(2) : '0.00';
   const capabilitiesText = Array.isArray(attrs?.Capabilities)
     ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
@@ -323,9 +318,6 @@ function TeamStats(props) {
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Hang Time:</strong> {hangTimeText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Penalties</strong>: {penaltyInfo}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
