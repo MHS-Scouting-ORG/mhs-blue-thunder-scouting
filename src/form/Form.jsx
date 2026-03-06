@@ -295,7 +295,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 <input 
                   style={{ cursor: !matchNumber ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
                   disabled={!matchNumber}
-                  onInput={(e) => setColor(false)} 
+                  onChange={() => setColor(false)} 
                   type="radio" 
                   id="redAllianceChosen" 
                   name="alliance"
@@ -308,7 +308,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 <input 
                   style={{ cursor: !matchNumber ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
                   disabled={!matchNumber}
-                  onInput={(e) => setColor(true)} 
+                  onChange={() => setColor(true)} 
                   type="radio" 
                   id="blueAllianceChosen" 
                   name="alliance"

@@ -21,6 +21,7 @@ export const createTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -36,7 +37,6 @@ export const createTeam = /* GraphQL */ `
           TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -104,6 +104,7 @@ export const updateTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -119,7 +120,6 @@ export const updateTeam = /* GraphQL */ `
           TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -187,6 +187,7 @@ export const deleteTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -202,7 +203,6 @@ export const deleteTeam = /* GraphQL */ `
           TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }

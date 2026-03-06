@@ -9,5 +9,6 @@
     "READ",
     "DELETE"
   ],
+  "triggerFunction": "NONE",
   "groupAccess": {}
 }

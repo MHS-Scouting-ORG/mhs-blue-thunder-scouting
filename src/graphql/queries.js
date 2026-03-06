@@ -18,6 +18,7 @@ export const getTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -33,7 +34,6 @@ export const getTeam = /* GraphQL */ `
           TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -47,6 +47,7 @@ export const getTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -55,15 +56,13 @@ export const getTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc
@@ -112,6 +111,7 @@ export const listTeams = /* GraphQL */ `
           MaxHang
           HangTeamwork
           HangTime
+          CanAutoHang
           Photo
           Notes
           __typename
@@ -127,7 +127,6 @@ export const listTeams = /* GraphQL */ `
             TeamImpact
             Autonomous {
               AutoStrat
-              TravelMid
               AutoHang
               __typename
             }
@@ -141,6 +140,7 @@ export const listTeams = /* GraphQL */ `
             RobotInfo {
               RobotSpeed
               ShooterSpeed
+              DriverSkill
               FuelCapacity
               BallsShot
               ShootingCycles
@@ -149,15 +149,13 @@ export const listTeams = /* GraphQL */ `
               __typename
             }
             Penalties {
-              Fouls
-              Tech
               PenaltiesCommitted {
-                YellowCard
-                RedCard
                 Disabled
                 DQ
                 Broken
                 NoShow
+                StuckOnBump
+                StuckOnBalls
                 __typename
               }
               FoulDesc
@@ -208,6 +206,7 @@ export const syncTeams = /* GraphQL */ `
           MaxHang
           HangTeamwork
           HangTime
+          CanAutoHang
           Photo
           Notes
           __typename
@@ -223,7 +222,6 @@ export const syncTeams = /* GraphQL */ `
             TeamImpact
             Autonomous {
               AutoStrat
-              TravelMid
               AutoHang
               __typename
             }
@@ -237,6 +235,7 @@ export const syncTeams = /* GraphQL */ `
             RobotInfo {
               RobotSpeed
               ShooterSpeed
+              DriverSkill
               FuelCapacity
               BallsShot
               ShootingCycles
@@ -245,15 +244,13 @@ export const syncTeams = /* GraphQL */ `
               __typename
             }
             Penalties {
-              Fouls
-              Tech
               PenaltiesCommitted {
-                YellowCard
-                RedCard
                 Disabled
                 DQ
                 Broken
                 NoShow
+                StuckOnBump
+                StuckOnBalls
                 __typename
               }
               FoulDesc
