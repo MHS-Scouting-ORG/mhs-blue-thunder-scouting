@@ -3,9 +3,11 @@ import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSumma
 import { isSameTeam } from "../../../utils/teamId"
 
 const getAutoPoints = (match) => {
-  const auto = match?.Autonomous?.AutoStrat || 'None'
-  if (auto === 'Scored') return 8
-  if (auto === 'WentMid' || auto === 'CrossedMid') return 2
+  const auto = match?.Autonomous?.AutoStrat || []
+  if (Array.isArray(auto)) {
+    if (auto.includes('Scored in Goal')) return 8
+    if (auto.includes('Left Starting Zone')) return 2
+  }
   return 0
 }
 
@@ -81,12 +83,12 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //Robot Performance
       const mcRobotSpeed = arrMode(teamStats.map(m => m?.RobotInfo?.RobotSpeed ?? null))
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
-      const mcAutoStrat = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
+      const mcDriverSkill = arrMode(teamStats.map(m => m?.RobotInfo?.DriverSkill ?? null))
       const mcActiveStrat = arrMode(teamStats.map(m => m?.ActiveStrat ?? 'None' ))
-      //const mcShooterSpeed = arrMode(teamStats.map((team) => team.Teleop.RobotInfo.ShooterSpeed !== null ?  team.RobotInfo.RobotSpeed : null))
-
-      //custom robot stats
-      const avgCycles = calcAvg(teamStats.map(m => Number(m?.RobotInfo?.ShootingCycles || 0)))
+      
+      // For AutoStrat as array, get most common item
+      const allAutoStrats = teamStats.flatMap(m => Array.isArray(m?.Autonomous?.AutoStrat) ? m.Autonomous.AutoStrat : [])
+      const mcAutoStrat = arrMode(allAutoStrats.length > 0 ? allAutoStrats : ['None'])
       
 
       const avgEndgame = calcAvg(teamStats.map(m => getEndgamePoints(m)))
@@ -96,15 +98,12 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //const mcAutoStart = arrMode(teamStats.map(m => m?.Autonomous?.AutoStrat ?? 'None' ))
 
       //penalties
-      const fouls = calcAvg(teamStats.map(m => m?.Penalties?.Fouls ?? 0))
-      const techs = calcAvg(teamStats.map(m => m?.Penalties?.Tech ?? 0))
-      const yellowCards = getMatchesOfPenalty(teamStats, 'YellowCard')
-      const redCards = getMatchesOfPenalty(teamStats, 'RedCard')
       const brokenRobots = getMatchesOfPenalty(teamStats, 'Broken')
-
       const disabledRobots = getMatchesOfPenalty(teamStats,"Disabled")
       const disqualifiedRobots = getMatchesOfPenalty(teamStats,"DQ")
       const noShowRobots = getMatchesOfPenalty(teamStats,"NoShow")
+      const stuckOnBumpRobots = getMatchesOfPenalty(teamStats,"StuckOnBump")
+      const stuckOnBallsRobots = getMatchesOfPenalty(teamStats,"StuckOnBalls")
 
       //reliable 
       const reliableRobotSpeed = getReliability(teamStats.map((team) => team?.RobotInfo?.RobotSpeed ?? 'Average'), mcRobotSpeed)
@@ -114,7 +113,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
       //grade
 
-      const maxCycles = getMax(tableData.map(team => team.AvgCycles))
       const maxPts = getMax(tableData.map(team => team.AvgPoints))
       const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
       const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
@@ -128,6 +126,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         TeamMatches: teamStats,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
+        DriverSkill: mcDriverSkill === null ? '' : mcDriverSkill,
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
         //ActiveStrat: mcActiveStrat === 'None' ? '' : mcActiveStrat, needs to be fixed
        
@@ -137,20 +136,17 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         //Made//
         AvgAutoPts: isNaN(avgAutoPoints) ? 0 : avgAutoPoints,
         AvgEndgamePts: isNaN(avgEndgame) ? 0 : avgEndgame,
-        AvgCycles: isNaN(avgCycles) ? 0 : avgCycles,
 
         //===auto==//
         AutoStrat: mcAutoStrat,
         
         //===Penalties===//
-        Fouls: isNaN(fouls) ? 0 : fouls, 
-        Tech: isNaN(techs) ? 0 : techs,
-        YellowCard: yellowCards,
-        RedCard: redCards,
         BrokenRobot: brokenRobots,
         Disabled: disabledRobots,
         DQ: disqualifiedRobots,
         NoShow: noShowRobots,
+        StuckOnBump: stuckOnBumpRobots,
+        StuckOnBalls: stuckOnBallsRobots,
 
         
         Evaluations: evaluations, 

@@ -217,11 +217,11 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
                         {isScoutingEntry ? (
                           <>
                             <div>Team {m?.Team || selectedTeam}</div>
-                            <div>Auto: {m?.Autonomous?.AutoStrat || 'None'} • Auto Hang: {m?.Autonomous?.AutoHang || 'None'} • Auto Mid: {m?.Autonomous?.TravelMid || 0}</div>
-                            <div>Endgame: {m?.Teleop?.Endgame || 'None'} • Tele Mid: {m?.Teleop?.TravelMid || 0}</div>
+                            <div>Auto: {Array.isArray(m?.Autonomous?.AutoStrat) ? m.Autonomous.AutoStrat.join(', ') : m?.Autonomous?.AutoStrat || 'None'} • Auto Hang: {m?.Autonomous?.AutoHang || 'None'}</div>
+                            <div>Endgame: {m?.Teleop?.Endgame || 'None'}</div>
                             <div>Active: {stringifyList(m?.ActiveStrat)} • Inactive: {stringifyList(m?.InactiveStrat)}</div>
-                            <div>Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)} • Cycles: {Number(m?.RobotInfo?.ShootingCycles || 0)}</div>
-                            <div>Fouls: {Number(m?.Penalties?.Fouls || 0)} • Tech: {Number(m?.Penalties?.Tech || 0)}</div>
+                            <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
+                            <div>Penalties: {Object.entries(m?.Penalties?.PenaltiesCommitted || {}).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None'}</div>
                             {m?.Comment ? <div>Comment: {m.Comment}</div> : null}
                           </>
                         ) : (

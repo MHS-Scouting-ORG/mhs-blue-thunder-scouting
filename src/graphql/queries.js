@@ -29,6 +29,8 @@ export const getTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
             TravelMid
@@ -121,6 +123,8 @@ export const listTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchResult
+            TeamImpact
             Autonomous {
               AutoStrat
               TravelMid
@@ -215,6 +219,8 @@ export const syncTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchResult
+            TeamImpact
             Autonomous {
               AutoStrat
               TravelMid

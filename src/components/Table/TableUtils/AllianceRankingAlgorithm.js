@@ -31,12 +31,11 @@ const DEFAULT_OPTIONS = {
   aggregateSeedSpread: 24,
 
   featureWeights: {
-    ballsShot: 0.35,
-    cycles: 0.25,
-    robotSpeed: 0.1,
+    ballsShot: 0.45,
+    robotSpeed: 0.15,
     activeStrategies: 0.1,
-    auto: 0.1,
-    endgame: 0.1
+    auto: 0.15,
+    endgame: 0.15
   }
 }
 
@@ -71,8 +70,26 @@ const parseSpeedScore = (speed) => {
 }
 
 const parseAutoScore = (autoStrat) => {
+  // Handle array-based AutoStrat (new format)
+  if (Array.isArray(autoStrat)) {
+    if (autoStrat.length === 0) return 0
+    // Give points for each auto action: ScoredInGoal=1, LeftStartingZone=0.3, Nothing=0
+    let maxScore = 0
+    for (const action of autoStrat) {
+      const v = safeLower(action)
+      if (v.includes('scored') || v.includes('goal')) {
+        maxScore = Math.max(maxScore, 1)
+      } else if (v.includes('left') || v.includes('starting') || v.includes('zone')) {
+        maxScore = Math.max(maxScore, 0.3)
+      }
+    }
+    return maxScore
+  }
+  
+  // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
-  if (v.includes('scored')) return 1
+  if (v.includes('scored') || v.includes('goal')) return 1
+  if (v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
   if (v.includes('wentmid') || v.includes('crossedmid')) return 0.45
   return 0
 }
@@ -98,24 +115,19 @@ const strategyQualityScore = (strategies) => {
 
 const getPenaltySeverity = (match) => {
   const committed = match?.Penalties?.PenaltiesCommitted || {}
-  const fouls = toNumber(match?.Penalties?.Fouls, 0)
-  const techs = toNumber(match?.Penalties?.Tech, 0)
   let severity = 0
-  severity += 0.08 * fouls
-  severity += 0.2 * techs
-  if (committed?.YellowCard) severity += 0.2
-  if (committed?.RedCard) severity += 0.5
   if (committed?.Broken) severity += 0.35
   if (committed?.Disabled) severity += 0.3
   if (committed?.DQ) severity += 0.6
   if (committed?.NoShow) severity += 0.6
+  if (committed?.StuckOnBump) severity += 0.25
+  if (committed?.StuckOnBalls) severity += 0.25
   return clamp(severity, 0, 0.85)
 }
 
 const getMatchPerformanceScore = (match, options) => {
   const weights = options.featureWeights
   const ballsShot = clamp(toNumber(match?.RobotInfo?.BallsShot, 0) / 18, 0, 1)
-  const cycles = clamp(toNumber(match?.RobotInfo?.ShootingCycles, 0) / 10, 0, 1)
   const robotSpeed = parseSpeedScore(match?.RobotInfo?.RobotSpeed)
   const activeStrategies = strategyQualityScore(match?.ActiveStrat)
   const auto = parseAutoScore(match?.Autonomous?.AutoStrat)
@@ -123,7 +135,6 @@ const getMatchPerformanceScore = (match, options) => {
 
   const rawPerformance =
     ballsShot * weights.ballsShot +
-    cycles * weights.cycles +
     robotSpeed * weights.robotSpeed +
     activeStrategies * weights.activeStrategies +
     auto * weights.auto +
@@ -146,10 +157,9 @@ const getAggregateSeedScore = (teamData) => {
 
   const normalized =
     clamp(toNumber(teamData.AvgPoints, 0) / 50, 0, 1) * 0.35 +
-    clamp(toNumber(teamData.AvgAutoPts, 0) / 15, 0, 1) * 0.2 +
-    clamp(toNumber(teamData.AvgEndgamePts, 0) / 30, 0, 1) * 0.2 +
-    clamp(toNumber(teamData.AvgCycles, 0) / 10, 0, 1) * 0.15 +
-    clamp(toNumber(teamData.OPR, 0) / 60, 0, 1) * 0.05 +
+    clamp(toNumber(teamData.AvgAutoPts, 0) / 15, 0, 1) * 0.25 +
+    clamp(toNumber(teamData.AvgEndgamePts, 0) / 30, 0, 1) * 0.25 +
+    clamp(toNumber(teamData.OPR, 0) / 60, 0, 1) * 0.1 +
     reliability * 0.05
 
   return clamp(normalized, 0, 1)

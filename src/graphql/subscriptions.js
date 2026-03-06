@@ -29,6 +29,8 @@ export const onCreateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
             TravelMid
@@ -108,6 +110,8 @@ export const onUpdateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
             TravelMid
@@ -187,6 +191,8 @@ export const onDeleteTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
             TravelMid

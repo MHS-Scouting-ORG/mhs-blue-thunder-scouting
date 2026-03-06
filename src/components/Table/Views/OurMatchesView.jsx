@@ -65,8 +65,8 @@ function OurMatchesView({ tableData, regional }) {
 
   const renderTeamButton = (teamKey, alliance, matchKey) => {
     const teamNumber = String(teamKey).replace('frc', '');
-    const isSelected = selectedTeam === teamNumber;
     const isOurTeam = teamNumber === OUR_TEAM_NUMBER;
+    const isSelected = selectedTeam === teamNumber && !isOurTeam;
     const cls = [
       tableStyles.AllianceButton,
       alliance === 'blue' ? tableStyles.AllianceButtonBlue : tableStyles.AllianceButtonRed
@@ -78,8 +78,10 @@ function OurMatchesView({ tableData, regional }) {
       <button
         key={`${alliance}-${teamNumber}`}
         onClick={() => {
-          setSelectedTeam(teamNumber);
-          setSelectedMatchKey(matchKey);
+          if (!isOurTeam) {
+            setSelectedTeam(teamNumber);
+            setSelectedMatchKey(matchKey);
+          }
         }}
         className={cls.join(' ')}
         style={{
@@ -87,7 +89,7 @@ function OurMatchesView({ tableData, regional }) {
           minWidth: '72px',
           margin: '2px',
           padding: '8px 10px',
-          ...(isOurTeam ? { borderWidth: '8px', borderStyle: 'solid', fontWeight: 800 } : {})
+          ...(isOurTeam ? { borderWidth: '8px', borderStyle: 'solid', fontWeight: 800, cursor: 'default' } : { cursor: 'pointer' })
         }}
       >
         {teamNumber}{isOurTeam ? '' : ''}
@@ -125,19 +127,19 @@ function OurMatchesView({ tableData, regional }) {
                   Match {match?.match_number}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', columnGap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', columnGap: '16px', rowGap: '12px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#cc0000' }}>Red</div>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'nowrap', gap: '6px', overflowX: 'auto' }}>
+                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#cc0000', fontSize: '14px' }}>Red</div>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
                       {(match?.alliances?.red?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'red', matchKey))}
                     </div>
                   </div>
 
-                  <div style={{ fontWeight: 700, fontSize: '18px', textAlign: 'center' }}>VS</div>
+                  <div style={{ fontWeight: 700, fontSize: '16px', textAlign: 'center' }}>VS</div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#0066cc' }}>Blue</div>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'nowrap', gap: '6px', overflowX: 'auto' }}>
+                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#0066cc', fontSize: '14px' }}>Blue</div>
+                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
                       {(match?.alliances?.blue?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'blue', matchKey))}
                     </div>
                   </div>

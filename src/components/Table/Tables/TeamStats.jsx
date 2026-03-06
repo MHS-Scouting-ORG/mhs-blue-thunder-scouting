@@ -208,19 +208,34 @@ function TeamStats(props) {
   const safeStats = stats || {};
 
   const attrs = teamData?.TeamAttributes || {};
-  const autoMode = mode(matches.map(m => m?.Autonomous?.AutoStrat || 'None'));
+  
+  // Handle AutoStrat as an array
+  const flattenedAutoStrats = matches
+    .flatMap(m => {
+      const auto = m?.Autonomous?.AutoStrat;
+      return Array.isArray(auto) ? auto : (auto ? [auto] : []);
+    });
+  const autoMode = flattenedAutoStrats.length > 0 
+    ? flattenedAutoStrats.reduce((acc, val, _, arr) => 
+        acc === val || acc.split(',').includes(val) ? acc : acc + ',' + val, '')
+    : 'None';
+  
   const autoHangMode = mode(matches.map(m => m?.Autonomous?.AutoHang || 'None'));
   const endgameMode = mode(matches.map(m => m?.Teleop?.Endgame || 'None'));
   const activeMode = topFromListFields(matches, 'ActiveStrat');
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
   const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
+  const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
 
-  const yellowCards = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.YellowCard ? 1 : 0), 0);
-  const redCards = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.RedCard ? 1 : 0), 0);
+  const penaltyCount = matches.reduce((sum, m) => {
+    const penalties = m?.Penalties?.PenaltiesCommitted || {};
+    return sum + Object.values(penalties).filter(v => v === true).length;
+  }, 0);
+  const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
   const brokenCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.Broken ? 1 : 0), 0);
 
-  const cardsInfo = `${yellowCards} yellow / ${redCards} red`;
+  const penaltyInfo = `${penaltyCount} total episodes${dqCount > 0 ? `, ${dqCount} DQ` : ''}`;
   const brokenRate = matches.length > 0 ? ((brokenCount / matches.length) * 100).toFixed(2) : '0.00';
   const capabilitiesText = Array.isArray(attrs?.Capabilities)
     ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
@@ -310,7 +325,10 @@ function TeamStats(props) {
             <strong>Hang Time:</strong> {hangTimeText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Cards</strong>: {cardsInfo}
+            <strong>Penalties</strong>: {penaltyInfo}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Shooter Speed:</strong> {shooterMode || 'N/A'}
