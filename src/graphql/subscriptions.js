@@ -8,7 +8,6 @@ export const onCreateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -18,6 +17,7 @@ export const onCreateTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -29,9 +29,10 @@ export const onCreateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -45,6 +46,7 @@ export const onCreateTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -53,15 +55,13 @@ export const onCreateTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc
@@ -87,7 +87,6 @@ export const onUpdateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -97,6 +96,7 @@ export const onUpdateTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -108,9 +108,10 @@ export const onUpdateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -124,6 +125,7 @@ export const onUpdateTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -132,15 +134,13 @@ export const onUpdateTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc
@@ -166,7 +166,6 @@ export const onDeleteTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -176,6 +175,7 @@ export const onDeleteTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -187,9 +187,10 @@ export const onDeleteTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -203,6 +204,7 @@ export const onDeleteTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -211,15 +213,13 @@ export const onDeleteTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc

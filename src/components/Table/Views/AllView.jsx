@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { apiListTeams } from '../../../api';
+import { apiListTeams, fromNotesTeamId, isNotesTeamId } from '../../../api';
 import tableStyles from '../Table.module.css';
 
 function AllView({ regional }) {
@@ -25,8 +25,19 @@ function AllView({ regional }) {
           return val.join(', ')
         }
 
+        const stringifyCapabilities = (value) => {
+          if (Array.isArray(value)) {
+            const filtered = value.filter(v => v && v !== 'None')
+            return filtered.length > 0 ? filtered.join(', ') : 'None'
+          }
+          if (typeof value === 'string' && value && value !== 'None') return value
+          return 'None'
+        }
+
         teams.forEach(team => {
           const teamId = String(team?.id || '');
+          const notesRecord = isNotesTeamId(teamId)
+          const displayTeamNumber = notesRecord ? fromNotesTeamId(teamId) : teamId
           const teamUpdatedAt = team?.updatedAt || null;
           const teamChangedAt = Number(team?._lastChangedAt || 0);
           const timestamp = teamChangedAt > 0
@@ -34,43 +45,32 @@ function AllView({ regional }) {
             : (teamUpdatedAt ? Date.parse(teamUpdatedAt) : 0);
 
           const attrs = team?.TeamAttributes || {};
-          const hasMeaningfulNotesData = Boolean(
-            (attrs?.name && String(attrs.name).trim()) ||
-            (attrs?.Notes && String(attrs.Notes).trim()) ||
-            (attrs?.Photo && String(attrs.Photo).trim()) ||
-            Number(attrs?.DeclaredFuelCap || 0) > 0 ||
-            Number(attrs?.CyclesPerMatch || 0) > 0 ||
-            Number(attrs?.HangTime || 0) > 0 ||
-            (attrs?.Capabilities && attrs.Capabilities !== 'None') ||
-            (attrs?.MaxHang && attrs.MaxHang !== 'None') ||
-            (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None')
-          )
-          const hasNoteData = Boolean(
-            hasMeaningfulNotesData
-          );
+          const noteParts = []
+          if (attrs?.Notes) noteParts.push(String(attrs.Notes))
+          if (attrs?.DeclaredFuelCap) noteParts.push(`Fuel Cap: ${attrs.DeclaredFuelCap}`)
+          if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
+          if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
+          if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
+          const capabilities = stringifyCapabilities(attrs?.Capabilities)
+          if (capabilities !== 'None') noteParts.push(`Capabilities: ${capabilities}`)
+          if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
+          if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
 
-          if (hasNoteData) {
-            const noteParts = []
-            if (attrs?.Notes) noteParts.push(String(attrs.Notes))
-            if (attrs?.DeclaredFuelCap) noteParts.push(`Fuel Cap: ${attrs.DeclaredFuelCap}`)
-            if (attrs?.CyclesPerMatch) noteParts.push(`Cycles: ${attrs.CyclesPerMatch}`)
-            if (attrs?.FuelPerCycle) noteParts.push(`Fuel/Cycle: ${attrs.FuelPerCycle}`)
-            if (attrs?.NumAutos) noteParts.push(`Autos: ${attrs.NumAutos}`)
-            if (attrs?.Capabilities && attrs.Capabilities !== 'None') noteParts.push(`Capabilities: ${attrs.Capabilities}`)
-            if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
-            if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
+          if (notesRecord && noteParts.length > 0) {
 
             flat.push({
-              id: `note-${teamId}`,
+              id: `note-${displayTeamNumber}`,
               type: 'Note',
-              team: teamId,
+              team: displayTeamNumber,
               regional: attrs?.Regional || '',
-              title: attrs?.name ? `${attrs.name}` : `Team ${teamId} notes`,
-              detail: noteParts.length > 0 ? noteParts.join(' • ') : 'Team info updated',
+              title: `Team ${displayTeamNumber} notes`,
+              detail: noteParts.join(' • '),
               timestamp,
               updatedAt: teamUpdatedAt,
             });
           }
+
+          if (notesRecord) return
 
           const regionals = Array.isArray(team?.Regionals)
             ? team.Regionals
@@ -87,7 +87,7 @@ function AllView({ regional }) {
               const matchId = typeof match?.MatchId === 'string' ? match.MatchId.trim() : '';
               if (!matchId || matchId === 'matchEntry.MatchId') return;
 
-              const auto = match?.Autonomous?.AutoStrat || 'None';
+              const auto = match?.Autonomous?.AutoStrat || [];
               const autoHang = match?.Autonomous?.AutoHang || 'None';
               const autoTravel = match?.Autonomous?.TravelMid || 0;
               const endgame = match?.Teleop?.Endgame || 'None';
@@ -95,14 +95,17 @@ function AllView({ regional }) {
               const active = stringifyList(match?.ActiveStrat)
               const inactive = stringifyList(match?.InactiveStrat)
               const robotSpeed = match?.RobotInfo?.RobotSpeed || 'None'
+              const driverSkill = match?.RobotInfo?.DriverSkill || 'None'
               const shooterSpeed = match?.RobotInfo?.ShooterSpeed || 'None'
               const ballsShot = Number(match?.RobotInfo?.BallsShot || 0)
-              const cycles = Number(match?.RobotInfo?.ShootingCycles || 0)
               const fuelCap = Number(match?.RobotInfo?.FuelCapacity || 0)
-              const fouls = Number(match?.Penalties?.Fouls || 0)
-              const tech = Number(match?.Penalties?.Tech || 0)
-              const cards = match?.Penalties?.PenaltiesCommitted || {}
+              const penalties = match?.Penalties?.PenaltiesCommitted || {}
+              const penaltyList = Object.entries(penalties)
+                .filter(([, v]) => v === true)
+                .map(([k]) => k)
+                .join(', ') || 'None'
               const comment = match?.Comment ? ` • Comment: ${match.Comment}` : ''
+              const autoStr = Array.isArray(auto) ? auto.join(', ') : auto
 
               flat.push({
                 id: `form-${teamId}-${matchId}-${idx}`,
@@ -110,7 +113,7 @@ function AllView({ regional }) {
                 team: String(match?.Team || teamId),
                 regional: reg?.RegionalId || '',
                 title: formatMatchLabel(matchId),
-                detail: `Auto: ${auto} (${autoHang}, Mid ${autoTravel}) • Endgame: ${endgame} • Tele Mid: ${teleTravel} • Active: ${active} • Inactive: ${inactive} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Cycles: ${cycles} • Fuel Cap: ${fuelCap} • Fouls: ${fouls}/${tech} • Cards: Y${cards?.YellowCard ? 1 : 0} R${cards?.RedCard ? 1 : 0}${comment}`,
+                detail: `Auto: ${autoStr} (${autoHang}) • Endgame: ${endgame} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${comment}`,
                 timestamp,
                 updatedAt: teamUpdatedAt,
               });
@@ -150,7 +153,7 @@ function AllView({ regional }) {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>All Submits</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Submitions</h2>
 
       <div className={tableStyles.Card}>
         {sortedEntries.length === 0 ? (

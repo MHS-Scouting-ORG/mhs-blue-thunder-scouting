@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
-import { buttonIncremental } from "./FormUtils";
-import { toggleIncremental } from "./FormUtils"
 
 import tableStyling from "../components/Table/Table.module.css";
 
@@ -39,7 +37,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   // const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
   const [teamNumber, setTeamNumber] = useState(''); //team num
-  const [color, setColor] = useState(false); // alliance color
+  const [color, setColor] = useState(undefined); // alliance color
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
@@ -48,34 +46,35 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   const [autoActions, setAutoActions] = useState([]);
   const [autoHang, setAutoHang] = useState('');
 
-  /* TElEOP */
+  /* ENDGAME */
   const [hangType, setHangType] = useState('');
 
-  /* PENALTIES */
-  const [yellowCard, setYellowCard] = useState(false);
-  const [redCard, setRedCard] = useState(false);
+  /* RESULTS FLAGS */
   const [disable, setDisable] = useState(false);
   const [dq, setDQ] = useState(false);
   const [botBroke, setBotBroke] = useState(false);
   const [noShow, setNoShow] = useState(false);
-  const [tipped, setTipped] = useState(false);
-  const [minFouls, setMinFouls] = useState(0);
-  const [majFouls, setMajFouls] = useState(0);
+  const [stuckOnBump, setStuckOnBump] = useState(false);
+  const [stuckOnBalls, setStuckOnBalls] = useState(false);
   const [robotBrokenComments, setRobotBrokenComments] = useState("");
 
   /* ROBOT INFO */
   const [robotSpeed, setRobotSpeed] = useState('');
+  const [driverSkill, setDriverSkill] = useState('');
   const [fuelCapacity, setFuelCapacity] = useState('');
   const [shootingSpeed, setShootingSpeed] = useState('');
   const [robotInsight, setRobotInsight] = useState("");
   const [estimatedBallsShot, setEstimatedBallsShot] = useState('');
-  const [shootingCycles, setShootingCycles] = useState('');
 
   /* ACTIVE/INACTIVE STRATEGIES */
   const [activeStrategy, setActiveStrategy] = useState([]);
   const [inactiveStrategy, setInactiveStrategy] = useState([]);
-  const [timesTravelledMidActive, setTimesTravelledMidActive] = useState(0);
-  const [timesTravelledMidInactive, setTimesTravelledMidInactive] = useState(0);
+  const [timesTravelledMid, setTimesTravelledMid] = useState(0);
+  const [shootingCycles, setShootingCycles] = useState(0);
+
+  /* RESULTS */
+  const [matchResult, setMatchResult] = useState('');
+  const [teamImpact, setTeamImpact] = useState('');
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -149,38 +148,46 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   }, [teamNumber]
   )
 
+  /* Stop Non Numbers From Going Into Number States */
+  const stopNonNum = (e) => {
+    const banned = ['e', 'E', '-', '+']
+    if (banned.includes(e.key)) {
+      e.preventDefault();
+    }
+  }
+
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
     setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
-    setColor(false)
+    setColor(undefined)
     setRed([])
     setBlue([])
     setMatchKey('')
     setAutoActions([])
     setAutoHang('')
-    setHangType([])
+    setHangType('')
     setActiveStrategy([])
     setInactiveStrategy([])
-    setTimesTravelledMidActive(0)
-    setTimesTravelledMidInactive(0)
-    setYellowCard(false)
-    setRedCard(false)
+    setTimesTravelledMid(0)
+    setShootingCycles(0)
+    setMatchResult('')
+    setTeamImpact('')
     setDisable(false)
     setDQ(false)
     setBotBroke(false)
     setNoShow(false)
-    setMinFouls(0)
-    setMajFouls(0)
+    setStuckOnBump(false)
+    setStuckOnBalls(false)
     setRobotBrokenComments('')
     setRobotSpeed('')
+    setDriverSkill('')
     setFuelCapacity('')
     setShootingSpeed('')
     setRobotInsight('')
     setEstimatedBallsShot('')
-    setShootingCycles('')
     setConfirm(false)
 
   }
@@ -229,7 +236,6 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
       {/* Match Info */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px", marginBottom: "20px" }}>
         <h2 style={{ marginTop: 0, marginBottom: "20px" }}>Match Info</h2>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
             <div style={{ flex: "1", minWidth: "150px" }}>
@@ -264,40 +270,51 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                   fontSize: "16px",
                   border: "2px solid #ddd",
                   borderRadius: "8px",
-                  boxSizing: "border-box"
+                  boxSizing: "border-box",
+                  opacity: !matchType ? 0.5 : 1,
+                  cursor: !matchType ? "not-allowed" : "text",
                 }}
                 placeholder="Enter match #" 
                 type="number" 
+                min="1"
+                disabled={!matchType}
                 value={matchNumber} 
-                onChange={(e) => setMatchNumber(e.target.value)}
+                onKeyDown={stopNonNum}
+                onChange={(e) => {
+                  setMatchNumber(e.target.value)}
+                }
                 onWheel={(e) => e.target.blur()} 
               />
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "2px solid #ddd" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "2px solid #ddd", opacity: !matchNumber ? 0.5 : 1 }}>
             <label style={{ fontWeight: "600", marginBottom: "5px" }}>Alliance Color</label>
             <div style={{ display: "flex", flexDirection: "row", gap: "20px", alignItems: "center", justifyContent: "center" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <input 
-                  style={{ cursor: "pointer", width: "20px", height: "20px" }}
-                  onInput={(e) => setColor(false)} 
+                  style={{ cursor: !matchNumber ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
+                  disabled={!matchNumber}
+                  onChange={() => setColor(false)} 
                   type="radio" 
                   id="redAllianceChosen" 
                   name="alliance"
+                  checked={color === false}
                 />
-                <label htmlFor="redAllianceChosen" style={{ cursor: "pointer", margin: "0" }}>Red</label>
+                <label htmlFor="redAllianceChosen" style={{ cursor: !matchNumber ? "not-allowed" : "pointer", margin: "0" }}>Red</label>
               </div>
               
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <input 
-                  style={{ cursor: "pointer", width: "20px", height: "20px" }}
-                  onInput={(e) => setColor(true)} 
+                  style={{ cursor: !matchNumber ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
+                  disabled={!matchNumber}
+                  onChange={() => setColor(true)} 
                   type="radio" 
                   id="blueAllianceChosen" 
                   name="alliance"
+                  checked={color === true}
                 />
-                <label htmlFor="blueAllianceChosen" style={{ cursor: "pointer", margin: "0" }}>Blue</label>
+                <label htmlFor="blueAllianceChosen" style={{ cursor: !matchNumber ? "not-allowed" : "pointer", margin: "0" }}>Blue</label>
               </div>
 
               {color ? (
@@ -308,7 +325,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
             </div>
           </div>
 
-          <div>
+          <div style={{ opacity: matchNumber && color !== undefined ? 1 : !matchNumber || color === undefined ? 0.5 : 0.5, cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer" }}>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
             <select 
               style={{
@@ -318,8 +335,10 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 fontSize: "16px",
                 border: "2px solid #ddd",
                 borderRadius: "8px",
-                cursor: "pointer"
+                cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer"
               }} 
+              disabled={!matchNumber || color === undefined}
+              value={teamNumber}
               onChange={async (e) => {
                 // capture the new team number immediately, avoid relying on state update
                 const normalized = normalizeTeamId(e.target.value);
@@ -364,7 +383,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-            {["Went Mid", "Scored", "Crossed Mid"].map((action) => (
+            {["Moved", "Scored", "Crossed Bump/Trench"].map((action) => (
               <button
                 key={action}
                 onClick={() => toggleAutoAction(action)}
@@ -404,15 +423,14 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Active Strategy</h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
+          {["Hoarding", "Defending", "Scoring"].map((strategy) => (
             <button
               key={strategy}
               onClick={() => toggleActiveStrategy(strategy)}
               title={
                 strategy === "Hoarding" ? "Collecting and holding game pieces" :
-                strategy === "Defense" ? "Playing defensively to block opponents" :
-                strategy === "Offensive" ? "Aggressive play to score points" :
-                "Assisting teammates"
+                strategy === "Defending" ? "Playing defense against opposing robots" :
+                "Focused on scoring points"
               }
               className={`${tableStyling.ToggleButton} ${activeStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
@@ -425,7 +443,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
           <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
             <button 
-              onClick={() => setTimesTravelledMidActive(Math.max(0, timesTravelledMidActive - 1))}
+              onClick={() => setTimesTravelledMid(Math.max(0, timesTravelledMid - 1))}
               style={{
                 padding: "10px 20px",
                 backgroundColor: "#ff6b6b",
@@ -442,8 +460,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
             </button>
             <input 
               type="number" 
-              value={timesTravelledMidActive} 
-              onChange={(e) => setTimesTravelledMidActive(Math.max(0, parseInt(e.target.value) || 0))}
+              value={timesTravelledMid} 
+              onChange={(e) => setTimesTravelledMid(Math.max(0, parseInt(e.target.value) || 0))}
               onWheel={(e) => e.target.blur()} 
               style={{
                 fontSize: "24px",
@@ -457,7 +475,61 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               }}
             />
             <button 
-              onClick={() => setTimesTravelledMidActive(timesTravelledMidActive + 1)}
+              onClick={() => setTimesTravelledMid(timesTravelledMid + 1)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "15px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooting Cycles</label>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+            <button 
+              onClick={() => setShootingCycles(Math.max(0, shootingCycles - 1))}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#ff6b6b",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              −
+            </button>
+            <input 
+              type="number" 
+              value={shootingCycles} 
+              onChange={(e) => setShootingCycles(Math.max(0, parseInt(e.target.value) || 0))}
+              onWheel={(e) => e.target.blur()} 
+              style={{
+                fontSize: "24px",
+                fontWeight: "600",
+                minWidth: "70px",
+                textAlign: "center",
+                height: "50px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                padding: "0 10px"
+              }}
+            />
+            <button 
+              onClick={() => setShootingCycles(shootingCycles + 1)}
               style={{
                 padding: "10px 20px",
                 backgroundColor: "#4CAF50",
@@ -481,15 +553,14 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
         <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Inactive Strategy</h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["Hoarding", "Defense", "Offensive", "Support"].map((strategy) => (
+          {["Hoarding", "Defending Mid", "Blocking"].map((strategy) => (
             <button
               key={strategy}
               onClick={() => toggleInactiveStrategy(strategy)}
               title={
                 strategy === "Hoarding" ? "Collecting and holding game pieces" :
-                strategy === "Defense" ? "Playing defensively to block opponents" :
-                strategy === "Offensive" ? "Aggressive play to score points" :
-                "Assisting teammates"
+                strategy === "Defending Mid" ? "Defending lanes and mid area" :
+                "Blocking opposing routes and shots"
               }
               className={`${tableStyling.ToggleButton} ${inactiveStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
@@ -497,65 +568,11 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
             </button>
           ))}
         </div>
-
-        <div style={{ marginTop: "15px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Times Travelled to Mid</label>
-          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
-            <button 
-              onClick={() => setTimesTravelledMidInactive(Math.max(0, timesTravelledMidInactive - 1))}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#ff6b6b",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "18px",
-                fontWeight: "600",
-                minWidth: "50px"
-              }}
-            >
-              −
-            </button>
-            <input 
-              type="number" 
-              value={timesTravelledMidInactive} 
-              onChange={(e) => setTimesTravelledMidInactive(Math.max(0, parseInt(e.target.value) || 0))}
-              onWheel={(e) => e.target.blur()} 
-              style={{
-                fontSize: "24px",
-                fontWeight: "600",
-                minWidth: "70px",
-                textAlign: "center",
-                height: "50px",
-                border: "2px solid #ddd",
-                borderRadius: "8px",
-                padding: "0 10px"
-              }}
-            />
-            <button 
-              onClick={() => setTimesTravelledMidInactive(timesTravelledMidInactive + 1)}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "18px",
-                fontWeight: "600",
-                minWidth: "50px"
-              }}
-            >
-              +
-            </button>
-          </div>
-        </div>
       </div>
 
-      {/* TELEOP */}
+      {/* RESULTS */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Teleop</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Results</h2>
         
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
           <div>
@@ -581,137 +598,61 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               <option value='Level3'>Level 3</option>
             </select>
           </div>
-        </div>
-      </div>
 
-      {/* PENALTIES */}
-      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Penalties</h2>
-        
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Minor Fouls</label>
-            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
-              <button 
-                onClick={() => setMinFouls(Math.max(0, minFouls - 1))}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#ff6b6b",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Result</label>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button
+                type="button"
+                onClick={() => setMatchResult("Win")}
+                className={`${tableStyling.ToggleButton} ${matchResult === "Win" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
               >
-                −
+                Win
               </button>
-              <input 
-                type="number" 
-                value={minFouls} 
-                onChange={(e) => setMinFouls(Math.max(0, parseInt(e.target.value) || 0))}
-                onWheel={(e) => e.target.blur()}
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "600",
-                  minWidth: "70px",
-                  textAlign: "center",
-                  height: "50px",
-                  border: "2px solid #ddd",
-                  borderRadius: "8px",
-                  padding: "0 10px"
-                }}
-              />
-              <button 
-                onClick={() => setMinFouls(minFouls + 1)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#ffbd59",
-                  color: "black",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
+              <button
+                type="button"
+                onClick={() => setMatchResult("Tie")}
+                className={`${tableStyling.ToggleButton} ${matchResult === "Tie" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
               >
-                +
+                Tie
+              </button>
+              <button
+                type="button"
+                onClick={() => setMatchResult("Lose")}
+                className={`${tableStyling.ToggleButton} ${matchResult === "Lose" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
+              >
+                Lose
               </button>
             </div>
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Major Fouls</label>
-            <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
-              <button 
-                onClick={() => setMajFouls(Math.max(0, majFouls - 1))}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#ff6b6b",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
-              >
-                −
-              </button>
-              <input 
-                type="number" 
-                value={majFouls} 
-                onChange={(e) => setMajFouls(Math.max(0, parseInt(e.target.value) || 0))}
-                onWheel={(e) => e.target.blur()}
-                style={{
-                  fontSize: "24px",
-                  fontWeight: "600",
-                  minWidth: "70px",
-                  textAlign: "center",
-                  height: "50px",
-                  border: "2px solid #ddd",
-                  borderRadius: "8px",
-                  padding: "0 10px"
-                }}
-              />
-              <button 
-                onClick={() => setMajFouls(majFouls + 1)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#ff3131",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  minWidth: "50px"
-                }}
-              >
-                +
-              </button>
-            </div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Impact</label>
+            <select
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }}
+              value={teamImpact}
+              onChange={(e) => setTeamImpact(e.target.value)}
+              onWheel={(e) => e.target.blur()}
+            >
+              <option value="">Select Team Impact</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
           </div>
 
           <div style={{ display: "flex", flexDirection: "row", gap: "6px", justifyContent: "center", flexWrap: "wrap", paddingTop: "6px" }}>
-            <button 
-              onClick={() => setYellowCard(!yellowCard)} 
-              className={`${tableStyling.ToggleButton} ${yellowCard ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
-              style={{ '--toggle-on-bg': '#ffbd59', '--toggle-on-fg': 'black' }}
-            >
-              Yellow Card
-            </button>
-            <button 
-              onClick={() => setRedCard(!redCard)} 
-              className={`${tableStyling.ToggleButton} ${redCard ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
-              style={{ '--toggle-on-bg': '#ff3131', '--toggle-on-fg': 'white' }}
-            >
-              Red Card
-            </button>
             <button 
               onClick={() => setDisable(!disable)} 
               className={`${tableStyling.ToggleButton} ${disable ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
@@ -739,10 +680,16 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               No Show
             </button>
             <button 
-              onClick={() => setTipped(!tipped)} 
-              className={`${tableStyling.ToggleButton} ${tipped ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+              onClick={() => setStuckOnBump(!stuckOnBump)} 
+              className={`${tableStyling.ToggleButton} ${stuckOnBump ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
-              Tipped
+              Stuck on Bump
+            </button>
+            <button 
+              onClick={() => setStuckOnBalls(!stuckOnBalls)} 
+              className={`${tableStyling.ToggleButton} ${stuckOnBalls ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+            >
+              Stuck on Balls
             </button>
           </div>
 
@@ -785,10 +732,34 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               onChange={(e) => setRobotSpeed(e.target.value)}
               onWheel={(e) => e.target.blur()} 
             >
-              <option value="">Select Speed</option>
+              <option value="">Select Robot Speed</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Driver Skill</label>
+            <select 
+              style={{
+                height: "50px",
+                width: "100%",
+                padding: "8px",
+                fontSize: "16px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                cursor: "pointer"
+              }} 
+              value={driverSkill} 
+              onChange={(e) => setDriverSkill(e.target.value)}
+              onWheel={(e) => e.target.blur()} 
+            >
+              <option value="">Select Driver Skill</option>
+              <option value="Poor">Poor</option>
+              <option value="Average">Average</option>
+              <option value="Good">Good</option>
+              <option value="Excellent">Excellent</option>
             </select>
           </div>
 
@@ -808,7 +779,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               onChange={(e) => setShootingSpeed(e.target.value)}
               onWheel={(e) => e.target.blur()} 
             >
-              <option value="">Select Speed</option>
+              <option value="">Select Shooting Speed</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
@@ -827,8 +798,10 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px"
               }} 
               type="number" 
-              placeholder="Enter fuel capacity (e.g., 100)"
+              min="0"
+              placeholder="Enter Estimated Fuel Capacity (e.g., 100)"
               value={fuelCapacity} 
+              onKeyDown={stopNonNum}
               onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
               onWheel={(e) => e.target.blur()} 
             />
@@ -846,34 +819,18 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
                 borderRadius: "8px"
               }} 
               type="number" 
+              min="0"
               placeholder="Enter estimated balls shot"
               value={estimatedBallsShot} 
+              onKeyDown={stopNonNum}
               onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
+
               onWheel={(e) => e.target.blur()} 
             />
           </div>
 
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooting Cycles</label>
-            <input 
-              style={{
-                height: "50px",
-                width: "100%",
-                padding: "8px",
-                fontSize: "16px",
-                border: "2px solid #ddd",
-                borderRadius: "8px"
-              }} 
-              type="number" 
-              placeholder="Enter shooting cycles"
-              value={shootingCycles} 
-              onChange={(e) => setShootingCycles(parseInt(e.target.value) || '')}
-              onWheel={(e) => e.target.blur()} 
-            />
-          </div>
-
-          <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Additional Insights</label>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Comments</label>
             <input 
               style={{
                 padding: "12px",
@@ -937,22 +894,22 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
             hangType,
             activeStrategy,
             inactiveStrategy,
-            timesTravelledMidActive,
-            timesTravelledMidInactive,
-            yellowCard,
-            redCard,
+            timesTravelledMid,
+            0,
+            shootingCycles,
+            matchResult,
+            teamImpact,
             disable,
             dq,
             botBroke,
             noShow,
-            tipped,
-            minFouls,
-            majFouls,
+            stuckOnBump,
+            stuckOnBalls,
             robotSpeed,
+            driverSkill,
             fuelCapacity,
             shootingSpeed,
             estimatedBallsShot,
-            shootingCycles,
             robotInsight,
             robotBrokenComments
         )

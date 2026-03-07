@@ -99,10 +99,9 @@ export const schema = {
         "AutoStratOpts": {
             "name": "AutoStratOpts",
             "values": [
-                "WentMid",
-                "Scored",
-                "CrossedMid",
-                "None"
+                "LeftStartingZone",
+                "ScoredInGoal",
+                "Nothing"
             ]
         },
         "AutoHangOpts": {
@@ -130,14 +129,40 @@ export const schema = {
                 "Fast"
             ]
         },
+        "DriverSkillOpts": {
+            "name": "DriverSkillOpts",
+            "values": [
+                "Poor",
+                "Average",
+                "Good",
+                "Excellent"
+            ]
+        },
         "StratOpts": {
             "name": "StratOpts",
             "values": [
                 "Hoarding",
                 "Defense",
-                "Offensive",
+                "Aggressive",
                 "Support",
+                "Shooting",
                 "None"
+            ]
+        },
+        "MatchResultOpts": {
+            "name": "MatchResultOpts",
+            "values": [
+                "Win",
+                "Lose",
+                "Tie"
+            ]
+        },
+        "TeamImpactOpts": {
+            "name": "TeamImpactOpts",
+            "values": [
+                "High",
+                "Medium",
+                "Low"
             ]
         },
         "HangTeamworkOpts": {
@@ -163,19 +188,13 @@ export const schema = {
             "fields": {
                 "AutoStrat": {
                     "name": "AutoStrat",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "AutoStratOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
-                },
-                "TravelMid": {
-                    "name": "TravelMid",
-                    "isArray": false,
-                    "type": "Int",
-                    "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "AutoHang": {
                     "name": "AutoHang",
@@ -191,20 +210,6 @@ export const schema = {
         "PenaltyOpts": {
             "name": "PenaltyOpts",
             "fields": {
-                "YellowCard": {
-                    "name": "YellowCard",
-                    "isArray": false,
-                    "type": "Boolean",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "RedCard": {
-                    "name": "RedCard",
-                    "isArray": false,
-                    "type": "Boolean",
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "Disabled": {
                     "name": "Disabled",
                     "isArray": false,
@@ -228,6 +233,20 @@ export const schema = {
                 },
                 "NoShow": {
                     "name": "NoShow",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "StuckOnBump": {
+                    "name": "StuckOnBump",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "StuckOnBalls": {
+                    "name": "StuckOnBalls",
                     "isArray": false,
                     "type": "Boolean",
                     "isRequired": false,
@@ -259,20 +278,6 @@ export const schema = {
         "PenaltyType": {
             "name": "PenaltyType",
             "fields": {
-                "Fouls": {
-                    "name": "Fouls",
-                    "isArray": false,
-                    "type": "Int",
-                    "isRequired": false,
-                    "attributes": []
-                },
-                "Tech": {
-                    "name": "Tech",
-                    "isArray": false,
-                    "type": "Int",
-                    "isRequired": false,
-                    "attributes": []
-                },
                 "PenaltiesCommitted": {
                     "name": "PenaltiesCommitted",
                     "isArray": false,
@@ -308,6 +313,15 @@ export const schema = {
                     "isArray": false,
                     "type": {
                         "enum": "SpeedOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "DriverSkill": {
+                    "name": "DriverSkill",
+                    "isArray": false,
+                    "type": {
+                        "enum": "DriverSkillOpts"
                     },
                     "isRequired": false,
                     "attributes": []
@@ -377,6 +391,24 @@ export const schema = {
                     "name": "MatchId",
                     "isArray": false,
                     "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "MatchResult": {
+                    "name": "MatchResult",
+                    "isArray": false,
+                    "type": {
+                        "enum": "MatchResultOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "TeamImpact": {
+                    "name": "TeamImpact",
+                    "isArray": false,
+                    "type": {
+                        "enum": "TeamImpactOpts"
+                    },
                     "isRequired": false,
                     "attributes": []
                 },
@@ -485,12 +517,13 @@ export const schema = {
                 },
                 "Capabilities": {
                     "name": "Capabilities",
-                    "isArray": false,
+                    "isArray": true,
                     "type": {
                         "enum": "CapabilitiesOpts"
                     },
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "MaxHang": {
                     "name": "MaxHang",
@@ -514,6 +547,13 @@ export const schema = {
                     "name": "HangTime",
                     "isArray": false,
                     "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "CanAutoHang": {
+                    "name": "CanAutoHang",
+                    "isArray": false,
+                    "type": "Boolean",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -557,5 +597,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "45120c12dfb86eeb207f085ee091fe8c"
+    "version": "4d9dcd47d3039167b66aea607fe7a478"
 };

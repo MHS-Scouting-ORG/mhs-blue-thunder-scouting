@@ -7,6 +7,8 @@ import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import SearchView from "./Views/SearchView";
 import AllView from "./Views/AllView";
+import AllLeaderboardView from "./Views/AllLeaderboardView";
+import OurMatchesView from "./Views/OurMatchesView";
 import 'chart.js/auto';
 
 import { apiGetRegional } from "../../api"
@@ -20,7 +22,7 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'search', 'quals', 'alliance', 'elims'
+  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'submissions', 'search', 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
@@ -134,13 +136,16 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["All", "Search","Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Submitions", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
                 switch (view){
                   case "All": 
                     setCurrentView('all')
+                    break;
+                  case "Submitions":
+                    setCurrentView('submissions')
                     break;
                   case "Quals":
                     setCurrentView('quals')
@@ -154,13 +159,20 @@ function Summary() {
                   case "Search":
                     setCurrentView('search')
                     break;
+                  case "Our Matches":
+                    setCurrentView('our-matches')
+                    break;
               }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
                     (view === "All"
                       ? 'all'
+                      : view === 'Submitions'
+                      ? 'submissions'
                       : view === "Alliance Selection"
                       ? 'alliance'
+                      : view === 'Our Matches'
+                      ? 'our-matches'
                       : view === 'Search'
                       ? 'search'
                       : view.toLowerCase())
@@ -176,6 +188,12 @@ function Summary() {
 
       {/* Render Current View */}
       {currentView === 'all' && (
+        <AllLeaderboardView
+          tableData={tableData}
+          regional={regional}
+        />
+      )}
+      {currentView === 'submissions' && (
         <AllView
           regional={regional}
         />
@@ -186,6 +204,12 @@ function Summary() {
           regional={regional}
           teamsClicked={teamsClicked}
           setTeamsClicked={setTeamsClicked}
+        />
+      )}
+      {currentView === 'our-matches' && (
+        <OurMatchesView
+          tableData={tableData}
+          regional={regional}
         />
       )}
       {currentView === 'quals' && (

@@ -3,10 +3,9 @@ import { ModelInit, MutableModel, __modelMeta__, OptionallyManagedIdentifier } f
 import { LazyLoading, LazyLoadingDisabled } from "@aws-amplify/datastore";
 
 export enum AutoStratOpts {
-  WENT_MID = "WentMid",
-  SCORED = "Scored",
-  CROSSED_MID = "CrossedMid",
-  NONE = "None"
+  LEFT_STARTING_ZONE = "LeftStartingZone",
+  SCORED_IN_GOAL = "ScoredInGoal",
+  NOTHING = "Nothing"
 }
 
 export enum AutoHangOpts {
@@ -28,12 +27,32 @@ export enum SpeedOpts {
   FAST = "Fast"
 }
 
+export enum DriverSkillOpts {
+  POOR = "Poor",
+  AVERAGE = "Average",
+  GOOD = "Good",
+  EXCELLENT = "Excellent"
+}
+
 export enum StratOpts {
   HOARDING = "Hoarding",
   DEFENSE = "Defense",
-  OFFENSIVE = "Offensive",
+  AGGRESSIVE = "Aggressive",
   SUPPORT = "Support",
+  SHOOTING = "Shooting",
   NONE = "None"
+}
+
+export enum MatchResultOpts {
+  WIN = "Win",
+  LOSE = "Lose",
+  TIE = "Tie"
+}
+
+export enum TeamImpactOpts {
+  HIGH = "High",
+  MEDIUM = "Medium",
+  LOW = "Low"
 }
 
 export enum HangTeamworkOpts {
@@ -49,14 +68,12 @@ export enum CapabilitiesOpts {
 }
 
 type EagerAutonomousType = {
-  readonly AutoStrat?: AutoStratOpts | keyof typeof AutoStratOpts | null;
-  readonly TravelMid?: number | null;
+  readonly AutoStrat?: (AutoStratOpts | null)[] | Array<keyof typeof AutoStratOpts> | null;
   readonly AutoHang?: AutoHangOpts | keyof typeof AutoHangOpts | null;
 }
 
 type LazyAutonomousType = {
-  readonly AutoStrat?: AutoStratOpts | keyof typeof AutoStratOpts | null;
-  readonly TravelMid?: number | null;
+  readonly AutoStrat?: (AutoStratOpts | null)[] | Array<keyof typeof AutoStratOpts> | null;
   readonly AutoHang?: AutoHangOpts | keyof typeof AutoHangOpts | null;
 }
 
@@ -65,21 +82,21 @@ export declare type AutonomousType = LazyLoading extends LazyLoadingDisabled ? E
 export declare const AutonomousType: (new (init: ModelInit<AutonomousType>) => AutonomousType)
 
 type EagerPenaltyOpts = {
-  readonly YellowCard?: boolean | null;
-  readonly RedCard?: boolean | null;
   readonly Disabled?: boolean | null;
   readonly DQ?: boolean | null;
   readonly Broken?: boolean | null;
   readonly NoShow?: boolean | null;
+  readonly StuckOnBump?: boolean | null;
+  readonly StuckOnBalls?: boolean | null;
 }
 
 type LazyPenaltyOpts = {
-  readonly YellowCard?: boolean | null;
-  readonly RedCard?: boolean | null;
   readonly Disabled?: boolean | null;
   readonly DQ?: boolean | null;
   readonly Broken?: boolean | null;
   readonly NoShow?: boolean | null;
+  readonly StuckOnBump?: boolean | null;
+  readonly StuckOnBalls?: boolean | null;
 }
 
 export declare type PenaltyOpts = LazyLoading extends LazyLoadingDisabled ? EagerPenaltyOpts : LazyPenaltyOpts
@@ -101,15 +118,11 @@ export declare type TeleType = LazyLoading extends LazyLoadingDisabled ? EagerTe
 export declare const TeleType: (new (init: ModelInit<TeleType>) => TeleType)
 
 type EagerPenaltyType = {
-  readonly Fouls?: number | null;
-  readonly Tech?: number | null;
   readonly PenaltiesCommitted?: PenaltyOpts | null;
   readonly FoulDesc?: string | null;
 }
 
 type LazyPenaltyType = {
-  readonly Fouls?: number | null;
-  readonly Tech?: number | null;
   readonly PenaltiesCommitted?: PenaltyOpts | null;
   readonly FoulDesc?: string | null;
 }
@@ -121,6 +134,7 @@ export declare const PenaltyType: (new (init: ModelInit<PenaltyType>) => Penalty
 type EagerRobotInfoType = {
   readonly RobotSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly ShooterSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
+  readonly DriverSkill?: DriverSkillOpts | keyof typeof DriverSkillOpts | null;
   readonly FuelCapacity?: number | null;
   readonly BallsShot?: number | null;
   readonly ShootingCycles?: number | null;
@@ -131,6 +145,7 @@ type EagerRobotInfoType = {
 type LazyRobotInfoType = {
   readonly RobotSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly ShooterSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
+  readonly DriverSkill?: DriverSkillOpts | keyof typeof DriverSkillOpts | null;
   readonly FuelCapacity?: number | null;
   readonly BallsShot?: number | null;
   readonly ShootingCycles?: number | null;
@@ -147,6 +162,8 @@ type EagerTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly MatchId?: string | null;
+  readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
+  readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
   readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
@@ -160,6 +177,8 @@ type LazyTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly MatchId?: string | null;
+  readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
+  readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
   readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
@@ -179,10 +198,11 @@ type EagerTeamAttributesType = {
   readonly CyclesPerMatch?: number | null;
   readonly FuelPerCycle?: number | null;
   readonly NumAutos?: number | null;
-  readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
+  readonly Capabilities?: (CapabilitiesOpts | null)[] | Array<keyof typeof CapabilitiesOpts> | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
+  readonly CanAutoHang?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }
@@ -194,10 +214,11 @@ type LazyTeamAttributesType = {
   readonly CyclesPerMatch?: number | null;
   readonly FuelPerCycle?: number | null;
   readonly NumAutos?: number | null;
-  readonly Capabilities?: CapabilitiesOpts | keyof typeof CapabilitiesOpts | null;
+  readonly Capabilities?: (CapabilitiesOpts | null)[] | Array<keyof typeof CapabilitiesOpts> | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
+  readonly CanAutoHang?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }

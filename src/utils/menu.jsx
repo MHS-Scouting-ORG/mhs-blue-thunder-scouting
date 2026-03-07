@@ -1,7 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import linkStyles from './menu.module.css'
-function Menu() {
+
+const TABLE_NOTES_ALLOWED_EMAILS = [
+    'toby.naumov@gmail.com',
+    'shdwberu@gmail.com',
+    'dn1guiwa@gmail.com',
+    'jhmaui2@gmail.com',
+]
+
+function Menu({ user }) {
+    const email = user?.tokens?.idToken?.payload?.email?.toLowerCase?.() || ''
+    const canViewTableAndNotes = TABLE_NOTES_ALLOWED_EMAILS.includes(email)
+
     return (
         <section className="top-nav">
             <input id="menu-toggle" type="checkbox" />
@@ -11,8 +22,8 @@ function Menu() {
             <ul className="menu">
                 <li><Link className={linkStyles.Link} to="/">HOME</Link></li>
                 <li><Link className={linkStyles.Link} to="/form">FORM</Link></li>
-                <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>
-                <li><Link className={linkStyles.Link} to="/notes">NOTES</Link></li>
+                {canViewTableAndNotes && <li><Link className={linkStyles.Link} to="/table">TABLE</Link></li>}
+                {canViewTableAndNotes && <li><Link className={linkStyles.Link} to="/notes">NOTES</Link></li>}
 
             </ul>
         </section>

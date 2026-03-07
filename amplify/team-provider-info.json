@@ -15,15 +15,14 @@
       "auth": {
         "frcscoutingapp49f69a47": {}
       },
+      "storage": {
+        "teamPhotos": {}
+      },
       "api": {
         "frcscoutingapp": {}
       },
       "custom": {
         "customResource5b71fb59": {}
-      },
-      "storage": {
-        "teamPhotos": {},
-        "teamphotos": {}
       }
     }
   }

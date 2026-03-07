@@ -28,13 +28,15 @@ code {
 .menu {
   display: flex;
   flex-direction: row;
+  gap: 1rem;
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
 .menu > li {
-  margin: 0 1rem;
+  margin: 0;
+  width: 150px;
   overflow: hidden;
 }
 
@@ -97,6 +99,7 @@ code {
     top: 50px;
     margin-top: 50px;
     left: 0;
+    gap: 0;
     flex-direction: column;
     width: 100%;
     justify-content: center;

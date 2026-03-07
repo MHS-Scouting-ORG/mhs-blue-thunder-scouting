@@ -10,7 +10,7 @@ function AuthenticatedUI({ user }) {
   return (
     <div>
 
-      <Menu></Menu>
+      <Menu user={user}></Menu>
       <div>
         <Outlet />
       </div>

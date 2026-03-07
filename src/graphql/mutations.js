@@ -11,7 +11,6 @@ export const createTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -21,6 +20,7 @@ export const createTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -32,9 +32,10 @@ export const createTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -48,6 +49,7 @@ export const createTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -56,15 +58,13 @@ export const createTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc
@@ -93,7 +93,6 @@ export const updateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -103,6 +102,7 @@ export const updateTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -114,9 +114,10 @@ export const updateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -130,6 +131,7 @@ export const updateTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -138,15 +140,13 @@ export const updateTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc
@@ -175,7 +175,6 @@ export const deleteTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -185,6 +184,7 @@ export const deleteTeam = /* GraphQL */ `
         MaxHang
         HangTeamwork
         HangTime
+        CanAutoHang
         Photo
         Notes
         __typename
@@ -196,9 +196,10 @@ export const deleteTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchResult
+          TeamImpact
           Autonomous {
             AutoStrat
-            TravelMid
             AutoHang
             __typename
           }
@@ -212,6 +213,7 @@ export const deleteTeam = /* GraphQL */ `
           RobotInfo {
             RobotSpeed
             ShooterSpeed
+            DriverSkill
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -220,15 +222,13 @@ export const deleteTeam = /* GraphQL */ `
             __typename
           }
           Penalties {
-            Fouls
-            Tech
             PenaltiesCommitted {
-              YellowCard
-              RedCard
               Disabled
               DQ
               Broken
               NoShow
+              StuckOnBump
+              StuckOnBalls
               __typename
             }
             FoulDesc

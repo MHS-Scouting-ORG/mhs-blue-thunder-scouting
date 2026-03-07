@@ -12,6 +12,26 @@ import {
 } from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
 
+const NOTES_TEAM_PREFIX = 'notes-'
+
+const isNotesTeamId = (teamId) => String(teamId || '').startsWith(NOTES_TEAM_PREFIX)
+
+const toNotesTeamId = (teamId) => {
+  const normalized = normalizeTeamId(teamId)
+  return normalized ? `${NOTES_TEAM_PREFIX}${normalized}` : ''
+}
+
+const fromNotesTeamId = (teamId) => {
+  const value = String(teamId || '')
+  if (isNotesTeamId(value)) return normalizeTeamId(value.slice(NOTES_TEAM_PREFIX.length))
+  return normalizeTeamId(value)
+}
+
+const isBaseTeamId = (teamId) => {
+  const normalized = normalizeTeamId(teamId)
+  return Boolean(normalized) && !isNotesTeamId(normalized)
+}
+
 import * as Auth from 'aws-amplify/auth'
 
 let client
@@ -20,18 +40,161 @@ const getClient = () => {
   return client
 }
 
+let isSigningOutForAuthError = false
+
+const validateAndRefreshAuthSession = async () => {
+  try {
+    await Auth.getCurrentUser()
+    await Auth.fetchAuthSession({ forceRefresh: true })
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+const forceSignOutForAuthError = async () => {
+  if (isSigningOutForAuthError) return
+  isSigningOutForAuthError = true
+
+  try {
+    await Auth.signOut()
+  } catch (_) {
+    // unimportant errors
+  } finally {
+    if (typeof window !== 'undefined') {
+      window.location.assign('/')
+    }
+  }
+}
+
 let regionalKey
 
-const runGraphQL = async ({ query, variables }) => {
-  return getClient().graphql({ query, variables })
+const extractGraphQLErrorMessages = (errors) => {
+  if (!Array.isArray(errors)) return []
+  return errors
+    .map(err => String(err?.message || err?.errorType || '').trim())
+    .filter(Boolean)
+}
+
+const isAuthRelatedMessage = (message) => {
+  const text = String(message || '').toLowerCase()
+  if (!text) return false
+  return (
+    text.includes('security token') ||
+    text.includes('invalid token') ||
+    text.includes('token is invalid') ||
+    text.includes('expired') ||
+    text.includes('unauthorized') ||
+    text.includes('not authorized') ||
+    text.includes('forbidden') ||
+    text.includes('credential') ||
+    text.includes('no current user')
+  )
+}
+
+const hasAuthErrorInGraphQLPayload = (errors) => {
+  const messages = extractGraphQLErrorMessages(errors)
+  return messages.some(isAuthRelatedMessage)
+}
+
+const throwGraphQLError = (responseOrErrors) => {
+  const errors = Array.isArray(responseOrErrors)
+    ? responseOrErrors
+    : (responseOrErrors?.errors || [])
+  const messages = extractGraphQLErrorMessages(errors)
+  const error = new Error(messages[0] || 'GraphQL request failed')
+  error.graphQLErrors = errors
+  throw error
+}
+
+const runGraphQL = async ({ query, variables, allowPartialData = false }) => {
+  let hasRetriedAfterRefresh = false
+
+  try {
+    while (true) {
+      const response = await getClient().graphql({ query, variables })
+
+      if (Array.isArray(response?.errors) && response.errors.length > 0) {
+        const authPayloadError = hasAuthErrorInGraphQLPayload(response.errors)
+
+        if (authPayloadError && !hasRetriedAfterRefresh) {
+          hasRetriedAfterRefresh = true
+          const hasValidSession = await validateAndRefreshAuthSession()
+          if (hasValidSession) continue
+        }
+
+        if (authPayloadError) {
+          await forceSignOutForAuthError()
+          throw new Error('Authentication session is invalid or expired. Signed out user.')
+        }
+
+        if (allowPartialData && response?.data) {
+          return response
+        }
+
+        throwGraphQLError(response)
+      }
+
+      return response
+    }
+  } catch (err) {
+    if (allowPartialData && err?.data) {
+      return err
+    }
+
+    if (isAuthRelatedMessage(err?.message)) {
+      if (!hasRetriedAfterRefresh) {
+        hasRetriedAfterRefresh = true
+        const hasValidSession = await validateAndRefreshAuthSession()
+        if (hasValidSession) {
+          const retryResponse = await getClient().graphql({ query, variables })
+          if (Array.isArray(retryResponse?.errors) && retryResponse.errors.length > 0) {
+            if (hasAuthErrorInGraphQLPayload(retryResponse.errors)) {
+              await forceSignOutForAuthError()
+              throw new Error('Authentication session is invalid or expired. Signed out user.')
+            }
+
+            if (allowPartialData && retryResponse?.data) {
+              return retryResponse
+            }
+
+            throwGraphQLError(retryResponse)
+          }
+          return retryResponse
+        }
+      }
+
+      await forceSignOutForAuthError()
+      throw new Error('Authentication session is invalid or expired. Signed out user.')
+    }
+
+    const hasValidSession = await validateAndRefreshAuthSession()
+    if (!hasValidSession) {
+      await forceSignOutForAuthError()
+      throw new Error('Authentication session is invalid or expired. Signed out user.')
+    }
+
+    throw err
+  }
 }
 
 const normalizeStratList = (value) => {
-  const allowed = ["Hoarding", "Defense", "Offensive", "Support", "None"]
+  const allowed = ["Hoarding", "Defense", "Aggressive", "Support", "Shooting", "None"]
+  const strategyMap = {
+    Hoarding: "Hoarding",
+    Defending: "Defense",
+    Defense: "Defense",
+    Offensive: "Aggressive",
+    Aggressive: "Aggressive",
+    Scoring: "Shooting",
+    Shooting: "Shooting",
+    Support: "Support",
+    None: "None",
+  }
 
   if (Array.isArray(value)) {
     const cleaned = value
-      .map(v => (typeof v === 'string' ? v.trim() : ''))
+      .map(v => (typeof v === 'string' ? strategyMap[v.trim()] : ''))
       .filter(v => allowed.includes(v) && v !== '')
     return cleaned.length > 0 ? cleaned : ["None"]
   }
@@ -39,7 +202,7 @@ const normalizeStratList = (value) => {
   if (typeof value === 'string') {
     const cleaned = value
       .split(',')
-      .map(v => v.trim())
+      .map(v => strategyMap[v.trim()])
       .filter(v => allowed.includes(v) && v !== '')
     return cleaned.length > 0 ? cleaned : ["None"]
   }
@@ -48,8 +211,50 @@ const normalizeStratList = (value) => {
 }
 
 const normalizeAutoStrat = (value) => {
-  const allowed = ["WentMid", "Scored", "CrossedMid", "None"]
-  return allowed.includes(value) ? value : "None"
+  const allowed = ["LeftStartingZone", "ScoredInGoal", "Nothing"]
+  const autoMap = {
+    WentMid: "LeftStartingZone",
+    CrossedMid: "LeftStartingZone",
+    "Crossed Bump/Trench": "LeftStartingZone",
+    Moved: "Nothing",
+    Scored: "ScoredInGoal",
+    LeftStartingZone: "LeftStartingZone",
+    ScoredInGoal: "ScoredInGoal",
+    Nothing: "Nothing",
+    None: "Nothing",
+  }
+
+  const raw = Array.isArray(value)
+    ? value
+    : (typeof value === 'string'
+      ? value.split(',')
+      : (value ? [value] : []))
+
+  const cleaned = raw
+    .map(v => (typeof v === 'string' ? autoMap[v.trim()] || '' : ''))
+    .filter(v => allowed.includes(v))
+
+  if (cleaned.length === 0) return ["Nothing"]
+  return [...new Set(cleaned)]
+}
+
+const normalizeCapabilitiesList = (value) => {
+  const allowed = ["Bump", "Trench", "None"]
+
+  if (Array.isArray(value)) {
+    return value
+      .filter(v => typeof v === 'string')
+      .map(v => v.trim())
+      .filter(v => allowed.includes(v) && v !== 'None')
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (!trimmed || trimmed === 'None') return []
+    return allowed.includes(trimmed) ? [trimmed] : []
+  }
+
+  return []
 }
 
 const normalizeRegionals = (regionalsValue) => {
@@ -85,6 +290,11 @@ const normalizeTeamRead = (team) => {
   if (!team || typeof team !== 'object') return team
   return {
     ...team,
+    TeamAttributes: {
+      ...(team.TeamAttributes || {}),
+      Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities),
+      CanAutoHang: team?.TeamAttributes?.CanAutoHang
+    },
     Regionals: normalizeRegionals(team.Regionals)
   }
 }
@@ -110,8 +320,15 @@ const apiSubscribeToMatchUpdates = async function (updateFn, errorFn) {
  */
 const apiGetTeam = async function (teamNumber) {
   const normalizedTeamId = normalizeTeamId(teamNumber)
-  const response = await runGraphQL({ query: getTeam, variables: { id: normalizedTeamId } })
-  return normalizeTeamRead(response?.data?.getTeam || null)
+  try {
+    const response = await runGraphQL({ query: getTeam, variables: { id: normalizedTeamId }, allowPartialData: true })
+    return normalizeTeamRead(response?.data?.getTeam || null)
+  } catch (err) {
+    if (err?.data?.getTeam) {
+      return normalizeTeamRead(err.data.getTeam)
+    }
+    throw err
+  }
 }
 
 
@@ -119,7 +336,7 @@ const apiGetTeam = async function (teamNumber) {
  * Add a team to our database
  */
 const apiAddTeam = async function (team) {
-  await getClient().graphql({ query: createTeam, variables: { input: team } })
+  await runGraphQL({ query: createTeam, variables: { input: team } })
 }
 
 const sanitizeTeamInput = (data, teamIdOverride) => {
@@ -156,30 +373,20 @@ const sanitizeTeamInput = (data, teamIdOverride) => {
 const apiUpdateTeamEntry = async function (team, data) {
   const input = sanitizeTeamInput(data, team)
   console.log({ ...input }, "...data")
-  await getClient().graphql({
-    query: updateTeam,  
-    variables: {
-      input
-    }
-  })
+  await runGraphQL({ query: updateTeam, variables: { input } })
 }
 
 const apiUpdateTeamEntryMatch = async function (team, data) {
   const input = sanitizeTeamInput(data, team)
   console.log({ ...input }, "...data")
-  await getClient().graphql({
-    query: updateTeam,  
-    variables: {
-      input
-    }
-  })
+  await runGraphQL({ query: updateTeam, variables: { input } })
 }
 
 /*
  * Get All the teams in our database
  */
 const apiListTeams = async function () {
-  const response = await runGraphQL({ query: listTeams })
+  const response = await runGraphQL({ query: listTeams, allowPartialData: true })
   const items = (response?.data?.listTeams?.items || []).map(normalizeTeamRead)
 
   return {
@@ -204,7 +411,7 @@ const apiListTeams = async function () {
 
 const apigetMatchesForRegional = async function (regionalId, teamNumber) {
 
-  const full = await runGraphQL({ query: listTeams });
+  const full = await runGraphQL({ query: listTeams, allowPartialData: true });
   const items = full?.data?.listTeams?.items || [];
 
   const normalizedTeamId = normalizeTeamId(teamNumber);
@@ -309,8 +516,9 @@ const apiCreateTeamEntry = async function (teamNumber, regional) {
     throw new Error("Team Number not provided")
   } 
 
-  return getClient().graphql({
-    query: createTeam, variables: {
+  return runGraphQL({
+    query: createTeam,
+    variables: {
       input: buildTeamEntry(teamNumber, regional)
     }
   })
@@ -347,4 +555,8 @@ export {
   apiGetRegional,
   apiCreateTeamEntry,
   apiUpdateTeamEntryMatch,
+  isNotesTeamId,
+  toNotesTeamId,
+  fromNotesTeamId,
+  isBaseTeamId,
 }

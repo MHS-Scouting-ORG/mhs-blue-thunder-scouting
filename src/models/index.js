@@ -3,10 +3,9 @@ import { initSchema } from '@aws-amplify/datastore';
 import { schema } from './schema';
 
 const AutoStratOpts = {
-  "WENT_MID": "WentMid",
-  "SCORED": "Scored",
-  "CROSSED_MID": "CrossedMid",
-  "NONE": "None"
+  "LEFT_STARTING_ZONE": "LeftStartingZone",
+  "SCORED_IN_GOAL": "ScoredInGoal",
+  "NOTHING": "Nothing"
 };
 
 const AutoHangOpts = {
@@ -28,12 +27,32 @@ const SpeedOpts = {
   "FAST": "Fast"
 };
 
+const DriverSkillOpts = {
+  "POOR": "Poor",
+  "AVERAGE": "Average",
+  "GOOD": "Good",
+  "EXCELLENT": "Excellent"
+};
+
 const StratOpts = {
   "HOARDING": "Hoarding",
   "DEFENSE": "Defense",
-  "OFFENSIVE": "Offensive",
+  "AGGRESSIVE": "Aggressive",
   "SUPPORT": "Support",
+  "SHOOTING": "Shooting",
   "NONE": "None"
+};
+
+const MatchResultOpts = {
+  "WIN": "Win",
+  "LOSE": "Lose",
+  "TIE": "Tie"
+};
+
+const TeamImpactOpts = {
+  "HIGH": "High",
+  "MEDIUM": "Medium",
+  "LOW": "Low"
 };
 
 const HangTeamworkOpts = {
@@ -56,7 +75,10 @@ export {
   AutoHangOpts,
   HangOpts,
   SpeedOpts,
+  DriverSkillOpts,
   StratOpts,
+  MatchResultOpts,
+  TeamImpactOpts,
   HangTeamworkOpts,
   CapabilitiesOpts,
   AutonomousType,

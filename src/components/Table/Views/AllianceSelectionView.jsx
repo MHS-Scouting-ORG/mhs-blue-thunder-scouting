@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
+import { getDefaultAllianceRankingOptions, rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
-import { apiGetAllianceSelection, apiSaveAllianceSelection, apiListTeams, apiGetSimpleTeamsForRegional } from '../../../api';
+import { apiGetAllianceSelection, apiSaveAllianceSelection, apiGetSimpleTeamsForRegional } from '../../../api';
+import { getTopTeamSuggestions } from '../../../utils/teamSearch';
 
 const pickingOrder = [
   { alliance: 1, type: 'captain' },
@@ -31,9 +32,15 @@ const pickingOrder = [
 ];
 
 function AllianceSelectionView({ tableData, regional }) {
+  const defaultRankingOptions = useMemo(() => getDefaultAllianceRankingOptions('frc2026Rebuilt'), []);
+  const defaultMetricWeights = useMemo(() => ({ ...(defaultRankingOptions.metricWeights || {}) }), [defaultRankingOptions]);
+
+  const [metricWeights, setMetricWeights] = useState(defaultMetricWeights);
   const [rankedTeams, setRankedTeams] = useState([]);
   const [simpleTeams, setSimpleTeams] = useState([]);
+  const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [inputDrafts, setInputDrafts] = useState({});
+  const [draftSuggestions, setDraftSuggestions] = useState({});
   const [alliances, setAlliances] = useState({
     alliance1: { captain: null, picks: [null, null] },
     alliance2: { captain: null, picks: [null, null] },
@@ -47,10 +54,32 @@ function AllianceSelectionView({ tableData, regional }) {
   const [currentPickIndex, setCurrentPickIndex] = useState(0);
   const [confirm, setConfirm] = useState(false);
 
+  const weightFields = [
+    { key: 'autoActions', label: 'Auto Actions' },
+    { key: 'autoHang', label: 'Auto Hang' },
+    { key: 'teleopMobility', label: 'Teleop Mobility' },
+    { key: 'endgame', label: 'Endgame' },
+    { key: 'ballsShot', label: 'Balls Shot' },
+    { key: 'shootingCycles', label: 'Shooting Cycles' },
+    { key: 'robotSpeed', label: 'Robot Speed' },
+    { key: 'shooterSpeed', label: 'Shooter Speed' },
+    { key: 'driverSkill', label: 'Driver Skill' },
+    { key: 'teamImpact', label: 'Team Impact' },
+    { key: 'strategyExecution', label: 'Strategy Execution' },
+    { key: 'reliability', label: 'Reliability' }
+  ];
+
+  const normalizeTeamNumber = (value) => String(value ?? '').trim();
+
+  const rankingOptions = useMemo(() => ({
+    gameProfile: 'frc2026Rebuilt',
+    metricWeights,
+  }), [metricWeights]);
+
   useEffect(() => {
-    const ranked = rankTeamsForAllianceSelection(tableData);
+    const ranked = rankTeamsForAllianceSelection(tableData, rankingOptions);
     setRankedTeams(ranked);
-  }, [tableData]);
+  }, [tableData, rankingOptions]);
 
   useEffect(() => {
     if (!regional) {
@@ -59,10 +88,15 @@ function AllianceSelectionView({ tableData, regional }) {
     }
 
     apiGetSimpleTeamsForRegional(regional)
-      .then(data => setSimpleTeams(data || []))
+      .then(data => {
+        const teamsData = data || []
+        setSimpleTeams(teamsData)
+        setRegionalTeamSet(new Set(teamsData.map((t) => String(t?.team_number || t?.TeamNumber || '').trim()).filter(Boolean)))
+      })
       .catch(err => {
         console.log('failed to load simple teams', err);
         setSimpleTeams([]);
+        setRegionalTeamSet(new Set());
       });
   }, [regional]);
 
@@ -126,14 +160,20 @@ function AllianceSelectionView({ tableData, regional }) {
   };
 
   const availableTeams = useMemo(() => {
-    const selectedTeams = Object.values(alliances).flatMap(alliance =>
-      [alliance.captain, ...alliance.picks].filter(Boolean)
+    const selectedTeams = new Set(
+      Object.values(alliances)
+        .flatMap(alliance => [alliance.captain, ...alliance.picks])
+        .filter(Boolean)
+        .map(normalizeTeamNumber)
     );
-    return rankedTeams.filter(team => !selectedTeams.includes(team.TeamNumber));
+
+    return rankedTeams.filter(team => !selectedTeams.has(normalizeTeamNumber(team.TeamNumber)));
   }, [rankedTeams, alliances]);
 
   const handleTeamSelect = (teamNumber) => {
     if (!teamNumber || currentPickIndex >= pickingOrder.length) return;
+
+    const normalizedTeamNumber = normalizeTeamNumber(teamNumber);
 
     const currentPick = pickingOrder[currentPickIndex];
     const allianceKey = `alliance${currentPick.alliance}`;
@@ -146,55 +186,79 @@ function AllianceSelectionView({ tableData, regional }) {
     setAlliances(prev => {
       const newAlliances = { ...prev };
       if (currentPick.type === 'captain') {
-        newAlliances[allianceKey].captain = teamNumber;
+        newAlliances[allianceKey].captain = normalizedTeamNumber;
       } else if (currentPick.type === 'pick1') {
-        newAlliances[allianceKey].picks[0] = teamNumber;
+        newAlliances[allianceKey].picks[0] = normalizedTeamNumber;
       } else if (currentPick.type === 'pick2') {
-        newAlliances[allianceKey].picks[1] = teamNumber;
+        newAlliances[allianceKey].picks[1] = normalizedTeamNumber;
       }
       return newAlliances;
     });
 
-    setInputDrafts(prev => ({ ...prev, [draftKey]: String(teamNumber) }));
+    setInputDrafts(prev => ({ ...prev, [draftKey]: normalizedTeamNumber }));
 
-    setCurrentPickIndex(currentPickIndex + 1);
+    setCurrentPickIndex(prev => prev + 1);
   };
 
   const lookupTeamNumber = async (term) => {
-    let num = null;
+    const normalizedTerm = String(term || '').trim()
 
-    if (/^\d+$/.test(term)) {
-      num = term;
-    } else {
-      try {
-        const list = await apiListTeams();
-        const items = list?.data?.listTeams?.items || [];
-        const found = items.find(t =>
-          t.TeamAttributes?.name?.toLowerCase().includes(term.toLowerCase())
-        );
-        if (found) {
-          num = String(found.id || '');
-        }
-      } catch (err) {
-        console.log('failed to list teams for name lookup', err);
+    if (/^\d+$/.test(normalizedTerm)) {
+      if (!regionalTeamSet.has(normalizedTerm)) {
+        return { teamNum: null, suggestions: [] }
       }
-
-      if (!num) {
-        const foundBA = simpleTeams.find(s =>
-          s.nickname && s.nickname.toLowerCase().includes(term.toLowerCase())
-        );
-        if (foundBA) {
-          num = String(foundBA.team_number || foundBA.TeamNumber || '');
-        }
-      }
+      return { teamNum: normalizedTerm, suggestions: [] };
     }
 
-    return num;
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    });
+
+    return {
+      teamNum: suggestions[0]?.teamNumber || null,
+      suggestions,
+    };
   };
 
   const handleDraftChange = (key, value) => {
     setInputDrafts(prev => ({ ...prev, [key]: value }));
+
+    const term = String(value || '').trim()
+    if (!term) {
+      setDraftSuggestions(prev => ({ ...prev, [key]: [] }));
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    setDraftSuggestions(prev => ({ ...prev, [key]: suggestions }));
   };
+
+  const applyTeamToDraftSlot = (allianceKey, type, teamNum, index = null) => {
+    setAlliances(prev => {
+      const newAlliances = { ...prev };
+      if (type === 'captain') {
+        newAlliances[allianceKey].captain = teamNum;
+      } else {
+        newAlliances[allianceKey].picks[index] = teamNum;
+      }
+      return newAlliances;
+    });
+
+    const key = type === 'captain' ? `${allianceKey}captain` : `${allianceKey}pick${index}`;
+    setInputDrafts(prev => ({ ...prev, [key]: String(teamNum) }));
+    setDraftSuggestions(prev => ({ ...prev, [key]: [] }));
+  }
 
   const commitDraft = async (allianceKey, type, index = null) => {
     const key = type === 'captain' ? `${allianceKey}captain` : `${allianceKey}pick${index}`;
@@ -213,23 +277,18 @@ function AllianceSelectionView({ tableData, regional }) {
       return;
     }
 
-    const teamNum = await lookupTeamNumber(term);
+    if (/^\d+$/.test(term) && !regionalTeamSet.has(term)) {
+      alert(`Team ${term} is not at this regional.`)
+      return
+    }
+
+    const { teamNum, suggestions } = await lookupTeamNumber(term);
     if (!teamNum) {
-      alert('Team not found');
+      setDraftSuggestions(prev => ({ ...prev, [key]: suggestions }));
       return;
     }
 
-    setAlliances(prev => {
-      const newAlliances = { ...prev };
-      if (type === 'captain') {
-        newAlliances[allianceKey].captain = teamNum;
-      } else {
-        newAlliances[allianceKey].picks[index] = teamNum;
-      }
-      return newAlliances;
-    });
-
-    setInputDrafts(prev => ({ ...prev, [key]: String(teamNum) }));
+    applyTeamToDraftSlot(allianceKey, type, teamNum, index);
   };
 
   const handleRemove = (allianceKey, type, index = null) => {
@@ -245,6 +304,19 @@ function AllianceSelectionView({ tableData, regional }) {
 
     const key = type === 'captain' ? `${allianceKey}captain` : `${allianceKey}pick${index}`;
     setInputDrafts(prev => ({ ...prev, [key]: '' }));
+    setDraftSuggestions(prev => ({ ...prev, [key]: [] }));
+  };
+
+  const handleWeightChange = (key, value) => {
+    const parsed = Number(value);
+    setMetricWeights((prev) => ({
+      ...prev,
+      [key]: Number.isFinite(parsed) ? Math.max(0, parsed) : 0
+    }));
+  };
+
+  const resetWeights = () => {
+    setMetricWeights(defaultMetricWeights);
   };
 
   const renderAllianceDiagram = () => {
@@ -269,48 +341,102 @@ function AllianceSelectionView({ tableData, regional }) {
               {currentAlliance === index + 1 && currentType && ` (Picking ${currentType})`}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <input
-                  type="text"
-                  value={inputDrafts[`${key}captain`] ?? (alliance.captain ? String(alliance.captain) : '')}
-                  onChange={(e) => handleDraftChange(`${key}captain`, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      commitDraft(key, 'captain');
-                    }
-                  }}
-                  placeholder="Captain"
-                  style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
-                />
-                <button
-                  onClick={() => handleRemove(key, 'captain')}
-                  style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                >
-                  X
-                </button>
-              </div>
-              {[0, 1].map(pickIndex => (
-                <div key={pickIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <input
                     type="text"
-                    value={inputDrafts[`${key}pick${pickIndex}`] ?? (alliance.picks[pickIndex] ? String(alliance.picks[pickIndex]) : '')}
-                    onChange={(e) => handleDraftChange(`${key}pick${pickIndex}`, e.target.value)}
+                    value={inputDrafts[`${key}captain`] ?? (alliance.captain ? String(alliance.captain) : '')}
+                    onChange={(e) => handleDraftChange(`${key}captain`, e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        commitDraft(key, 'pick', pickIndex);
+                        commitDraft(key, 'captain');
                       }
                     }}
-                    placeholder={`Pick ${pickIndex + 1}`}
+                    placeholder="Captain"
                     style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
                   />
                   <button
-                    onClick={() => handleRemove(key, 'pick', pickIndex)}
+                    onClick={() => handleRemove(key, 'captain')}
                     style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                   >
                     X
                   </button>
+                </div>
+                {Array.isArray(draftSuggestions[`${key}captain`]) && draftSuggestions[`${key}captain`].length > 0 ? (
+                  <div style={{ marginTop: '6px' }}>
+                    <div style={{ border: '1px solid #ddd', borderRadius: '6px', backgroundColor: 'white', overflow: 'hidden' }}>
+                      {draftSuggestions[`${key}captain`].map((suggestion, idx) => (
+                        <button
+                          key={`${key}captain-${suggestion.teamNumber}`}
+                          type="button"
+                          onClick={() => applyTeamToDraftSlot(key, 'captain', suggestion.teamNumber)}
+                          style={{
+                            width: '100%',
+                            textAlign: 'left',
+                            padding: '8px 10px',
+                            border: 'none',
+                            borderTop: idx === 0 ? 'none' : '1px solid #eee',
+                            backgroundColor: 'white',
+                            cursor: 'pointer',
+                            fontSize: '13px'
+                          }}
+                        >
+                          {suggestion.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              {[0, 1].map(pickIndex => (
+                <div key={pickIndex}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <input
+                      type="text"
+                      value={inputDrafts[`${key}pick${pickIndex}`] ?? (alliance.picks[pickIndex] ? String(alliance.picks[pickIndex]) : '')}
+                      onChange={(e) => handleDraftChange(`${key}pick${pickIndex}`, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          commitDraft(key, 'pick', pickIndex);
+                        }
+                      }}
+                      placeholder={`Pick ${pickIndex + 1}`}
+                      style={{ flex: 1, padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+                    />
+                    <button
+                      onClick={() => handleRemove(key, 'pick', pickIndex)}
+                      style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                    >
+                      X
+                    </button>
+                  </div>
+                  {Array.isArray(draftSuggestions[`${key}pick${pickIndex}`]) && draftSuggestions[`${key}pick${pickIndex}`].length > 0 ? (
+                    <div style={{ marginTop: '6px' }}>
+                      <div style={{ border: '1px solid #ddd', borderRadius: '6px', backgroundColor: 'white', overflow: 'hidden' }}>
+                        {draftSuggestions[`${key}pick${pickIndex}`].map((suggestion, idx) => (
+                          <button
+                            key={`${key}pick${pickIndex}-${suggestion.teamNumber}`}
+                            type="button"
+                            onClick={() => applyTeamToDraftSlot(key, 'pick', suggestion.teamNumber, pickIndex)}
+                            style={{
+                              width: '100%',
+                              textAlign: 'left',
+                              padding: '8px 10px',
+                              border: 'none',
+                              borderTop: idx === 0 ? 'none' : '1px solid #eee',
+                              backgroundColor: 'white',
+                              cursor: 'pointer',
+                              fontSize: '13px'
+                            }}
+                          >
+                            {suggestion.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>
@@ -321,6 +447,12 @@ function AllianceSelectionView({ tableData, regional }) {
   };
 
   const renderLeaderboard = () => {
+    const getRSOutOfFive = (team) => {
+      const confidence = Number(team?.confidence ?? 0);
+      const normalized = Math.max(0, Math.min(1, confidence));
+      return (normalized * 5).toFixed(1);
+    };
+
     return (
       <div className={tableStyles.TableContainer}>
         <h3>Available Teams Leaderboard</h3>
@@ -331,16 +463,15 @@ function AllianceSelectionView({ tableData, regional }) {
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
-                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Avg Points</th>
-                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>OPR</th>
+                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>RS</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Action</th>
               </tr>
             </thead>
             <tbody>
-              {availableTeams.slice(0, 20).map((team, index) => (
+              {availableTeams.map((team, index) => (
                 <tr key={team.TeamNumber} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {rankedTeams.findIndex(t => t.TeamNumber === team.TeamNumber) + 1}
+                    {rankedTeams.findIndex(t => normalizeTeamNumber(t.TeamNumber) === normalizeTeamNumber(team.TeamNumber)) + 1}
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 'bold' }}>
                     {team.TeamNumber}
@@ -349,10 +480,7 @@ function AllianceSelectionView({ tableData, regional }) {
                     {team.allianceScore?.toFixed(2) || '0.00'}
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {team.AvgPoints?.toFixed(1) || '0.0'}
-                  </td>
-                  <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
-                    {team.OPR?.toFixed(1) || '0.0'}
+                    {getRSOutOfFive(team)} / 5
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     <button
@@ -391,6 +519,35 @@ function AllianceSelectionView({ tableData, regional }) {
       {/* Leaderboard */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Team Leaderboard</h3>
+
+        <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '14px', marginBottom: '16px', border: '1px solid #e5e5e5' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '8px', flexWrap: 'wrap' }}>
+            <h4 style={{ margin: 0 }}>2026 Ranking Weights</h4>
+            <button
+              onClick={resetWeights}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #ccc', backgroundColor: 'white', cursor: 'pointer' }}
+            >
+              Reset Defaults
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
+            {weightFields.map((field) => (
+              <label key={field.key} style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px' }}>
+                {field.label}
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={metricWeights?.[field.key] ?? 0}
+                  onChange={(e) => handleWeightChange(field.key, e.target.value)}
+                  style={{ height: '34px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #ccc' }}
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+
         {renderLeaderboard()}
       </div>
 
