@@ -264,8 +264,8 @@ export async function submitState( //params are states of data from form
   
   /* Driver Skill Select */
   switch (driverSkill){
-    case 'Bad':
-      driverSkill = "Bad"
+    case 'Poor':
+      driverSkill = "Poor"
       break;
     case 'Average':
       driverSkill = "Average"
