@@ -403,8 +403,10 @@ export async function submitState( //params are states of data from form
         ? currentRegional.TeamMatches
         : (currentRegional.TeamMatches ? [currentRegional.TeamMatches] : [])
 
+      const submittedAt = new Date().toISOString()
+
       const teamMatch = {
-        name: "",
+        name: submittedAt,
         description: robotInsight,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,

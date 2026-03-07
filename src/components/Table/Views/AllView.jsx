@@ -87,6 +87,9 @@ function AllView({ regional }) {
               const matchId = typeof match?.MatchId === 'string' ? match.MatchId.trim() : '';
               if (!matchId || matchId === 'matchEntry.MatchId') return;
 
+              const matchTimestampFromName = Date.parse(String(match?.name || ''))
+              const matchTimestamp = Number.isNaN(matchTimestampFromName) ? 0 : matchTimestampFromName
+
               const auto = match?.Autonomous?.AutoStrat || [];
               const autoHang = match?.Autonomous?.AutoHang || 'None';
               const autoTravel = match?.Autonomous?.TravelMid || 0;
@@ -114,7 +117,7 @@ function AllView({ regional }) {
                 regional: reg?.RegionalId || '',
                 title: formatMatchLabel(matchId),
                 detail: `Auto: ${autoStr} (${autoHang}) • Endgame: ${endgame} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${comment}`,
-                timestamp,
+                timestamp: matchTimestamp,
                 updatedAt: teamUpdatedAt,
               });
             });
@@ -140,6 +143,13 @@ function AllView({ regional }) {
   }, [entries]);
 
   const formatWhen = (entry) => {
+    if (entry?.type === 'Form') {
+      if (entry?.timestamp) {
+        const d = new Date(entry.timestamp);
+        if (!Number.isNaN(d.getTime())) return d.toLocaleString();
+      }
+      return 'Unknown time';
+    }
     if (entry?.updatedAt) {
       const d = new Date(entry.updatedAt);
       if (!Number.isNaN(d.getTime())) return d.toLocaleString();
