@@ -47,7 +47,7 @@ function Home() {
         @media (max-width: 767px) {
           .mobile-nav {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(1, 1fr);
             gap: 12px;
             max-width: 350px;
             width: 100%;
@@ -133,13 +133,6 @@ function Home() {
             <p>Team notes</p>
           </Link>
           
-          <Link 
-            to="/upload"
-            className="nav-card"
-          >
-            <h3>UPLOAD</h3>
-            <p>Upload data</p>
-          </Link>
         </div>
       </div>
     </>  )
