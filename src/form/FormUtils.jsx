@@ -261,6 +261,26 @@ export async function submitState( //params are states of data from form
       windowAlertMsg = windowAlertMsg + "\nShooting Speed"
       break;
   }
+  
+  /* Driver Skill Select */
+  switch (driverSkill){
+    case 'Bad':
+      driverSkill = "Bad"
+      break;
+    case 'Average':
+      driverSkill = "Average"
+      break;
+    case 'Good':
+      driverSkill = "Good"
+      break
+    case 'Excellent':
+      driverSkill = "Excellent"
+      break;
+    default:
+      incompleteForm = true;
+      windowAlertMsg = windowAlertMsg + "\nDriver Skill"
+      break;
+  }
 
   /* Point Calc */
 

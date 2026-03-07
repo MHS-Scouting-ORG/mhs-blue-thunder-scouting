@@ -238,16 +238,15 @@ function TeamStats(props) {
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
   const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
   const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
+  
+  const ballsShot = mode(matches.map(m => m?.RobotInfo.BallsShot || 'None'))
 
-  const penaltyCount = matches.reduce((sum, m) => {
-    const penalties = m?.Penalties?.PenaltiesCommitted || {};
-    return sum + Object.values(penalties).filter(v => v === true).length;
-  }, 0);
+  const scoutedFuelCap = mode(matches.map(m => m?.RobotInfo?.FuelCapacity || 'None'));
+
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
   const brokenCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.Broken ? 1 : 0), 0);
 
-  const penaltyInfo = `${penaltyCount} total episodes${dqCount > 0 ? `, ${dqCount} DQ` : ''}`;
   const brokenRate = matches.length > 0 ? ((brokenCount / matches.length) * 100).toFixed(2) : '0.00';
   const capabilitiesText = Array.isArray(attrs?.Capabilities)
     ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
@@ -334,16 +333,19 @@ function TeamStats(props) {
             <strong>Most Likely Inactive Strat:</strong> {inactiveMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Hang Time:</strong> {hangTimeText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Penalties</strong>: {penaltyInfo}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Shooter Speed:</strong> {shooterMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Balls Shot</strong>: {ballsShot ?? 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Scouted Fuel Cap</strong>: {scoutedFuelCap ?? 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Hang Time:</strong> {hangTimeText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Declared Fuel Cap</strong>: {attrs?.DeclaredFuelCap ?? 'N/A'}
@@ -371,6 +373,12 @@ function TeamStats(props) {
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Broken:</strong> {brokenRateText}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>What Broke: </strong>
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Insight: </strong>
           </div>
         </div>
       </div>
