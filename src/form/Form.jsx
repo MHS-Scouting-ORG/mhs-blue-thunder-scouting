@@ -756,7 +756,7 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
               onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Driver Skill</option>
-              <option value="Bad">Bad</option>
+              <option value="Poor">Poor</option>
               <option value="Average">Average</option>
               <option value="Good">Good</option>
               <option value="Excellent">Excellent</option>
