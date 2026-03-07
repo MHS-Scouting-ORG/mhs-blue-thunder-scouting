@@ -1,24 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { apigetMatchesForRegional, apiListTeams, apiGetSimpleTeamsForRegional } from '../../../api';
+import { apigetMatchesForRegional, apiGetSimpleTeamsForRegional } from '../../../api';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
+import { getTopTeamSuggestions } from '../../../utils/teamSearch';
 
 function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [matches, setMatches] = useState([]);
   const [simpleTeams, setSimpleTeams] = useState([]);
+  const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
+  const [lookupSuggestions, setLookupSuggestions] = useState([]);
+
+  const applySelectedTeam = (teamNum) => {
+    setSelectedTeam(teamNum);
+    setSearchTerm('');
+    setLookupSuggestions([]);
+    setTeamsClicked(prev => {
+      if (prev.find(x => x.TeamNumber === teamNum)) return prev;
+      return [...prev, { TeamNumber: teamNum }];
+    });
+  }
 
   useEffect(() => {
     // pull basic BlueAlliance team info for name lookup
     if (regional) {
       apiGetSimpleTeamsForRegional(regional)
         .then(data => {
-          setSimpleTeams(data || []);
+          const teamsData = data || []
+          setSimpleTeams(teamsData);
+          setRegionalTeamSet(new Set(teamsData.map((t) => String(t?.team_number || t?.TeamNumber || '').trim()).filter(Boolean)));
         })
-        .catch(err => console.log('failed to load simple teams', err));
+        .catch(err => {
+          console.log('failed to load simple teams', err)
+          setSimpleTeams([])
+          setRegionalTeamSet(new Set())
+        });
+    } else {
+      setSimpleTeams([])
+      setRegionalTeamSet(new Set())
     }
   }, [regional]);
+
+  useEffect(() => {
+    const term = String(searchTerm || '').trim()
+    if (!term) {
+      setLookupSuggestions([])
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    setLookupSuggestions(suggestions)
+  }, [searchTerm, simpleTeams])
 
   useEffect(() => {
     if (selectedTeam && regional) {
@@ -49,53 +89,44 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   }, [selectedTeam, regional]);
 
   const lookupTeamNumber = async (term) => {
-    let num = null;
-    // digits only -> team number
-    if (/^\d+$/.test(term)) {
-      num = term;
-    } else {
-      // first, check DB for custom name
-      try {
-        const list = await apiListTeams();
-        const items = list?.data?.listTeams?.items || [];
-        const found = items.find(t =>
-          t.TeamAttributes?.name?.toLowerCase().includes(term.toLowerCase())
-        );
-        if (found) {
-          num = String(found.id || '');
-        }
-      } catch (err) {
-        console.log('failed to list teams for name lookup', err);
+    const normalizedTerm = String(term || '').trim()
+    if (/^\d+$/.test(normalizedTerm)) {
+      if (!regionalTeamSet.has(normalizedTerm)) {
+        return { teamNum: null, suggestions: [] }
       }
-      // if not found, fall back to blue alliance nicknames
-      if (!num) {
-        const foundBA = simpleTeams.find(s =>
-          s.nickname && s.nickname.toLowerCase().includes(term.toLowerCase())
-        );
-        if (foundBA) {
-          num = String(foundBA.team_number || foundBA.TeamNumber || '');
-        }
-      }
+      return { teamNum: normalizedTerm, suggestions: [] };
     }
 
-    return num;
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    });
+
+    return {
+      teamNum: suggestions[0]?.teamNumber || null,
+      suggestions,
+    };
   };
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     const term = searchTerm.trim();
     if (!term) return;
-    const teamNum = await lookupTeamNumber(term);
+
+    if (/^\d+$/.test(term) && !regionalTeamSet.has(term)) {
+      alert(`Team ${term} is not at this regional.`)
+      setSelectedTeam(null)
+      return
+    }
+
+    const { teamNum, suggestions } = await lookupTeamNumber(term);
     if (teamNum) {
-      setSelectedTeam(teamNum);
-      setSearchTerm('');
-      setTeamsClicked(prev => {
-        // also toggle in the summary list so that it matches other views
-        if (prev.find(x => x.TeamNumber === teamNum)) return prev;
-        return [...prev, { TeamNumber: teamNum }];
-      });
+      applySelectedTeam(teamNum)
     } else {
-      alert('Team not found');
+      setLookupSuggestions(suggestions)
       setSelectedTeam(null);
     }
   };
@@ -107,11 +138,7 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       <button
         key={display + alliance}
         onClick={() => {
-          setSelectedTeam(display);
-          setTeamsClicked(prev => {
-            if (prev.find(x => x.TeamNumber === display)) return prev;
-            return [...prev, { TeamNumber: display }];
-          });
+          applySelectedTeam(display)
         }}
         className={tableStyles.AllianceButton}
         style={{ margin: '2px' }}
@@ -168,6 +195,38 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
             Lookup
           </button>
         </form>
+        {lookupSuggestions.length > 0 ? (
+          <div style={{ marginTop: '10px', maxWidth: '560px', marginInline: 'auto', textAlign: 'left' }}>
+            <div
+              style={{
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                backgroundColor: 'white',
+                overflow: 'hidden'
+              }}
+            >
+              {lookupSuggestions.map((suggestion, index) => (
+                <button
+                  key={suggestion.teamNumber}
+                  type="button"
+                  onClick={() => applySelectedTeam(suggestion.teamNumber)}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '10px 12px',
+                    backgroundColor: 'white',
+                    border: 'none',
+                    borderTop: index === 0 ? 'none' : '1px solid #eee',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  {suggestion.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       {selectedTeam && (

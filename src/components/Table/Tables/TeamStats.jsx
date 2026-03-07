@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { getUrl } from 'aws-amplify/storage';
-import { apiGetTeam, apiGetSimpleTeamsForRegional, apigetMatchesForRegional } from '../../../api/index';
+import { apiGetTeam, apiGetSimpleTeamsForRegional, apigetMatchesForRegional, toNotesTeamId } from '../../../api/index';
 
 function TeamStats(props) {
   const information = props.information
@@ -62,9 +62,21 @@ function TeamStats(props) {
   useEffect(() => {
     if (!selectedTeam) return;
 
-    apiGetTeam(selectedTeam)
-      .then(team => {
-        setTeamData(team);
+    Promise.all([
+      apiGetTeam(selectedTeam),
+      apiGetTeam(toNotesTeamId(selectedTeam)),
+    ])
+      .then(([baseTeam, notesTeam]) => {
+        const baseAttrs = baseTeam?.TeamAttributes || {}
+        const notesAttrs = notesTeam?.TeamAttributes || {}
+
+        setTeamData({
+          ...(baseTeam || {}),
+          TeamAttributes: {
+            ...baseAttrs,
+            ...notesAttrs,
+          },
+        });
       })
       .catch(err => {
         console.log('Error fetching team data:', err);
@@ -278,7 +290,7 @@ function TeamStats(props) {
           <div>
             <p style={{ margin: "5px 0", fontWeight: "600" }}>Team Number: {selectedTeam}</p>
             <p style={{ margin: "5px 0", fontWeight: "600" }}>
-            Team Name: {teamData?.TeamAttributes?.name || teamData?.nickname || simpleTeamName || 'Unknown'}
+            Team Name: {simpleTeamName || teamData?.nickname || 'Unknown'}
           </p>
             <p style={{ margin: "5px 0", fontWeight: "600" }}>Matches Scouted: {safeStats?.Matches ?? matches.length ?? 0}</p>
           </div>

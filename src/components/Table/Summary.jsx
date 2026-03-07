@@ -7,6 +7,7 @@ import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import SearchView from "./Views/SearchView";
 import AllView from "./Views/AllView";
+import AllLeaderboardView from "./Views/AllLeaderboardView";
 import OurMatchesView from "./Views/OurMatchesView";
 import 'chart.js/auto';
 
@@ -21,7 +22,7 @@ function Summary() {
   const [tableData, setTableData] = useState([]); //data on table
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
-  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'search', 'quals', 'alliance', 'elims'
+  const [currentView, setCurrentView] = useState(''); // current view: 'all', 'submissions', 'search', 'quals', 'alliance', 'elims'
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
@@ -135,13 +136,16 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["All", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Submitions", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
                 switch (view){
                   case "All": 
                     setCurrentView('all')
+                    break;
+                  case "Submitions":
+                    setCurrentView('submissions')
                     break;
                   case "Quals":
                     setCurrentView('quals')
@@ -163,6 +167,8 @@ function Summary() {
                   currentView ===
                     (view === "All"
                       ? 'all'
+                      : view === 'Submitions'
+                      ? 'submissions'
                       : view === "Alliance Selection"
                       ? 'alliance'
                       : view === 'Our Matches'
@@ -182,6 +188,12 @@ function Summary() {
 
       {/* Render Current View */}
       {currentView === 'all' && (
+        <AllLeaderboardView
+          tableData={tableData}
+          regional={regional}
+        />
+      )}
+      {currentView === 'submissions' && (
         <AllView
           regional={regional}
         />

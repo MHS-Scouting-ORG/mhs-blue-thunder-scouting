@@ -8,7 +8,6 @@ export const getTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -101,7 +100,6 @@ export const listTeams = /* GraphQL */ `
         description
         Comment
         TeamAttributes {
-          name
           Regional
           DeclaredFuelCap
           CyclesPerMatch
@@ -196,7 +194,6 @@ export const syncTeams = /* GraphQL */ `
         description
         Comment
         TeamAttributes {
-          name
           Regional
           DeclaredFuelCap
           CyclesPerMatch

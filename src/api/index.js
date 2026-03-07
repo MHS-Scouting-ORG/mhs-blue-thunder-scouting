@@ -12,6 +12,26 @@ import {
 } from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
 
+const NOTES_TEAM_PREFIX = 'notes-'
+
+const isNotesTeamId = (teamId) => String(teamId || '').startsWith(NOTES_TEAM_PREFIX)
+
+const toNotesTeamId = (teamId) => {
+  const normalized = normalizeTeamId(teamId)
+  return normalized ? `${NOTES_TEAM_PREFIX}${normalized}` : ''
+}
+
+const fromNotesTeamId = (teamId) => {
+  const value = String(teamId || '')
+  if (isNotesTeamId(value)) return normalizeTeamId(value.slice(NOTES_TEAM_PREFIX.length))
+  return normalizeTeamId(value)
+}
+
+const isBaseTeamId = (teamId) => {
+  const normalized = normalizeTeamId(teamId)
+  return Boolean(normalized) && !isNotesTeamId(normalized)
+}
+
 import * as Auth from 'aws-amplify/auth'
 
 let client
@@ -535,4 +555,8 @@ export {
   apiGetRegional,
   apiCreateTeamEntry,
   apiUpdateTeamEntryMatch,
+  isNotesTeamId,
+  toNotesTeamId,
+  fromNotesTeamId,
+  isBaseTeamId,
 }

@@ -9,7 +9,60 @@
  *   allianceScore = skillRating - uncertaintyPenalty
  */
 
+const DEFAULT_GAME_PROFILE = 'frc2026Rebuilt'
+
+const DEFAULT_GAME_PROFILES = {
+  legacy: {
+    metricWeights: {
+      autoActions: 0.16,
+      autoHang: 0.04,
+      teleopMobility: 0.08,
+      endgame: 0.12,
+      ballsShot: 0.27,
+      shootingCycles: 0.08,
+      robotSpeed: 0.09,
+      shooterSpeed: 0.04,
+      driverSkill: 0.03,
+      teamImpact: 0.03,
+      strategyExecution: 0.03,
+      reliability: 0.03
+    },
+    seedWeights: {
+      avgPoints: 0.35,
+      avgAutoPts: 0.25,
+      avgEndgamePts: 0.25,
+      opr: 0.1,
+      reliability: 0.05
+    }
+  },
+  frc2026Rebuilt: {
+    metricWeights: {
+      autoActions: 0.17,
+      autoHang: 0.06,
+      teleopMobility: 0.07,
+      endgame: 0.16,
+      ballsShot: 0.16,
+      shootingCycles: 0.1,
+      robotSpeed: 0.07,
+      shooterSpeed: 0.04,
+      driverSkill: 0.05,
+      teamImpact: 0.04,
+      strategyExecution: 0.05,
+      reliability: 0.03
+    },
+    seedWeights: {
+      avgPoints: 0.34,
+      avgAutoPts: 0.24,
+      avgEndgamePts: 0.24,
+      opr: 0.1,
+      reliability: 0.08
+    }
+  }
+}
+
 const DEFAULT_OPTIONS = {
+  gameProfile: DEFAULT_GAME_PROFILE,
+
   initialRating: 50,
   initialUncertainty: 18,
   minUncertainty: 4,
@@ -30,12 +83,25 @@ const DEFAULT_OPTIONS = {
 
   aggregateSeedSpread: 24,
 
+  normalizationCaps: {
+    ballsShotMax: 18,
+    shootingCyclesMax: 10,
+    teleopTravelMidMax: 6
+  },
+
+  metricWeights: {
+    ...DEFAULT_GAME_PROFILES.frc2026Rebuilt.metricWeights
+  },
+  seedWeights: {
+    ...DEFAULT_GAME_PROFILES.frc2026Rebuilt.seedWeights
+  },
+
   featureWeights: {
-    ballsShot: 0.45,
-    robotSpeed: 0.15,
-    activeStrategies: 0.1,
-    auto: 0.15,
-    endgame: 0.15
+    ballsShot: 0.16,
+    robotSpeed: 0.07,
+    activeStrategies: 0.05,
+    auto: 0.17,
+    endgame: 0.16
   }
 }
 
@@ -53,6 +119,90 @@ const avg = (arr) => {
   return arr.reduce((sum, x) => sum + toNumber(x, 0), 0) / arr.length
 }
 
+const normalizeWeights = (weights, fallbackWeights) => {
+  const source = weights && typeof weights === 'object' ? weights : fallbackWeights
+  const keys = Object.keys(source || {})
+  if (keys.length === 0) return {}
+
+  const sanitized = {}
+  let sum = 0
+  keys.forEach((key) => {
+    const weight = Math.max(0, toNumber(source[key], 0))
+    sanitized[key] = weight
+    sum += weight
+  })
+
+  if (sum <= 0) {
+    const equal = 1 / keys.length
+    keys.forEach((key) => {
+      sanitized[key] = equal
+    })
+    return sanitized
+  }
+
+  keys.forEach((key) => {
+    sanitized[key] = sanitized[key] / sum
+  })
+
+  return sanitized
+}
+
+const mergeWeights = (baseWeights, overrideWeights) => {
+  if (!overrideWeights || typeof overrideWeights !== 'object') return { ...baseWeights }
+  return {
+    ...baseWeights,
+    ...overrideWeights
+  }
+}
+
+const mapLegacyFeatureWeights = (featureWeights) => {
+  if (!featureWeights || typeof featureWeights !== 'object') return {}
+
+  return {
+    autoActions: featureWeights.auto,
+    ballsShot: featureWeights.ballsShot,
+    robotSpeed: featureWeights.robotSpeed,
+    strategyExecution: featureWeights.activeStrategies,
+    endgame: featureWeights.endgame
+  }
+}
+
+const resolveRankingOptions = (options = {}) => {
+  const profileName = options.gameProfile || DEFAULT_OPTIONS.gameProfile
+  const profile = DEFAULT_GAME_PROFILES[profileName] || DEFAULT_GAME_PROFILES[DEFAULT_GAME_PROFILE]
+
+  const metricOverride = {
+    ...mapLegacyFeatureWeights(options.featureWeights),
+    ...(options.metricWeights || {})
+  }
+
+  const metricWeights = normalizeWeights(
+    mergeWeights(profile.metricWeights, metricOverride),
+    profile.metricWeights
+  )
+
+  const seedWeights = normalizeWeights(
+    mergeWeights(profile.seedWeights, options.seedWeights),
+    profile.seedWeights
+  )
+
+  return {
+    ...DEFAULT_OPTIONS,
+    ...options,
+    gameProfile: profileName,
+    normalizationCaps: {
+      ...DEFAULT_OPTIONS.normalizationCaps,
+      ...(options.normalizationCaps || {})
+    },
+    metricWeights,
+    seedWeights,
+    featureWeights: {
+      ...DEFAULT_OPTIONS.featureWeights,
+      ...(options.featureWeights || {})
+    }
+  }
+}
+
 const parseMatchOrder = (matchId) => {
   const id = String(matchId || '')
   const matchNumber = id.match(/m(\d+)$/i) || id.match(/_(\d+)$/)
@@ -66,6 +216,23 @@ const parseSpeedScore = (speed) => {
   if (v.includes('fast')) return 1
   if (v.includes('average') || v.includes('medium')) return 0.6
   if (v.includes('slow')) return 0.3
+  return 0
+}
+
+const parseDriverSkillScore = (skill) => {
+  const v = safeLower(skill)
+  if (v.includes('excellent')) return 1
+  if (v.includes('good')) return 0.75
+  if (v.includes('average')) return 0.5
+  if (v.includes('poor')) return 0.25
+  return 0
+}
+
+const parseTeamImpactScore = (impact) => {
+  const v = safeLower(impact)
+  if (v.includes('high')) return 1
+  if (v.includes('medium')) return 0.6
+  if (v.includes('low')) return 0.3
   return 0
 }
 
@@ -94,11 +261,19 @@ const parseAutoScore = (autoStrat) => {
   return 0
 }
 
+const parseAutoHangScore = (autoHang) => {
+  const v = safeLower(autoHang)
+  if (v.includes('level3')) return 1
+  if (v.includes('level2')) return 0.7
+  if (v.includes('level1')) return 0.45
+  return 0
+}
+
 const parseEndgameScore = (endgame) => {
   const v = safeLower(endgame)
-  if (v.includes('level1')) return 1
-  if (v.includes('level2')) return 0.67
-  if (v.includes('level3')) return 0.34
+  if (v.includes('level3')) return 1
+  if (v.includes('level2')) return 0.7
+  if (v.includes('level1')) return 0.45
   return 0
 }
 
@@ -111,6 +286,16 @@ const strategyQualityScore = (strategies) => {
   const breadth = clamp(strategies.length / 4, 0, 1)
   const quality = clamp(hits / Math.max(1, strategies.length), 0, 1)
   return 0.5 * breadth + 0.5 * quality
+}
+
+const strategyExecutionScore = (activeStrategies, inactiveStrategies) => {
+  const active = strategyQualityScore(activeStrategies)
+  if (!Array.isArray(inactiveStrategies) || inactiveStrategies.length === 0) {
+    return active
+  }
+
+  const inactivePenalty = clamp(inactiveStrategies.length / 5, 0, 0.35)
+  return clamp(active - inactivePenalty, 0, 1)
 }
 
 const getPenaltySeverity = (match) => {
@@ -126,27 +311,51 @@ const getPenaltySeverity = (match) => {
 }
 
 const getMatchPerformanceScore = (match, options) => {
-  const weights = options.featureWeights
-  const ballsShot = clamp(toNumber(match?.RobotInfo?.BallsShot, 0) / 18, 0, 1)
-  const robotSpeed = parseSpeedScore(match?.RobotInfo?.RobotSpeed)
-  const activeStrategies = strategyQualityScore(match?.ActiveStrat)
-  const auto = parseAutoScore(match?.Autonomous?.AutoStrat)
-  const endgame = parseEndgameScore(match?.Teleop?.Endgame)
+  const weights = options.metricWeights
+  const caps = options.normalizationCaps
 
-  const rawPerformance =
-    ballsShot * weights.ballsShot +
-    robotSpeed * weights.robotSpeed +
-    activeStrategies * weights.activeStrategies +
-    auto * weights.auto +
-    endgame * weights.endgame
+  const ballsShot = clamp(toNumber(match?.RobotInfo?.BallsShot, 0) / Math.max(1, toNumber(caps?.ballsShotMax, 18)), 0, 1)
+  const shootingCycles = clamp(toNumber(match?.RobotInfo?.ShootingCycles, 0) / Math.max(1, toNumber(caps?.shootingCyclesMax, 10)), 0, 1)
+  const teleopMobility = clamp(toNumber(match?.Teleop?.TravelMid, 0) / Math.max(1, toNumber(caps?.teleopTravelMidMax, 6)), 0, 1)
+
+  const robotSpeed = parseSpeedScore(match?.RobotInfo?.RobotSpeed)
+  const shooterSpeed = parseSpeedScore(match?.RobotInfo?.ShooterSpeed)
+  const driverSkill = parseDriverSkillScore(match?.RobotInfo?.DriverSkill)
+  const teamImpact = parseTeamImpactScore(match?.TeamImpact)
+
+  const autoActions = parseAutoScore(match?.Autonomous?.AutoStrat)
+  const autoHang = parseAutoHangScore(match?.Autonomous?.AutoHang)
+  const endgame = parseEndgameScore(match?.Teleop?.Endgame)
+  const strategyExecution = strategyExecutionScore(match?.ActiveStrat, match?.InactiveStrat)
 
   const penaltySeverity = getPenaltySeverity(match)
-  const reliabilityMultiplier = 1 - penaltySeverity
+  const reliability = 1 - penaltySeverity
 
-  return clamp(rawPerformance * reliabilityMultiplier * 100, 0, 100)
+  const metrics = {
+    autoActions,
+    autoHang,
+    teleopMobility,
+    endgame,
+    ballsShot,
+    shootingCycles,
+    robotSpeed,
+    shooterSpeed,
+    driverSkill,
+    teamImpact,
+    strategyExecution,
+    reliability
+  }
+
+  const rawPerformance = Object.entries(metrics)
+    .reduce((sum, [key, value]) => {
+      const weight = toNumber(weights?.[key], 0)
+      return sum + (value * weight)
+    }, 0)
+
+  return clamp(rawPerformance * 100, 0, 100)
 }
 
-const getAggregateSeedScore = (teamData) => {
+const getAggregateSeedScoreWithOptions = (teamData, options) => {
   if (!teamData) return 0.5
 
   const totalMatches = Math.max(1, toNumber(teamData.Matches, 0))
@@ -155,12 +364,22 @@ const getAggregateSeedScore = (teamData) => {
   const dq = Array.isArray(teamData.DQ) ? teamData.DQ.length : toNumber(teamData.DQ, 0)
   const reliability = clamp(1 - ((broken + disabled + dq) / totalMatches), 0, 1)
 
+  const seed = {
+    avgPoints: clamp(toNumber(teamData.AvgPoints, 0) / 50, 0, 1),
+    avgAutoPts: clamp(toNumber(teamData.AvgAutoPts, 0) / 15, 0, 1),
+    avgEndgamePts: clamp(toNumber(teamData.AvgEndgamePts, 0) / 30, 0, 1),
+    opr: clamp(toNumber(teamData.OPR, 0) / 60, 0, 1),
+    reliability
+  }
+
+  const weights = normalizeWeights(options.seedWeights, DEFAULT_OPTIONS.seedWeights)
+
   const normalized =
-    clamp(toNumber(teamData.AvgPoints, 0) / 50, 0, 1) * 0.35 +
-    clamp(toNumber(teamData.AvgAutoPts, 0) / 15, 0, 1) * 0.25 +
-    clamp(toNumber(teamData.AvgEndgamePts, 0) / 30, 0, 1) * 0.25 +
-    clamp(toNumber(teamData.OPR, 0) / 60, 0, 1) * 0.1 +
-    reliability * 0.05
+    seed.avgPoints * toNumber(weights.avgPoints, 0) +
+    seed.avgAutoPts * toNumber(weights.avgAutoPts, 0) +
+    seed.avgEndgamePts * toNumber(weights.avgEndgamePts, 0) +
+    seed.opr * toNumber(weights.opr, 0) +
+    seed.reliability * toNumber(weights.reliability, 0)
 
   return clamp(normalized, 0, 1)
 }
@@ -316,29 +535,15 @@ const runRatingUpdates = (entries, initialStateMap, options) => {
 }
 
 export function calculateTeamScore(teamData, options = {}) {
-  const mergedOptions = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-    featureWeights: {
-      ...DEFAULT_OPTIONS.featureWeights,
-      ...(options.featureWeights || {})
-    }
-  }
+  const mergedOptions = resolveRankingOptions(options)
 
   const teamMatches = extractTeamMatches(teamData)
   if (teamMatches.length === 0) {
     return 0
   }
 
-  if (teamMatches.length > 0) {
-    const ranked = rankTeamsForAllianceSelection([teamData], mergedOptions)
-    return ranked[0]?.allianceScore ?? mergedOptions.initialRating
-  }
-
-  const seed = getAggregateSeedScore(teamData)
-  const baselineState = createInitialState(seed, mergedOptions)
-  const baselineFinal = finalizeTeamState(baselineState, mergedOptions)
-  return baselineFinal.conservativeRating
+  const ranked = rankTeamsForAllianceSelection([teamData], mergedOptions)
+  return ranked[0]?.allianceScore ?? mergedOptions.initialRating
 }
 
 /**
@@ -357,20 +562,13 @@ export function calculateTeamScore(teamData, options = {}) {
 export function rankTeamsForAllianceSelection(teamsData, options = {}) {
   if (!teamsData || !Array.isArray(teamsData)) return []
 
-  const mergedOptions = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-    featureWeights: {
-      ...DEFAULT_OPTIONS.featureWeights,
-      ...(options.featureWeights || {})
-    }
-  }
+  const mergedOptions = resolveRankingOptions(options)
 
   const stateMap = new Map()
   teamsData.forEach((team) => {
     const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
     if (!teamNumber) return
-    const seed = getAggregateSeedScore(team)
+    const seed = getAggregateSeedScoreWithOptions(team, mergedOptions)
     ensureTeamState(stateMap, teamNumber, seed, mergedOptions)
   })
 
@@ -432,14 +630,7 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
  * without reprocessing older events in a separate cache/service.
  */
 export function updateRatingsWithNewMatches(existingRatings = {}, newMatchEntries = [], options = {}) {
-  const mergedOptions = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-    featureWeights: {
-      ...DEFAULT_OPTIONS.featureWeights,
-      ...(options.featureWeights || {})
-    }
-  }
+  const mergedOptions = resolveRankingOptions(options)
 
   const stateMap = new Map()
   Object.entries(existingRatings || {}).forEach(([teamNumber, rating]) => {
@@ -496,4 +687,15 @@ export function updateRatingsWithNewMatches(existingRatings = {}, newMatchEntrie
   })
 
   return result
+}
+
+export function getDefaultAllianceRankingOptions(gameProfile = DEFAULT_GAME_PROFILE) {
+  const profile = DEFAULT_GAME_PROFILES[gameProfile] || DEFAULT_GAME_PROFILES[DEFAULT_GAME_PROFILE]
+  return {
+    ...DEFAULT_OPTIONS,
+    gameProfile,
+    metricWeights: { ...profile.metricWeights },
+    seedWeights: { ...profile.seedWeights },
+    normalizationCaps: { ...DEFAULT_OPTIONS.normalizationCaps }
+  }
 }

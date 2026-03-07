@@ -8,7 +8,6 @@ export const onCreateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -88,7 +87,6 @@ export const onUpdateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -168,7 +166,6 @@ export const onDeleteTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
-        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch

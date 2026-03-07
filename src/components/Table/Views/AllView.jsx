@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { apiListTeams } from '../../../api';
+import { apiListTeams, fromNotesTeamId, isNotesTeamId } from '../../../api';
 import tableStyles from '../Table.module.css';
 
 function AllView({ regional }) {
@@ -36,6 +36,8 @@ function AllView({ regional }) {
 
         teams.forEach(team => {
           const teamId = String(team?.id || '');
+          const notesRecord = isNotesTeamId(teamId)
+          const displayTeamNumber = notesRecord ? fromNotesTeamId(teamId) : teamId
           const teamUpdatedAt = team?.updatedAt || null;
           const teamChangedAt = Number(team?._lastChangedAt || 0);
           const timestamp = teamChangedAt > 0
@@ -54,19 +56,21 @@ function AllView({ regional }) {
           if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
           if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
 
-          if (noteParts.length > 0) {
+          if (notesRecord && noteParts.length > 0) {
 
             flat.push({
-              id: `note-${teamId}`,
+              id: `note-${displayTeamNumber}`,
               type: 'Note',
-              team: teamId,
+              team: displayTeamNumber,
               regional: attrs?.Regional || '',
-              title: attrs?.name ? `${attrs.name}` : `Team ${teamId} notes`,
+              title: `Team ${displayTeamNumber} notes`,
               detail: noteParts.join(' • '),
               timestamp,
               updatedAt: teamUpdatedAt,
             });
           }
+
+          if (notesRecord) return
 
           const regionals = Array.isArray(team?.Regionals)
             ? team.Regionals
@@ -149,7 +153,7 @@ function AllView({ regional }) {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>All Submits</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Submitions</h2>
 
       <div className={tableStyles.Card}>
         {sortedEntries.length === 0 ? (

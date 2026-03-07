@@ -4,14 +4,15 @@ import React, { useEffect, useState } from "react"
 import {
   apiGetRegional,
   apigetMatchesForRegional,
-  apiListTeams,
   apiGetSimpleTeamsForRegional,
   apiGetTeam,
   apiUpdateTeamEntry,
-  apiCreateTeamEntry
+  apiCreateTeamEntry,
+  toNotesTeamId,
 } from '../api/index';
 import { buttonIncremental } from "../form/FormUtils";
 import { toggleIncremental } from "../form/FormUtils"
+import { getTopTeamSuggestions } from "../utils/teamSearch";
 
 // styling
 import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
@@ -27,8 +28,10 @@ function Notes(props) {
   const [teams, setTeams] = useState([])
   const [findTeam, setFindTeam] = useState("")
   const [teamNumberInput, setTeamNumberInput] = useState("")
+  const [teamSuggestions, setTeamSuggestions] = useState([])
   const [nickname, setNickname] = useState(false)
   const [simpleTeams, setSimpleTeams] = useState([])
+  const [regionalTeamSet, setRegionalTeamSet] = useState(new Set())
 
   /* Team Info */
   const [teamName, setTeamName] = useState("")
@@ -68,28 +71,42 @@ function Notes(props) {
   }
 
   useEffect(() => {
-    apiListTeams()
-      .then((data) => {
-       console.log("Teams data: ", data  )
-      })
-      .catch(err => console.log(err))
-  }, [])
-
-  useEffect(() => {
     if (!regional) {
       setSimpleTeams([])
+      setRegionalTeamSet(new Set())
       return
     }
 
     apiGetSimpleTeamsForRegional(regional)
       .then(data => {
-        setSimpleTeams(data || [])
+        const teamsData = data || []
+        setSimpleTeams(teamsData)
+        setRegionalTeamSet(new Set(teamsData.map((t) => String(t?.team_number || t?.TeamNumber || '').trim()).filter(Boolean)))
       })
       .catch(err => {
         console.log('failed to load simple teams', err)
         setSimpleTeams([])
+        setRegionalTeamSet(new Set())
       })
   }, [regional])
+
+  useEffect(() => {
+    const term = String(teamNumberInput || '').trim()
+    if (!term) {
+      setTeamSuggestions([])
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    setTeamSuggestions(suggestions)
+  }, [teamNumberInput, simpleTeams])
 
   useEffect(() => {
     if (stream && showCamera) {
@@ -120,6 +137,7 @@ function Notes(props) {
     setConfirm(false)
     setFindTeam("")
     setTeamNumberInput("")
+    setTeamSuggestions([])
     setTeamName("")
     setFuelCapacity("")
     setNotes("")
@@ -148,69 +166,79 @@ function Notes(props) {
     teams.find(x => x.key.substring(3) === findTeam) !== undefined ? setNickname(true) : setNickname(false)
   }
 
-  const lookupTeamNumber = async (term) => {
-    let num = null
-
-    if (/^\d+$/.test(term)) {
-      num = term
-    } else {
-      try {
-        const list = await apiListTeams()
-        const items = list?.data?.listTeams?.items || []
-        const found = items.find(t =>
-          t.TeamAttributes?.name?.toLowerCase().includes(term.toLowerCase())
-        )
-        if (found) {
-          num = String(found.id || '')
-        }
-      } catch (err) {
-        console.log('failed to list teams for name lookup', err)
-      }
-
-      if (!num) {
-        const foundBA = simpleTeams.find(s =>
-          s.nickname && s.nickname.toLowerCase().includes(term.toLowerCase())
-        )
-        if (foundBA) {
-          num = String(foundBA.team_number || foundBA.TeamNumber || '')
-        }
-      }
-    }
-
-    return num
+  const getRegionalNickname = (teamNum) => {
+    const team = simpleTeams.find((t) => String(t?.team_number || t?.TeamNumber || '').trim() === String(teamNum || '').trim())
+    return String(team?.nickname || '').trim()
   }
 
-  const loadTeamData = async () => {
-    const term = String(teamNumberInput || '').trim()
+  const lookupTeamNumber = async (term) => {
+    const normalizedTerm = String(term || '').trim()
+
+    if (/^\d+$/.test(normalizedTerm)) {
+      if (!regionalTeamSet.has(normalizedTerm)) {
+        return { teamNum: null, suggestions: [] }
+      }
+      return { teamNum: normalizedTerm, suggestions: [] }
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    return {
+      teamNum: suggestions[0]?.teamNumber || null,
+      suggestions,
+    }
+  }
+
+  const loadTeamData = async (termOverride = '') => {
+    const term = String(termOverride || teamNumberInput || '').trim()
     if (!term) {
       resetStates()
       return
     }
 
-    const teamNum = await lookupTeamNumber(term)
-    if (!teamNum) {
-      alert('Team not found')
+    if (/^\d+$/.test(term) && !regionalTeamSet.has(term)) {
+      alert(`Team ${term} is not at this regional.`)
       return
     }
 
+    const { teamNum, suggestions } = await lookupTeamNumber(term)
+    if (!teamNum) {
+      setTeamSuggestions(suggestions)
+      return
+    }
+
+    setTeamSuggestions([])
     setTeamNumberInput(teamNum)
     setFindTeam(teamNum)
 
+    if (!regionalTeamSet.has(String(teamNum))) {
+      alert('That team is not at this regional.')
+      return
+    }
+
     try {
-      let teamData = await apiGetTeam(teamNum)
+      let teamData = await apiGetTeam(toNotesTeamId(teamNum))
+      const baseTeamData = await apiGetTeam(teamNum)
+
       if (!teamData) {
         const reg = regional || apiGetRegional()
         if (!reg) {
           alert('Regional key not loaded yet. Please wait a moment and try again.')
           return
         }
-        await apiCreateTeamEntry(teamNum, reg)
-        teamData = await apiGetTeam(teamNum)
+        await apiCreateTeamEntry(toNotesTeamId(teamNum), reg)
+        teamData = await apiGetTeam(toNotesTeamId(teamNum))
       }
 
       if (teamData) {
         const attrs = teamData.TeamAttributes || {}
-        setTeamName(attrs.name || "")
+        setTeamName(getRegionalNickname(teamNum) || "")
         setFuelCapacity(attrs.DeclaredFuelCap ?? "")
         setNotes(attrs.Notes || "")
         setPhotoUrl(attrs.Photo || "")
@@ -290,6 +318,11 @@ function Notes(props) {
       return
     }
 
+    if (!regionalTeamSet.has(String(findTeam))) {
+      alert('Only teams at this regional can be edited.')
+      return
+    }
+
     // upload photo if a new file was selected
     let photoKey = photoUrl
     if (photo) {
@@ -319,7 +352,6 @@ function Notes(props) {
     }
 
     const teamAttrs = {
-      name: teamName,
       DeclaredFuelCap: fuelCapacity ? parseInt(fuelCapacity) : null,
       Notes: notes,
       Photo: photoKey,
@@ -337,7 +369,8 @@ function Notes(props) {
     }
 
     try {
-      const existing = await apiGetTeam(findTeam)
+      const notesTeamId = toNotesTeamId(findTeam)
+      const existing = await apiGetTeam(notesTeamId)
       if (existing) {
         // merge new attributes into whatever is already stored so we don't
         // accidentally null‑out other fields (description, Regionals, etc.)
@@ -348,15 +381,15 @@ function Notes(props) {
             ...teamAttrs,
           },
         }
-        await apiUpdateTeamEntry(findTeam, merged)
+        await apiUpdateTeamEntry(notesTeamId, merged)
       } else {
         // team doesn't exist yet; create it first so the required
         // non-null `Regional` field is initialized. then fetch the new
         // entry and merge our attribute updates so nothing important gets
         // dropped.
         const reg = apiGetRegional()
-        await apiCreateTeamEntry(findTeam, reg)
-        const created = await apiGetTeam(findTeam)
+        await apiCreateTeamEntry(notesTeamId, reg)
+        const created = await apiGetTeam(notesTeamId)
         if (created) {
           const merged = {
             ...created,
@@ -365,7 +398,7 @@ function Notes(props) {
               ...teamAttrs,
             },
           }
-          await apiUpdateTeamEntry(findTeam, merged)
+          await apiUpdateTeamEntry(notesTeamId, merged)
         }
       }
       alert('Team info saved successfully')
@@ -431,6 +464,38 @@ function Notes(props) {
                   Load
                 </button>
               </div>
+              {teamSuggestions.length > 0 ? (
+                <div style={{ marginTop: '10px' }}>
+                  <div
+                    style={{
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      backgroundColor: 'white',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {teamSuggestions.map((suggestion, index) => (
+                      <button
+                        key={suggestion.teamNumber}
+                        type="button"
+                        onClick={() => loadTeamData(suggestion.teamNumber)}
+                        style={{
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '10px 12px',
+                          backgroundColor: 'white',
+                          border: 'none',
+                          borderTop: index === 0 ? 'none' : '1px solid #eee',
+                          cursor: 'pointer',
+                          fontSize: '14px'
+                        }}
+                      >
+                        {suggestion.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -438,7 +503,7 @@ function Notes(props) {
             <>
               <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name (Blue Alliance)</label>
                   <input 
                     style={{
                       height: "50px",
@@ -449,10 +514,10 @@ function Notes(props) {
                       borderRadius: "8px",
                       boxSizing: "border-box"
                     }}
-                    placeholder="Enter team name" 
+                    placeholder="Auto-filled from Blue Alliance" 
                     type="text" 
                     value={teamName} 
-                    onChange={(e) => setTeamName(e.target.value)}
+                    readOnly
                   />
                 </div>
               </div>

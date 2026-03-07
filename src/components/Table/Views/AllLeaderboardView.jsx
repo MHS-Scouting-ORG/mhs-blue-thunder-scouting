@@ -1,0 +1,411 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
+import tableStyles from '../Table.module.css';
+import { apiGetSimpleTeamsForRegional } from '../../../api';
+import { getTopTeamSuggestions } from '../../../utils/teamSearch';
+
+const toNumber = (value, fallback = 0) => {
+  const num = Number(value)
+  return Number.isFinite(num) ? num : fallback
+}
+
+const safeLower = (value) => String(value || '').toLowerCase()
+
+const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10]
+const CONFIDENCE_OPTIONS = [0, 20, 40, 50, 60, 70, 80, 90]
+const ALLIANCE_SCORE_OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70]
+const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
+const ENDGAME_OPTIONS = [0, 5, 10, 15, 20, 25, 30]
+const BROKEN_OPTIONS = [100, 80, 60, 50, 40, 30, 20, 10, 0]
+
+function AllLeaderboardView({ tableData, regional }) {
+  const [simpleTeams, setSimpleTeams] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortKey, setSortKey] = useState('allianceScore')
+  const [sortDir, setSortDir] = useState('desc')
+  const [minMatches, setMinMatches] = useState(1)
+  const [minConfidence, setMinConfidence] = useState(0)
+  const [minAllianceScore, setMinAllianceScore] = useState(0)
+  const [minAutoPts, setMinAutoPts] = useState(0)
+  const [minEndgamePts, setMinEndgamePts] = useState(0)
+  const [maxBrokenRate, setMaxBrokenRate] = useState(100)
+  const [robotSpeed, setRobotSpeed] = useState('any')
+  const [showFilters, setShowFilters] = useState(false)
+  const [searchSuggestions, setSearchSuggestions] = useState([])
+
+  useEffect(() => {
+    if (!regional) {
+      setSimpleTeams([])
+      return
+    }
+
+    apiGetSimpleTeamsForRegional(regional)
+      .then(data => setSimpleTeams(data || []))
+      .catch(err => {
+        console.log('failed to load simple teams', err)
+        setSimpleTeams([])
+      })
+  }, [regional])
+
+  useEffect(() => {
+    if (!showFilters) return
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowFilters(false)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [showFilters])
+
+  useEffect(() => {
+    const term = String(searchTerm || '').trim()
+    if (!term) {
+      setSearchSuggestions([])
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    setSearchSuggestions(suggestions)
+  }, [searchTerm, simpleTeams])
+
+  const nameMap = useMemo(() => {
+    const map = new Map()
+    ;(simpleTeams || []).forEach(team => {
+      const teamNumber = String(team?.team_number || team?.TeamNumber || '')
+      if (!teamNumber) return
+      map.set(teamNumber, String(team?.nickname || '').trim())
+    })
+    return map
+  }, [simpleTeams])
+
+  const rankedRows = useMemo(() => {
+    const ranked = rankTeamsForAllianceSelection(Array.isArray(tableData) ? tableData : [])
+
+    return ranked.map(team => {
+      const teamNumber = String(team?.TeamNumber ?? '').trim()
+      const matches = toNumber(team?.Matches, 0)
+      const brokenCount = Array.isArray(team?.BrokenRobot)
+        ? team.BrokenRobot.length
+        : toNumber(team?.BrokenRobot, 0)
+      const brokenRate = matches > 0 ? (brokenCount / matches) * 100 : 0
+
+      const speedText = safeLower(team?.RobotSpeed)
+      const speedBucket = speedText.includes('fast')
+        ? 'fast'
+        : speedText.includes('average')
+          ? 'average'
+          : speedText.includes('slow')
+            ? 'slow'
+            : 'unknown'
+
+      return {
+        ...team,
+        TeamNumber: teamNumber,
+        TeamName: nameMap.get(teamNumber) || '',
+        allianceScore: toNumber(team?.allianceScore, 0),
+        skillRating: toNumber(team?.skillRating, 0),
+        confidence: toNumber(team?.confidence, 0),
+        matchesRated: toNumber(team?.matchesRated, 0),
+        Matches: matches,
+        AvgPoints: toNumber(team?.AvgPoints, 0),
+        AvgAutoPts: toNumber(team?.AvgAutoPts, 0),
+        AvgEndgamePts: toNumber(team?.AvgEndgamePts, 0),
+        brokenRate,
+        speedBucket,
+      }
+    })
+  }, [tableData, nameMap])
+
+  const filteredAndSorted = useMemo(() => {
+    const search = safeLower(searchTerm)
+
+    const filtered = rankedRows.filter(team => {
+      const confidencePct = team.confidence * 100
+      if (team.Matches < minMatches) return false
+      if (confidencePct < minConfidence) return false
+      if (team.allianceScore < minAllianceScore) return false
+      if (team.AvgAutoPts < minAutoPts) return false
+      if (team.AvgEndgamePts < minEndgamePts) return false
+      if (team.brokenRate > maxBrokenRate) return false
+      if (robotSpeed !== 'any' && team.speedBucket !== robotSpeed) return false
+
+      if (!search) return true
+
+      const teamNum = safeLower(team.TeamNumber)
+      const teamName = safeLower(team.TeamName)
+      return teamNum.includes(search) || teamName.includes(search)
+    })
+
+    const sorted = [...filtered].sort((a, b) => {
+      const aVal = a?.[sortKey]
+      const bVal = b?.[sortKey]
+
+      if (typeof aVal === 'string' || typeof bVal === 'string') {
+        const cmp = String(aVal || '').localeCompare(String(bVal || ''))
+        return sortDir === 'asc' ? cmp : -cmp
+      }
+
+      const cmp = toNumber(aVal, 0) - toNumber(bVal, 0)
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+
+    return sorted
+  }, [rankedRows, searchTerm, sortKey, sortDir, minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed])
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0
+    if (minMatches !== 1) count += 1
+    if (minConfidence !== 0) count += 1
+    if (minAllianceScore !== 0) count += 1
+    if (minAutoPts !== 0) count += 1
+    if (minEndgamePts !== 0) count += 1
+    if (maxBrokenRate !== 100) count += 1
+    if (robotSpeed !== 'any') count += 1
+    return count
+  }, [minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed])
+
+  const resetFilters = () => {
+    setSearchTerm('')
+    setSortKey('allianceScore')
+    setSortDir('desc')
+    setMinMatches(1)
+    setMinConfidence(0)
+    setMinAllianceScore(0)
+    setMinAutoPts(0)
+    setMinEndgamePts(0)
+    setMaxBrokenRate(100)
+    setRobotSpeed('any')
+  }
+
+  return (
+    <div>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>All Teams Leaderboard</h2>
+
+      <div className={tableStyles.Card}>
+        <h3 style={{ marginTop: 0, marginBottom: '14px' }}>Filters & Sorting</h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1.5fr) repeat(3, minmax(140px, 1fr))', gap: '10px', marginBottom: '10px' }}>
+          <input
+            type="text"
+            placeholder="Search team # or name"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}
+          />
+
+          <select value={sortKey} onChange={e => setSortKey(e.target.value)} style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}>
+            <option value="allianceScore">Sort: Alliance Score</option>
+            <option value="skillRating">Sort: Skill Rating</option>
+            <option value="confidence">Sort: Confidence</option>
+            <option value="Matches">Sort: Matches</option>
+            <option value="AvgPoints">Sort: Avg Points</option>
+            <option value="AvgAutoPts">Sort: Avg Auto Pts</option>
+            <option value="AvgEndgamePts">Sort: Avg Endgame Pts</option>
+            <option value="brokenRate">Sort: Broken %</option>
+            <option value="TeamNumber">Sort: Team Number</option>
+          </select>
+
+          <select value={sortDir} onChange={e => setSortDir(e.target.value)} style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}>
+            <option value="desc">Order: Desc</option>
+            <option value="asc">Order: Asc</option>
+          </select>
+
+          <button
+            onClick={() => setShowFilters(true)}
+            className={tableStyles.PrimaryButton}
+            style={{ height: '40px', position: 'relative', boxSizing: 'border-box', width: '100%' }}
+          >
+            Filters
+            {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          </button>
+        </div>
+
+        {searchSuggestions.length > 0 ? (
+          <div style={{ marginBottom: '10px', maxWidth: '520px' }}>
+            <div
+              style={{
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                backgroundColor: 'white',
+                overflow: 'hidden'
+              }}
+            >
+              {searchSuggestions.map((suggestion, index) => (
+                <button
+                  key={suggestion.teamNumber}
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm(suggestion.teamNumber)
+                    setSearchSuggestions([])
+                  }}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '10px 12px',
+                    backgroundColor: 'white',
+                    border: 'none',
+                    borderTop: index === 0 ? 'none' : '1px solid #eee',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  {suggestion.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div style={{ color: '#666', fontSize: '14px' }}>
+          Showing {filteredAndSorted.length} teams • Speed: {robotSpeed === 'any' ? 'Any' : robotSpeed[0].toUpperCase() + robotSpeed.slice(1)}
+        </div>
+      </div>
+
+      {showFilters && (
+        <div
+          onClick={() => setShowFilters(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '760px',
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              border: '1px solid #ddd',
+              padding: '18px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h3 style={{ margin: 0 }}>Filters</h3>
+              <button onClick={() => setShowFilters(false)} className={tableStyles.PrimaryButton}>Done</button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Speed</span>
+                <select value={robotSpeed} onChange={e => setRobotSpeed(e.target.value)} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  <option value="any">Any</option>
+                  <option value="fast">Fast</option>
+                  <option value="average">Average</option>
+                  <option value="slow">Slow</option>
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Min Matches</span>
+                <select value={minMatches} onChange={e => setMinMatches(toNumber(e.target.value, 1))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {MATCH_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Min Confidence %</span>
+                <select value={minConfidence} onChange={e => setMinConfidence(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {CONFIDENCE_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Min Alliance Score</span>
+                <select value={minAllianceScore} onChange={e => setMinAllianceScore(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {ALLIANCE_SCORE_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Min Avg Auto Pts</span>
+                <select value={minAutoPts} onChange={e => setMinAutoPts(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {AUTO_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Min Avg Endgame Pts</span>
+                <select value={minEndgamePts} onChange={e => setMinEndgamePts(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {ENDGAME_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Max Broken %</span>
+                <select value={maxBrokenRate} onChange={e => setMaxBrokenRate(toNumber(e.target.value, 100))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {BROKEN_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
+                </select>
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
+              <button onClick={resetFilters} className={tableStyles.PrimaryButton}>Reset Filters</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={tableStyles.Card}>
+        {filteredAndSorted.length === 0 ? (
+          <p>No teams match current filters.</p>
+        ) : (
+          <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '70vh' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f8f9fa' }}>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Name</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Skill</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Confidence</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Matches</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Avg Pts</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Auto</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Endgame</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Broken %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAndSorted.map((team, idx) => (
+                  <tr key={team.TeamNumber} style={{ backgroundColor: idx % 2 === 0 ? 'white' : '#f8f9fa' }}>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{idx + 1}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 700 }}>{team.TeamNumber}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{team.TeamName || '-'}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.allianceScore.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.skillRating.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{(team.confidence * 100).toFixed(1)}%</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.Matches}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.AvgPoints.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.AvgAutoPts.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.AvgEndgamePts.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.brokenRate.toFixed(1)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default AllLeaderboardView;
