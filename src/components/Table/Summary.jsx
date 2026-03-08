@@ -136,7 +136,7 @@ function Summary() {
       {/* View Tabs */}
       <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
-          {["All", "Submitions", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
+          {["All", "Submissions", "Search", "Our Matches", "Quals", "Alliance Selection", "Elims"].map((view) => (
             <button
               key={view}
               onClick={() => {
