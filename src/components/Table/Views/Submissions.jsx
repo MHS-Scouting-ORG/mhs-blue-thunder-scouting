@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { apiListTeams, fromNotesTeamId, isNotesTeamId } from '../../../api';
 import tableStyles from '../Table.module.css';
 
-function AllView({ regional }) {
+function Submissions({ regional }) {
   const [entries, setEntries] = useState([]);
 
   useEffect(() => {
@@ -195,4 +195,4 @@ function AllView({ regional }) {
   );
 }
 
-export default AllView;
+export default Submissions;

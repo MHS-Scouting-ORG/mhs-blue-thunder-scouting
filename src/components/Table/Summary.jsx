@@ -6,7 +6,7 @@ import QualsView from "./Views/QualsView";
 import AllianceSelectionView from "./Views/AllianceSelectionView";
 import ElimsView from "./Views/ElimsView";
 import SearchView from "./Views/SearchView";
-import AllView from "./Views/AllView";
+import Submissions from "./Views/Submissions";
 import AllLeaderboardView from "./Views/AllLeaderboardView";
 import OurMatchesView from "./Views/OurMatchesView";
 import 'chart.js/auto';
@@ -144,7 +144,7 @@ function Summary() {
                   case "All": 
                     setCurrentView('all')
                     break;
-                  case "Submitions":
+                  case "Submissions":
                     setCurrentView('submissions')
                     break;
                   case "Quals":
@@ -165,9 +165,9 @@ function Summary() {
               }}}
                 className={`${tableStyles.ToggleButton} ${
                   currentView ===
-                    (view === "All"
-                      ? 'all'
-                      : view === 'Submitions'
+                    (view === "Submissions"
+                      ? 'submissions'
+                      : view === 'Submissions'
                       ? 'submissions'
                       : view === "Alliance Selection"
                       ? 'alliance'
@@ -194,7 +194,7 @@ function Summary() {
         />
       )}
       {currentView === 'submissions' && (
-        <AllView
+        <Submissions
           regional={regional}
         />
       )}

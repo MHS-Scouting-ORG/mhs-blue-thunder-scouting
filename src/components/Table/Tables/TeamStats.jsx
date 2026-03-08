@@ -243,6 +243,10 @@ function TeamStats(props) {
 
   const scoutedFuelCap = mode(matches.map(m => m?.RobotInfo?.FuelCapacity || 'None'));
 
+  const insightText = mode(matches.map(m => m?.Comment || 'None'));
+
+  const brokenText = mode(matches.map(m => m?.RobotInfo?.WhatBrokeDesc || 'None')); 
+
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
   const brokenCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.Broken ? 1 : 0), 0);
@@ -374,12 +378,12 @@ function TeamStats(props) {
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Broken:</strong> {brokenRateText}
           </div>
-{/*           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>What Broke: </strong>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>What Broke: </strong> {brokenText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Insight: </strong>
-          </div> */} 
+            <strong>Insight: </strong> {insightText}
+          </div>
         </div>
       </div>
 
