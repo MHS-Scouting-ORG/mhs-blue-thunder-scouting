@@ -242,10 +242,11 @@ function TeamStats(props) {
   const ballsShot = mode(matches.map(m => m?.RobotInfo.BallsShot || 'None'))
 
   const scoutedFuelCap = mode(matches.map(m => m?.RobotInfo?.FuelCapacity || 'None'));
-
-  const brokenText =  matches.map(m => m?.RobotInfo?.WhatBrokeDesc  ?? 'None');
   
-  const insightText = matches.map(m => m?.RobotInfo?.Comments ?? 'None');
+  /* I made this ~ Jmoney */
+  const brokenText =  mode(matches.map(m => m?.RobotInfo?.WhatBrokeDesc  ?? 'None'));
+  
+  const insightText = mode(matches.map(m => m?.RobotInfo?.Comments ?? 'None'));
 
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
@@ -378,11 +379,12 @@ function TeamStats(props) {
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Broken:</strong> {brokenRateText}
           </div>
+          {/* Is displayed in all matches */}
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>What Broke: </strong> {brokenText.length > 0 ? brokenText.join(", ") : "None"}
+            <strong>What Broke: </strong> {brokenText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Insight: </strong> {insightText.length > 0 ? insightText.join(", ") : "None"}
+            <strong>Insight: </strong> {insightText}
           </div>
         </div>
       </div>
