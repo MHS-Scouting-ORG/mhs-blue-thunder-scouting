@@ -5,7 +5,7 @@ import { apiListTeams, apiDeleteMatchSubmission, apiDeleteTeam, fromNotesTeamId,
 import { isTableNotesAllowed } from '../../../utils/tableNotesPermissions';
 import tableStyles from '../Table.module.css';
 
-function AllView({ regional }) {
+function Submissions({ regional }) {
   const { user } = useOutletContext() ?? {}
   const canDelete = isTableNotesAllowed(user)
 
