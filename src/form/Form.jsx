@@ -8,6 +8,42 @@ import tableStyling from "../components/Table/Table.module.css";
 
 import { submitState } from './FormUtils' //from formUtils submits to builder
 
+const sectionHelp = {
+  matchInfo: "Match Info sets the identity of the team you are scouting for this specific match. Select Qualification, Semifinal, or Final based on the official schedule, enter the match number exactly as listed, then choose the alliance color that team is actually playing on in that match. Finally, pick the robot number for the single team you are scouting. Use this section first, because every note below should describe only that one team in that one match.",
+  autonomous: "Autonomous records what the robot completed before driver control started. Select Moved if the robot clearly left its starting area or completed the required autonomous mobility action. Select Scored if it successfully scored Fuel into its alliance hub while that hub was active during auto. Select Crossed Bump/Trench if it intentionally used that route during autonomous. For Auto Hang, choose None if it did not complete an autonomous hang, or choose the level it reached if the robot finished the hang in auto. Only mark actions that fully happened, not attempts that failed halfway.",
+  activeStrategy: "Active Strategy should describe the robot's main job during teleop in Rebuilt. Select Scoring if the team spent most of the match gathering Fuel and putting it into the active alliance hub. Select Hoarding if it mainly controlled large amounts of Fuel, stockpiled game pieces, or managed possession to influence scoring opportunities. Select Defending if its main impact came from slowing cycles, blocking shooting lanes, pressuring intakes, or disrupting the other alliance. Use Times Travelled to Mid to count how often it crossed into the middle of the field or central traffic area, and use Shooting Cycles to count distinct scoring trips or shooting possessions, not individual balls.",
+  inactiveStrategy: "Inactive Strategy tracks tactics this robot could have used but did not meaningfully show in this match. Select Hoarding if the robot was capable of controlling Fuel volume but mostly did not do it here. Select Defending Mid if it had opportunities to protect or contest the middle area but rarely committed to that role. Select Blocking if it could have obstructed lanes, sightlines, or scoring paths but did not spend enough time doing so to count as a main job. This section is useful for alliance selection because it separates a robot's unused tools from what it actually chose to do in the match you watched.",
+  results: "Results records how the match ended for the scouted team. Endgame Hang should be None if the robot stayed on the floor, or the highest level fully secured if it completed a hang. Match Result is the official result for that team's alliance: Win, Tie, or Lose. Team Impact should be High if this robot strongly changed the outcome through scoring, defense, control of Fuel, or endgame; Medium if it contributed clearly but was not the main driver; and Low if its effect on the outcome was limited. Select Disable if the robot lost normal function for part of the match, DQ if the team was disqualified, Broke if it suffered a mechanical or electrical failure, No Show if it never meaningfully entered play, Stuck on Bump if terrain or an obstacle trapped it, and Stuck on Balls if Fuel on the carpet prevented movement. Add broken comments only when Broke is selected and include the failure you observed.",
+  robotInfo: "Robot Info is where you rate the machine itself compared with the field you have watched at this event. Robot Speed should be Slow, Average, or Fast based on how quickly it drove between intake, shooting, and defensive positions. Driver Skill should be Poor, Average, Good, or Excellent based on pathing, awareness, recovery under pressure, and whether the team made smart decisions about when the alliance hub was active. Shooter Speed should reflect how quickly it could convert a shooting opportunity once set. Fuel Capacity is your estimate of how much Fuel it can hold at once. Balls Shot is your estimate of how many total Fuel pieces it successfully scored in this match, remembering that Rebuilt has roughly 400 Fuel on the field and pieces can be cycled and scored multiple times. Use Comments for anything that matters in alliance selection, such as intake reliability, activation awareness, preferred shooting spots, or whether the robot improved as the match went on."
+};
+
+const InfoIcon = ({ text, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "20px",
+      height: "20px",
+      borderRadius: "50%",
+      backgroundColor: "#e0e0e0",
+      color: "#333",
+      fontWeight: 700,
+      cursor: "pointer",
+      marginLeft: "8px",
+      fontSize: "14px",
+      userSelect: "none",
+      border: "none",
+      padding: 0
+    }}
+    aria-label={text}
+  >
+    ?
+  </button>
+);
+
  function Form() {
   /* Regional Key */
   // regional key is populated asynchronously by apiUpdateRegional in App.jsx.
@@ -79,6 +115,8 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   /* Submit */
   const [confirm, setConfirm] = useState(false);
 
+  /* Info popup */
+  const [infoModal, setInfoModal] = useState("");
 
  /* Blue Alliance API List Teams */
   useEffect(() => {
@@ -224,6 +262,52 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
 
+      {infoModal ? (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000
+          }}
+          onClick={() => setInfoModal("")}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "12px",
+              maxWidth: "420px",
+              width: "calc(100% - 40px)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <div style={{ fontWeight: 700 }}>Info</div>
+              <button
+                type="button"
+                onClick={() => setInfoModal("")}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  lineHeight: 1
+                }}
+                aria-label="Close info"
+              >
+                ×
+              </button>
+            </div>
+            <p style={{ margin: 0, lineHeight: "1.5" }}>{infoModal}</p>
+          </div>
+        </div>
+      ) : null}
+
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img 
           src="./images/BLUETHUNDERLOGO_BLUE.png" 
@@ -235,7 +319,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* Match Info */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "20px" }}>Match Info</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "20px" }}>
+          Match Info
+          <InfoIcon
+            text={sectionHelp.matchInfo}
+            onClick={() => setInfoModal(sectionHelp.matchInfo)}
+          />
+        </h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div style={{ display: "flex", flexDirection: "row", gap: "15px", justifyContent: "center", flexWrap: "wrap" }}>
             <div style={{ flex: "1", minWidth: "150px" }}>
@@ -379,7 +469,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* AUTONOMOUS */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Autonomous</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>
+          Autonomous
+          <InfoIcon
+            text={sectionHelp.autonomous}
+            onClick={() => setInfoModal(sectionHelp.autonomous)}
+          />
+        </h2>
 
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
           <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
@@ -420,18 +516,19 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* ACTIVE */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Active Strategy</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>
+          Active Strategy
+          <InfoIcon
+            text={sectionHelp.activeStrategy}
+            onClick={() => setInfoModal(sectionHelp.activeStrategy)}
+          />
+        </h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
           {["Hoarding", "Defending", "Scoring"].map((strategy) => (
             <button
               key={strategy}
               onClick={() => toggleActiveStrategy(strategy)}
-              title={
-                strategy === "Hoarding" ? "Collecting and holding game pieces" :
-                strategy === "Defending" ? "Playing defense against opposing robots" :
-                "Focused on scoring points"
-              }
               className={`${tableStyling.ToggleButton} ${activeStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               {strategy}
@@ -550,18 +647,19 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* INACTIVE */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Inactive Strategy</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>
+          Inactive Strategy
+          <InfoIcon
+            text={sectionHelp.inactiveStrategy}
+            onClick={() => setInfoModal(sectionHelp.inactiveStrategy)}
+          />
+        </h2>
         
         <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
           {["Hoarding", "Defending Mid", "Blocking"].map((strategy) => (
             <button
               key={strategy}
               onClick={() => toggleInactiveStrategy(strategy)}
-              title={
-                strategy === "Hoarding" ? "Collecting and holding game pieces" :
-                strategy === "Defending Mid" ? "Defending lanes and mid area" :
-                "Blocking opposing routes and shots"
-              }
               className={`${tableStyling.ToggleButton} ${inactiveStrategy.includes(strategy) ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
             >
               {strategy}
@@ -572,7 +670,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* RESULTS */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Results</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>
+          Results
+          <InfoIcon
+            text={sectionHelp.results}
+            onClick={() => setInfoModal(sectionHelp.results)}
+          />
+        </h2>
         
         <div style={{display: "flex", flexDirection: "column", gap: "15px"}}>
           <div>
@@ -713,7 +817,13 @@ import { submitState } from './FormUtils' //from formUtils submits to builder
 
       {/* ROBOT INFO */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>Robot Info</h2>
+        <h2 style={{ marginTop: 0, marginBottom: "15px" }}>
+          Robot Info
+          <InfoIcon
+            text={sectionHelp.robotInfo}
+            onClick={() => setInfoModal(sectionHelp.robotInfo)}
+          />
+        </h2>
         
         <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
           <div>

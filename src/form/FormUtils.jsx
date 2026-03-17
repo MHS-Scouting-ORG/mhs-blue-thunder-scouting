@@ -1,4 +1,5 @@
 import React from "react"
+import * as Auth from 'aws-amplify/auth'
 import { buildMatchEntry } from '../api/builder';
 import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam, apiGetMatchesForRegional } from '../api';
 //import { generateRandomEntry } from "../api/builder";
@@ -405,9 +406,18 @@ export async function submitState( //params are states of data from form
 
       const submittedAt = new Date().toISOString()
 
+      let submittedBy = ''
+      try {
+        const user = await Auth.currentAuthenticatedUser()
+        submittedBy = user?.attributes?.email || user?.username || ''
+      } catch (e) {
+        console.warn('Could not resolve current user for submission attribution', e)
+      }
+
       const teamMatch = {
         name: submittedAt,
         description: robotInsight,
+        SubmittedBy: submittedBy,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
         MatchResult: matchResult,

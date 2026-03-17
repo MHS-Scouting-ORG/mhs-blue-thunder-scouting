@@ -364,7 +364,7 @@ function Notes(props) {
         trench ? "Trench" : null,
       ].filter(Boolean),
       MaxHang: normalizeMaxHang(maxHangHeight),
-      HangTeamwork: canDoubleHang ? "DoubleHang" : canTripleHang ? "TripleHang" : "None",
+      HangTeamwork: canTripleHang ? "TripleHang" : canDoubleHang ? "DoubleHang" : "None",
       CanAutoHang: Boolean(canAutoHang)
     }
 
@@ -676,13 +676,25 @@ function Notes(props) {
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Hang Teamwork</label>
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
-                      onClick={() => setCanDoubleHang(!canDoubleHang)}
+                      onClick={() => {
+                        setCanDoubleHang(prev => {
+                          const next = !prev
+                          if (next) setCanTripleHang(false)
+                          return next
+                        })
+                      }}
                       className={`${tableStyling.ToggleButton} ${canDoubleHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
                       Can Double Hang
                     </button>
                     <button
-                      onClick={() => setCanTripleHang(!canTripleHang)}
+                      onClick={() => {
+                        setCanTripleHang(prev => {
+                          const next = !prev
+                          if (next) setCanDoubleHang(false)
+                          return next
+                        })
+                      }}
                       className={`${tableStyling.ToggleButton} ${canTripleHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
                       Can Triple Hang
