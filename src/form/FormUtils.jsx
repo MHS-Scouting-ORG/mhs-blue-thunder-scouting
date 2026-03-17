@@ -339,7 +339,7 @@ export async function submitState( //params are states of data from form
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.Comment = robotInsight
+    matchEntry.RobotInfo.Comments = robotInsight
 
     // PENALTIES //
     matchEntry.Penalties.PenaltiesCommitted.Disabled = disable

@@ -205,7 +205,7 @@ function AllView({ regional }) {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Submitions</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Submissions</h2>
 
       <div className={tableStyles.Card}>
         {sortedEntries.length === 0 ? (
@@ -259,4 +259,4 @@ function AllView({ regional }) {
   );
 }
 
-export default AllView;
+export default Submissions;
