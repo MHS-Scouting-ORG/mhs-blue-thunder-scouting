@@ -194,7 +194,7 @@ function AllLeaderboardView({ tableData, regional }) {
       <div className={tableStyles.Card}>
         <h3 style={{ marginTop: 0, marginBottom: '14px' }}>Filters & Sorting</h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 1.5fr) repeat(3, minmax(140px, 1fr))', gap: '10px', marginBottom: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '10px' }}>
           <input
             type="text"
             placeholder="Search team # or name"
@@ -290,6 +290,8 @@ function AllLeaderboardView({ tableData, regional }) {
             style={{
               width: '100%',
               maxWidth: '760px',
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto',
               backgroundColor: 'white',
               borderRadius: '12px',
               border: '1px solid #ddd',

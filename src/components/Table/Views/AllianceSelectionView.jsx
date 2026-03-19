@@ -31,6 +31,17 @@ const pickingOrder = [
   { alliance: 1, type: 'pick2' },
 ];
 
+const getEmptyAlliances = () => ({
+  alliance1: { captain: null, picks: [null, null] },
+  alliance2: { captain: null, picks: [null, null] },
+  alliance3: { captain: null, picks: [null, null] },
+  alliance4: { captain: null, picks: [null, null] },
+  alliance5: { captain: null, picks: [null, null] },
+  alliance6: { captain: null, picks: [null, null] },
+  alliance7: { captain: null, picks: [null, null] },
+  alliance8: { captain: null, picks: [null, null] }
+});
+
 function AllianceSelectionView({ tableData, regional }) {
   const defaultRankingOptions = useMemo(() => getDefaultAllianceRankingOptions('frc2026Rebuilt'), []);
   const defaultMetricWeights = useMemo(() => ({ ...(defaultRankingOptions.metricWeights || {}) }), [defaultRankingOptions]);
@@ -41,16 +52,7 @@ function AllianceSelectionView({ tableData, regional }) {
   const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [inputDrafts, setInputDrafts] = useState({});
   const [draftSuggestions, setDraftSuggestions] = useState({});
-  const [alliances, setAlliances] = useState({
-    alliance1: { captain: null, picks: [null, null] },
-    alliance2: { captain: null, picks: [null, null] },
-    alliance3: { captain: null, picks: [null, null] },
-    alliance4: { captain: null, picks: [null, null] },
-    alliance5: { captain: null, picks: [null, null] },
-    alliance6: { captain: null, picks: [null, null] },
-    alliance7: { captain: null, picks: [null, null] },
-    alliance8: { captain: null, picks: [null, null] }
-  });
+  const [alliances, setAlliances] = useState(getEmptyAlliances());
   const [currentPickIndex, setCurrentPickIndex] = useState(0);
   const [confirm, setConfirm] = useState(false);
 
@@ -319,6 +321,14 @@ function AllianceSelectionView({ tableData, regional }) {
     setMetricWeights(defaultMetricWeights);
   };
 
+  const resetAlliances = () => {
+    setAlliances(getEmptyAlliances());
+    setInputDrafts({});
+    setDraftSuggestions({});
+    setCurrentPickIndex(0);
+    setConfirm(false);
+  };
+
   const renderAllianceDiagram = () => {
     const currentPick = pickingOrder[currentPickIndex];
     const currentAlliance = currentPick ? currentPick.alliance : null;
@@ -512,7 +522,23 @@ function AllianceSelectionView({ tableData, regional }) {
 
       {/* Alliance Selection Diagram */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Alliance Diagram</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h3 style={{ margin: 0 }}>Alliance Diagram</h3>
+          <button
+            onClick={resetAlliances}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              backgroundColor: 'white',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 600
+            }}
+          >
+            Reset All
+          </button>
+        </div>
         {renderAllianceDiagram()}
       </div>
 
@@ -553,7 +579,7 @@ function AllianceSelectionView({ tableData, regional }) {
 
       {/* Save Button */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px", textAlign: "center" }}>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px" }}>
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "30px", flexWrap: 'wrap' }}>
           <button onClick={() => {setConfirm(!confirm)}} style={{
             padding: "15px 30px",
             backgroundColor: confirm ? "red" : "white",

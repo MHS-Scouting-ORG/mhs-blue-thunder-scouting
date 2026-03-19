@@ -2,7 +2,7 @@
 import { generateClient } from 'aws-amplify/api'
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm"
 import {getTeam, listTeams, } from '../graphql/queries'
-import {createTeam, updateTeam} from '../graphql/mutations'
+import {createTeam, updateTeam, deleteTeam} from '../graphql/mutations'
 import {buildMatchEntry, buildTeamEntry} from './builder'
 import {
   getMatchesForRegional as fetchMatchesForRegional,
@@ -382,22 +382,80 @@ const apiUpdateTeamEntryMatch = async function (team, data) {
   await runGraphQL({ query: updateTeam, variables: { input } })
 }
 
+const apiDeleteTeam = async function (teamId) {
+  await runGraphQL({ query: deleteTeam, variables: { input: { id: teamId } } })
+}
+
+const apiDeleteMatchSubmission = async function ({ teamId, regionalId, matchId }) {
+  const team = await apiGetTeam(teamId)
+  if (!team) throw new Error(`Team not found: ${teamId}`)
+
+  const updated = JSON.parse(JSON.stringify(team))
+  let didRemove = false
+
+  const regionals = Array.isArray(updated.Regionals) ? updated.Regionals : (updated.Regionals ? [updated.Regionals] : [])
+  updated.Regionals = regionals.map((reg) => {
+    if (String(reg?.RegionalId) !== String(regionalId)) return reg
+
+    const matches = Array.isArray(reg?.TeamMatches)
+      ? reg.TeamMatches
+      : (reg?.TeamMatches ? [reg.TeamMatches] : [])
+
+    const remaining = matches.filter((m) => String(m?.MatchId) !== String(matchId))
+    if (remaining.length !== matches.length) {
+      didRemove = true
+    }
+
+    return {
+      ...reg,
+      TeamMatches: remaining.length ? remaining : undefined,
+    }
+  })
+
+  if (!didRemove) {
+    return
+  }
+
+  await apiUpdateTeamEntry(teamId, updated)
+}
+
 /*
  * Get All the teams in our database
  */
-const apiListTeams = async function () {
-  const response = await runGraphQL({ query: listTeams, allowPartialData: true })
-  const items = (response?.data?.listTeams?.items || []).map(normalizeTeamRead)
+const apiListTeams = async function ({ limit = 1000, filter, nextToken: startingNextToken } = {}) {
+  let allItems = []
+  let nextToken = startingNextToken
+  let lastResponse = null
+
+  do {
+    const response = await runGraphQL({
+      query: listTeams,
+      variables: {
+        limit,
+        filter,
+        nextToken,
+      },
+      allowPartialData: true,
+    })
+
+    lastResponse = response
+    const items = (response?.data?.listTeams?.items || []).map(normalizeTeamRead)
+    allItems = allItems.concat(items)
+    nextToken = response?.data?.listTeams?.nextToken
+  } while (nextToken)
+
+  const listTeamsPayload = {
+    ...(lastResponse?.data?.listTeams || {}),
+    items: allItems,
+    nextToken,
+  }
 
   return {
-    ...response,
+    ...lastResponse,
     data: {
-      ...response?.data,
-      listTeams: {
-        ...(response?.data?.listTeams || {}),
-        items
-      }
-    }
+      ...lastResponse?.data,
+      listTeams: listTeamsPayload,
+    },
   }
 }
 
@@ -551,6 +609,8 @@ export {
   apiGetAllianceSelection,
   apiSaveAllianceSelection,
   apiUpdateTeamEntry,
+  apiDeleteTeam,
+  apiDeleteMatchSubmission,
   apiUpdateRegional,
   apiGetRegional,
   apiCreateTeamEntry,

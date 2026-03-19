@@ -8,6 +8,7 @@ export const onCreateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
+        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -31,6 +32,7 @@ export const onCreateTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang
@@ -87,6 +89,7 @@ export const onUpdateTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
+        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -110,6 +113,7 @@ export const onUpdateTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang
@@ -166,6 +170,7 @@ export const onDeleteTeam = /* GraphQL */ `
       description
       Comment
       TeamAttributes {
+        name
         Regional
         DeclaredFuelCap
         CyclesPerMatch
@@ -189,6 +194,7 @@ export const onDeleteTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang

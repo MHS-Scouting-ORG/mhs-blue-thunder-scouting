@@ -1,4 +1,5 @@
 import React from "react"
+import * as Auth from 'aws-amplify/auth'
 import { buildMatchEntry } from '../api/builder';
 import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam, apiGetMatchesForRegional } from '../api';
 //import { generateRandomEntry } from "../api/builder";
@@ -338,7 +339,7 @@ export async function submitState( //params are states of data from form
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
     matchEntry.RobotInfo.WhatBrokeDesc = robotBrokenComments
-    matchEntry.Comment = robotInsight
+    matchEntry.RobotInfo.Comments = robotInsight
 
     // PENALTIES //
     matchEntry.Penalties.PenaltiesCommitted.Disabled = disable
@@ -403,9 +404,20 @@ export async function submitState( //params are states of data from form
         ? currentRegional.TeamMatches
         : (currentRegional.TeamMatches ? [currentRegional.TeamMatches] : [])
 
+      const submittedAt = new Date().toISOString()
+
+      let submittedBy = ''
+      try {
+        const user = await Auth.currentAuthenticatedUser()
+        submittedBy = user?.attributes?.email || user?.username || ''
+      } catch (e) {
+        console.warn('Could not resolve current user for submission attribution', e)
+      }
+
       const teamMatch = {
-        name: "",
+        name: submittedAt,
         description: robotInsight,
+        SubmittedBy: submittedBy,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
         MatchResult: matchResult,
