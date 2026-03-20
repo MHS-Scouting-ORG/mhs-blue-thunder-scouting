@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import {
   apiGetRegional,
   apigetMatchesForRegional,
-  apiGetSimpleTeamsForRegional,
+  apiGetRegionalTeams,
   apiGetTeam,
   apiUpdateTeamEntry,
   apiCreateTeamEntry,
@@ -23,7 +23,7 @@ import { uploadData, getUrl } from 'aws-amplify/storage';
 
 function Notes(props) {
   /* Regional Key */
-  const regional = apiGetRegional()
+  const [regional, setRegional] = useState(apiGetRegional())
 
   const [teams, setTeams] = useState([])
   const [findTeam, setFindTeam] = useState("")
@@ -71,13 +71,27 @@ function Notes(props) {
   }
 
   useEffect(() => {
+    if (regional) return
+
+    const id = setInterval(() => {
+      const reg = apiGetRegional()
+      if (reg) {
+        setRegional(reg)
+        clearInterval(id)
+      }
+    }, 500)
+
+    return () => clearInterval(id)
+  }, [regional])
+
+  useEffect(() => {
     if (!regional) {
       setSimpleTeams([])
       setRegionalTeamSet(new Set())
       return
     }
 
-    apiGetSimpleTeamsForRegional(regional)
+    apiGetRegionalTeams(regional)
       .then(data => {
         const teamsData = data || []
         setSimpleTeams(teamsData)
@@ -503,14 +517,13 @@ function Notes(props) {
             <>
               <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name (Blue Alliance)</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
                   <input 
                     style={{
                       height: "50px",
                       width: "100%",
                       padding: "8px",
                       fontSize: "16px",
-                      border: "2px solid #ddd",
                       borderRadius: "8px",
                       boxSizing: "border-box"
                     }}

@@ -5,6 +5,10 @@ const TABLE_NOTES_ALLOWED_EMAILS = [
   'shdwberu@gmail.com',
   'dn1guiwa@gmail.com',
   'jhmaui2@gmail.com',
+  'miaterawaki@gmail.com',
+  'jcreyn2010@gmail.com',
+  'alaina.hook@gmail.com',
+  'guiwadominick@gmail.com'
 ]
 
 export function isTableNotesAllowed(user) {
