@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 
 import {
@@ -43,6 +43,7 @@ function Notes(props) {
   const [imageUrl, setImageUrl] = useState("")
   const [showCamera, setShowCamera] = useState(false)
   const [stream, setStream] = useState(null)
+  const notesTextareaRef = useRef(null)
   
   /* New Fields */
   const [hangTime, setHangTime] = useState("")
@@ -147,10 +148,19 @@ function Notes(props) {
     fetchImageUrl()
   }, [photoUrl])
 
-  const resetStates = () => {
+  useEffect(() => {
+    if (!notesTextareaRef.current) return
+    notesTextareaRef.current.style.height = 'auto'
+    notesTextareaRef.current.style.height = `${notesTextareaRef.current.scrollHeight}px`
+  }, [notes, findTeam])
+
+  const resetStates = (options = {}) => {
+    const { keepTeamNumberInput = false } = options
     setConfirm(false)
     setFindTeam("")
-    setTeamNumberInput("")
+    if (!keepTeamNumberInput) {
+      setTeamNumberInput("")
+    }
     setTeamSuggestions([])
     setTeamName("")
     setFuelCapacity("")
@@ -457,12 +467,18 @@ function Notes(props) {
                   }}
                   placeholder="Enter team # or name" 
                   type="text" 
-                  value={teamNumberInput} 
-                  onChange={(e) => setTeamNumberInput(e.target.value)}
+                  value={teamNumberInput}
+                  onChange={(e) => {
+                    const nextValue = e.target.value
+                    if (findTeam && nextValue !== findTeam) {
+                      resetStates({ keepTeamNumberInput: true })
+                    }
+                    setTeamNumberInput(nextValue)
+                  }}
                   onKeyDown={(e) => { if (e.key === 'Enter') loadTeamData() }}
                 />
                 <button
-                  onClick={loadTeamData}
+                  onClick={() => loadTeamData()}
                   style={{
                     height: "50px",
                     padding: "0 20px",
@@ -734,20 +750,28 @@ function Notes(props) {
               <div style={gridRowStyle}>
                 <div style={{ flex: "1", minWidth: "150px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Notes</label>
-                  <input 
+                  <textarea
+                    ref={notesTextareaRef}
                     style={{
-                      height: "50px",
+                      minHeight: "110px",
                       width: "100%",
-                      padding: "8px",
+                      padding: "10px",
                       fontSize: "16px",
                       border: "2px solid #ddd",
                       borderRadius: "8px",
-                      boxSizing: "border-box"
+                      boxSizing: "border-box",
+                      resize: "vertical",
+                      overflow: "hidden",
+                      lineHeight: "1.4"
                     }}
-                    placeholder="Enter notes" 
-                    type="text" 
-                    value={notes} 
-                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Enter notes"
+                    value={notes}
+                    rows={5}
+                    onChange={(e) => {
+                      setNotes(e.target.value)
+                      e.target.style.height = 'auto'
+                      e.target.style.height = `${e.target.scrollHeight}px`
+                    }}
                   />
                 </div>
               </div>
