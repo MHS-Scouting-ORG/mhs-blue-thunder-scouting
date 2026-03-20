@@ -412,6 +412,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "SubmittedBy": {
+                    "name": "SubmittedBy",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Autonomous": {
                     "name": "Autonomous",
                     "isArray": false,
@@ -597,5 +604,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "4d9dcd47d3039167b66aea607fe7a478"
+    "version": "696e2b8f71884741230b67cacb299af6"
 };

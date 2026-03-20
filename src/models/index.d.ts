@@ -164,6 +164,7 @@ type EagerTeamMatchesType = {
   readonly MatchId?: string | null;
   readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
   readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly SubmittedBy?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
   readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;
@@ -179,6 +180,7 @@ type LazyTeamMatchesType = {
   readonly MatchId?: string | null;
   readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
   readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly SubmittedBy?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
   readonly ActiveStrat?: (StratOpts | null)[] | Array<keyof typeof StratOpts> | null;

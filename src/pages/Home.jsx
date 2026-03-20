@@ -1,7 +1,11 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
+import { isTableNotesAllowed } from '../utils/tableNotesPermissions'
 
 function Home() {
+  const { user } = useOutletContext() ?? {}
+  const canViewTableAndNotes = isTableNotesAllowed(user)
+
   return (
     <>
       <style>{`
@@ -117,21 +121,25 @@ function Home() {
             <p>Record match data</p>
           </Link>
           
-          <Link 
-            to="/table"
-            className="nav-card"
-          >
-            <h3>TABLE</h3>
-            <p>View data</p>
-          </Link>
+          {canViewTableAndNotes && (
+            <Link 
+              to="/table"
+              className="nav-card"
+            >
+              <h3>TABLE</h3>
+              <p>View data</p>
+            </Link>
+          )}
           
-          <Link 
-            to="/notes"
-            className="nav-card"
-          >
-            <h3>NOTES</h3>
-            <p>Team notes</p>
-          </Link>
+          {canViewTableAndNotes && (
+            <Link 
+              to="/notes"
+              className="nav-card"
+            >
+              <h3>NOTES</h3>
+              <p>Team notes</p>
+            </Link>
+          )}
           
         </div>
       </div>

@@ -35,6 +35,7 @@ export const createTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang
@@ -118,6 +119,7 @@ export const updateTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang
@@ -201,6 +203,7 @@ export const deleteTeam = /* GraphQL */ `
           MatchId
           MatchResult
           TeamImpact
+          SubmittedBy
           Autonomous {
             AutoStrat
             AutoHang

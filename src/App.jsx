@@ -12,7 +12,7 @@ function AuthenticatedUI({ user }) {
 
       <Menu user={user}></Menu>
       <div>
-        <Outlet />
+        <Outlet context={{ user }} />
       </div>
     </div>
   )

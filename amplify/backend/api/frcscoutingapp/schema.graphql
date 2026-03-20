@@ -138,6 +138,7 @@ type TeamMatchesType {
   MatchId: String
   MatchResult: MatchResultOpts
   TeamImpact: TeamImpactOpts
+  SubmittedBy: String
   Autonomous: AutonomousType!
   Teleop: TeleType!
   ActiveStrat: [StratOpts]

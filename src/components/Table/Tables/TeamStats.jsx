@@ -242,6 +242,11 @@ function TeamStats(props) {
   const ballsShot = mode(matches.map(m => m?.RobotInfo.BallsShot || 'None'))
 
   const scoutedFuelCap = mode(matches.map(m => m?.RobotInfo?.FuelCapacity || 'None'));
+  
+  /* I made this ~ Jmoney */
+  const brokenText =  mode(matches.map(m => m?.RobotInfo?.WhatBrokeDesc  ?? 'None'));
+  
+  const insightText = mode(matches.map(m => m?.RobotInfo?.Comments ?? 'None'));
 
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
@@ -374,12 +379,13 @@ function TeamStats(props) {
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Broken:</strong> {brokenRateText}
           </div>
-{/*           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>What Broke: </strong>
+          {/* Is displayed in all matches */}
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>What Broke: </strong> {brokenText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Insight: </strong>
-          </div> */} 
+            <strong>Insight: </strong> {insightText}
+          </div>
         </div>
       </div>
 
