@@ -11,7 +11,7 @@ const toNumber = (value, fallback = 0) => {
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
-const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10]
+const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10, 9999]
 const CONFIDENCE_OPTIONS = [0, 20, 40, 50, 60, 70, 80, 90]
 const ALLIANCE_SCORE_OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70]
 const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
@@ -23,7 +23,8 @@ function AllLeaderboardView({ tableData, regional }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState('allianceScore')
   const [sortDir, setSortDir] = useState('desc')
-  const [minMatches, setMinMatches] = useState(1)
+  // Default minMatches to 9999 so no teams show by default
+  const [minMatches, setMinMatches] = useState(9999)
   const [minConfidence, setMinConfidence] = useState(0)
   const [minAllianceScore, setMinAllianceScore] = useState(0)
   const [minAutoPts, setMinAutoPts] = useState(0)
@@ -32,6 +33,10 @@ function AllLeaderboardView({ tableData, regional }) {
   const [robotSpeed, setRobotSpeed] = useState('any')
   const [showFilters, setShowFilters] = useState(false)
   const [searchSuggestions, setSearchSuggestions] = useState([])
+  // New filters
+  const [canHang, setCanHang] = useState(false)
+  const [canTrench, setCanTrench] = useState(false)
+  const [hasAutos, setHasAutos] = useState(false)
 
   useEffect(() => {
     if (!regional) {
@@ -138,6 +143,10 @@ function AllLeaderboardView({ tableData, regional }) {
       if (team.AvgEndgamePts < minEndgamePts) return false
       if (team.brokenRate > maxBrokenRate) return false
       if (robotSpeed !== 'any' && team.speedBucket !== robotSpeed) return false
+      // New filters
+      if (canHang && !team.canHang) return false
+      if (canTrench && !team.canTrench) return false
+      if (hasAutos && !team.hasAutos) return false
 
       if (!search) return true
 
@@ -160,31 +169,37 @@ function AllLeaderboardView({ tableData, regional }) {
     })
 
     return sorted
-  }, [rankedRows, searchTerm, sortKey, sortDir, minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed])
+  }, [rankedRows, searchTerm, sortKey, sortDir, minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos])
 
   const activeFilterCount = useMemo(() => {
     let count = 0
-    if (minMatches !== 1) count += 1
+    if (minMatches !== 9999) count += 1
     if (minConfidence !== 0) count += 1
     if (minAllianceScore !== 0) count += 1
     if (minAutoPts !== 0) count += 1
     if (minEndgamePts !== 0) count += 1
     if (maxBrokenRate !== 100) count += 1
     if (robotSpeed !== 'any') count += 1
+    if (canHang) count += 1
+    if (canTrench) count += 1
+    if (hasAutos) count += 1
     return count
-  }, [minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed])
+  }, [minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos])
 
   const resetFilters = () => {
     setSearchTerm('')
     setSortKey('allianceScore')
     setSortDir('desc')
-    setMinMatches(1)
+    setMinMatches(9999)
     setMinConfidence(0)
     setMinAllianceScore(0)
     setMinAutoPts(0)
     setMinEndgamePts(0)
     setMaxBrokenRate(100)
     setRobotSpeed('any')
+    setCanHang(false)
+    setCanTrench(false)
+    setHasAutos(false)
   }
 
   return (
@@ -355,6 +370,32 @@ function AllLeaderboardView({ tableData, regional }) {
                   {BROKEN_OPTIONS.map(v => <option key={v} value={v}>{v}%</option>)}
                 </select>
               </label>
+              <div style={{ display: 'flex', gap: '10px', gridColumn: '1 / -1', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => setCanHang(prev => !prev)}
+                  className={`${tableStyles.ToggleButton} ${canHang ? tableStyles.ToggleButtonOn : tableStyles.ToggleButtonOff}`}
+                  style={{ flex: 1, textAlign: 'center' }}
+                >
+                  Can Hang
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCanTrench(prev => !prev)}
+                  className={`${tableStyles.ToggleButton} ${canTrench ? tableStyles.ToggleButtonOn : tableStyles.ToggleButtonOff}`}
+                  style={{ flex: 1, textAlign: 'center' }}
+                >
+                  Can Trench
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHasAutos(prev => !prev)}
+                  className={`${tableStyles.ToggleButton} ${hasAutos ? tableStyles.ToggleButtonOn : tableStyles.ToggleButtonOff}`}
+                  style={{ flex: 1, textAlign: 'center' }}
+                >
+                  Has Autos
+                </button>
+              </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
