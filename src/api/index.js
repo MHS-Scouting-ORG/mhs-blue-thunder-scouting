@@ -299,6 +299,37 @@ const normalizeTeamRead = (team) => {
   }
 }
 
+const normalizeBlueAllianceTeam = (team) => {
+  if (!team || typeof team !== 'object') return null
+
+  const normalizedTeamNumber = normalizeTeamId(team?.team_number ?? team?.TeamNumber)
+  if (!normalizedTeamNumber) return null
+
+  const numericTeamNumber = Number.parseInt(normalizedTeamNumber, 10)
+
+  return {
+    ...team,
+    TeamNumber: normalizedTeamNumber,
+    team_number: Number.isNaN(numericTeamNumber) ? team?.team_number : numericTeamNumber,
+    key: String(team?.key || `frc${normalizedTeamNumber}`),
+    nickname: typeof team?.nickname === 'string' ? team.nickname : '',
+  }
+}
+
+const normalizeBlueAllianceTeams = (teams) => {
+  const seen = new Set()
+
+  return (Array.isArray(teams) ? teams : [])
+    .map(normalizeBlueAllianceTeam)
+    .filter(Boolean)
+    .filter((team) => {
+      if (seen.has(team.TeamNumber)) return false
+      seen.add(team.TeamNumber)
+      return true
+    })
+    .sort((left, right) => Number(left.team_number) - Number(right.team_number))
+}
+
 /**
  * Subscribe to create and update events
  * @param {*} updateFn
@@ -515,14 +546,36 @@ const apiGetMatchesForRegional = async function (regionalId) {
   return fetchMatchesForRegional(regionalId)
 }
 
+const apiGetRegionalTeams = async function (regionalId) {
+  const resolvedRegionalId = regionalId || apiGetRegional()
+  if (!resolvedRegionalId) return []
+
+  let lastError = null
+
+  try {
+    const simpleTeams = normalizeBlueAllianceTeams(await fetchSimpleTeamsForRegional(resolvedRegionalId))
+    if (simpleTeams.length > 0) return simpleTeams
+  } catch (err) {
+    lastError = err
+  }
+
+  try {
+    const teams = normalizeBlueAllianceTeams(await fetchTeamsInRegional(resolvedRegionalId))
+    if (teams.length > 0) return teams
+  } catch (err) {
+    lastError = err
+  }
+
+  if (lastError) throw lastError
+  return []
+}
+
 const apiGetTeamsInRegional = async function (regionalId) {
-  if (!regionalId) return []
-  return fetchTeamsInRegional(regionalId)
+  return apiGetRegionalTeams(regionalId)
 }
 
 const apiGetSimpleTeamsForRegional = async function (regionalId) {
-  if (!regionalId) return []
-  return fetchSimpleTeamsForRegional(regionalId)
+  return apiGetRegionalTeams(regionalId)
 }
 
 const apiGetRankingsForRegional = async function (regionalId) {
@@ -603,6 +656,7 @@ export {
   apiListTeams,
   apigetMatchesForRegional,
   apiGetMatchesForRegional,
+  apiGetRegionalTeams,
   apiGetTeamsInRegional,
   apiGetSimpleTeamsForRegional,
   apiGetRankingsForRegional,
