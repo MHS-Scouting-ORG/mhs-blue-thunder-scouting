@@ -138,7 +138,7 @@ export async function submitState( //params are states of data from form
   /* Checks Match Selects */
   if (matchType === '') {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals or Finals)"
+    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals, Finals or Practice)"
   }
 
   if (normalizedTeamNumber === '') {
@@ -420,6 +420,7 @@ export async function submitState( //params are states of data from form
         SubmittedBy: submittedBy,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
+        MatchType: matchType,
         MatchResult: matchResult,
         TeamImpact: teamImpact,
         Autonomous: {

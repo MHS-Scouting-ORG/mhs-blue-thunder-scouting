@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry, apiGetRegionalTeams } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
+import { getTopTeamSuggestions } from "../utils/teamSearch";
 
 import tableStyling from "../components/Table/Table.module.css";
 
@@ -9,7 +10,7 @@ import tableStyling from "../components/Table/Table.module.css";
 import { submitState } from './FormUtils' //from formUtils submits to builder
 
 const sectionHelp = {
-  matchInfo: "Match Info sets the identity of the team you are scouting for this specific match. Select Qualification, Semifinal, or Final based on the official schedule, enter the match number exactly as listed, then choose the alliance color that team is actually playing on in that match. Finally, pick the robot number for the single team you are scouting. Use this section first, because every note below should describe only that one team in that specific match.",
+  matchInfo: "Match Info sets the identity of the team you are scouting for this specific match. Select Qualification, Semifinal, or Final based on the official schedule, enter the match number exactly as listed, then choose the alliance color that team is actually playing on in that match. For Practice matches, type the team number or name to pick a team since there is no schedule to pull from Blue Alliance. Use this section first, because every note below should describe only that one team in that specific match.",
   autonomous: "Autonomous records what the robot completed before driver control started. Select Moved if the robot clearly left its starting area or completed the required autonomous mobility action. Select Scored if it successfully scored Fuel into its alliance hub while that hub was active during auto. Select Crossed Bump/Trench if it intentionally used that route during autonomous. For Auto Hang, choose None if it did not complete an autonomous hang, or level1 if the robot finished the hang in auto. Only mark actions that fully happened, not attempts that failed halfway.",
   activeStrategy: "Active Strategy should describe the robot's main job during teleop. Select Scoring if the team spent most of the match gathering Fuel and shooting it into the active alliance hub. Select Hoarding if it mainly controlled large amounts of Fuel, stockpiled game pieces, or managed fuel to influence scoring opportunities. Select Defending if its main impact came from stopping/slowing cycles, blocking shooting spots, pressuring intakes, or disrupting the other alliance in other ways. Use Times Travelled to Mid to count how often it crossed into the middle of the field or central traffic area, and use Shooting Cycles to count distinct scoring trips or shooting fuel, not individual balls shot.",
   inactiveStrategy: "Inactive Strategy tracks tactics this robot used during the inactive period. Select Hoarding if the robot was significantly hoaring balls in their baskets or bringing them to their alliance zones. Select Defending Mid if the robot protected or contested the middle. Select Blocking if it was trying to blocking the opponents. This section is only for what the robot did when their hub was inactive.",
@@ -77,6 +78,10 @@ const InfoIcon = ({ text, onClick }) => (
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
+  const [simpleTeams, setSimpleTeams] = useState([]);
+  const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
+  const [teamSearchInput, setTeamSearchInput] = useState('');
+  const [teamSuggestions, setTeamSuggestions] = useState([]);
 
   /* AUTO SPECIFIC */
   const [autoActions, setAutoActions] = useState([]);
@@ -120,6 +125,15 @@ const InfoIcon = ({ text, onClick }) => (
 
  /* Blue Alliance API List Teams */
   useEffect(() => {
+    if (matchType === "p") {
+      const practiceKey = `${regional || ""}_pm${matchNumber}`;
+      setMatchKey(practiceKey);
+      setRed([]);
+      setBlue([]);
+      setMatchData([]);
+      return;
+    }
+
     /* Get latest regional key each time in case it was undefined earlier */
     const reg = regional || apiGetRegional();
     if (!reg) {
@@ -162,6 +176,44 @@ const InfoIcon = ({ text, onClick }) => (
   }, [matchType, matchNumber, regional])
 
   useEffect(() => {
+    if (!regional) {
+      setSimpleTeams([]);
+      setRegionalTeamSet(new Set());
+      return;
+    }
+
+    apiGetRegionalTeams(regional)
+      .then((data) => {
+        const teamsData = Array.isArray(data) ? data : [];
+        setSimpleTeams(teamsData);
+        setRegionalTeamSet(new Set(teamsData.map((t) => String(t?.team_number || t?.TeamNumber || '').trim()).filter(Boolean)));
+      })
+      .catch((err) => {
+        console.log('failed to load regional teams', err);
+        setSimpleTeams([]);
+        setRegionalTeamSet(new Set());
+      });
+  }, [regional]);
+
+  useEffect(() => {
+    const term = String(teamSearchInput || '').trim();
+    if (!term || matchType !== 'p') {
+      setTeamSuggestions([]);
+      return;
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    });
+
+    setTeamSuggestions(suggestions);
+  }, [teamSearchInput, simpleTeams, matchType]);
+
+  useEffect(() => {
     /* Check for pre-existing team entry data in our api */
     apiListTeams()
       .then((data) => {
@@ -200,6 +252,8 @@ const InfoIcon = ({ text, onClick }) => (
     setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
+    setTeamSearchInput('')
+    setTeamSuggestions([])
     setColor(undefined)
     setRed([])
     setBlue([])
@@ -228,6 +282,65 @@ const InfoIcon = ({ text, onClick }) => (
     setEstimatedBallsShot('')
     setConfirm(false)
 
+  }
+
+  const getRegionalNickname = (teamNum) => {
+    const team = simpleTeams.find((t) => String(t?.team_number || t?.TeamNumber || '').trim() === String(teamNum || '').trim())
+    return String(team?.nickname || '').trim()
+  }
+
+  const ensureTeamExists = async (normalizedTeamNumber) => {
+    if (!normalizedTeamNumber) return
+
+    try {
+      const checkData = await apiGetTeam(normalizedTeamNumber)
+      console.log("data in our thing ", checkData)
+
+      if (checkData === null) {
+        console.log("api get team returned null")
+        console.log(apiTeamListData, "api list team data")
+        await apiCreateTeamEntry(normalizedTeamNumber, regional)
+        console.log("created team entry for team/regional", { team: normalizedTeamNumber, regional })
+      }
+    } catch (err) {
+      console.error("error fetching/creating team", err)
+    }
+  }
+
+  const selectPracticeTeam = async (term) => {
+    const rawTerm = String(term || '').trim()
+    if (!rawTerm) {
+      setTeamNumber('')
+      setTeamSearchInput('')
+      setTeamSuggestions([])
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term: rawTerm,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    const fromNumber = /^\d+$/.test(rawTerm) ? rawTerm : ''
+    const teamNum = normalizeTeamId(fromNumber || suggestions[0]?.teamNumber || '')
+    if (!teamNum) {
+      setTeamSuggestions(suggestions)
+      return
+    }
+
+    if (!regionalTeamSet.has(teamNum)) {
+      alert(`Team ${teamNum} is not at this regional.`)
+      setTeamSuggestions(suggestions)
+      return
+    }
+
+    setTeamNumber(teamNum)
+    setTeamSearchInput(getRegionalNickname(teamNum) ? `${teamNum} - ${getRegionalNickname(teamNum)}` : teamNum)
+    setTeamSuggestions([])
+    await ensureTeamExists(teamNum)
   }
 
   /* toggle functions for display of form sections */
@@ -347,6 +460,7 @@ const InfoIcon = ({ text, onClick }) => (
                 <option value='q'>Qualification</option>
                 <option value='sf'>Semifinal</option>
                 <option value='f'>Final</option>
+                <option value='p'>Practice</option>
               </select>
             </div>
 
@@ -415,55 +529,90 @@ const InfoIcon = ({ text, onClick }) => (
             </div>
           </div>
 
-          <div style={{ opacity: matchNumber && color !== undefined ? 1 : !matchNumber || color === undefined ? 0.5 : 0.5, cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
-            <select 
-              style={{
-                height: "50px",
-                width: "100%",
-                padding: "8px",
-                fontSize: "16px",
-                border: "2px solid #ddd",
-                borderRadius: "8px",
-                cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer"
-              }} 
-              disabled={!matchNumber || color === undefined}
-              value={teamNumber}
-              onChange={async (e) => {
-                // capture the new team number immediately, avoid relying on state update
-                const normalized = normalizeTeamId(e.target.value);
-                setTeamNumber(normalized);
-
-                try {
-                  const checkData = await apiGetTeam(normalized);
-                  console.log("data in our thing ", checkData);
-
-                  if (checkData === null) {
-                    console.log("api get team returned null");
-                    console.log(apiTeamListData, "api list team data");
-                    await apiCreateTeamEntry(normalized, regional);
-                    console.log("created team entry for team/regional", { team: normalized, regional });
-                  }
-                } catch (err) {
-                  // GraphQL returns object with data/errors; log details
-                  console.error("error fetching/creating team", err);
+          {matchType === 'p' ? (
+            <div style={{ opacity: matchNumber ? 1 : 0.5, cursor: !matchNumber ? "not-allowed" : "text" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Number / Name</label>
+              <input
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  boxSizing: "border-box",
+                  cursor: !matchNumber ? "not-allowed" : "text"
+                }}
+                disabled={!matchNumber}
+                placeholder="Type team number or team name"
+                value={teamSearchInput}
+                onChange={(e) => {
+                  setTeamSearchInput(e.target.value)
+                  setTeamNumber('')
+                }}
+                onBlur={() => {
+                  if (!teamSearchInput.trim()) return
+                  selectPracticeTeam(teamSearchInput)
+                }}
+              />
+              {teamSuggestions.length > 0 ? (
+                <div style={{ marginTop: "8px", display: "grid", gap: "6px" }}>
+                  {teamSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.teamNumber}
+                      type="button"
+                      style={{
+                        textAlign: "left",
+                        border: "1px solid #ddd",
+                        borderRadius: "6px",
+                        background: "white",
+                        padding: "8px",
+                        cursor: "pointer"
+                      }}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => selectPracticeTeam(suggestion.teamNumber)}
+                    >
+                      {suggestion.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div style={{ opacity: matchNumber && color !== undefined ? 1 : !matchNumber || color === undefined ? 0.5 : 0.5, cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
+              <select 
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer"
+                }} 
+                disabled={!matchNumber || color === undefined}
+                value={teamNumber}
+                onChange={async (e) => {
+                  const normalized = normalizeTeamId(e.target.value);
+                  setTeamNumber(normalized);
+                  await ensureTeamExists(normalized)
+                }}
+              >
+                <option value="">Select robot number</option>
+                {color === false ?
+                  matchData != [] ?
+                    red.map((team) => {
+                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                    }) : null
+                  : matchData != [] ?
+                    blue.map((team) => {
+                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                    }) : null
                 }
-                
-              }}
-            >
-              <option value="">Select robot number</option>
-              {color === false ?
-                matchData != [] ?
-                  red.map((team) => {
-                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
-                  }) : null
-                : matchData != [] ?
-                  blue.map((team) => {
-                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
-                  }) : null
-              }
-            </select>
-          </div>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 

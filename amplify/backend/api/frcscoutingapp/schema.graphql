@@ -117,6 +117,13 @@ enum TeamImpactOpts {
   Low
 }
 
+enum MatchTypeOpts {
+  q
+  sf
+  f
+  p
+}
+
 enum HangTeamworkOpts {
   DoubleHang
   TripleHang
@@ -136,6 +143,7 @@ type TeamMatchesType {
   description: String
   Team: ID!
   MatchId: String
+  MatchType: MatchTypeOpts
   MatchResult: MatchResultOpts
   TeamImpact: TeamImpactOpts
   SubmittedBy: String
