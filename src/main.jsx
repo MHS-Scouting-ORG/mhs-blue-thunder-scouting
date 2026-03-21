@@ -1,7 +1,7 @@
 import './amplifyConfig.js'
 
 import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createHashRouter, RouterProvider } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
@@ -10,7 +10,7 @@ import Form from './form/Form.jsx'
 import Summary from './components/Table/Summary.jsx'
 import Notes from './scoutingNotes/Notes.jsx'
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <App />,

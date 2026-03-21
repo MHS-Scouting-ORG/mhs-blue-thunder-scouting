@@ -113,7 +113,12 @@ function Submissions({ regional }) {
               .filter(([, v]) => v === true)
               .map(([k]) => k)
               .join(', ') || 'None'
-            const comment = match?.Comment ? ` • Comment: ${match.Comment}` : ''
+            const matchComment = String(match?.RobotInfo?.Comments || '').trim()
+            const autoWin = match?.AutoWin || 'N/A'
+            const autoImpact = match?.AutoImpact || 'N/A'
+            const teamImpact = match?.TeamImpact || 'N/A'
+            const allianceScore = Number.isFinite(Number(match?.AllianceScore)) ? Number(match?.AllianceScore) : null
+            const opponentScore = Number.isFinite(Number(match?.OpponentScore)) ? Number(match?.OpponentScore) : null
             const autoStr = Array.isArray(auto) ? auto.join(', ') : auto
 
             flat.push({
@@ -122,7 +127,7 @@ function Submissions({ regional }) {
               team: String(match?.Team || teamId),
               regional: reg?.RegionalId || '',
               title: formatMatchLabel(matchId),
-              detail: `Auto: ${autoStr} (${autoHang}) • Endgame: ${endgame} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${comment}`,
+              detail: `Auto: ${autoStr} (${autoHang}) • Auto Win: ${autoWin} • Auto Impact: ${autoImpact} • Endgame: ${endgame} • Match Result: ${match?.MatchResult || 'N/A'} • Team Impact: ${teamImpact} • Score: ${allianceScore ?? 'N/A'}-${opponentScore ?? 'N/A'} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${matchComment ? ` • Comments: ${matchComment}` : ''}`,
               submittedBy: match?.SubmittedBy || 'Unknown',
               timestamp: matchTimestamp,
               updatedAt: teamUpdatedAt,
@@ -147,6 +152,14 @@ function Submissions({ regional }) {
   useEffect(() => {
     loadEntries();
   }, [loadEntries, refreshKey]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setRefreshKey((k) => k + 1)
+    }, 15000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
 
   const handleDeleteEntry = async (entry) => {
     if (!canDelete) return;

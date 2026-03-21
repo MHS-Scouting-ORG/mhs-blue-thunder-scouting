@@ -145,7 +145,11 @@ type TeamMatchesType {
   MatchId: String
   MatchType: MatchTypeOpts
   MatchResult: MatchResultOpts
+  AutoWin: MatchResultOpts
   TeamImpact: TeamImpactOpts
+  AutoImpact: TeamImpactOpts
+  AllianceScore: Int
+  OpponentScore: Int
   SubmittedBy: String
   Autonomous: AutonomousType!
   Teleop: TeleType!

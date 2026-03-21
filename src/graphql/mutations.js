@@ -34,7 +34,11 @@ export const createTeam = /* GraphQL */ `
           Team
           MatchId
           MatchResult
+          AutoWin
           TeamImpact
+          AutoImpact
+          AllianceScore
+          OpponentScore
           SubmittedBy
           Autonomous {
             AutoStrat
@@ -118,7 +122,11 @@ export const updateTeam = /* GraphQL */ `
           Team
           MatchId
           MatchResult
+          AutoWin
           TeamImpact
+          AutoImpact
+          AllianceScore
+          OpponentScore
           SubmittedBy
           Autonomous {
             AutoStrat
@@ -202,7 +210,11 @@ export const deleteTeam = /* GraphQL */ `
           Team
           MatchId
           MatchResult
+          AutoWin
           TeamImpact
+          AutoImpact
+          AllianceScore
+          OpponentScore
           SubmittedBy
           Autonomous {
             AutoStrat

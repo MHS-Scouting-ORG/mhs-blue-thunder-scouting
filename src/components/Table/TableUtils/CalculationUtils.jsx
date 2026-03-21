@@ -96,7 +96,7 @@ const getMax = (arr) => {
 const getSummary = (arr) => {
   const newarr = arr
     .map((match) => {
-      const comment = match?.Comment ?? match?.RobotInfo?.Comments
+      const comment = match?.RobotInfo?.Comments
       if (!comment) return null
       return `${comment}, `
     })

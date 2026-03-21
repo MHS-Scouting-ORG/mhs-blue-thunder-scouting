@@ -11,7 +11,7 @@ const toNumber = (value, fallback = 0) => {
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
-const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10, 9999]
+const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10]
 const CONFIDENCE_OPTIONS = [0, 20, 40, 50, 60, 70, 80, 90]
 const ALLIANCE_SCORE_OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70]
 const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
@@ -23,8 +23,7 @@ function AllLeaderboardView({ tableData, regional }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState('allianceScore')
   const [sortDir, setSortDir] = useState('desc')
-  // Default minMatches to 9999 so no teams show by default
-  const [minMatches, setMinMatches] = useState(9999)
+  const [minMatches, setMinMatches] = useState(1)
   const [minConfidence, setMinConfidence] = useState(0)
   const [minAllianceScore, setMinAllianceScore] = useState(0)
   const [minAutoPts, setMinAutoPts] = useState(0)
@@ -127,6 +126,9 @@ function AllLeaderboardView({ tableData, regional }) {
         AvgEndgamePts: toNumber(team?.AvgEndgamePts, 0),
         brokenRate,
         speedBucket,
+        canHang: Boolean(team?.canHang),
+        canTrench: Boolean(team?.canTrench),
+        hasAutos: Boolean(team?.hasAutos),
       }
     })
   }, [tableData, nameMap])
@@ -173,7 +175,7 @@ function AllLeaderboardView({ tableData, regional }) {
 
   const activeFilterCount = useMemo(() => {
     let count = 0
-    if (minMatches !== 9999) count += 1
+    if (minMatches !== 1) count += 1
     if (minConfidence !== 0) count += 1
     if (minAllianceScore !== 0) count += 1
     if (minAutoPts !== 0) count += 1
@@ -190,7 +192,7 @@ function AllLeaderboardView({ tableData, regional }) {
     setSearchTerm('')
     setSortKey('allianceScore')
     setSortDir('desc')
-    setMinMatches(9999)
+    setMinMatches(1)
     setMinConfidence(0)
     setMinAllianceScore(0)
     setMinAutoPts(0)
@@ -315,7 +317,13 @@ function AllLeaderboardView({ tableData, regional }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <h3 style={{ margin: 0 }}>Filters</h3>
-              <button onClick={() => setShowFilters(false)} className={tableStyles.PrimaryButton}>Done</button>
+              <button
+                onClick={resetFilters}
+                className={tableStyles.PrimaryButton}
+                style={{ fontSize: '12px', padding: '4px 8px', lineHeight: 1.2 }}
+              >
+                Reset
+              </button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
@@ -399,7 +407,7 @@ function AllLeaderboardView({ tableData, regional }) {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
-              <button onClick={resetFilters} className={tableStyles.PrimaryButton}>Reset Filters</button>
+              <button onClick={() => setShowFilters(false)} className={tableStyles.PrimaryButton}>Done</button>
             </div>
           </div>
         </div>
