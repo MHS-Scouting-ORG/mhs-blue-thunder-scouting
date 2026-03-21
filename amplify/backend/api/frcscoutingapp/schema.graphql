@@ -8,7 +8,7 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 # enums
 enum AutoStratOpts {
-  LeftStartingZone
+  MovedInAuto
   ScoredInGoal
   Nothing
 }

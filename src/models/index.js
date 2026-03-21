@@ -3,7 +3,7 @@ import { initSchema } from '@aws-amplify/datastore';
 import { schema } from './schema';
 
 const AutoStratOpts = {
-  "LEFT_STARTING_ZONE": "LeftStartingZone",
+  "MOVED_IN_AUTO": "MovedInAuto",
   "SCORED_IN_GOAL": "ScoredInGoal",
   "NOTHING": "Nothing"
 };

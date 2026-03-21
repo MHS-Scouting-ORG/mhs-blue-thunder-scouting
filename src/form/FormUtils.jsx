@@ -73,17 +73,18 @@ export async function submitState( //params are states of data from form
 ) {
 
   const normalizeAutoStratFromActions = (actions) => {
-    if (!Array.isArray(actions) || actions.length === 0) return []
+    if (!Array.isArray(actions) || actions.length === 0) return ["Nothing"]
     const autoMap = {
-      "Moved": "Nothing",
+      "Moved": "MovedInAuto",
       "Scored": "ScoredInGoal",
-      "Crossed Bump/Trench": "LeftStartingZone",
+      "Crossed Bump/Trench": "MovedInAuto",
     }
-    const normalized = actions
+    const unique = [...new Set(actions
       .map(action => autoMap[action])
-      .filter(Boolean)
+      .filter(Boolean))]
 
-    return [...new Set(normalized)]
+    const meaningful = unique.filter(v => v !== 'Nothing')
+    return meaningful.length > 0 ? meaningful : ['Nothing']
   }
 
   const normalizeStratList = (value) => {

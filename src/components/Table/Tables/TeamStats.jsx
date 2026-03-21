@@ -59,6 +59,21 @@ function TeamStats(props) {
     return null;
   };
 
+  const isQualificationSubmission = (match) => {
+    const matchType = String(match?.MatchType || '').trim().toLowerCase();
+    if (matchType === 'q' || matchType === 'qm' || matchType === 'qualification' || matchType === 'qualifications') {
+      return true;
+    }
+
+    const matchId = String(match?.MatchId || '').trim().toLowerCase();
+    if (!matchId) return false;
+    if (/^qm\d+$/.test(matchId)) return true;
+    if (/_qm\d+$/.test(matchId)) return true;
+    if (/[_-]qual\d*$/.test(matchId)) return true;
+
+    return false;
+  };
+
   useEffect(() => {
     if (!selectedTeam) return;
 
@@ -115,6 +130,8 @@ function TeamStats(props) {
         let latestMatchNumber = 0;
 
         items.forEach(match => {
+          if (!isQualificationSubmission(match)) return;
+
           const team = String(match?.Team || '').trim();
           const matchNumber = parseMatchNumberFromId(match?.MatchId);
           if (!team || !matchNumber || Number.isNaN(matchNumber)) return;
@@ -233,8 +250,8 @@ function TeamStats(props) {
     : 'None';
   
   const autoHangMode = mode(matches.map(m => m?.Autonomous?.AutoHang || 'None'));
-  const autoWinMode = mode(matches.map(m => m?.AutoWin || 'N/A'));
-  const autoImpactMode = mode(matches.map(m => m?.AutoImpact || 'N/A'));
+  const autoWinMode = mode(matches.map(m => m?.AutoWin));
+  const autoImpactMode = mode(matches.map(m => m?.AutoImpact));
   const endgameMode = mode(matches.map(m => m?.Teleop?.Endgame || 'None'));
   const matchResultMode = mode(matches.map(m => m?.MatchResult || 'N/A'));
   const teamImpactMode = mode(matches.map(m => m?.TeamImpact || 'N/A'));
@@ -331,85 +348,113 @@ function TeamStats(props) {
       {/* Statistics */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Form + Notes Summary</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "15px" }}>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Max Level Hang</strong> {formattedEndgameMode}
+        <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          <div>
+            <h4 style={{ margin: "0 0 8px 0", color: "#2b4b66" }}>Auto</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>AutoStrat:</strong> {autoMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Auto Hang:</strong> {autoHangMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Auto Win:</strong> {autoWinMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Auto Impact:</strong> {autoImpactMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Number of Autos (Notes)</strong>: {attrs?.NumAutos ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Can Auto Hang (Notes)</strong>: {canAutoHangText}
+              </div>
+            </div>
           </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>AutoStrat:</strong> {autoMode || 'N/A'}
+
+          <div>
+            <h4 style={{ margin: "0 0 8px 0", color: "#2b4b66" }}>Hang / Endgame</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Max Level Hang:</strong> {formattedEndgameMode}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Hang Time:</strong> {hangTimeText}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Max Hang Capability</strong>: {attrs?.MaxHang || 'None'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Hang Teamwork</strong>: {attrs?.HangTeamwork || 'None'}
+              </div>
+            </div>
           </div>
-           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Hang:</strong> {autoHangMode || 'N/A'}
+
+          <div>
+            <h4 style={{ margin: "0 0 8px 0", color: "#2b4b66" }}>Performance</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Shooter Speed:</strong> {shooterMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Balls Shot:</strong> {ballsShot ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Scouted Fuel Cap:</strong> {scoutedFuelCap ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Declared Fuel Cap:</strong> {attrs?.DeclaredFuelCap ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Cycles Per Match (Notes):</strong> {attrs?.CyclesPerMatch ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Fuel Per Cycle (Notes):</strong> {attrs?.FuelPerCycle ?? 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Capabilities:</strong> {capabilitiesText}
+              </div>
+            </div>
           </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Win:</strong> {autoWinMode || 'N/A'}
+
+          <div>
+            <h4 style={{ margin: "0 0 8px 0", color: "#2b4b66" }}>Strategy / Impact</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Most Likely Active Strat:</strong> {activeMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Most Likely Inactive Strat:</strong> {inactiveMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Match Result:</strong> {matchResultMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Team Impact:</strong> {teamImpactMode || 'N/A'}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Avg Alliance/Opp Score:</strong> {avgAllianceScore} / {avgOpponentScore}
+              </div>
+            </div>
           </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Auto Impact:</strong> {autoImpactMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Active Strat:</strong> {activeMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Most Likely Inactive Strat:</strong> {inactiveMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Shooter Speed:</strong> {shooterMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Balls Shot</strong>: {ballsShot ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Scouted Fuel Cap</strong>: {scoutedFuelCap ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Match Result:</strong> {matchResultMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Team Impact:</strong> {teamImpactMode || 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Avg Alliance/Opp Score:</strong> {avgAllianceScore} / {avgOpponentScore}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Hang Time:</strong> {hangTimeText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Declared Fuel Cap</strong>: {attrs?.DeclaredFuelCap ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Cycles Per Match (Notes)</strong>: {attrs?.CyclesPerMatch ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Fuel Per Cycle (Notes)</strong>: {attrs?.FuelPerCycle ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Number of Autos (Notes)</strong>: {attrs?.NumAutos ?? 'N/A'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Max Hang Capability</strong>: {attrs?.MaxHang || 'None'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Hang Teamwork</strong>: {attrs?.HangTeamwork || 'None'}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Can Auto Hang (Notes)</strong>: {canAutoHangText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Capabilities:</strong> {capabilitiesText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Broken:</strong> {brokenRateText}
-          </div>
-          {/* Is displayed in all matches */}
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>What Broke: </strong> {brokenText}
-          </div>
-          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Insight: </strong> {insightText}
+
+          <div>
+            <h4 style={{ margin: "0 0 8px 0", color: "#2b4b66" }}>Reliability + Insight</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Broken:</strong> {brokenRateText}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>What Broke:</strong> {brokenText}
+              </div>
+              <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+                <strong>Insight:</strong> {insightText}
+              </div>
+            </div>
           </div>
         </div>
       </div>

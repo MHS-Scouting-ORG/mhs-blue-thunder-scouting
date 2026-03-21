@@ -256,6 +256,12 @@ const InfoIcon = ({ text, onClick }) => (
     }
   }
 
+  const autoResizeTextarea = (element) => {
+    if (!element) return
+    element.style.height = 'auto'
+    element.style.height = `${element.scrollHeight}px`
+  }
+
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
@@ -391,7 +397,7 @@ const InfoIcon = ({ text, onClick }) => (
       ballsHoldTimerRef.current = setTimeout(loop, delay)
     }
 
-    ballsHoldTimerRef.current = setTimeout(loop, 300)
+    ballsHoldTimerRef.current = setTimeout(loop, 550)
   }
 
   useEffect(() => {
@@ -978,11 +984,10 @@ const InfoIcon = ({ text, onClick }) => (
           <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
             <button
               type="button"
-              onMouseDown={() => startAdjustBallsShot(-1)}
-              onMouseUp={stopAdjustBallsShot}
-              onMouseLeave={stopAdjustBallsShot}
-              onTouchStart={() => startAdjustBallsShot(-1)}
-              onTouchEnd={stopAdjustBallsShot}
+              onPointerDown={() => startAdjustBallsShot(-1)}
+              onPointerUp={stopAdjustBallsShot}
+              onPointerLeave={stopAdjustBallsShot}
+              onPointerCancel={stopAdjustBallsShot}
               style={{
                 padding: "10px 20px",
                 backgroundColor: "#ff6b6b",
@@ -990,6 +995,7 @@ const InfoIcon = ({ text, onClick }) => (
                 border: "none",
                 borderRadius: "8px",
                 cursor: "pointer",
+                touchAction: "none",
                 fontSize: "18px",
                 fontWeight: "600",
                 minWidth: "50px"
@@ -1025,11 +1031,10 @@ const InfoIcon = ({ text, onClick }) => (
             />
             <button
               type="button"
-              onMouseDown={() => startAdjustBallsShot(1)}
-              onMouseUp={stopAdjustBallsShot}
-              onMouseLeave={stopAdjustBallsShot}
-              onTouchStart={() => startAdjustBallsShot(1)}
-              onTouchEnd={stopAdjustBallsShot}
+              onPointerDown={() => startAdjustBallsShot(1)}
+              onPointerUp={stopAdjustBallsShot}
+              onPointerLeave={stopAdjustBallsShot}
+              onPointerCancel={stopAdjustBallsShot}
               style={{
                 padding: "10px 20px",
                 backgroundColor: "#4CAF50",
@@ -1037,6 +1042,7 @@ const InfoIcon = ({ text, onClick }) => (
                 border: "none",
                 borderRadius: "8px",
                 cursor: "pointer",
+                touchAction: "none",
                 fontSize: "18px",
                 fontWeight: "600",
                 minWidth: "50px"
@@ -1255,17 +1261,21 @@ const InfoIcon = ({ text, onClick }) => (
           </div>
 
           {botBroke && (
-            <input 
+            <textarea
               placeholder="broken comments" 
-              type="text" 
               value={robotBrokenComments} 
               onChange={(e) => setRobotBrokenComments(e.target.value)}
-              onWheel={(e) => e.target.blur()} 
+              onInput={(e) => autoResizeTextarea(e.currentTarget)}
               style={{
                 padding: "10px",
                 fontSize: "16px",
                 border: "2px solid #ddd",
-                borderRadius: "8px"
+                borderRadius: "8px",
+                width: "100%",
+                boxSizing: "border-box",
+                minHeight: "74px",
+                resize: "none",
+                overflow: "hidden"
               }}
             />
           )}
@@ -1385,20 +1395,22 @@ const InfoIcon = ({ text, onClick }) => (
 
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Comments</label>
-            <input 
+            <textarea
               style={{
                 padding: "12px",
                 fontSize: "16px",
                 border: "2px solid #ddd",
                 borderRadius: "8px",
                 width: "100%",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                minHeight: "88px",
+                resize: "none",
+                overflow: "hidden"
               }} 
-              type="text" 
               placeholder="Add any observations..." 
               value={robotInsight} 
               onChange={(e) => setRobotInsight(e.target.value)}
-              onWheel={(e) => e.target.blur()} 
+              onInput={(e) => autoResizeTextarea(e.currentTarget)}
             />
           </div>
         </div>

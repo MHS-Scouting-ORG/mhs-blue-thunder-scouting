@@ -99,7 +99,7 @@ export const schema = {
         "AutoStratOpts": {
             "name": "AutoStratOpts",
             "values": [
-                "LeftStartingZone",
+                "MovedInAuto",
                 "ScoredInGoal",
                 "Nothing"
             ]

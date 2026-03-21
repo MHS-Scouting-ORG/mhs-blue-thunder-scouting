@@ -211,14 +211,12 @@ const normalizeStratList = (value) => {
 }
 
 const normalizeAutoStrat = (value) => {
-  const allowed = ["LeftStartingZone", "ScoredInGoal", "Nothing"]
+  const allowed = ["MovedInAuto", "ScoredInGoal", "Nothing"]
   const autoMap = {
-    WentMid: "LeftStartingZone",
-    CrossedMid: "LeftStartingZone",
-    "Crossed Bump/Trench": "LeftStartingZone",
-    Moved: "Nothing",
+    "Crossed Bump/Trench": "MovedInAuto",
+    Moved: "MovedInAuto",
+    MovedInAuto: "MovedInAuto",
     Scored: "ScoredInGoal",
-    LeftStartingZone: "LeftStartingZone",
     ScoredInGoal: "ScoredInGoal",
     Nothing: "Nothing",
     None: "Nothing",
@@ -235,7 +233,12 @@ const normalizeAutoStrat = (value) => {
     .filter(v => allowed.includes(v))
 
   if (cleaned.length === 0) return ["Nothing"]
-  return [...new Set(cleaned)]
+
+  const unique = [...new Set(cleaned)]
+  // "Nothing" means no meaningful auto action happened, so drop it if
+  // there is any explicit movement/score action present.
+  const meaningful = unique.filter(v => v !== 'Nothing')
+  return meaningful.length > 0 ? meaningful : ['Nothing']
 }
 
 const normalizeCapabilitiesList = (value) => {
@@ -621,6 +624,44 @@ const apiSaveAllianceSelection = async function (regionalId, alliances) {
   return true
 }
 
+const apiGetLeaderboardSettings = async function (regionalId) {
+  if (!regionalId) return null
+  const settingsId = `leaderboard-settings-${regionalId}`
+
+  const team = await apiGetTeam(settingsId)
+  if (!team?.description) return null
+
+  try {
+    return JSON.parse(team.description)
+  } catch (_) {
+    return null
+  }
+}
+
+const apiSaveLeaderboardSettings = async function (regionalId, settings) {
+  if (!regionalId) throw new Error('Regional not provided')
+
+  const settingsId = `leaderboard-settings-${regionalId}`
+  let team = await apiGetTeam(settingsId)
+
+  if (!team) {
+    await apiCreateTeamEntry(settingsId, regionalId)
+    team = await apiGetTeam(settingsId)
+  }
+
+  if (!team) {
+    throw new Error('Failed to initialize leaderboard settings storage')
+  }
+
+  const merged = {
+    ...team,
+    description: JSON.stringify(settings || {})
+  }
+
+  await apiUpdateTeamEntry(settingsId, merged)
+  return true
+}
+
 /* Creates team entry for our database*/
 const apiCreateTeamEntry = async function (teamNumber, regional) {
   if (teamNumber === undefined) {
@@ -662,6 +703,8 @@ export {
   apiGetRankingsForRegional,
   apiGetAllianceSelection,
   apiSaveAllianceSelection,
+  apiGetLeaderboardSettings,
+  apiSaveLeaderboardSettings,
   apiUpdateTeamEntry,
   apiDeleteTeam,
   apiDeleteMatchSubmission,

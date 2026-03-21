@@ -28,11 +28,11 @@ const DEFAULT_GAME_PROFILES = {
       reliability: 0.03
     },
     seedWeights: {
-      avgPoints: 0.35,
-      avgAutoPts: 0.25,
-      avgEndgamePts: 0.25,
-      opr: 0.1,
-      reliability: 0.05
+      avgPoints: 0.45,
+      avgAutoPts: 0.27,
+      avgEndgamePts: 0.2,
+      opr: 0.05,
+      reliability: 0.03
     }
   },
   frc2026Rebuilt: {
@@ -51,11 +51,11 @@ const DEFAULT_GAME_PROFILES = {
       reliability: 0.03
     },
     seedWeights: {
-      avgPoints: 0.34,
-      avgAutoPts: 0.24,
-      avgEndgamePts: 0.24,
-      opr: 0.1,
-      reliability: 0.08
+      avgPoints: 0.46,
+      avgAutoPts: 0.26,
+      avgEndgamePts: 0.18,
+      opr: 0.05,
+      reliability: 0.05
     }
   }
 }
@@ -241,13 +241,13 @@ const parseAutoScore = (autoStrat) => {
   // Handle array-based AutoStrat (new format)
   if (Array.isArray(autoStrat)) {
     if (autoStrat.length === 0) return 0
-    // Give points for each auto action: ScoredInGoal=1, LeftStartingZone=0.3, Nothing=0
+    // Give points for each auto action: ScoredInGoal=1, MovedInAuto=0.3, Nothing=0
     let maxScore = 0
     for (const action of autoStrat) {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
-      } else if (v.includes('left') || v.includes('starting') || v.includes('zone')) {
+      } else if (v.includes('movedinauto') || v.includes('moved')) {
         maxScore = Math.max(maxScore, 0.3)
       }
     }
@@ -257,8 +257,7 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
-  if (v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
-  if (v.includes('wentmid') || v.includes('crossedmid')) return 0.45
+  if (v.includes('movedinauto') || v.includes('moved')) return 0.3
   return 0
 }
 
@@ -397,8 +396,15 @@ const extractTeamMatches = (team) => {
 
 const isQualificationMatch = (match, matchId) => {
   const matchType = safeLower(match?.MatchType)
-  if (matchType === 'q' || matchType === 'qm') return true
-  return /_qm\d+$/i.test(String(matchId || ''))
+  if (matchType === 'q' || matchType === 'qm' || matchType === 'qualification' || matchType === 'qualifications') {
+    return true
+  }
+
+  const compLevel = safeLower(match?.comp_level ?? match?.CompLevel)
+  if (compLevel === 'qm') return true
+
+  const id = String(matchId || '').trim().toLowerCase()
+  return /^qm\d+$/.test(id) || /_qm\d+$/.test(id)
 }
 
 const extractNumeric = (...values) => {
@@ -952,6 +958,7 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
       }
 
       const scout = computeTeamScoutAverages(team, mergedOptions)
+      const aggregateSeed = getAggregateSeedScoreWithOptions(team, mergedOptions)
 
       const weightedSkill =
         toNumber(metricWeights.autoActions, 0) * toNumber(ls.autoActionsScore.get(teamNumber), 0) +
@@ -967,8 +974,13 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         toNumber(metricWeights.strategyExecution, 0) * scout.strategyExecution +
         toNumber(metricWeights.reliability, 0) * scout.reliability
 
-      const scoreDrivenBoost = 0.55 * toNumber(ls.totalScore.get(teamNumber), 0) + 0.45 * toNumber(ls.winContribution.get(teamNumber), 0)
-      const skillRating = clamp((0.78 * weightedSkill + 0.22 * scoreDrivenBoost) * 100, 0, 100)
+      const scoreDrivenBoost =
+        0.2 * toNumber(ls.totalScore.get(teamNumber), 0) +
+        0.1 * toNumber(ls.winContribution.get(teamNumber), 0) +
+        0.7 * aggregateSeed
+
+      // Favor objective match outcomes and scoring over subjective scouting fields.
+      const skillRating = clamp((0.35 * weightedSkill + 0.65 * scoreDrivenBoost) * 100, 0, 100)
 
       const uncertaintyFromSample = clamp(
         mergedOptions.maxUncertainty - (Math.log2(1 + scout.matchCount) * 6),
@@ -979,8 +991,8 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
       const inconsistency = clamp((1 - scout.reliability) * 20, 0, 20)
       const conservativeRating =
         skillRating -
-        mergedOptions.uncertaintyPenalty * uncertaintyFromSample -
-        mergedOptions.inconsistencyPenalty * inconsistency
+        (mergedOptions.uncertaintyPenalty * 0.45) * uncertaintyFromSample -
+        (mergedOptions.inconsistencyPenalty * 0.5) * inconsistency
 
       const confidence = clamp(1 - (uncertaintyFromSample / mergedOptions.maxUncertainty), 0, 1)
 

@@ -119,7 +119,11 @@ function Submissions({ regional }) {
             const teamImpact = match?.TeamImpact || 'N/A'
             const allianceScore = Number.isFinite(Number(match?.AllianceScore)) ? Number(match?.AllianceScore) : null
             const opponentScore = Number.isFinite(Number(match?.OpponentScore)) ? Number(match?.OpponentScore) : null
-            const autoStr = Array.isArray(auto) ? auto.join(', ') : auto
+            const autoList = Array.isArray(auto)
+              ? auto.filter(v => typeof v === 'string' && v.trim() !== '')
+              : (typeof auto === 'string' ? auto.split(',').map(v => v.trim()).filter(Boolean) : [])
+            const meaningfulAuto = autoList.filter(v => v !== 'Nothing')
+            const autoStr = (meaningfulAuto.length > 0 ? meaningfulAuto : autoList).join(', ') || 'None'
 
             flat.push({
               id: `form-${teamId}-${matchId}-${idx}`,

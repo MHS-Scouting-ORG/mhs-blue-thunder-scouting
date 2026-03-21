@@ -4,6 +4,19 @@ import { isSameTeam } from "../../../utils/teamId"
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
+const isQualificationSubmission = (match) => {
+  const matchType = safeLower(match?.MatchType)
+  if (matchType === 'q' || matchType === 'qm' || matchType === 'qualification' || matchType === 'qualifications') {
+    return true
+  }
+
+  const compLevel = safeLower(match?.comp_level ?? match?.CompLevel)
+  if (compLevel === 'qm') return true
+
+  const matchId = String(match?.MatchId || '').trim().toLowerCase()
+  return /^qm\d+$/.test(matchId) || /_qm\d+$/.test(matchId)
+}
+
 const normalizeAutoActions = (autoStrat) => {
   if (Array.isArray(autoStrat)) return autoStrat.map((x) => String(x || '').trim())
   if (typeof autoStrat === 'string') return autoStrat.split(',').map((x) => x.trim()).filter(Boolean)
@@ -99,7 +112,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       //teamMatchesByRegional is left undefined
       const teamMatchData = data.data.teamMatchesByRegional.items;
       const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
-      const totalMatches = teamStats.length
+      const qualTeamStats = teamStats.filter(isQualificationSubmission)
+      const totalMatches = qualTeamStats.length
 
       const pointsByMatch = teamStats.map(m => getAutoPoints(m) + getEndgamePoints(m) + getTravelPoints(m) + getShotPoints(m))
       //console.log("teamStats", teamStats)

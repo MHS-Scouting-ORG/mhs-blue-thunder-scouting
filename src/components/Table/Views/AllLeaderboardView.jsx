@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
+import { getDefaultAllianceRankingOptions, rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
-import { apiGetSimpleTeamsForRegional } from '../../../api';
+import { apiGetLeaderboardSettings, apiGetSimpleTeamsForRegional, apiSaveLeaderboardSettings } from '../../../api';
 import { getTopTeamSuggestions } from '../../../utils/teamSearch';
 
 const toNumber = (value, fallback = 0) => {
@@ -18,14 +18,36 @@ const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
 const ENDGAME_OPTIONS = [0, 5, 10, 15, 20, 25, 30]
 const BROKEN_OPTIONS = [100, 80, 60, 50, 40, 30, 20, 10, 0]
 
+const normalizeSeedWeights = (weights, fallback) => {
+  if (!weights || typeof weights !== 'object') return { ...fallback }
+  return {
+    avgPoints: toNumber(weights.avgPoints, fallback.avgPoints),
+    avgAutoPts: toNumber(weights.avgAutoPts, fallback.avgAutoPts),
+    avgEndgamePts: toNumber(weights.avgEndgamePts, fallback.avgEndgamePts),
+    opr: toNumber(weights.opr, fallback.opr),
+    reliability: toNumber(weights.reliability, fallback.reliability),
+  }
+}
+
 function AllLeaderboardView({ tableData, regional }) {
+  const defaultSeedWeights = useMemo(() => {
+    const defaults = getDefaultAllianceRankingOptions('frc2026Rebuilt')
+    return normalizeSeedWeights(defaults.seedWeights, {
+      avgPoints: 0.46,
+      avgAutoPts: 0.26,
+      avgEndgamePts: 0.18,
+      opr: 0.05,
+      reliability: 0.05,
+    })
+  }, [])
+
   const [simpleTeams, setSimpleTeams] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState('allianceScore')
   const [sortDir, setSortDir] = useState('desc')
-  const [minMatches, setMinMatches] = useState(1)
+  const [minMatches, setMinMatches] = useState(0)
   const [minConfidence, setMinConfidence] = useState(0)
-  const [minAllianceScore, setMinAllianceScore] = useState(0)
+  const [minAllianceScore, setMinAllianceScore] = useState(null)
   const [minAutoPts, setMinAutoPts] = useState(0)
   const [minEndgamePts, setMinEndgamePts] = useState(0)
   const [maxBrokenRate, setMaxBrokenRate] = useState(100)
@@ -36,6 +58,24 @@ function AllLeaderboardView({ tableData, regional }) {
   const [canHang, setCanHang] = useState(false)
   const [canTrench, setCanTrench] = useState(false)
   const [hasAutos, setHasAutos] = useState(false)
+  const [seedWeights, setSeedWeights] = useState(defaultSeedWeights)
+  const [showVariablesModal, setShowVariablesModal] = useState(false)
+  const [variablesDraft, setVariablesDraft] = useState(null)
+  const [settingsMessage, setSettingsMessage] = useState('')
+  const [isSavingSettings, setIsSavingSettings] = useState(false)
+
+  const rankingOptions = useMemo(() => ({
+    gameProfile: 'frc2026Rebuilt',
+    seedWeights,
+  }), [seedWeights])
+
+  const openVariablesModal = () => {
+    setSettingsMessage('')
+    setVariablesDraft({
+      seedWeights: { ...seedWeights },
+    })
+    setShowVariablesModal(true)
+  }
 
   useEffect(() => {
     if (!regional) {
@@ -63,6 +103,51 @@ function AllLeaderboardView({ tableData, regional }) {
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [showFilters])
+
+  useEffect(() => {
+    if (!regional) return
+
+    let isCancelled = false
+
+    apiGetLeaderboardSettings(regional)
+      .then((saved) => {
+        if (isCancelled || !saved || typeof saved !== 'object') return
+
+        const rawSeedWeights = saved.seedWeights && typeof saved.seedWeights === 'object'
+          ? saved.seedWeights
+          : saved
+        const savedSeedWeights = normalizeSeedWeights(rawSeedWeights, defaultSeedWeights)
+        setSeedWeights(savedSeedWeights)
+      })
+      .catch((err) => {
+        console.log('failed to load leaderboard settings', err)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [regional, defaultSeedWeights])
+
+  const saveVariablesToServer = async () => {
+    if (!regional || !variablesDraft) return
+
+    const normalizedSeedWeights = normalizeSeedWeights(variablesDraft.seedWeights, defaultSeedWeights)
+
+    try {
+      setIsSavingSettings(true)
+      await apiSaveLeaderboardSettings(regional, { seedWeights: normalizedSeedWeights })
+
+      setSeedWeights(normalizedSeedWeights)
+
+      setSettingsMessage('Saved ranking weights to server.')
+      setShowVariablesModal(false)
+    } catch (err) {
+      console.log('failed to save leaderboard settings', err)
+      setSettingsMessage('Failed to save settings. Please try again.')
+    } finally {
+      setIsSavingSettings(false)
+    }
+  }
 
   useEffect(() => {
     const term = String(searchTerm || '').trim()
@@ -93,7 +178,7 @@ function AllLeaderboardView({ tableData, regional }) {
   }, [simpleTeams])
 
   const rankedRows = useMemo(() => {
-    const ranked = rankTeamsForAllianceSelection(Array.isArray(tableData) ? tableData : [])
+    const ranked = rankTeamsForAllianceSelection(Array.isArray(tableData) ? tableData : [], rankingOptions)
 
     return ranked.map(team => {
       const teamNumber = String(team?.TeamNumber ?? '').trim()
@@ -131,7 +216,7 @@ function AllLeaderboardView({ tableData, regional }) {
         hasAutos: Boolean(team?.hasAutos),
       }
     })
-  }, [tableData, nameMap])
+  }, [tableData, nameMap, rankingOptions])
 
   const filteredAndSorted = useMemo(() => {
     const search = safeLower(searchTerm)
@@ -140,7 +225,7 @@ function AllLeaderboardView({ tableData, regional }) {
       const confidencePct = team.confidence * 100
       if (team.Matches < minMatches) return false
       if (confidencePct < minConfidence) return false
-      if (team.allianceScore < minAllianceScore) return false
+      if (minAllianceScore !== null && team.allianceScore < minAllianceScore) return false
       if (team.AvgAutoPts < minAutoPts) return false
       if (team.AvgEndgamePts < minEndgamePts) return false
       if (team.brokenRate > maxBrokenRate) return false
@@ -175,9 +260,9 @@ function AllLeaderboardView({ tableData, regional }) {
 
   const activeFilterCount = useMemo(() => {
     let count = 0
-    if (minMatches !== 1) count += 1
+    if (minMatches !== 0) count += 1
     if (minConfidence !== 0) count += 1
-    if (minAllianceScore !== 0) count += 1
+    if (minAllianceScore !== null) count += 1
     if (minAutoPts !== 0) count += 1
     if (minEndgamePts !== 0) count += 1
     if (maxBrokenRate !== 100) count += 1
@@ -192,9 +277,9 @@ function AllLeaderboardView({ tableData, regional }) {
     setSearchTerm('')
     setSortKey('allianceScore')
     setSortDir('desc')
-    setMinMatches(1)
+    setMinMatches(0)
     setMinConfidence(0)
-    setMinAllianceScore(0)
+    setMinAllianceScore(null)
     setMinAutoPts(0)
     setMinEndgamePts(0)
     setMaxBrokenRate(100)
@@ -245,7 +330,21 @@ function AllLeaderboardView({ tableData, regional }) {
             Filters
             {activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
           </button>
+
+          <button
+            onClick={openVariablesModal}
+            className={tableStyles.PrimaryButton}
+            style={{ height: '40px', boxSizing: 'border-box', width: '100%' }}
+          >
+            Variables
+          </button>
         </div>
+
+        {settingsMessage ? (
+          <div style={{ marginBottom: '10px', color: '#2f6f44', fontSize: '14px' }}>
+            {settingsMessage}
+          </div>
+        ) : null}
 
         {searchSuggestions.length > 0 ? (
           <div style={{ marginBottom: '10px', maxWidth: '520px' }}>
@@ -339,7 +438,7 @@ function AllLeaderboardView({ tableData, regional }) {
 
               <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span>Min Matches</span>
-                <select value={minMatches} onChange={e => setMinMatches(toNumber(e.target.value, 1))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                <select value={minMatches} onChange={e => setMinMatches(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
                   {MATCH_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </label>
@@ -353,7 +452,8 @@ function AllLeaderboardView({ tableData, regional }) {
 
               <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span>Min Alliance Score</span>
-                <select value={minAllianceScore} onChange={e => setMinAllianceScore(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                <select value={minAllianceScore === null ? '' : String(minAllianceScore)} onChange={e => setMinAllianceScore(e.target.value === '' ? null : toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  <option value="">Any</option>
                   {ALLIANCE_SCORE_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </label>
@@ -412,6 +512,142 @@ function AllLeaderboardView({ tableData, regional }) {
           </div>
         </div>
       )}
+
+      {showVariablesModal && variablesDraft ? (
+        <div
+          onClick={() => setShowVariablesModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: '100%',
+              maxWidth: '820px',
+              maxHeight: 'calc(100vh - 40px)',
+              overflowY: 'auto',
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              border: '1px solid #ddd',
+              padding: '18px',
+            }}
+          >
+            <h3 style={{ marginTop: 0, marginBottom: '10px' }}>Leaderboard Variables</h3>
+            <p style={{ marginTop: 0, color: '#555', fontSize: '14px' }}>
+              Update ranking weights, then save them to the server for this regional.
+            </p>
+
+            <h4 style={{ marginTop: '16px', marginBottom: '8px' }}>Ranking Weights</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px' }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Avg Pts</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={variablesDraft.seedWeights.avgPoints}
+                  onChange={(e) => setVariablesDraft((prev) => ({
+                    ...prev,
+                    seedWeights: { ...prev.seedWeights, avgPoints: toNumber(e.target.value, 0) }
+                  }))}
+                  style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}
+                />
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Auto</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={variablesDraft.seedWeights.avgAutoPts}
+                  onChange={(e) => setVariablesDraft((prev) => ({
+                    ...prev,
+                    seedWeights: { ...prev.seedWeights, avgAutoPts: toNumber(e.target.value, 0) }
+                  }))}
+                  style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}
+                />
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Endgame</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={variablesDraft.seedWeights.avgEndgamePts}
+                  onChange={(e) => setVariablesDraft((prev) => ({
+                    ...prev,
+                    seedWeights: { ...prev.seedWeights, avgEndgamePts: toNumber(e.target.value, 0) }
+                  }))}
+                  style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}
+                />
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>OPR</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={variablesDraft.seedWeights.opr}
+                  onChange={(e) => setVariablesDraft((prev) => ({
+                    ...prev,
+                    seedWeights: { ...prev.seedWeights, opr: toNumber(e.target.value, 0) }
+                  }))}
+                  style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}
+                />
+              </label>
+
+              <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <span>Reliability</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={variablesDraft.seedWeights.reliability}
+                  onChange={(e) => setVariablesDraft((prev) => ({
+                    ...prev,
+                    seedWeights: { ...prev.seedWeights, reliability: toNumber(e.target.value, 0) }
+                  }))}
+                  style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}
+                />
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginTop: '16px' }}>
+              <button
+                type="button"
+                className={tableStyles.PrimaryButton}
+                onClick={() => {
+                  setVariablesDraft({
+                    seedWeights: { ...defaultSeedWeights },
+                  })
+                }}
+              >
+                Reset Draft
+              </button>
+
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="button" className={tableStyles.PrimaryButton} onClick={() => setShowVariablesModal(false)}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={tableStyles.PrimaryButton}
+                  onClick={saveVariablesToServer}
+                  disabled={isSavingSettings}
+                >
+                  {isSavingSettings ? 'Saving...' : 'Save To Server'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <div className={tableStyles.Card}>
         {filteredAndSorted.length === 0 ? (

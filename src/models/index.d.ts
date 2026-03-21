@@ -3,7 +3,7 @@ import { ModelInit, MutableModel, __modelMeta__, OptionallyManagedIdentifier } f
 import { LazyLoading, LazyLoadingDisabled } from "@aws-amplify/datastore";
 
 export enum AutoStratOpts {
-  LEFT_STARTING_ZONE = "LeftStartingZone",
+  MOVED_IN_AUTO = "MovedInAuto",
   SCORED_IN_GOAL = "ScoredInGoal",
   NOTHING = "Nothing"
 }

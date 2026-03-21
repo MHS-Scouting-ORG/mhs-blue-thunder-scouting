@@ -276,7 +276,14 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
                         {isScoutingEntry ? (
                           <>
                             <div>Team {m?.Team || selectedTeam}</div>
-                            <div>Auto: {Array.isArray(m?.Autonomous?.AutoStrat) ? m.Autonomous.AutoStrat.join(', ') : m?.Autonomous?.AutoStrat || 'None'} • Auto Hang: {m?.Autonomous?.AutoHang || 'None'}</div>
+                            <div>Auto: {(() => {
+                              const raw = m?.Autonomous?.AutoStrat
+                              const list = Array.isArray(raw)
+                                ? raw.filter(v => typeof v === 'string' && v.trim() !== '')
+                                : (typeof raw === 'string' ? raw.split(',').map(v => v.trim()).filter(Boolean) : [])
+                              const meaningful = list.filter(v => v !== 'Nothing')
+                              return (meaningful.length > 0 ? meaningful : list).join(', ') || 'None'
+                            })()} • Auto Hang: {m?.Autonomous?.AutoHang || 'None'}</div>
                             <div>Auto Win: {m?.AutoWin || 'N/A'} • Auto Impact: {m?.AutoImpact || 'N/A'}</div>
                             <div>Endgame: {m?.Teleop?.Endgame || 'None'}</div>
                             <div>Match Result: {m?.MatchResult || 'N/A'} • Team Impact: {m?.TeamImpact || 'N/A'}</div>
