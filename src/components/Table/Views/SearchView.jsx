@@ -277,11 +277,14 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
                           <>
                             <div>Team {m?.Team || selectedTeam}</div>
                             <div>Auto: {Array.isArray(m?.Autonomous?.AutoStrat) ? m.Autonomous.AutoStrat.join(', ') : m?.Autonomous?.AutoStrat || 'None'} • Auto Hang: {m?.Autonomous?.AutoHang || 'None'}</div>
+                            <div>Auto Win: {m?.AutoWin || 'N/A'} • Auto Impact: {m?.AutoImpact || 'N/A'}</div>
                             <div>Endgame: {m?.Teleop?.Endgame || 'None'}</div>
+                            <div>Match Result: {m?.MatchResult || 'N/A'} • Team Impact: {m?.TeamImpact || 'N/A'}</div>
+                            <div>Alliance Score: {Number.isFinite(Number(m?.AllianceScore)) ? Number(m?.AllianceScore) : 'N/A'} • Opponent Score: {Number.isFinite(Number(m?.OpponentScore)) ? Number(m?.OpponentScore) : 'N/A'}</div>
                             <div>Active: {stringifyList(m?.ActiveStrat)} • Inactive: {stringifyList(m?.InactiveStrat)}</div>
                             <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
                             <div>Penalties: {Object.entries(m?.Penalties?.PenaltiesCommitted || {}).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None'}</div>
-                            {m?.Comment ? <div>Comment: {m.Comment}</div> : null}
+                            {String(m?.RobotInfo?.Comments || '').trim() ? <div>Comments: {String(m?.RobotInfo?.Comments || '').trim()}</div> : null}
                           </>
                         ) : (
                           <div>Team {m?.Team || selectedTeam}</div>

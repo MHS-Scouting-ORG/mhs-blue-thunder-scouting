@@ -165,6 +165,15 @@ export const schema = {
                 "Low"
             ]
         },
+        "MatchTypeOpts": {
+            "name": "MatchTypeOpts",
+            "values": [
+                "q",
+                "sf",
+                "f",
+                "p"
+            ]
+        },
         "HangTeamworkOpts": {
             "name": "HangTeamworkOpts",
             "values": [
@@ -394,8 +403,26 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "MatchType": {
+                    "name": "MatchType",
+                    "isArray": false,
+                    "type": {
+                        "enum": "MatchTypeOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "MatchResult": {
                     "name": "MatchResult",
+                    "isArray": false,
+                    "type": {
+                        "enum": "MatchResultOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "AutoWin": {
+                    "name": "AutoWin",
                     "isArray": false,
                     "type": {
                         "enum": "MatchResultOpts"
@@ -409,6 +436,29 @@ export const schema = {
                     "type": {
                         "enum": "TeamImpactOpts"
                     },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "AutoImpact": {
+                    "name": "AutoImpact",
+                    "isArray": false,
+                    "type": {
+                        "enum": "TeamImpactOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "AllianceScore": {
+                    "name": "AllianceScore",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "OpponentScore": {
+                    "name": "OpponentScore",
+                    "isArray": false,
+                    "type": "Int",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -604,5 +654,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "696e2b8f71884741230b67cacb299af6"
+    "version": "97a50c380ead0f72dc6f1d91f10a2e76"
 };

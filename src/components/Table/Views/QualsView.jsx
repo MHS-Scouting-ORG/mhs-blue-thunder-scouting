@@ -110,10 +110,13 @@ function QualsView({ tableData, regional, teamsClicked, setTeamsClicked }) {
       )}
 
       {/* Team Statistics */}
-      {//selectedTeam && 
-      (
+      {selectedTeam && (
         <div className={tableStyles.Card}>
           <TeamStats
+            information={tableData}
+            gFilter=""
+            regionalEvent={regional}
+            teamHandler={setSelectedTeam}
             selectedTeam={selectedTeam}
           />
         </div>

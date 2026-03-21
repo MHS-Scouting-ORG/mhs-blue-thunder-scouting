@@ -1,21 +1,36 @@
-import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional } from "../../../api";
+import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional, toNotesTeamId } from "../../../api";
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
 import { isSameTeam } from "../../../utils/teamId"
 
+const safeLower = (value) => String(value || '').toLowerCase()
+
+const normalizeAutoActions = (autoStrat) => {
+  if (Array.isArray(autoStrat)) return autoStrat.map((x) => String(x || '').trim())
+  if (typeof autoStrat === 'string') return autoStrat.split(',').map((x) => x.trim()).filter(Boolean)
+  return []
+}
+
 const getAutoPoints = (match) => {
-  const auto = match?.Autonomous?.AutoStrat || []
-  if (Array.isArray(auto)) {
-    if (auto.includes('Scored in Goal')) return 8
-    if (auto.includes('Left Starting Zone')) return 2
-  }
-  return 0
+  const actions = normalizeAutoActions(match?.Autonomous?.AutoStrat)
+
+  const actionPoints = actions.reduce((sum, action) => {
+    const value = safeLower(action)
+    if (value.includes('scored') || value.includes('goal')) return sum + 8
+    if (value.includes('left') || value.includes('starting') || value.includes('zone')) return sum + 3
+    return sum
+  }, 0)
+
+  const autoHang = safeLower(match?.Autonomous?.AutoHang)
+  const autoHangPoints = autoHang.includes('level1') ? 15 : 0
+
+  return actionPoints + autoHangPoints
 }
 
 const getEndgamePoints = (match) => {
   const endgame = match?.Teleop?.Endgame || 'None'
-  if (endgame === 'Level1') return 30
+  if (endgame === 'Level3') return 30
   if (endgame === 'Level2') return 20
-  if (endgame === 'Level3') return 10
+  if (endgame === 'Level1') return 10
   return 0
 }
 
@@ -33,16 +48,28 @@ async function getTeams (regional) {
   const data = await apiGetTeamsInRegional(regional)
 
      const teamsWithPhotos = await Promise.all(data.map(async obj => {
+      const teamNumber = String(obj.team_number)
       const teamNumObj = {
        TeamNumber: obj.team_number,
        TeamNum: `frc${obj.team_number}`,
+       TeamAttributes: {},
       }
 
-       // Try to get photo from database
+       // Pull both base and notes records so table views can use data from both forms.
        try {
-         const dbTeam = await apiGetTeam(obj.team_number.toString());
-         if (dbTeam?.TeamAttributes?.Photo) {
-           teamNumObj.photo = dbTeam.TeamAttributes.Photo;
+         const [dbTeam, notesTeam] = await Promise.all([
+           apiGetTeam(teamNumber),
+           apiGetTeam(toNotesTeamId(teamNumber)),
+         ])
+
+         const mergedAttrs = {
+           ...(dbTeam?.TeamAttributes || {}),
+           ...(notesTeam?.TeamAttributes || {}),
+         }
+
+         teamNumObj.TeamAttributes = mergedAttrs
+         if (mergedAttrs?.Photo) {
+           teamNumObj.photo = mergedAttrs.Photo
          }
        } catch (_) {
          // most teams dont have a photo yet so dont display error
@@ -110,6 +137,19 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const reliableRobotEndgame = getReliability(teamStats.map((team) => team?.Teleop?.Endgame ?? 'None'), mcRobotHang)
 
       const evaluations = getSummary(teamStats)
+      const capabilities = Array.isArray(team?.TeamAttributes?.Capabilities)
+        ? team.TeamAttributes.Capabilities
+        : []
+      const hasScoredAuto = teamStats.some((match) => {
+        const actions = normalizeAutoActions(match?.Autonomous?.AutoStrat)
+        return actions.some((action) => {
+          const value = safeLower(action)
+          return value.includes('scored') || value.includes('goal') || value.includes('left') || value.includes('zone')
+        })
+      })
+      const canHangByForm = teamStats.some((match) => String(match?.Teleop?.Endgame || 'None') !== 'None')
+      const canHangByNotes = String(team?.TeamAttributes?.MaxHang || 'None') !== 'None'
+      const hasAutosByNotes = Number(team?.TeamAttributes?.NumAutos || 0) > 0
 
       //grade
 
@@ -150,6 +190,9 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
         
         Evaluations: evaluations, 
+        canHang: canHangByForm || canHangByNotes,
+        canTrench: capabilities.includes('Trench'),
+        hasAutos: hasScoredAuto || hasAutosByNotes,
         /* Grade */
         SumPriorities: team.SumPriorities,
         //NPts: isNaN(rPts) ? 0 : 67,//rPts,

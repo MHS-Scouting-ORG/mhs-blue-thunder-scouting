@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react"
-import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry } from '../api/index';
+import React, { useEffect, useRef, useState } from "react"
+import { apiGetMatchesForRegional, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry, apiGetRegionalTeams } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
+import { getTopTeamSuggestions } from "../utils/teamSearch";
 
 import tableStyling from "../components/Table/Table.module.css";
 
@@ -9,12 +10,12 @@ import tableStyling from "../components/Table/Table.module.css";
 import { submitState } from './FormUtils' //from formUtils submits to builder
 
 const sectionHelp = {
-  matchInfo: "Match Info sets the identity of the team you are scouting for this specific match. Select Qualification, Semifinal, or Final based on the official schedule, enter the match number exactly as listed, then choose the alliance color that team is actually playing on in that match. Finally, pick the robot number for the single team you are scouting. Use this section first, because every note below should describe only that one team in that specific match.",
-  autonomous: "Autonomous records what the robot completed before driver control started. Select Moved if the robot clearly left its starting area or completed the required autonomous mobility action. Select Scored if it successfully scored Fuel into its alliance hub while that hub was active during auto. Select Crossed Bump/Trench if it intentionally used that route during autonomous. For Auto Hang, choose None if it did not complete an autonomous hang, or level1 if the robot finished the hang in auto. Only mark actions that fully happened, not attempts that failed halfway.",
-  activeStrategy: "Active Strategy should describe the robot's main job during teleop. Select Scoring if the team spent most of the match gathering Fuel and shooting it into the active alliance hub. Select Hoarding if it mainly controlled large amounts of Fuel, stockpiled game pieces, or managed fuel to influence scoring opportunities. Select Defending if its main impact came from stopping/slowing cycles, blocking shooting spots, pressuring intakes, or disrupting the other alliance in other ways. Use Times Travelled to Mid to count how often it crossed into the middle of the field or central traffic area, and use Shooting Cycles to count distinct scoring trips or shooting fuel, not individual balls shot.",
-  inactiveStrategy: "Inactive Strategy tracks tactics this robot used during the inactive period. Select Hoarding if the robot was significantly hoaring balls in their baskets or bringing them to their alliance zones. Select Defending Mid if the robot protected or contested the middle. Select Blocking if it was trying to blocking the opponents. This section is only for what the robot did when their hub was inactive.",
-  results: "Results records how the match ended for the scouted team. Endgame Hang should be None if the robot stayed on the floor, or the highest level fully secured if it completed a hang. Match Result is the official result for that team's alliance: Win, Tie, or Lose. Team Impact should be High if this robot strongly changed the outcome through scoring, defense, control of Fuel, or endgame; Medium if it contributed clearly but was not the main driver; and Low if its effect on the outcome was limited. Select Disable if the drivers lost control for the remaineder of the match, DQ if the team was disqualified, Broke if it suffered a mechanical or electrical failure, No Show if it didnt entered play, Stuck on Bump if it was stuck on one of the Bumps, and Stuck on Balls if Fuel on the carpet prevented movement. Add broken comments if Broke is selected and include the failure you observed.",
-  robotInfo: "Robot Info is where you rate the machine itself compared to the AVERAGE ROBOT at the EVENT. Robot Speed should be Slow, Average, or Fast based on how quickly it drove. Driver Skill should be Poor, Average, Good, or Excellent based on pathing, awareness, recovery under pressure, and whether the team made smart decisions. Shooter Speed should reflect how quickly it could score. Fuel Capacity is your estimate of how much Fuel it can hold at once. Balls Shot is your estimate of how many total Fuel pieces it successfully scored in this match, remembering that Rebuilt has roughly 400 Fuel on the field and pieces can be cycled and scored multiple times. Use Comments for anything weird that happened during the match to the robot such as penalties, or information that you fell is important to share about the robot/match."
+  matchInfo: "Pick the exact team and match first. For Practice, type a team number/name; for scheduled matches, select alliance and team from the match list.",
+  autonomous: "Mark only actions fully completed in auto. Fuel = balls shot into the active hub; use Autonomous Win and Auto Impact to rate auto-only influence.",
+  activeStrategy: "Record primary teleop role while your hub is active: scoring Fuel, defending, or hoarding. Use Mid Trips and Shooting Cycles as count metrics, and Balls Shot for total Fuel scored.",
+  inactiveStrategy: "Track what this robot did while their hub was inactive. Mark all tactics that actually mattered this match.",
+  results: "Capture final match outcome, endgame hang, scores, and overall impact. Use penalty toggles only when they clearly occurred.",
+  robotInfo: "Rate robot quality vs event average: drive speed, shooter speed, and driver skill. Add Fuel Capacity and comments for anything notable or unusual."
 };
 
 const InfoIcon = ({ text, onClick }) => (
@@ -77,10 +78,16 @@ const InfoIcon = ({ text, onClick }) => (
   const [red, setRed] = useState([]); //red teams for a given match
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
+  const [simpleTeams, setSimpleTeams] = useState([]);
+  const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
+  const [teamSearchInput, setTeamSearchInput] = useState('');
+  const [teamSuggestions, setTeamSuggestions] = useState([]);
 
   /* AUTO SPECIFIC */
   const [autoActions, setAutoActions] = useState([]);
-  const [autoHang, setAutoHang] = useState('');
+  const [autoHang, setAutoHang] = useState('None');
+  const [autoWin, setAutoWin] = useState('');
+  const [autoImpact, setAutoImpact] = useState('');
 
   /* ENDGAME */
   const [hangType, setHangType] = useState('');
@@ -100,7 +107,7 @@ const InfoIcon = ({ text, onClick }) => (
   const [fuelCapacity, setFuelCapacity] = useState('');
   const [shootingSpeed, setShootingSpeed] = useState('');
   const [robotInsight, setRobotInsight] = useState("");
-  const [estimatedBallsShot, setEstimatedBallsShot] = useState('');
+  const [estimatedBallsShot, setEstimatedBallsShot] = useState(0);
 
   /* ACTIVE/INACTIVE STRATEGIES */
   const [activeStrategy, setActiveStrategy] = useState([]);
@@ -110,16 +117,33 @@ const InfoIcon = ({ text, onClick }) => (
 
   /* RESULTS */
   const [matchResult, setMatchResult] = useState('');
+  const [allianceScore, setAllianceScore] = useState('');
+  const [opponentScore, setOpponentScore] = useState('');
   const [teamImpact, setTeamImpact] = useState('');
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitLockedUntil, setSubmitLockedUntil] = useState(0);
+  const [submitCooldownSeconds, setSubmitCooldownSeconds] = useState(0);
 
   /* Info popup */
   const [infoModal, setInfoModal] = useState("");
 
+  const fieldRefs = useRef({});
+  const ballsHoldTimerRef = useRef(null);
+
  /* Blue Alliance API List Teams */
   useEffect(() => {
+    if (matchType === "p") {
+      const practiceKey = `${regional || ""}_pm${matchNumber}`;
+      setMatchKey(practiceKey);
+      setRed([]);
+      setBlue([]);
+      setMatchData([]);
+      return;
+    }
+
     /* Get latest regional key each time in case it was undefined earlier */
     const reg = regional || apiGetRegional();
     if (!reg) {
@@ -162,6 +186,44 @@ const InfoIcon = ({ text, onClick }) => (
   }, [matchType, matchNumber, regional])
 
   useEffect(() => {
+    if (!regional) {
+      setSimpleTeams([]);
+      setRegionalTeamSet(new Set());
+      return;
+    }
+
+    apiGetRegionalTeams(regional)
+      .then((data) => {
+        const teamsData = Array.isArray(data) ? data : [];
+        setSimpleTeams(teamsData);
+        setRegionalTeamSet(new Set(teamsData.map((t) => String(t?.team_number || t?.TeamNumber || '').trim()).filter(Boolean)));
+      })
+      .catch((err) => {
+        console.log('failed to load regional teams', err);
+        setSimpleTeams([]);
+        setRegionalTeamSet(new Set());
+      });
+  }, [regional]);
+
+  useEffect(() => {
+    const term = String(teamSearchInput || '').trim();
+    if (!term || matchType !== 'p') {
+      setTeamSuggestions([]);
+      return;
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    });
+
+    setTeamSuggestions(suggestions);
+  }, [teamSearchInput, simpleTeams, matchType]);
+
+  useEffect(() => {
     /* Check for pre-existing team entry data in our api */
     apiListTeams()
       .then((data) => {
@@ -200,18 +262,24 @@ const InfoIcon = ({ text, onClick }) => (
     setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
+    setTeamSearchInput('')
+    setTeamSuggestions([])
     setColor(undefined)
     setRed([])
     setBlue([])
     setMatchKey('')
     setAutoActions([])
-    setAutoHang('')
+    setAutoHang('None')
+    setAutoWin('')
+    setAutoImpact('')
     setHangType('')
     setActiveStrategy([])
     setInactiveStrategy([])
     setTimesTravelledMid(0)
     setShootingCycles(0)
     setMatchResult('')
+    setAllianceScore('')
+    setOpponentScore('')
     setTeamImpact('')
     setDisable(false)
     setDQ(false)
@@ -225,9 +293,168 @@ const InfoIcon = ({ text, onClick }) => (
     setFuelCapacity('')
     setShootingSpeed('')
     setRobotInsight('')
-    setEstimatedBallsShot('')
+    setEstimatedBallsShot(0)
     setConfirm(false)
+    setIsSubmitting(false)
+    setSubmitLockedUntil(0)
+    setSubmitCooldownSeconds(0)
 
+  }
+
+  const resetEntireForm = () => {
+    setMatchType('')
+    resetStates()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const normalizeNumberField = (value) => {
+    const parsed = Number.parseInt(String(value), 10)
+    return Number.isNaN(parsed) ? null : parsed
+  }
+
+  const isSubmitLocked = isSubmitting || Date.now() < submitLockedUntil
+
+  useEffect(() => {
+    const tick = () => {
+      const remainingMs = submitLockedUntil - Date.now()
+      setSubmitCooldownSeconds(remainingMs > 0 ? Math.ceil(remainingMs / 1000) : 0)
+    }
+
+    tick()
+    if (submitLockedUntil <= Date.now()) return
+
+    const intervalId = setInterval(tick, 200)
+    return () => clearInterval(intervalId)
+  }, [submitLockedUntil])
+
+  const setFieldRef = (fieldName) => (element) => {
+    fieldRefs.current[fieldName] = element
+  }
+
+  const scrollToField = (fieldName) => {
+    const element = fieldRefs.current[fieldName]
+    if (!element) return
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (typeof element.focus === 'function') {
+      element.focus({ preventScroll: true })
+    }
+  }
+
+  const validateRequiredFields = () => {
+    const missingFields = []
+
+    if (!matchType) missingFields.push('matchType')
+    if (normalizeNumberField(matchNumber) === null) missingFields.push('matchNumber')
+    if (!teamNumber) missingFields.push('teamNumber')
+    if (!autoHang) missingFields.push('autoHang')
+    if (!hangType) missingFields.push('hangType')
+    if (!matchResult) missingFields.push('matchResult')
+    if (!teamImpact) missingFields.push('teamImpact')
+    if (!robotSpeed) missingFields.push('robotSpeed')
+    if (!driverSkill) missingFields.push('driverSkill')
+    if (!shootingSpeed) missingFields.push('shootingSpeed')
+    if (normalizeNumberField(fuelCapacity) === null) missingFields.push('fuelCapacity')
+    if (normalizeNumberField(shootingCycles) === null) missingFields.push('shootingCycles')
+
+    if (missingFields.length > 0) {
+      scrollToField(missingFields[0])
+      return false
+    }
+
+    return true
+  }
+
+  const adjustBallsShot = (direction, tick = 0) => {
+    const step = tick > 10 ? 30 : tick > 4 ? 20 : 10
+    setEstimatedBallsShot((previous) => {
+      const safePrevious = Number.isFinite(previous) ? previous : 0
+      return Math.max(0, safePrevious + (direction * step))
+    })
+  }
+
+  const stopAdjustBallsShot = () => {
+    if (ballsHoldTimerRef.current) {
+      clearTimeout(ballsHoldTimerRef.current)
+      ballsHoldTimerRef.current = null
+    }
+  }
+
+  const startAdjustBallsShot = (direction) => {
+    stopAdjustBallsShot()
+    adjustBallsShot(direction, 0)
+
+    let tick = 0
+    const loop = () => {
+      tick += 1
+      adjustBallsShot(direction, tick)
+      const delay = tick < 5 ? 220 : tick < 12 ? 130 : 80
+      ballsHoldTimerRef.current = setTimeout(loop, delay)
+    }
+
+    ballsHoldTimerRef.current = setTimeout(loop, 300)
+  }
+
+  useEffect(() => {
+    return () => stopAdjustBallsShot()
+  }, [])
+
+  const getRegionalNickname = (teamNum) => {
+    const team = simpleTeams.find((t) => String(t?.team_number || t?.TeamNumber || '').trim() === String(teamNum || '').trim())
+    return String(team?.nickname || '').trim()
+  }
+
+  const ensureTeamExists = async (normalizedTeamNumber) => {
+    if (!normalizedTeamNumber) return
+
+    try {
+      const checkData = await apiGetTeam(normalizedTeamNumber)
+      console.log("data in our thing ", checkData)
+
+      if (checkData === null) {
+        console.log("api get team returned null")
+        console.log(apiTeamListData, "api list team data")
+        await apiCreateTeamEntry(normalizedTeamNumber, regional)
+        console.log("created team entry for team/regional", { team: normalizedTeamNumber, regional })
+      }
+    } catch (err) {
+      console.error("error fetching/creating team", err)
+    }
+  }
+
+  const selectPracticeTeam = async (term) => {
+    const rawTerm = String(term || '').trim()
+    if (!rawTerm) {
+      setTeamNumber('')
+      setTeamSearchInput('')
+      setTeamSuggestions([])
+      return
+    }
+
+    const suggestions = getTopTeamSuggestions({
+      term: rawTerm,
+      dbTeams: [],
+      simpleTeams,
+      resolveDbTeamNumber: () => '',
+      limit: 3,
+    })
+
+    const fromNumber = /^\d+$/.test(rawTerm) ? rawTerm : ''
+    const teamNum = normalizeTeamId(fromNumber || suggestions[0]?.teamNumber || '')
+    if (!teamNum) {
+      setTeamSuggestions(suggestions)
+      return
+    }
+
+    if (!regionalTeamSet.has(teamNum)) {
+      alert(`Team ${teamNum} is not at this regional.`)
+      setTeamSuggestions(suggestions)
+      return
+    }
+
+    setTeamNumber(teamNum)
+    setTeamSearchInput(getRegionalNickname(teamNum) ? `${teamNum} - ${getRegionalNickname(teamNum)}` : teamNum)
+    setTeamSuggestions([])
+    await ensureTeamExists(teamNum)
   }
 
   /* toggle functions for display of form sections */
@@ -260,7 +487,7 @@ const InfoIcon = ({ text, onClick }) => (
   
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto", position: "relative" }}>
 
       {infoModal ? (
         <div
@@ -308,6 +535,24 @@ const InfoIcon = ({ text, onClick }) => (
         </div>
       ) : null}
 
+      <button
+        type="button"
+        onClick={resetEntireForm}
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "20px",
+          border: "2px solid #ddd",
+          background: "white",
+          borderRadius: "8px",
+          padding: "10px 14px",
+          fontWeight: 600,
+          cursor: "pointer"
+        }}
+      >
+        Reset Form
+      </button>
+
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <img 
           src="./images/BLUETHUNDERLOGO_BLUE.png" 
@@ -331,6 +576,7 @@ const InfoIcon = ({ text, onClick }) => (
             <div style={{ flex: "1", minWidth: "150px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Type</label>
               <select 
+                ref={setFieldRef('matchType')}
                 style={{
                   height: "50px",
                   width: "100%",
@@ -347,12 +593,14 @@ const InfoIcon = ({ text, onClick }) => (
                 <option value='q'>Qualification</option>
                 <option value='sf'>Semifinal</option>
                 <option value='f'>Final</option>
+                <option value='p'>Practice</option>
               </select>
             </div>
 
             <div style={{ flex: "1", minWidth: "150px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Number</label>
               <input 
+                ref={setFieldRef('matchNumber')}
                 style={{
                   height: "50px",
                   width: "100%",
@@ -415,55 +663,92 @@ const InfoIcon = ({ text, onClick }) => (
             </div>
           </div>
 
-          <div style={{ opacity: matchNumber && color !== undefined ? 1 : !matchNumber || color === undefined ? 0.5 : 0.5, cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer" }}>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
-            <select 
-              style={{
-                height: "50px",
-                width: "100%",
-                padding: "8px",
-                fontSize: "16px",
-                border: "2px solid #ddd",
-                borderRadius: "8px",
-                cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer"
-              }} 
-              disabled={!matchNumber || color === undefined}
-              value={teamNumber}
-              onChange={async (e) => {
-                // capture the new team number immediately, avoid relying on state update
-                const normalized = normalizeTeamId(e.target.value);
-                setTeamNumber(normalized);
-
-                try {
-                  const checkData = await apiGetTeam(normalized);
-                  console.log("data in our thing ", checkData);
-
-                  if (checkData === null) {
-                    console.log("api get team returned null");
-                    console.log(apiTeamListData, "api list team data");
-                    await apiCreateTeamEntry(normalized, regional);
-                    console.log("created team entry for team/regional", { team: normalized, regional });
-                  }
-                } catch (err) {
-                  // GraphQL returns object with data/errors; log details
-                  console.error("error fetching/creating team", err);
+          {matchType === 'p' ? (
+            <div style={{ opacity: matchNumber ? 1 : 0.5, cursor: !matchNumber ? "not-allowed" : "text" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Number / Name</label>
+              <input
+                ref={setFieldRef('teamNumber')}
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  boxSizing: "border-box",
+                  cursor: !matchNumber ? "not-allowed" : "text"
+                }}
+                disabled={!matchNumber}
+                placeholder="Type team number or team name"
+                value={teamSearchInput}
+                onChange={(e) => {
+                  setTeamSearchInput(e.target.value)
+                  setTeamNumber('')
+                }}
+                onBlur={() => {
+                  if (!teamSearchInput.trim()) return
+                  selectPracticeTeam(teamSearchInput)
+                }}
+              />
+              {teamSuggestions.length > 0 ? (
+                <div style={{ marginTop: "8px", display: "grid", gap: "6px" }}>
+                  {teamSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.teamNumber}
+                      type="button"
+                      style={{
+                        textAlign: "left",
+                        border: "1px solid #ddd",
+                        borderRadius: "6px",
+                        background: "white",
+                        padding: "8px",
+                        cursor: "pointer"
+                      }}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => selectPracticeTeam(suggestion.teamNumber)}
+                    >
+                      {suggestion.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div style={{ opacity: matchNumber && color !== undefined ? 1 : !matchNumber || color === undefined ? 0.5 : 0.5, cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
+              <select 
+                ref={setFieldRef('teamNumber')}
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  cursor: !matchNumber || color === undefined ? "not-allowed" : "pointer"
+                }} 
+                disabled={!matchNumber || color === undefined}
+                value={teamNumber}
+                onChange={async (e) => {
+                  const normalized = normalizeTeamId(e.target.value);
+                  setTeamNumber(normalized);
+                  await ensureTeamExists(normalized)
+                }}
+              >
+                <option value="">Select robot number</option>
+                {color === false ?
+                  matchData != [] ?
+                    red.map((team) => {
+                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                    }) : null
+                  : matchData != [] ?
+                    blue.map((team) => {
+                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                    }) : null
                 }
-                
-              }}
-            >
-              <option value="">Select robot number</option>
-              {color === false ?
-                matchData != [] ?
-                  red.map((team) => {
-                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
-                  }) : null
-                : matchData != [] ?
-                  blue.map((team) => {
-                    return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
-                  }) : null
-              }
-            </select>
-          </div>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -490,25 +775,68 @@ const InfoIcon = ({ text, onClick }) => (
             ))}
           </div>
 
+          <div ref={setFieldRef('autoHang')} style={{ display: "flex", justifyContent: "center" }}>
+            <button
+              type="button"
+              onClick={() => setAutoHang(autoHang === 'Level1' ? 'None' : 'Level1')}
+              className={`${tableStyling.ToggleButton} ${autoHang === 'Level1' ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+            >
+              Auto Hang
+            </button>
+          </div>
+
           <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Auto Hang</label>
-            <select 
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Autonomous Win</label>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button
+                type="button"
+                onClick={() => setAutoWin("Win")}
+                className={`${tableStyling.ToggleButton} ${autoWin === "Win" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
+              >
+                Win
+              </button>
+              <button
+                type="button"
+                onClick={() => setAutoWin("Tie")}
+                className={`${tableStyling.ToggleButton} ${autoWin === "Tie" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
+              >
+                Tie
+              </button>
+              <button
+                type="button"
+                onClick={() => setAutoWin("Lose")}
+                className={`${tableStyling.ToggleButton} ${autoWin === "Lose" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                style={{ flex: 1, maxWidth: "180px" }}
+              >
+                Lose
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Auto Impact</label>
+            <select
               style={{
-                height: "50px", 
+                height: "50px",
                 width: "100%",
                 padding: "8px",
                 fontSize: "16px",
                 border: "2px solid #ddd",
                 borderRadius: "8px",
                 cursor: "pointer"
-              }} 
-              value={autoHang} 
-              onChange={(e) => setAutoHang(e.target.value)}
-              onWheel={(e) => e.target.blur()} 
+              }}
+              value={autoImpact}
+              onChange={(e) => setAutoImpact(e.target.value)}
+              onWheel={(e) => e.target.blur()}
             >
-              <option value=''>Select Level</option>
-              <option value="None">None</option>
-              <option value='Level1'>Level 1</option>
+              <option value="">Select Auto Impact</option>
+              <option value="Nothing">Nothing</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Very High">Very High</option>
             </select>
           </div>
         </div>
@@ -610,6 +938,7 @@ const InfoIcon = ({ text, onClick }) => (
               −
             </button>
             <input 
+              ref={setFieldRef('shootingCycles')}
               type="number" 
               value={shootingCycles} 
               onChange={(e) => setShootingCycles(Math.max(0, parseInt(e.target.value) || 0))}
@@ -641,6 +970,83 @@ const InfoIcon = ({ text, onClick }) => (
             >
               +
             </button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: "15px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Balls Shot</label>
+          <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", justifyContent: "center"}}>
+            <button
+              type="button"
+              onMouseDown={() => startAdjustBallsShot(-1)}
+              onMouseUp={stopAdjustBallsShot}
+              onMouseLeave={stopAdjustBallsShot}
+              onTouchStart={() => startAdjustBallsShot(-1)}
+              onTouchEnd={stopAdjustBallsShot}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#ff6b6b",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min="0"
+              value={estimatedBallsShot}
+              onKeyDown={stopNonNum}
+              onChange={(e) => {
+                const rawValue = e.target.value
+                if (rawValue === '') {
+                  setEstimatedBallsShot(0)
+                  return
+                }
+                const parsedValue = Number.parseInt(rawValue, 10)
+                setEstimatedBallsShot(Number.isNaN(parsedValue) ? 0 : Math.max(0, parsedValue))
+              }}
+              onWheel={(e) => e.target.blur()}
+              style={{
+                fontSize: "24px",
+                fontWeight: "600",
+                minWidth: "100px",
+                textAlign: "center",
+                height: "50px",
+                border: "2px solid #ddd",
+                borderRadius: "8px",
+                padding: "0 10px"
+              }}
+            />
+            <button
+              type="button"
+              onMouseDown={() => startAdjustBallsShot(1)}
+              onMouseUp={stopAdjustBallsShot}
+              onMouseLeave={stopAdjustBallsShot}
+              onTouchStart={() => startAdjustBallsShot(1)}
+              onTouchEnd={stopAdjustBallsShot}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "18px",
+                fontWeight: "600",
+                minWidth: "50px"
+              }}
+            >
+              +
+            </button>
+          </div>
+          <div style={{ textAlign: "center", marginTop: "6px", color: "#666", fontSize: "14px" }}>
+            Tap changes by 10. Hold to ramp up speed.
           </div>
         </div>
       </div>
@@ -682,6 +1088,7 @@ const InfoIcon = ({ text, onClick }) => (
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Endgame Hang</label>
             <select 
+              ref={setFieldRef('hangType')}
               style={{
                 height: "50px", 
                 width: "100%",
@@ -708,6 +1115,7 @@ const InfoIcon = ({ text, onClick }) => (
             <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
               <button
                 type="button"
+                ref={setFieldRef('matchResult')}
                 onClick={() => setMatchResult("Win")}
                 className={`${tableStyling.ToggleButton} ${matchResult === "Win" ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                 style={{ flex: 1, maxWidth: "180px" }}
@@ -733,9 +1141,56 @@ const InfoIcon = ({ text, onClick }) => (
             </div>
           </div>
 
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <div style={{ flex: 1, minWidth: "180px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Alliance Score</label>
+              <input
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  boxSizing: "border-box"
+                }}
+                type="number"
+                min="0"
+                placeholder="Enter alliance score"
+                value={allianceScore}
+                onKeyDown={stopNonNum}
+                onChange={(e) => setAllianceScore(e.target.value)}
+                onWheel={(e) => e.target.blur()}
+              />
+            </div>
+
+            <div style={{ flex: 1, minWidth: "180px" }}>
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Opponent Score</label>
+              <input
+                style={{
+                  height: "50px",
+                  width: "100%",
+                  padding: "8px",
+                  fontSize: "16px",
+                  border: "2px solid #ddd",
+                  borderRadius: "8px",
+                  boxSizing: "border-box"
+                }}
+                type="number"
+                min="0"
+                placeholder="Enter opponent score"
+                value={opponentScore}
+                onKeyDown={stopNonNum}
+                onChange={(e) => setOpponentScore(e.target.value)}
+                onWheel={(e) => e.target.blur()}
+              />
+            </div>
+          </div>
+
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Impact</label>
             <select
+              ref={setFieldRef('teamImpact')}
               style={{
                 height: "50px",
                 width: "100%",
@@ -750,9 +1205,11 @@ const InfoIcon = ({ text, onClick }) => (
               onWheel={(e) => e.target.blur()}
             >
               <option value="">Select Team Impact</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
+              <option value="Nothing">Nothing</option>
               <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Very High">Very High</option>
             </select>
           </div>
 
@@ -829,6 +1286,7 @@ const InfoIcon = ({ text, onClick }) => (
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Speed</label>
             <select 
+              ref={setFieldRef('robotSpeed')}
               style={{
                 height: "50px",
                 width: "100%",
@@ -843,15 +1301,18 @@ const InfoIcon = ({ text, onClick }) => (
               onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Robot Speed</option>
+              <option value="Very Slow">Very Slow</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
+              <option value="Very Fast">Very Fast</option>
             </select>
           </div>
 
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Driver Skill</label>
             <select 
+              ref={setFieldRef('driverSkill')}
               style={{
                 height: "50px",
                 width: "100%",
@@ -866,6 +1327,7 @@ const InfoIcon = ({ text, onClick }) => (
               onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Driver Skill</option>
+              <option value="Very Poor">Very Poor</option>
               <option value="Poor">Poor</option>
               <option value="Average">Average</option>
               <option value="Good">Good</option>
@@ -876,6 +1338,7 @@ const InfoIcon = ({ text, onClick }) => (
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooter Speed</label>
             <select 
+              ref={setFieldRef('shootingSpeed')}
               style={{
                 height: "50px",
                 width: "100%",
@@ -890,15 +1353,18 @@ const InfoIcon = ({ text, onClick }) => (
               onWheel={(e) => e.target.blur()} 
             >
               <option value="">Select Shooting Speed</option>
+              <option value="Very Slow">Very Slow</option>
               <option value="Slow">Slow</option>
               <option value="Average">Average</option>
               <option value="Fast">Fast</option>
+              <option value="Very Fast">Very Fast</option>
             </select>
           </div>
 
           <div>
             <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Fuel Capacity</label>
             <input 
+              ref={setFieldRef('fuelCapacity')}
               style={{
                 height: "50px",
                 width: "100%",
@@ -913,28 +1379,6 @@ const InfoIcon = ({ text, onClick }) => (
               value={fuelCapacity} 
               onKeyDown={stopNonNum}
               onChange={(e) => setFuelCapacity(parseInt(e.target.value) || '')}
-              onWheel={(e) => e.target.blur()} 
-            />
-          </div>
-
-          <div>
-            <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Balls Shot</label>
-            <input 
-              style={{
-                height: "50px",
-                width: "100%",
-                padding: "8px",
-                fontSize: "16px",
-                border: "2px solid #ddd",
-                borderRadius: "8px"
-              }} 
-              type="number" 
-              min="0"
-              placeholder="Enter estimated balls shot"
-              value={estimatedBallsShot} 
-              onKeyDown={stopNonNum}
-              onChange={(e) => setEstimatedBallsShot(parseInt(e.target.value) || '')}
-
               onWheel={(e) => e.target.blur()} 
             />
           </div>
@@ -984,13 +1428,25 @@ const InfoIcon = ({ text, onClick }) => (
         {/* Submit & Send */}
         {confirm ? <button style={{
           padding: "15px 30px",
-          backgroundColor: "white",
+          backgroundColor: isSubmitLocked ? "#f2f2f2" : "white",
           border: "2px solid #ddd",
           borderRadius: "8px",
-          cursor: "pointer",
+          cursor: isSubmitLocked ? "not-allowed" : "pointer",
           fontSize: "16px",
-          fontWeight: "600"
-        }} onClick={() => {
+          fontWeight: "600",
+          opacity: isSubmitLocked ? 0.8 : 1
+        }}
+          disabled={isSubmitLocked}
+          onClick={() => {
+          if (isSubmitLocked) return
+          if (!validateRequiredFields()) {
+            alert("Form is incomplete. Please fill the highlighted section first.")
+            return
+          }
+
+          setIsSubmitting(true)
+          setSubmitLockedUntil(Date.now() + 5000)
+
           submitState( //passes all data (states) of the form into the build in formutils
             regional,
             teamNumber,
@@ -1001,6 +1457,8 @@ const InfoIcon = ({ text, onClick }) => (
             color,
             autoActions,
             autoHang,
+            autoWin,
+            autoImpact,
             hangType,
             activeStrategy,
             inactiveStrategy,
@@ -1008,6 +1466,8 @@ const InfoIcon = ({ text, onClick }) => (
             0,
             shootingCycles,
             matchResult,
+            allianceScore,
+            opponentScore,
             teamImpact,
             disable,
             dq,
@@ -1026,6 +1486,7 @@ const InfoIcon = ({ text, onClick }) => (
         .then(_ => {
           if(_ === false){ //checks if the form utils return true or false which based on if the user filled all required
             resetStates()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
           }
         })
           .catch(err => {
@@ -1041,9 +1502,12 @@ const InfoIcon = ({ text, onClick }) => (
             console.error('Form submit failed', err)
             alert(`Form submit failed:\n${details}`)
           })
+          .finally(() => {
+            setIsSubmitting(false)
+          })
           }
         }/* Double checks and confirms for submission, in case of accidental press */
-        ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>Confirm</div></div></button> : null}
+        ><div><img src="./images/BLUETHUNDERLOGO_BLUE.png" style={{width:"60px", height: "auto"}}></img><div style={{fontSize: "16px"}}>{isSubmitLocked ? `Wait ${submitCooldownSeconds}s` : "Confirm"}</div></div></button> : null}
       </div>
       <div>
         {/* <button onClick={async () => {await apiCreateTeamEntry(teamNumber); await apiListTeams()}}>test and bypass</button> */}

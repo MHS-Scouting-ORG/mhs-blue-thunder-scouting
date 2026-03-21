@@ -23,6 +23,16 @@ function Summary() {
   const [sortBy, setSortBy] = useState([]); //for grade based on checkboxes and prioritities
   const [teamsClicked, setTeamsClicked] = useState([]); //teams clicked in the default table
   const [currentView, setCurrentView] = useState(''); // current view: 'all', 'submissions', 'search', 'quals', 'alliance', 'elims'
+  const [refreshTick, setRefreshTick] = useState(0); // periodic refresh to keep charts/rankings current
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setRefreshTick((tick) => tick + 1)
+    }, 30000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
+
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
     ueTableData(tableData, regional)
@@ -30,7 +40,7 @@ function Summary() {
         setTableData(data)
       })
       .catch(err => console.error('error building table data', err))
-  }, [sortBy, teamsClicked, regional]) //depended on the teams clicked, sortby, and regional readiness
+  }, [sortBy, teamsClicked, regional, refreshTick]) //depended on the teams clicked, sortby, and regional readiness
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */
   const handleTeamClicked = (team) => {

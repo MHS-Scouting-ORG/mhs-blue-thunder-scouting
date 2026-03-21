@@ -233,15 +233,25 @@ function TeamStats(props) {
     : 'None';
   
   const autoHangMode = mode(matches.map(m => m?.Autonomous?.AutoHang || 'None'));
+  const autoWinMode = mode(matches.map(m => m?.AutoWin || 'N/A'));
+  const autoImpactMode = mode(matches.map(m => m?.AutoImpact || 'N/A'));
   const endgameMode = mode(matches.map(m => m?.Teleop?.Endgame || 'None'));
+  const matchResultMode = mode(matches.map(m => m?.MatchResult || 'N/A'));
+  const teamImpactMode = mode(matches.map(m => m?.TeamImpact || 'N/A'));
   const activeMode = topFromListFields(matches, 'ActiveStrat');
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
   const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
   const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
   
-  const ballsShot = mode(matches.map(m => m?.RobotInfo.BallsShot || 'None'))
+  const ballsShot = mode(matches.map(m => m?.RobotInfo?.BallsShot || 'None'))
 
   const scoutedFuelCap = mode(matches.map(m => m?.RobotInfo?.FuelCapacity || 'None'));
+  const avgAllianceScore = matches.length > 0
+    ? (matches.reduce((sum, m) => sum + (Number.isFinite(Number(m?.AllianceScore)) ? Number(m.AllianceScore) : 0), 0) / matches.length).toFixed(1)
+    : 'N/A'
+  const avgOpponentScore = matches.length > 0
+    ? (matches.reduce((sum, m) => sum + (Number.isFinite(Number(m?.OpponentScore)) ? Number(m.OpponentScore) : 0), 0) / matches.length).toFixed(1)
+    : 'N/A'
   
   /* I made this ~ Jmoney */
   const brokenText =  mode(matches.map(m => m?.RobotInfo?.WhatBrokeDesc  ?? 'None'));
@@ -332,6 +342,12 @@ function TeamStats(props) {
             <strong>Auto Hang:</strong> {autoHangMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Auto Win:</strong> {autoWinMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Auto Impact:</strong> {autoImpactMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Most Likely Active Strat:</strong> {activeMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
@@ -348,6 +364,15 @@ function TeamStats(props) {
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Scouted Fuel Cap</strong>: {scoutedFuelCap ?? 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Match Result:</strong> {matchResultMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Team Impact:</strong> {teamImpactMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Avg Alliance/Opp Score:</strong> {avgAllianceScore} / {avgOpponentScore}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Hang Time:</strong> {hangTimeText}

@@ -45,6 +45,8 @@ export async function submitState( //params are states of data from form
   allianceColor,
   autoActions,
   autoHang,
+  autoWin,
+  autoImpact,
   hangType,
   activeStrategy,
   inactiveStrategy,
@@ -52,6 +54,8 @@ export async function submitState( //params are states of data from form
   timesTravelledMidInactive,
   shootingCycles,
   matchResult,
+  allianceScore,
+  opponentScore,
   teamImpact,
   disable,
   dq,
@@ -115,6 +119,52 @@ export async function submitState( //params are states of data from form
     return ["None"]
   }
 
+  const normalizeSpeedValue = (value) => {
+    const speedMap = {
+      "Very Slow": "Slow",
+      "Slow": "Slow",
+      "Average": "Average",
+      "Fast": "Fast",
+      "Very Fast": "Fast",
+    }
+    return speedMap[String(value || "").trim()] || ""
+  }
+
+  const normalizeDriverSkillValue = (value) => {
+    const skillMap = {
+      "Very Poor": "Poor",
+      "Poor": "Poor",
+      "Average": "Average",
+      "Good": "Good",
+      "Excellent": "Excellent",
+    }
+    return skillMap[String(value || "").trim()] || ""
+  }
+
+  const normalizeTeamImpactValue = (value) => {
+    const impactMap = {
+      "Nothing": null,
+      "Low": "Low",
+      "Medium": "Medium",
+      "High": "High",
+      "Very High": "High",
+    }
+    const normalized = impactMap[String(value || "").trim()]
+    return normalized === undefined ? "" : normalized
+  }
+
+  const parseScore = (value) => {
+    if (value === '' || value === null || value === undefined) return null
+    const parsed = Number.parseInt(String(value), 10)
+    return Number.isNaN(parsed) ? null : Math.max(0, parsed)
+  }
+
+  const normalizeAutoWinValue = (value) => {
+    const v = String(value || '').trim()
+    if (v === 'Win' || v === 'Tie' || v === 'Lose') return v
+    return null
+  }
+
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
 
@@ -138,7 +188,7 @@ export async function submitState( //params are states of data from form
   /* Checks Match Selects */
   if (matchType === '') {
     incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals or Finals)"
+    windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals, Finals or Practice)"
   }
 
   if (normalizedTeamNumber === '') {
@@ -196,10 +246,19 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nMatch Result"
   }
 
-  if (teamImpact === '') {
+  const normalizedTeamImpact = normalizeTeamImpactValue(teamImpact)
+  if (teamImpact === '' || normalizedTeamImpact === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nTeam Impact"
   }
+
+  const normalizedRobotSpeed = normalizeSpeedValue(robotSpeed)
+  const normalizedShootingSpeed = normalizeSpeedValue(shootingSpeed)
+  const normalizedDriverSkill = normalizeDriverSkillValue(driverSkill)
+  const normalizedAutoImpact = normalizeTeamImpactValue(autoImpact)
+  const normalizedAutoWin = normalizeAutoWinValue(autoWin)
+  const parsedAllianceScore = parseScore(allianceScore)
+  const parsedOpponentScore = parseScore(opponentScore)
 
   /* AutoHang */
   if (autoHang === "None" && (dq || noShow || disable || botBroke) === false) {
@@ -230,57 +289,21 @@ export async function submitState( //params are states of data from form
   }
 
   /* Robot Info Select */
-  switch(robotSpeed){
-    case 'Slow':
-      robotSpeed = "Slow"
-      break;
-    case 'Average':
-      robotSpeed = "Average"
-      break;
-    case 'Fast':
-      robotSpeed = "Fast"
-      break;
-    default:
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nRobot Speed"
-      break;
+  if (!normalizedRobotSpeed) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nRobot Speed"
   }
 
   /* Shooting Speed Select */
-  switch(shootingSpeed){
-    case 'Slow':
-      shootingSpeed = "Slow"
-      break;
-    case 'Average':
-      shootingSpeed = "Average"
-      break;
-    case 'Fast':
-      shootingSpeed = "Fast"
-      break;
-    default:
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nShooting Speed"
-      break;
+  if (!normalizedShootingSpeed) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nShooting Speed"
   }
   
   /* Driver Skill Select */
-  switch (driverSkill){
-    case 'Poor':
-      driverSkill = "Poor"
-      break;
-    case 'Average':
-      driverSkill = "Average"
-      break;
-    case 'Good':
-      driverSkill = "Good"
-      break
-    case 'Excellent':
-      driverSkill = "Excellent"
-      break;
-    default:
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nDriver Skill"
-      break;
+  if (!normalizedDriverSkill) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nDriver Skill"
   }
 
   /* Point Calc */
@@ -332,9 +355,9 @@ export async function submitState( //params are states of data from form
     matchEntry.Teleop.Endgame = hangType
 
     /* Robot Info */
-    matchEntry.RobotInfo.RobotSpeed = robotSpeed
-    matchEntry.RobotInfo.ShooterSpeed = shootingSpeed
-    matchEntry.RobotInfo.DriverSkill = driverSkill
+    matchEntry.RobotInfo.RobotSpeed = normalizedRobotSpeed
+    matchEntry.RobotInfo.ShooterSpeed = normalizedShootingSpeed
+    matchEntry.RobotInfo.DriverSkill = normalizedDriverSkill
     matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
@@ -349,7 +372,7 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.StuckOnBump = stuckOnBump
     matchEntry.Penalties.PenaltiesCommitted.StuckOnBalls = stuckOnBalls
     matchEntry.MatchResult = matchResult
-    matchEntry.TeamImpact = teamImpact
+    matchEntry.TeamImpact = normalizedTeamImpact
 
     //console.log("check")
 
@@ -408,20 +431,24 @@ export async function submitState( //params are states of data from form
 
       let submittedBy = ''
       try {
-        const user = await Auth.currentAuthenticatedUser()
-        submittedBy = user?.attributes?.email || user?.username || ''
+        const user = await Auth.getCurrentUser()
+        submittedBy = user?.signInDetails?.loginId || user?.username || ''
       } catch (e) {
         console.warn('Could not resolve current user for submission attribution', e)
       }
 
       const teamMatch = {
         name: submittedAt,
-        description: robotInsight,
         SubmittedBy: submittedBy,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
+        MatchType: matchType,
         MatchResult: matchResult,
-        TeamImpact: teamImpact,
+        AutoWin: normalizedAutoWin,
+        TeamImpact: normalizedTeamImpact,
+        AutoImpact: normalizedAutoImpact === '' ? null : normalizedAutoImpact,
+        AllianceScore: parsedAllianceScore,
+        OpponentScore: parsedOpponentScore,
         Autonomous: {
           AutoStrat: Array.isArray(matchEntry.Autonomous.AutoStrat)
             ? matchEntry.Autonomous.AutoStrat

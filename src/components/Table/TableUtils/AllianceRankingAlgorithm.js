@@ -82,6 +82,7 @@ const DEFAULT_OPTIONS = {
   inconsistencyPenalty: 0.25,
 
   aggregateSeedSpread: 24,
+  ridgeLambda: 0.35,
 
   normalizationCaps: {
     ballsShotMax: 18,
@@ -394,23 +395,109 @@ const extractTeamMatches = (team) => {
   return []
 }
 
-const normalizeMatchEntriesFromTeams = (teamsData) => {
+const isQualificationMatch = (match, matchId) => {
+  const matchType = safeLower(match?.MatchType)
+  if (matchType === 'q' || matchType === 'qm') return true
+  return /_qm\d+$/i.test(String(matchId || ''))
+}
+
+const extractNumeric = (...values) => {
+  for (const value of values) {
+    const parsed = Number(value)
+    if (Number.isFinite(parsed)) return parsed
+  }
+  return null
+}
+
+const getAllianceAndOpponentScore = (match) => {
+  const allianceScore = extractNumeric(
+    match?.AllianceScore,
+    match?.allianceScore,
+    match?.Scores?.Alliance,
+    match?.Score?.Alliance
+  )
+  const opponentScore = extractNumeric(
+    match?.OpponentScore,
+    match?.opponentScore,
+    match?.Scores?.Opponent,
+    match?.Score?.Opponent
+  )
+  return { allianceScore, opponentScore }
+}
+
+const getAutoImpactValue = (match) => {
+  return match?.AutoImpact ?? null
+}
+
+const getAutoWinValue = (match) => {
+  return match?.AutoWin ?? null
+}
+
+const getAutoActionPoints = (autoStrat) => {
+  const actions = Array.isArray(autoStrat)
+    ? autoStrat
+    : (typeof autoStrat === 'string' ? autoStrat.split(',') : [])
+
+  if (actions.length === 0) return 0
+  let points = 0
+  actions.forEach((action) => {
+    const v = safeLower(action)
+    if (v.includes('scored') || v.includes('goal')) points += 8
+    else if (v.includes('left') || v.includes('starting') || v.includes('zone')) points += 3
+  })
+  return points
+}
+
+const getAutoHangPoints = (autoHang) => {
+  const v = safeLower(autoHang)
+  if (v.includes('level1')) return 15
+  return 0
+}
+
+const getEndgamePoints = (endgame) => {
+  const v = safeLower(endgame)
+  if (v.includes('level3')) return 30
+  if (v.includes('level2')) return 20
+  if (v.includes('level1')) return 10
+  return 0
+}
+
+const getAutoWinScore = (value) => {
+  const v = safeLower(value)
+  if (v === 'win') return 1
+  if (v === 'tie') return 0.5
+  if (v === 'lose') return 0
+  return 0
+}
+
+const normalizeQualEntriesFromTeams = (teamsData) => {
   const entries = []
 
   ;(teamsData || []).forEach((team) => {
     const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
     if (!teamNumber) return
 
+    const seen = new Set()
     const teamMatches = extractTeamMatches(team)
     teamMatches.forEach((match, index) => {
       const matchId = String(match?.MatchId || match?.id || '').trim()
       if (!matchId || matchId === 'matchEntry.MatchId') return
+      if (!isQualificationMatch(match, matchId)) return
+
+      const dedupeKey = `${teamNumber}|${matchId}`
+      if (seen.has(dedupeKey)) return
+      seen.add(dedupeKey)
+
+      const { allianceScore, opponentScore } = getAllianceAndOpponentScore(match)
 
       entries.push({
         teamNumber,
         matchId,
         matchOrder: parseMatchOrder(matchId) || (index + 1),
-        match
+        match,
+        matchResult: safeLower(match?.MatchResult),
+        allianceScore,
+        opponentScore
       })
     })
   })
@@ -422,122 +509,404 @@ const normalizeMatchEntriesFromTeams = (teamsData) => {
   })
 }
 
-const buildMatchBuckets = (entries) => {
-  const matchBuckets = new Map()
-  entries.forEach((entry) => {
-    if (!matchBuckets.has(entry.matchId)) matchBuckets.set(entry.matchId, [])
-    matchBuckets.get(entry.matchId).push(entry)
+const splitAllianceByScorePairs = (rows) => {
+  const groups = new Map()
+  rows.forEach((row) => {
+    if (!Number.isFinite(row.allianceScore) || !Number.isFinite(row.opponentScore)) return
+    const key = `${row.allianceScore}|${row.opponentScore}`
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(row)
   })
-  return matchBuckets
+
+  const candidates = [...groups.values()]
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 2)
+
+  if (candidates.length < 2) return null
+  if (candidates[0].length < 2 || candidates[1].length < 2) return null
+
+  const teamsA = new Set(candidates[0].map((r) => r.teamNumber))
+  const teamsB = new Set(candidates[1].map((r) => r.teamNumber))
+  const overlap = [...teamsA].some((team) => teamsB.has(team))
+  if (overlap) return null
+
+  return [
+    { members: candidates[0].slice(0, 3) },
+    { members: candidates[1].slice(0, 3) }
+  ]
 }
 
-const createInitialState = (seedScore, options) => {
-  const centered = (seedScore - 0.5) * options.aggregateSeedSpread
-  return {
-    rating: options.initialRating + centered,
-    uncertainty: options.initialUncertainty,
-    inconsistency: options.initialUncertainty * 0.25,
-    matchesPlayed: 0
+const splitAllianceByResult = (rows) => {
+  const wins = rows.filter((r) => r.matchResult === 'win')
+  const losses = rows.filter((r) => r.matchResult === 'lose')
+  if (wins.length >= 2 && losses.length >= 2) {
+    return [
+      { members: wins.slice(0, 3) },
+      { members: losses.slice(0, 3) }
+    ]
   }
+  return null
 }
 
-const ensureTeamState = (stateMap, teamNumber, seedScore, options) => {
-  if (!stateMap.has(teamNumber)) {
-    stateMap.set(teamNumber, createInitialState(seedScore, options))
+const inferMatchAlliances = (rows) => {
+  if (!Array.isArray(rows) || rows.length < 4) return []
+  const uniqueRows = []
+  const seen = new Set()
+  rows.forEach((row) => {
+    const key = `${row.teamNumber}|${row.matchId}`
+    if (seen.has(key)) return
+    seen.add(key)
+    uniqueRows.push(row)
+  })
+
+  const byScores = splitAllianceByScorePairs(uniqueRows)
+  if (byScores) return byScores
+
+  const byResult = splitAllianceByResult(uniqueRows)
+  if (byResult) return byResult
+
+  if (uniqueRows.length >= 6) {
+    const sorted = [...uniqueRows].sort((a, b) => a.teamNumber.localeCompare(b.teamNumber))
+    return [
+      { members: sorted.slice(0, 3) },
+      { members: sorted.slice(3, 6) }
+    ]
   }
-  return stateMap.get(teamNumber)
+
+  return []
 }
 
-const applyMatchUpdate = ({ teamState, rawPerformance, recencyWeight, opponentMean, options }) => {
-  const relativeOpponentStrength = (opponentMean - options.initialRating) / 25
-  const difficultyMultiplier = clamp(
-    1 + options.opponentStrengthWeight * relativeOpponentStrength,
-    options.minDifficultyMultiplier,
-    options.maxDifficultyMultiplier
-  )
-
-  const observedPerformance = clamp(rawPerformance * difficultyMultiplier, 0, 100)
-  const residual = observedPerformance - teamState.rating
-
-  const uncertaintyFactor = 1 + (teamState.uncertainty / options.initialUncertainty)
-  const effectiveK = options.baseK * recencyWeight * uncertaintyFactor
-  teamState.rating = clamp(teamState.rating + (effectiveK * residual), 0, 100)
-
-  teamState.inconsistency =
-    (1 - options.inconsistencyAlpha) * teamState.inconsistency +
-    options.inconsistencyAlpha * Math.abs(residual)
-
-  const newUncertainty =
-    teamState.uncertainty * (1 - options.uncertaintyDecay * recencyWeight) +
-    options.uncertaintyShockWeight * (Math.abs(residual) ** 2)
-
-  teamState.uncertainty = clamp(newUncertainty, options.minUncertainty, options.maxUncertainty)
-  teamState.matchesPlayed += 1
-}
-
-const finalizeTeamState = (teamState, options) => {
-  const conservativeRating =
-    teamState.rating -
-    options.uncertaintyPenalty * teamState.uncertainty -
-    options.inconsistencyPenalty * teamState.inconsistency
-
-  const confidence = clamp(1 - (teamState.uncertainty / options.maxUncertainty), 0, 1)
-
-  return {
-    rating: teamState.rating,
-    uncertainty: teamState.uncertainty,
-    inconsistency: teamState.inconsistency,
-    conservativeRating,
-    confidence,
-    matchesPlayed: teamState.matchesPlayed
-  }
-}
-
-const runRatingUpdates = (entries, initialStateMap, options) => {
-  const matchBuckets = buildMatchBuckets(entries)
-  const stateMap = initialStateMap
-  const latestOrder = entries.reduce((max, entry) => Math.max(max, entry.matchOrder), 0)
-
+const buildAllianceRows = (entries) => {
+  const byMatch = new Map()
   entries.forEach((entry) => {
-    const teamState = stateMap.get(entry.teamNumber)
-    if (!teamState) return
+    if (!byMatch.has(entry.matchId)) byMatch.set(entry.matchId, [])
+    byMatch.get(entry.matchId).push(entry)
+  })
 
-    const age = Math.max(0, latestOrder - entry.matchOrder)
-    const recencyWeight = Math.exp(-age / options.recencyHalfLife)
+  const allianceRows = []
 
-    const teammatesAndOpponents = matchBuckets.get(entry.matchId) || []
-    const opponentRatings = teammatesAndOpponents
-      .filter((other) => other.teamNumber !== entry.teamNumber)
-      .map((other) => stateMap.get(other.teamNumber)?.rating)
-      .filter((value) => Number.isFinite(value))
+  byMatch.forEach((rows, matchId) => {
+    const alliances = inferMatchAlliances(rows)
+    if (alliances.length !== 2) return
 
-    const opponentMean = opponentRatings.length > 0
-      ? avg(opponentRatings)
-      : options.initialRating
+    const [a, b] = alliances
+    if (a.members.length !== 3 || b.members.length !== 3) return
 
-    const rawPerformance = getMatchPerformanceScore(entry.match, options)
+    const summarizeAlliance = (alliance, opponent) => {
+      const teams = alliance.members.map((m) => m.teamNumber)
+      const scoreCandidates = alliance.members
+        .map((m) => m.allianceScore)
+        .filter((s) => Number.isFinite(s))
 
-    applyMatchUpdate({
-      teamState,
-      rawPerformance,
-      recencyWeight,
-      opponentMean,
-      options
+      if (scoreCandidates.length === 0) {
+        opponent.members.forEach((m) => {
+          if (Number.isFinite(m.opponentScore)) scoreCandidates.push(m.opponentScore)
+        })
+      }
+
+      const totalScore = scoreCandidates.length > 0 ? avg(scoreCandidates) : null
+      const scoreSpread = scoreCandidates.length > 1
+        ? Math.max(...scoreCandidates) - Math.min(...scoreCandidates)
+        : 0
+
+      const autoActionPoints = alliance.members.reduce((sum, row) => {
+        return sum + getAutoActionPoints(row?.match?.Autonomous?.AutoStrat)
+      }, 0)
+
+      const autoHangPoints = alliance.members.reduce((sum, row) => {
+        return sum + getAutoHangPoints(row?.match?.Autonomous?.AutoHang)
+      }, 0)
+
+      const endgamePoints = alliance.members.reduce((sum, row) => {
+        return sum + getEndgamePoints(row?.match?.Teleop?.Endgame)
+      }, 0)
+
+      const fuel = alliance.members.reduce((sum, row) => sum + toNumber(row?.match?.RobotInfo?.BallsShot, 0), 0)
+      const cycles = alliance.members.reduce((sum, row) => sum + toNumber(row?.match?.RobotInfo?.ShootingCycles, 0), 0)
+      const teleopMobility = alliance.members.reduce((sum, row) => sum + toNumber(row?.match?.Teleop?.TravelMid, 0), 0)
+
+      const winSignal = avg(alliance.members.map((row) => {
+        const result = safeLower(row?.match?.MatchResult)
+        if (result === 'win') return 1
+        if (result === 'tie') return 0.5
+        if (result === 'lose') return 0
+        return 0.5
+      }))
+
+      const completenessSignals = alliance.members.map((row) => {
+        const match = row?.match
+        let present = 0
+        let total = 7
+        if (Array.isArray(match?.Autonomous?.AutoStrat) && match.Autonomous.AutoStrat.length > 0) present += 1
+        if (safeLower(match?.Autonomous?.AutoHang)) present += 1
+        if (Number.isFinite(toNumber(match?.RobotInfo?.BallsShot, NaN))) present += 1
+        if (Number.isFinite(toNumber(match?.RobotInfo?.ShootingCycles, NaN))) present += 1
+        if (safeLower(match?.Teleop?.Endgame)) present += 1
+        if (safeLower(match?.RobotInfo?.DriverSkill)) present += 1
+        if (safeLower(match?.TeamImpact)) present += 1
+        return present / total
+      })
+
+      const avgCompleteness = avg(completenessSignals)
+      const scoreAgreement = clamp(1 - (scoreSpread / 35), 0, 1)
+      const evidenceWeight = clamp(
+        0.5 + 0.35 * avgCompleteness + 0.15 * scoreAgreement,
+        0.25,
+        1
+      )
+
+      return {
+        matchId,
+        teams,
+        totalScore,
+        autoActionPoints,
+        autoHangPoints,
+        endgamePoints,
+        fuel,
+        cycles,
+        teleopMobility,
+        winSignal,
+        evidenceWeight
+      }
+    }
+
+    allianceRows.push(summarizeAlliance(a, b))
+    allianceRows.push(summarizeAlliance(b, a))
+  })
+
+  return allianceRows
+}
+
+const createZeroMatrix = (rows, cols) => Array.from({ length: rows }, () => Array(cols).fill(0))
+
+const solveLinearSystem = (matrix, vector) => {
+  const n = matrix.length
+  if (n === 0) return []
+
+  const a = matrix.map((row, i) => [...row, toNumber(vector[i], 0)])
+
+  for (let col = 0; col < n; col += 1) {
+    let pivot = col
+    for (let row = col + 1; row < n; row += 1) {
+      if (Math.abs(a[row][col]) > Math.abs(a[pivot][col])) pivot = row
+    }
+
+    if (Math.abs(a[pivot][col]) < 1e-9) continue
+    if (pivot !== col) {
+      const temp = a[col]
+      a[col] = a[pivot]
+      a[pivot] = temp
+    }
+
+    const pivotVal = a[col][col]
+    for (let j = col; j <= n; j += 1) {
+      a[col][j] /= pivotVal
+    }
+
+    for (let row = 0; row < n; row += 1) {
+      if (row === col) continue
+      const factor = a[row][col]
+      if (Math.abs(factor) < 1e-9) continue
+      for (let j = col; j <= n; j += 1) {
+        a[row][j] -= factor * a[col][j]
+      }
+    }
+  }
+
+  return a.map((row) => (Number.isFinite(row[n]) ? row[n] : 0))
+}
+
+const solveContributionMetric = ({ allianceRows, teamIndex, ridgeLambda, valueAccessor }) => {
+  const validRows = allianceRows.filter((row) => row.teams.length === 3 && Number.isFinite(valueAccessor(row)))
+  if (validRows.length === 0) return null
+
+  const n = teamIndex.size
+  const ata = createZeroMatrix(n, n)
+  const atb = Array(n).fill(0)
+
+  validRows.forEach((row) => {
+    const b = valueAccessor(row)
+    const w = clamp(toNumber(row?.evidenceWeight, 1), 0.1, 1)
+    const idx = row.teams
+      .map((team) => teamIndex.get(team))
+      .filter((x) => Number.isInteger(x))
+
+    if (idx.length !== 3) return
+
+    idx.forEach((i) => {
+      atb[i] += w * b
+      idx.forEach((j) => {
+        ata[i][j] += w
+      })
     })
   })
 
-  const finalized = new Map()
-  stateMap.forEach((state, teamNumber) => {
-    finalized.set(teamNumber, finalizeTeamState(state, options))
+  for (let i = 0; i < n; i += 1) {
+    ata[i][i] += ridgeLambda
+  }
+
+  const solution = solveLinearSystem(ata, atb)
+  const result = new Map()
+  teamIndex.forEach((idx, team) => {
+    result.set(team, toNumber(solution[idx], 0))
   })
 
-  return finalized
+  return result
+}
+
+const normalizeByCap = (value, cap) => clamp(toNumber(value, 0) / Math.max(1, toNumber(cap, 1)), 0, 1)
+
+const getTeamQualMatches = (team) => {
+  const teamMatches = extractTeamMatches(team)
+  return teamMatches.filter((match) => {
+    const matchId = String(match?.MatchId || match?.id || '').trim()
+    return isQualificationMatch(match, matchId)
+  })
+}
+
+const computeTeamScoutAverages = (team, options) => {
+  const quals = getTeamQualMatches(team)
+  if (quals.length === 0) {
+    return {
+      matchCount: 0,
+      reliability: 0,
+      robotSpeed: 0,
+      shooterSpeed: 0,
+      driverSkill: 0,
+      teamImpact: 0,
+      autoImpact: 0,
+      strategyExecution: 0,
+      winRate: 0,
+      autoWinRate: 0,
+      avgPenaltySeverity: 1
+    }
+  }
+
+  const penaltySeverity = quals.map(getPenaltySeverity)
+
+  return {
+    matchCount: quals.length,
+    reliability: clamp(1 - avg(penaltySeverity), 0, 1),
+    robotSpeed: avg(quals.map((m) => parseSpeedScore(m?.RobotInfo?.RobotSpeed))),
+    shooterSpeed: avg(quals.map((m) => parseSpeedScore(m?.RobotInfo?.ShooterSpeed))),
+    driverSkill: avg(quals.map((m) => parseDriverSkillScore(m?.RobotInfo?.DriverSkill))),
+    teamImpact: avg(quals.map((m) => parseTeamImpactScore(m?.TeamImpact))),
+    strategyExecution: avg(quals.map((m) => strategyExecutionScore(m?.ActiveStrat, m?.InactiveStrat))),
+    winRate: avg(quals.map((m) => {
+      const v = safeLower(m?.MatchResult)
+      if (v === 'win') return 1
+      if (v === 'tie') return 0.5
+      return 0
+    })),
+    autoImpact: avg(quals.map((m) => parseTeamImpactScore(getAutoImpactValue(m)))),
+    autoWinRate: avg(quals.map((m) => getAutoWinScore(getAutoWinValue(m)))),
+    avgPenaltySeverity: avg(penaltySeverity)
+  }
+}
+
+const indexTeams = (teamsData) => {
+  const teamIndex = new Map()
+  ;(teamsData || []).forEach((team) => {
+    const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
+    if (!teamNumber) return
+    if (!teamIndex.has(teamNumber)) teamIndex.set(teamNumber, teamIndex.size)
+  })
+  return teamIndex
+}
+
+const normalizeMetricMap = (metricMap) => {
+  if (!metricMap || metricMap.size === 0) return new Map()
+  const values = [...metricMap.values()].map((v) => toNumber(v, 0))
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const span = Math.max(1e-9, max - min)
+  const normalized = new Map()
+  metricMap.forEach((value, team) => {
+    normalized.set(team, clamp((toNumber(value, 0) - min) / span, 0, 1))
+  })
+  return normalized
+}
+
+const buildLeastSquaresRatings = (teamsData, options) => {
+  const entries = normalizeQualEntriesFromTeams(teamsData)
+  const allianceRows = buildAllianceRows(entries)
+  const teamIndex = indexTeams(teamsData)
+  const ridgeLambda = Math.max(0.05, toNumber(options?.ridgeLambda, 0.35))
+
+  const totalScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.totalScore
+  })
+
+  const autoActionsScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.autoActionPoints
+  })
+
+  const autoHangScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.autoHangPoints
+  })
+
+  const endgameScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.endgamePoints
+  })
+
+  const fuelScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.fuel
+  })
+
+  const cycleScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.cycles
+  })
+
+  const mobilityScore = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.teleopMobility
+  })
+
+  const winContribution = solveContributionMetric({
+    allianceRows,
+    teamIndex,
+    ridgeLambda,
+    valueAccessor: (row) => row.winSignal
+  })
+
+  return {
+    entries,
+    allianceRows,
+    totalScore: normalizeMetricMap(totalScore || new Map()),
+    autoActionsScore: normalizeMetricMap(autoActionsScore || new Map()),
+    autoHangScore: normalizeMetricMap(autoHangScore || new Map()),
+    endgameScore: normalizeMetricMap(endgameScore || new Map()),
+    fuelScore: normalizeMetricMap(fuelScore || new Map()),
+    cycleScore: normalizeMetricMap(cycleScore || new Map()),
+    mobilityScore: normalizeMetricMap(mobilityScore || new Map()),
+    winContribution: normalizeMetricMap(winContribution || new Map())
+  }
 }
 
 export function calculateTeamScore(teamData, options = {}) {
   const mergedOptions = resolveRankingOptions(options)
 
-  const teamMatches = extractTeamMatches(teamData)
+  const teamMatches = getTeamQualMatches(teamData)
   if (teamMatches.length === 0) {
     return 0
   }
@@ -564,30 +933,13 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
 
   const mergedOptions = resolveRankingOptions(options)
 
-  const stateMap = new Map()
-  teamsData.forEach((team) => {
-    const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
-    if (!teamNumber) return
-    const seed = getAggregateSeedScoreWithOptions(team, mergedOptions)
-    ensureTeamState(stateMap, teamNumber, seed, mergedOptions)
-  })
-
-  const entries = normalizeMatchEntriesFromTeams(teamsData)
-  const finalRatings = entries.length > 0
-    ? runRatingUpdates(entries, stateMap, mergedOptions)
-    : (() => {
-      const finalized = new Map()
-      stateMap.forEach((state, teamNumber) => {
-        finalized.set(teamNumber, finalizeTeamState(state, mergedOptions))
-      })
-      return finalized
-    })()
+  const ls = buildLeastSquaresRatings(teamsData, mergedOptions)
+  const metricWeights = normalizeWeights(mergedOptions.metricWeights, DEFAULT_OPTIONS.metricWeights)
 
   return teamsData
     .map((team) => {
       const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
-      const teamMatches = extractTeamMatches(team)
-
+      const teamMatches = getTeamQualMatches(team)
       if (teamMatches.length === 0) {
         return {
           ...team,
@@ -599,26 +951,46 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         }
       }
 
-      const rating = finalRatings.get(teamNumber)
+      const scout = computeTeamScoutAverages(team, mergedOptions)
 
-      if (!rating) {
-        return {
-          ...team,
-          allianceScore: 0,
-          skillRating: 0,
-          uncertainty: mergedOptions.maxUncertainty,
-          confidence: 0,
-          matchesRated: 0
-        }
-      }
+      const weightedSkill =
+        toNumber(metricWeights.autoActions, 0) * toNumber(ls.autoActionsScore.get(teamNumber), 0) +
+        toNumber(metricWeights.autoHang, 0) * toNumber(ls.autoHangScore.get(teamNumber), 0) +
+        toNumber(metricWeights.teleopMobility, 0) * toNumber(ls.mobilityScore.get(teamNumber), 0) +
+        toNumber(metricWeights.endgame, 0) * toNumber(ls.endgameScore.get(teamNumber), 0) +
+        toNumber(metricWeights.ballsShot, 0) * toNumber(ls.fuelScore.get(teamNumber), 0) +
+        toNumber(metricWeights.shootingCycles, 0) * toNumber(ls.cycleScore.get(teamNumber), 0) +
+        toNumber(metricWeights.robotSpeed, 0) * scout.robotSpeed +
+        toNumber(metricWeights.shooterSpeed, 0) * scout.shooterSpeed +
+        toNumber(metricWeights.driverSkill, 0) * scout.driverSkill +
+        toNumber(metricWeights.teamImpact, 0) * Math.max(scout.teamImpact, scout.autoImpact) +
+        toNumber(metricWeights.strategyExecution, 0) * scout.strategyExecution +
+        toNumber(metricWeights.reliability, 0) * scout.reliability
+
+      const scoreDrivenBoost = 0.55 * toNumber(ls.totalScore.get(teamNumber), 0) + 0.45 * toNumber(ls.winContribution.get(teamNumber), 0)
+      const skillRating = clamp((0.78 * weightedSkill + 0.22 * scoreDrivenBoost) * 100, 0, 100)
+
+      const uncertaintyFromSample = clamp(
+        mergedOptions.maxUncertainty - (Math.log2(1 + scout.matchCount) * 6),
+        mergedOptions.minUncertainty,
+        mergedOptions.maxUncertainty
+      )
+
+      const inconsistency = clamp((1 - scout.reliability) * 20, 0, 20)
+      const conservativeRating =
+        skillRating -
+        mergedOptions.uncertaintyPenalty * uncertaintyFromSample -
+        mergedOptions.inconsistencyPenalty * inconsistency
+
+      const confidence = clamp(1 - (uncertaintyFromSample / mergedOptions.maxUncertainty), 0, 1)
 
       return {
         ...team,
-        allianceScore: rating.conservativeRating,
-        skillRating: rating.rating,
-        uncertainty: rating.uncertainty,
-        confidence: rating.confidence,
-        matchesRated: rating.matchesPlayed
+        allianceScore: conservativeRating,
+        skillRating,
+        uncertainty: uncertaintyFromSample,
+        confidence,
+        matchesRated: scout.matchCount
       }
     })
     .sort((a, b) => b.allianceScore - a.allianceScore)
@@ -630,59 +1002,39 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
  * without reprocessing older events in a separate cache/service.
  */
 export function updateRatingsWithNewMatches(existingRatings = {}, newMatchEntries = [], options = {}) {
-  const mergedOptions = resolveRankingOptions(options)
+  const normalizedEntries = Array.isArray(newMatchEntries) ? newMatchEntries : []
+  if (normalizedEntries.length === 0) return existingRatings
 
-  const stateMap = new Map()
-  Object.entries(existingRatings || {}).forEach(([teamNumber, rating]) => {
-    const normalizedTeam = normalizeTeamNumber(teamNumber)
-    if (!normalizedTeam) return
-    stateMap.set(normalizedTeam, {
-      rating: clamp(toNumber(rating?.rating, mergedOptions.initialRating), 0, 100),
-      uncertainty: clamp(
-        toNumber(rating?.uncertainty, mergedOptions.initialUncertainty),
-        mergedOptions.minUncertainty,
-        mergedOptions.maxUncertainty
-      ),
-      inconsistency: Math.max(0, toNumber(rating?.inconsistency, mergedOptions.initialUncertainty * 0.25)),
-      matchesPlayed: Math.max(0, toNumber(rating?.matchesPlayed, 0))
-    })
-  })
-
-  const normalizedEntries = (Array.isArray(newMatchEntries) ? newMatchEntries : [])
-    .map((entry, index) => {
-      const teamNumber = normalizeTeamNumber(entry?.teamNumber ?? entry?.Team ?? entry?.team ?? entry?.TeamNumber)
-      const matchId = String(entry?.matchId ?? entry?.MatchId ?? '').trim()
-      const match = entry?.match || entry
-      if (!teamNumber || !matchId) return null
-      return {
-        teamNumber,
-        matchId,
-        matchOrder: parseMatchOrder(matchId) || (index + 1),
-        match
-      }
-    })
-    .filter(Boolean)
-    .sort((a, b) => {
-      if (a.matchOrder !== b.matchOrder) return a.matchOrder - b.matchOrder
-      if (a.matchId !== b.matchId) return a.matchId.localeCompare(b.matchId)
-      return a.teamNumber.localeCompare(b.teamNumber)
-    })
-
+  const teamsById = new Map()
   normalizedEntries.forEach((entry) => {
-    ensureTeamState(stateMap, entry.teamNumber, 0.5, mergedOptions)
+    const teamNumber = normalizeTeamNumber(entry?.teamNumber ?? entry?.Team ?? entry?.team ?? entry?.TeamNumber)
+    if (!teamNumber) return
+    if (!teamsById.has(teamNumber)) {
+      teamsById.set(teamNumber, {
+        TeamNumber: teamNumber,
+        TeamMatches: []
+      })
+    }
+
+    const match = entry?.match || entry
+    teamsById.get(teamNumber).TeamMatches.push({
+      ...match,
+      MatchId: String(entry?.matchId ?? entry?.MatchId ?? match?.MatchId ?? '').trim()
+    })
   })
 
-  const finalRatings = runRatingUpdates(normalizedEntries, stateMap, mergedOptions)
-  const result = {}
-
-  finalRatings.forEach((value, teamNumber) => {
+  const ranked = rankTeamsForAllianceSelection([...teamsById.values()], options)
+  const result = { ...existingRatings }
+  ranked.forEach((team) => {
+    const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
+    if (!teamNumber) return
     result[teamNumber] = {
-      rating: value.rating,
-      uncertainty: value.uncertainty,
-      inconsistency: value.inconsistency,
-      conservativeRating: value.conservativeRating,
-      confidence: value.confidence,
-      matchesPlayed: value.matchesPlayed
+      rating: toNumber(team.skillRating, 0),
+      uncertainty: toNumber(team.uncertainty, 0),
+      inconsistency: 0,
+      conservativeRating: toNumber(team.allianceScore, 0),
+      confidence: toNumber(team.confidence, 0),
+      matchesPlayed: toNumber(team.matchesRated, 0)
     }
   })
 

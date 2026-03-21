@@ -30,8 +30,13 @@ export const getTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchType
           MatchResult
+          AutoWin
           TeamImpact
+          AutoImpact
+          AllianceScore
+          OpponentScore
           SubmittedBy
           Autonomous {
             AutoStrat
@@ -124,8 +129,13 @@ export const listTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchType
             MatchResult
+            AutoWin
             TeamImpact
+            AutoImpact
+            AllianceScore
+            OpponentScore
             SubmittedBy
             Autonomous {
               AutoStrat
@@ -220,8 +230,13 @@ export const syncTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchType
             MatchResult
+            AutoWin
             TeamImpact
+            AutoImpact
+            AllianceScore
+            OpponentScore
             SubmittedBy
             Autonomous {
               AutoStrat

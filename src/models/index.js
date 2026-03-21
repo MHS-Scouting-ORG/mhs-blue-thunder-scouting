@@ -55,6 +55,13 @@ const TeamImpactOpts = {
   "LOW": "Low"
 };
 
+const MatchTypeOpts = {
+  "Q": "q",
+  "SF": "sf",
+  "F": "f",
+  "P": "p"
+};
+
 const HangTeamworkOpts = {
   "DOUBLE_HANG": "DoubleHang",
   "TRIPLE_HANG": "TripleHang",
@@ -79,6 +86,7 @@ export {
   StratOpts,
   MatchResultOpts,
   TeamImpactOpts,
+  MatchTypeOpts,
   HangTeamworkOpts,
   CapabilitiesOpts,
   AutonomousType,
