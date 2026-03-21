@@ -247,7 +247,7 @@ const parseAutoScore = (autoStrat) => {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
-      } else if (v.includes('movedinauto') || v.includes('moved')) {
+      } else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) {
         maxScore = Math.max(maxScore, 0.3)
       }
     }
@@ -257,7 +257,7 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
-  if (v.includes('movedinauto') || v.includes('moved')) return 0.3
+  if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
   return 0
 }
 
@@ -449,7 +449,7 @@ const getAutoActionPoints = (autoStrat) => {
   actions.forEach((action) => {
     const v = safeLower(action)
     if (v.includes('scored') || v.includes('goal')) points += 8
-    else if (v.includes('left') || v.includes('starting') || v.includes('zone')) points += 3
+    else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) points += 3
   })
   return points
 }

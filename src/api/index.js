@@ -214,8 +214,11 @@ const normalizeAutoStrat = (value) => {
   const allowed = ["MovedInAuto", "ScoredInGoal", "Nothing"]
   const autoMap = {
     "Crossed Bump/Trench": "MovedInAuto",
+    WentMid: "MovedInAuto",
+    CrossedMid: "MovedInAuto",
     Moved: "MovedInAuto",
     MovedInAuto: "MovedInAuto",
+    LeftStartingZone: "MovedInAuto",
     Scored: "ScoredInGoal",
     ScoredInGoal: "ScoredInGoal",
     Nothing: "Nothing",
