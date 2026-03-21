@@ -30,6 +30,7 @@ export const onCreateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchType
           MatchResult
           AutoWin
           TeamImpact
@@ -115,6 +116,7 @@ export const onUpdateTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchType
           MatchResult
           AutoWin
           TeamImpact
@@ -200,6 +202,7 @@ export const onDeleteTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchType
           MatchResult
           AutoWin
           TeamImpact

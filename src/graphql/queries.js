@@ -30,6 +30,7 @@ export const getTeam = /* GraphQL */ `
           description
           Team
           MatchId
+          MatchType
           MatchResult
           AutoWin
           TeamImpact
@@ -128,6 +129,7 @@ export const listTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchType
             MatchResult
             AutoWin
             TeamImpact
@@ -228,6 +230,7 @@ export const syncTeams = /* GraphQL */ `
             description
             Team
             MatchId
+            MatchType
             MatchResult
             AutoWin
             TeamImpact

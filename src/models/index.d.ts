@@ -55,6 +55,13 @@ export enum TeamImpactOpts {
   LOW = "Low"
 }
 
+export enum MatchTypeOpts {
+  Q = "q",
+  SF = "sf",
+  F = "f",
+  P = "p"
+}
+
 export enum HangTeamworkOpts {
   DOUBLE_HANG = "DoubleHang",
   TRIPLE_HANG = "TripleHang",
@@ -162,8 +169,13 @@ type EagerTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly MatchId?: string | null;
+  readonly MatchType?: MatchTypeOpts | keyof typeof MatchTypeOpts | null;
   readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
+  readonly AutoWin?: MatchResultOpts | keyof typeof MatchResultOpts | null;
   readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly AutoImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly AllianceScore?: number | null;
+  readonly OpponentScore?: number | null;
   readonly SubmittedBy?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
@@ -178,8 +190,13 @@ type LazyTeamMatchesType = {
   readonly description?: string | null;
   readonly Team: string;
   readonly MatchId?: string | null;
+  readonly MatchType?: MatchTypeOpts | keyof typeof MatchTypeOpts | null;
   readonly MatchResult?: MatchResultOpts | keyof typeof MatchResultOpts | null;
+  readonly AutoWin?: MatchResultOpts | keyof typeof MatchResultOpts | null;
   readonly TeamImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly AutoImpact?: TeamImpactOpts | keyof typeof TeamImpactOpts | null;
+  readonly AllianceScore?: number | null;
+  readonly OpponentScore?: number | null;
   readonly SubmittedBy?: string | null;
   readonly Autonomous: AutonomousType;
   readonly Teleop: TeleType;
