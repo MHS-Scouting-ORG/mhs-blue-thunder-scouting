@@ -572,6 +572,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "Pickable": {
+                    "name": "Pickable",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Capabilities": {
                     "name": "Capabilities",
                     "isArray": true,

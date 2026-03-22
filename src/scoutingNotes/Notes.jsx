@@ -56,6 +56,7 @@ function Notes(props) {
   const [canDoubleHang, setCanDoubleHang] = useState(false)
   const [canTripleHang, setCanTripleHang] = useState(false)
   const [canAutoHang, setCanAutoHang] = useState(false)
+  const [pickable, setPickable] = useState(true)
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -180,6 +181,7 @@ function Notes(props) {
     setCanDoubleHang(false)
     setCanTripleHang(false)
     setCanAutoHang(false)
+    setPickable(true)
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
       setStream(null)
@@ -279,6 +281,7 @@ function Notes(props) {
         setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
         setCanTripleHang(attrs.HangTeamwork === "TripleHang")
         setCanAutoHang(Boolean(attrs.CanAutoHang))
+        setPickable(attrs.Pickable !== false)
       } else {
         alert('Unable to load or create team data. Please try again.')
       }
@@ -389,7 +392,8 @@ function Notes(props) {
       ].filter(Boolean),
       MaxHang: normalizeMaxHang(maxHangHeight),
       HangTeamwork: canTripleHang ? "TripleHang" : canDoubleHang ? "DoubleHang" : "None",
-      CanAutoHang: Boolean(canAutoHang)
+      CanAutoHang: Boolean(canAutoHang),
+      Pickable: Boolean(pickable)
     }
 
     try {
@@ -739,6 +743,18 @@ function Notes(props) {
                       className={`${tableStyling.ToggleButton} ${canAutoHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
                       {canAutoHang ? 'Can Auto Hang' : 'Cannot Auto Hang'}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Alliance Selection</label>
+                  <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+                    <button
+                      onClick={() => setPickable((prev) => !prev)}
+                      className={`${tableStyling.ToggleButton} ${pickable ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                    >
+                      {pickable ? 'Pickable' : 'Not Pickable'}
                     </button>
                   </div>
                 </div>

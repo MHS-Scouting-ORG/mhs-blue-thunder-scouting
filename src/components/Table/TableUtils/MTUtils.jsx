@@ -164,6 +164,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const canHangByForm = teamStats.some((match) => String(match?.Teleop?.Endgame || 'None') !== 'None')
       const canHangByNotes = String(team?.TeamAttributes?.MaxHang || 'None') !== 'None'
       const hasAutosByNotes = Number(team?.TeamAttributes?.NumAutos || 0) > 0
+      const isPickable = team?.TeamAttributes?.Pickable !== false
 
       //grade
 
@@ -207,6 +208,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         canHang: canHangByForm || canHangByNotes,
         canTrench: capabilities.includes('Trench'),
         hasAutos: hasScoredAuto || hasAutosByNotes,
+        pickable: isPickable,
         /* Grade */
         SumPriorities: team.SumPriorities,
         //NPts: isNaN(rPts) ? 0 : 67,//rPts,

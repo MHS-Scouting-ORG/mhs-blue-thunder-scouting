@@ -232,6 +232,7 @@ const buildTeamEntry = (teamNumber, regional) => {
         CyclesPerMatch: 0,
         FuelPerCycle: 0,
         NumAutos: 0,
+        Pickable: true,
         Capabilities: [],
         MaxHang: HangOpts.None,
         HangTeamwork: HangTeamworkOpts.None,

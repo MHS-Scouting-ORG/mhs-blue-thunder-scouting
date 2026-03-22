@@ -55,6 +55,7 @@ function AllianceSelectionView({ tableData, regional }) {
   const [alliances, setAlliances] = useState(getEmptyAlliances());
   const [currentPickIndex, setCurrentPickIndex] = useState(0);
   const [confirm, setConfirm] = useState(false);
+  const [pickableOnly, setPickableOnly] = useState(false);
 
   const weightFields = [
     { key: 'autoActions', label: 'Auto Actions' },
@@ -168,8 +169,10 @@ function AllianceSelectionView({ tableData, regional }) {
         .map(normalizeTeamNumber)
     );
 
-    return rankedTeams.filter(team => !selectedTeams.has(normalizeTeamNumber(team.TeamNumber)));
-  }, [rankedTeams, alliances]);
+    return rankedTeams
+      .filter(team => !selectedTeams.has(normalizeTeamNumber(team.TeamNumber)))
+      .filter((team) => !pickableOnly || team?.pickable !== false);
+  }, [rankedTeams, alliances, pickableOnly]);
 
   const handleTeamSelect = (teamNumber) => {
     if (!teamNumber || currentPickIndex >= pickingOrder.length) return;
@@ -544,6 +547,16 @@ function AllianceSelectionView({ tableData, regional }) {
       {/* Leaderboard */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
         <h3 style={{ marginTop: 0, marginBottom: "20px", textAlign: "center" }}>Team Leaderboard</h3>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+          <button
+            type="button"
+            onClick={() => setPickableOnly((prev) => !prev)}
+            className={`${tableStyles.ToggleButton} ${pickableOnly ? tableStyles.ToggleButtonOn : tableStyles.ToggleButtonOff}`}
+          >
+            Pickable only
+          </button>
+        </div>
 
         <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '14px', marginBottom: '16px', border: '1px solid #e5e5e5' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '8px', flexWrap: 'wrap' }}>

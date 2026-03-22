@@ -12,6 +12,53 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [lookupSuggestions, setLookupSuggestions] = useState([]);
 
+  const getMatchLevelAndNumber = (match) => {
+    const compLevel = String(match?.comp_level || '').trim().toLowerCase();
+    const compNumber = Number(match?.match_number);
+    if (compLevel) {
+      return {
+        level: compLevel,
+        number: Number.isFinite(compNumber) ? compNumber : -1,
+      };
+    }
+
+    const rawMatchId = String(match?.MatchId || '').trim().toLowerCase();
+    const idParts = rawMatchId.split('_');
+    const token = idParts.length >= 2 ? idParts[1] : rawMatchId;
+    const parsed = token.match(/^([a-z]+)(\d+)$/);
+    if (parsed) {
+      return {
+        level: parsed[1],
+        number: Number(parsed[2]),
+      };
+    }
+
+    return {
+      level: '',
+      number: -1,
+    };
+  };
+
+  const getSortBucket = (level) => {
+    if (level === 'q' || level === 'qm' || level === 'qualification' || level === 'qualifications') return 0;
+    if (level === 'p' || level === 'pm' || level === 'practice') return 2;
+    return 1;
+  };
+
+  const compareMatchesForSearch = (a, b) => {
+    const aMeta = getMatchLevelAndNumber(a);
+    const bMeta = getMatchLevelAndNumber(b);
+
+    const bucketDiff = getSortBucket(aMeta.level) - getSortBucket(bMeta.level);
+    if (bucketDiff !== 0) return bucketDiff;
+
+    if (aMeta.number !== bMeta.number) {
+      return bMeta.number - aMeta.number;
+    }
+
+    return String(a?.MatchId || '').localeCompare(String(b?.MatchId || ''));
+  };
+
   const applySelectedTeam = (teamNum) => {
     setSelectedTeam(teamNum);
     setSearchTerm('');
@@ -75,7 +122,7 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
               seen.add(id)
               return true
             })
-            .sort((a, b) => String(a?.MatchId || '').localeCompare(String(b?.MatchId || '')))
+            .sort(compareMatchesForSearch)
 
           setMatches(normalized);
         })

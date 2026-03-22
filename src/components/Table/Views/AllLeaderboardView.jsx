@@ -58,6 +58,7 @@ function AllLeaderboardView({ tableData, regional }) {
   const [canHang, setCanHang] = useState(false)
   const [canTrench, setCanTrench] = useState(false)
   const [hasAutos, setHasAutos] = useState(false)
+  const [pickableOnly, setPickableOnly] = useState(false)
   const [seedWeights, setSeedWeights] = useState(defaultSeedWeights)
   const [showVariablesModal, setShowVariablesModal] = useState(false)
   const [variablesDraft, setVariablesDraft] = useState(null)
@@ -213,6 +214,7 @@ function AllLeaderboardView({ tableData, regional }) {
         canHang: Boolean(team?.canHang),
         canTrench: Boolean(team?.canTrench),
         hasAutos: Boolean(team?.hasAutos),
+        pickable: team?.pickable !== false,
       }
     })
   }, [tableData, nameMap, rankingOptions])
@@ -233,6 +235,7 @@ function AllLeaderboardView({ tableData, regional }) {
       if (canHang && !team.canHang) return false
       if (canTrench && !team.canTrench) return false
       if (hasAutos && !team.hasAutos) return false
+      if (pickableOnly && !team.pickable) return false
 
       if (!search) return true
 
@@ -255,7 +258,7 @@ function AllLeaderboardView({ tableData, regional }) {
     })
 
     return sorted
-  }, [rankedRows, searchTerm, sortKey, sortDir, minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos])
+  }, [rankedRows, searchTerm, sortKey, sortDir, minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos, pickableOnly])
 
   const activeFilterCount = useMemo(() => {
     let count = 0
@@ -269,8 +272,9 @@ function AllLeaderboardView({ tableData, regional }) {
     if (canHang) count += 1
     if (canTrench) count += 1
     if (hasAutos) count += 1
+    if (pickableOnly) count += 1
     return count
-  }, [minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos])
+  }, [minMatches, minConfidence, minAllianceScore, minAutoPts, minEndgamePts, maxBrokenRate, robotSpeed, canHang, canTrench, hasAutos, pickableOnly])
 
   const resetFilters = () => {
     setSearchTerm('')
@@ -286,6 +290,7 @@ function AllLeaderboardView({ tableData, regional }) {
     setCanHang(false)
     setCanTrench(false)
     setHasAutos(false)
+    setPickableOnly(false)
   }
 
   return (
@@ -501,6 +506,14 @@ function AllLeaderboardView({ tableData, regional }) {
                   style={{ flex: 1, textAlign: 'center' }}
                 >
                   Has Autos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPickableOnly(prev => !prev)}
+                  className={`${tableStyles.ToggleButton} ${pickableOnly ? tableStyles.ToggleButtonOn : tableStyles.ToggleButtonOff}`}
+                  style={{ flex: 1, textAlign: 'center' }}
+                >
+                  Pickable only
                 </button>
               </div>
             </div>

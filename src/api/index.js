@@ -299,7 +299,8 @@ const normalizeTeamRead = (team) => {
     TeamAttributes: {
       ...(team.TeamAttributes || {}),
       Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities),
-      CanAutoHang: team?.TeamAttributes?.CanAutoHang
+      CanAutoHang: team?.TeamAttributes?.CanAutoHang,
+      Pickable: team?.TeamAttributes?.Pickable !== false
     },
     Regionals: normalizeRegionals(team.Regionals)
   }

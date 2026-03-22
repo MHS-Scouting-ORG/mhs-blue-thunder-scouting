@@ -17,6 +17,7 @@ export const createTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
@@ -106,6 +107,7 @@ export const updateTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
@@ -195,6 +197,7 @@ export const deleteTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
