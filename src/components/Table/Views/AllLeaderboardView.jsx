@@ -293,6 +293,21 @@ function AllLeaderboardView({ tableData, regional }) {
     setPickableOnly(false)
   }
 
+  const handleHeaderSort = (key) => {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+
+    setSortKey(key)
+    setSortDir('desc')
+  }
+
+  const getSortIndicator = (key) => {
+    if (sortKey !== key) return ''
+    return sortDir === 'asc' ? ' ▲' : ' ▼'
+  }
+
   return (
     <div>
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>All Teams Leaderboard</h2>
@@ -670,16 +685,16 @@ function AllLeaderboardView({ tableData, regional }) {
               <thead>
                 <tr style={{ backgroundColor: '#f8f9fa' }}>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Name</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Skill</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Confidence</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Matches</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Avg Pts</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Auto</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Endgame</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Broken %</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('TeamNumber')}>Team{getSortIndicator('TeamNumber')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('TeamName')}>Name{getSortIndicator('TeamName')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('allianceScore')}>Alliance Score{getSortIndicator('allianceScore')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('skillRating')}>Skill{getSortIndicator('skillRating')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('confidence')}>Confidence{getSortIndicator('confidence')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('Matches')}>Matches{getSortIndicator('Matches')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('AvgPoints')}>Avg Pts{getSortIndicator('AvgPoints')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('AvgAutoPts')}>Auto{getSortIndicator('AvgAutoPts')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('AvgEndgamePts')}>Endgame{getSortIndicator('AvgEndgamePts')}</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6', cursor: 'pointer' }} onClick={() => handleHeaderSort('brokenRate')}>Broken %{getSortIndicator('brokenRate')}</th>
                 </tr>
               </thead>
               <tbody>

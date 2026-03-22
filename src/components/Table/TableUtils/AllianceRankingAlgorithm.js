@@ -61,6 +61,8 @@ const DEFAULT_OPTIONS = {
     teleopTravelMidMax: 6
   },
 
+  confidenceStdDevCap: 25,
+
   metricWeights: {
     ...DEFAULT_PROFILE.metricWeights
   },
@@ -102,6 +104,17 @@ const normalizeCentered = (value, labelsInOrder = []) => {
 const avg = (arr) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0
   return arr.reduce((sum, x) => sum + toNumber(x, 0), 0) / arr.length
+}
+
+const stdDev = (arr) => {
+  if (!Array.isArray(arr) || arr.length === 0) return 0
+  const values = arr.map((x) => toNumber(x, 0))
+  const mean = avg(values)
+  const variance = values.reduce((sum, value) => {
+    const diff = value - mean
+    return sum + (diff * diff)
+  }, 0) / values.length
+  return Math.sqrt(Math.max(0, variance))
 }
 
 const normalizeWeights = (weights, fallbackWeights) => {
@@ -923,7 +936,7 @@ export function calculateTeamScore(teamData, options = {}) {
  *  - allianceScore: conservative rating (primary sort key)
  *  - skillRating: current estimated skill
  *  - uncertainty: rating uncertainty
- *  - confidence: 0..1 certainty estimate
+ *  - confidence: 0..1 consistency score derived from match-performance stddev (higher = better)
  *  - matchesRated: number of matches used in updates
  */
 export function rankTeamsForAllianceSelection(teamsData, options = {}) {
@@ -986,7 +999,12 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         (mergedOptions.uncertaintyPenalty * 0.45) * uncertaintyFromSample -
         (mergedOptions.inconsistencyPenalty * 0.5) * inconsistency
 
-      const confidence = clamp(1 - (uncertaintyFromSample / mergedOptions.maxUncertainty), 0, 1)
+      const performanceStdDev = stdDev(teamMatches.map((match) => getMatchPerformanceScore(match, mergedOptions)))
+      const confidence = clamp(
+        1 - (performanceStdDev / Math.max(1, toNumber(mergedOptions.confidenceStdDevCap, 25))),
+        0,
+        1
+      )
 
       return {
         ...team,

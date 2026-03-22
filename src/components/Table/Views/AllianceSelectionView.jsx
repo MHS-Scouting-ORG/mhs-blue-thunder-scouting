@@ -460,8 +460,7 @@ function AllianceSelectionView({ tableData, regional }) {
 
   const renderLeaderboard = () => {
     const getRSOutOfFive = (team) => {
-      const confidence = Number(team?.confidence ?? 0);
-      const normalized = Math.max(0, Math.min(1, confidence));
+      const normalized = Math.max(0, Math.min(1, Number(team?.confidence ?? 0)));
       return (normalized * 5).toFixed(1);
     };
 
