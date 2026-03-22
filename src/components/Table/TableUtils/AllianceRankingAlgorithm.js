@@ -9,60 +9,31 @@
  *   allianceScore = skillRating - uncertaintyPenalty
  */
 
-const DEFAULT_GAME_PROFILE = 'frc2026Rebuilt'
-
-const DEFAULT_GAME_PROFILES = {
-  legacy: {
-    metricWeights: {
-      autoActions: 0.16,
-      autoHang: 0.04,
-      teleopMobility: 0.08,
-      endgame: 0.12,
-      ballsShot: 0.27,
-      shootingCycles: 0.08,
-      robotSpeed: 0.09,
-      shooterSpeed: 0.04,
-      driverSkill: 0.03,
-      teamImpact: 0.03,
-      strategyExecution: 0.03,
-      reliability: 0.03
-    },
-    seedWeights: {
-      avgPoints: 0.45,
-      avgAutoPts: 0.27,
-      avgEndgamePts: 0.2,
-      opr: 0.05,
-      reliability: 0.03
-    }
+const DEFAULT_PROFILE = {
+  metricWeights: {
+    autoActions: 0.17,
+    autoHang: 0.06,
+    teleopMobility: 0.07,
+    endgame: 0.16,
+    ballsShot: 0.16,
+    shootingCycles: 0.1,
+    robotSpeed: 0.07,
+    shooterSpeed: 0.04,
+    driverSkill: 0.05,
+    teamImpact: 0.04,
+    strategyExecution: 0.05,
+    reliability: 0.03
   },
-  frc2026Rebuilt: {
-    metricWeights: {
-      autoActions: 0.17,
-      autoHang: 0.06,
-      teleopMobility: 0.07,
-      endgame: 0.16,
-      ballsShot: 0.16,
-      shootingCycles: 0.1,
-      robotSpeed: 0.07,
-      shooterSpeed: 0.04,
-      driverSkill: 0.05,
-      teamImpact: 0.04,
-      strategyExecution: 0.05,
-      reliability: 0.03
-    },
-    seedWeights: {
-      avgPoints: 0.46,
-      avgAutoPts: 0.26,
-      avgEndgamePts: 0.18,
-      opr: 0.05,
-      reliability: 0.05
-    }
+  seedWeights: {
+    avgPoints: 0.46,
+    avgAutoPts: 0.26,
+    avgEndgamePts: 0.18,
+    opr: 0.05,
+    reliability: 0.05
   }
 }
 
 const DEFAULT_OPTIONS = {
-  gameProfile: DEFAULT_GAME_PROFILE,
-
   initialRating: 50,
   initialUncertainty: 18,
   minUncertainty: 4,
@@ -91,10 +62,10 @@ const DEFAULT_OPTIONS = {
   },
 
   metricWeights: {
-    ...DEFAULT_GAME_PROFILES.frc2026Rebuilt.metricWeights
+    ...DEFAULT_PROFILE.metricWeights
   },
   seedWeights: {
-    ...DEFAULT_GAME_PROFILES.frc2026Rebuilt.seedWeights
+    ...DEFAULT_PROFILE.seedWeights
   },
 
   featureWeights: {
@@ -114,6 +85,19 @@ const toNumber = (value, fallback = 0) => {
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const safeLower = (value) => String(value || '').toLowerCase()
+
+const normalizeCentered = (value, labelsInOrder = []) => {
+  const labels = labelsInOrder.map((label) => safeLower(label))
+  if (labels.length < 2) return 0
+
+  const idx = labels.findIndex((label) => label === safeLower(value))
+  if (idx < 0) return 0
+
+  const center = (labels.length - 1) / 2
+  const top = labels.length - 1
+  const distanceToTop = Math.max(1e-9, top - center)
+  return clamp((idx - center) / distanceToTop, -1, 1)
+}
 
 const avg = (arr) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0
@@ -156,7 +140,7 @@ const mergeWeights = (baseWeights, overrideWeights) => {
   }
 }
 
-const mapLegacyFeatureWeights = (featureWeights) => {
+const mapFeatureWeightAliases = (featureWeights) => {
   if (!featureWeights || typeof featureWeights !== 'object') return {}
 
   return {
@@ -169,37 +153,36 @@ const mapLegacyFeatureWeights = (featureWeights) => {
 }
 
 const resolveRankingOptions = (options = {}) => {
-  const profileName = options.gameProfile || DEFAULT_OPTIONS.gameProfile
-  const profile = DEFAULT_GAME_PROFILES[profileName] || DEFAULT_GAME_PROFILES[DEFAULT_GAME_PROFILE]
+  const normalizedOptions = { ...(options || {}) }
+  delete normalizedOptions.gameProfile
 
   const metricOverride = {
-    ...mapLegacyFeatureWeights(options.featureWeights),
-    ...(options.metricWeights || {})
+    ...mapFeatureWeightAliases(normalizedOptions.featureWeights),
+    ...(normalizedOptions.metricWeights || {})
   }
 
   const metricWeights = normalizeWeights(
-    mergeWeights(profile.metricWeights, metricOverride),
-    profile.metricWeights
+    mergeWeights(DEFAULT_PROFILE.metricWeights, metricOverride),
+    DEFAULT_PROFILE.metricWeights
   )
 
   const seedWeights = normalizeWeights(
-    mergeWeights(profile.seedWeights, options.seedWeights),
-    profile.seedWeights
+    mergeWeights(DEFAULT_PROFILE.seedWeights, normalizedOptions.seedWeights),
+    DEFAULT_PROFILE.seedWeights
   )
 
   return {
     ...DEFAULT_OPTIONS,
-    ...options,
-    gameProfile: profileName,
+    ...normalizedOptions,
     normalizationCaps: {
       ...DEFAULT_OPTIONS.normalizationCaps,
-      ...(options.normalizationCaps || {})
+      ...(normalizedOptions.normalizationCaps || {})
     },
     metricWeights,
     seedWeights,
     featureWeights: {
       ...DEFAULT_OPTIONS.featureWeights,
-      ...(options.featureWeights || {})
+      ...(normalizedOptions.featureWeights || {})
     }
   }
 }
@@ -214,26 +197,31 @@ const parseMatchOrder = (matchId) => {
 
 const parseSpeedScore = (speed) => {
   const v = safeLower(speed)
-  if (v.includes('fast')) return 1
-  if (v.includes('average') || v.includes('medium')) return 0.6
-  if (v.includes('slow')) return 0.3
+  if (v.includes('very fast')) return 1
+  if (v.includes('fast')) return 0.5
+  if (v.includes('average') || v.includes('medium')) return 0
+  if (v.includes('very slow')) return -1
+  if (v.includes('slow')) return -0.5
   return 0
 }
 
 const parseDriverSkillScore = (skill) => {
   const v = safeLower(skill)
   if (v.includes('excellent')) return 1
-  if (v.includes('good')) return 0.75
-  if (v.includes('average')) return 0.5
-  if (v.includes('poor')) return 0.25
+  if (v.includes('good')) return 0.5
+  if (v.includes('average')) return 0
+  if (v.includes('very poor')) return -1
+  if (v.includes('poor')) return -0.5
   return 0
 }
 
 const parseTeamImpactScore = (impact) => {
   const v = safeLower(impact)
-  if (v.includes('high')) return 1
-  if (v.includes('medium')) return 0.6
-  if (v.includes('low')) return 0.3
+  if (v.includes('very high')) return 1
+  if (v.includes('high')) return 0.5
+  if (v.includes('medium')) return 0
+  if (v.includes('nothing')) return -1
+  if (v.includes('low')) return -0.5
   return 0
 }
 
@@ -247,6 +235,8 @@ const parseAutoScore = (autoStrat) => {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
+      } else if (v.includes('crossed') || v.includes('bump') || v.includes('trench')) {
+        maxScore = Math.max(maxScore, 0.6)
       } else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) {
         maxScore = Math.max(maxScore, 0.3)
       }
@@ -257,15 +247,15 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
+  if (v.includes('crossed') || v.includes('bump') || v.includes('trench')) return 0.6
   if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
   return 0
 }
 
 const parseAutoHangScore = (autoHang) => {
   const v = safeLower(autoHang)
-  if (v.includes('level3')) return 1
-  if (v.includes('level2')) return 0.7
-  if (v.includes('level1')) return 0.45
+  // Current form only captures auto hang as Level1 on/off.
+  if (v.includes('level1')) return 1
   return 0
 }
 
@@ -279,13 +269,20 @@ const parseEndgameScore = (endgame) => {
 
 const strategyQualityScore = (strategies) => {
   if (!Array.isArray(strategies) || strategies.length === 0) return 0
-  const qualityKeywords = ['score', 'shoot', 'cycle', 'defense', 'climb', 'amp', 'speaker', 'trap']
-  const hits = strategies.filter((strategy) =>
-    qualityKeywords.some((keyword) => safeLower(strategy).includes(keyword))
-  ).length
-  const breadth = clamp(strategies.length / 4, 0, 1)
-  const quality = clamp(hits / Math.max(1, strategies.length), 0, 1)
-  return 0.5 * breadth + 0.5 * quality
+
+  const scoreForStrategy = (strategy) => {
+    const v = safeLower(strategy)
+    if (v.includes('scoring')) return 1
+    if (v.includes('defending mid')) return 0.8
+    if (v.includes('defending')) return 0.75
+    if (v.includes('blocking')) return 0.7
+    if (v.includes('hoarding')) return 0.65
+    return 0.45
+  }
+
+  const quality = avg(strategies.map(scoreForStrategy))
+  const breadth = clamp(strategies.length / 3, 0, 1)
+  return clamp((0.7 * quality) + (0.3 * breadth), 0, 1)
 }
 
 const strategyExecutionScore = (activeStrategies, inactiveStrategies) => {
@@ -294,8 +291,9 @@ const strategyExecutionScore = (activeStrategies, inactiveStrategies) => {
     return active
   }
 
-  const inactivePenalty = clamp(inactiveStrategies.length / 5, 0, 0.35)
-  return clamp(active - inactivePenalty, 0, 1)
+  const inactive = strategyQualityScore(inactiveStrategies)
+  // Keep active role primary while still reflecting inactive role usefulness.
+  return clamp((0.75 * active) + (0.25 * inactive), 0, 1)
 }
 
 const getPenaltySeverity = (match) => {
@@ -449,6 +447,7 @@ const getAutoActionPoints = (autoStrat) => {
   actions.forEach((action) => {
     const v = safeLower(action)
     if (v.includes('scored') || v.includes('goal')) points += 8
+    else if (v.includes('crossed') || v.includes('bump') || v.includes('trench')) points += 5
     else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) points += 3
   })
   return points
@@ -469,11 +468,7 @@ const getEndgamePoints = (endgame) => {
 }
 
 const getAutoWinScore = (value) => {
-  const v = safeLower(value)
-  if (v === 'win') return 1
-  if (v === 'tie') return 0.5
-  if (v === 'lose') return 0
-  return 0
+  return normalizeCentered(value, ['lose', 'tie', 'win'])
 }
 
 const normalizeQualEntriesFromTeams = (teamsData) => {
@@ -799,10 +794,7 @@ const computeTeamScoutAverages = (team, options) => {
     teamImpact: avg(quals.map((m) => parseTeamImpactScore(m?.TeamImpact))),
     strategyExecution: avg(quals.map((m) => strategyExecutionScore(m?.ActiveStrat, m?.InactiveStrat))),
     winRate: avg(quals.map((m) => {
-      const v = safeLower(m?.MatchResult)
-      if (v === 'win') return 1
-      if (v === 'tie') return 0.5
-      return 0
+      return normalizeCentered(m?.MatchResult, ['lose', 'tie', 'win'])
     })),
     autoImpact: avg(quals.map((m) => parseTeamImpactScore(getAutoImpactValue(m)))),
     autoWinRate: avg(quals.map((m) => getAutoWinScore(getAutoWinValue(m)))),
@@ -1053,13 +1045,11 @@ export function updateRatingsWithNewMatches(existingRatings = {}, newMatchEntrie
   return result
 }
 
-export function getDefaultAllianceRankingOptions(gameProfile = DEFAULT_GAME_PROFILE) {
-  const profile = DEFAULT_GAME_PROFILES[gameProfile] || DEFAULT_GAME_PROFILES[DEFAULT_GAME_PROFILE]
+export function getDefaultAllianceRankingOptions() {
   return {
     ...DEFAULT_OPTIONS,
-    gameProfile,
-    metricWeights: { ...profile.metricWeights },
-    seedWeights: { ...profile.seedWeights },
+    metricWeights: { ...DEFAULT_PROFILE.metricWeights },
+    seedWeights: { ...DEFAULT_PROFILE.seedWeights },
     normalizationCaps: { ...DEFAULT_OPTIONS.normalizationCaps }
   }
 }

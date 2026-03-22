@@ -43,7 +43,7 @@ const getEmptyAlliances = () => ({
 });
 
 function AllianceSelectionView({ tableData, regional }) {
-  const defaultRankingOptions = useMemo(() => getDefaultAllianceRankingOptions('frc2026Rebuilt'), []);
+  const defaultRankingOptions = useMemo(() => getDefaultAllianceRankingOptions(), []);
   const defaultMetricWeights = useMemo(() => ({ ...(defaultRankingOptions.metricWeights || {}) }), [defaultRankingOptions]);
 
   const [metricWeights, setMetricWeights] = useState(defaultMetricWeights);
@@ -74,7 +74,6 @@ function AllianceSelectionView({ tableData, regional }) {
   const normalizeTeamNumber = (value) => String(value ?? '').trim();
 
   const rankingOptions = useMemo(() => ({
-    gameProfile: 'frc2026Rebuilt',
     metricWeights,
   }), [metricWeights]);
 

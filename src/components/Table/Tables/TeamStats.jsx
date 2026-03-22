@@ -34,6 +34,40 @@ function TeamStats(props) {
     return best;
   };
 
+  const averageOrdinalLabel = (rows, valueGetter, orderedLabels, neutralLabel = null) => {
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return 'N/A';
+    }
+
+    const normalizedLabels = orderedLabels.map((label) => String(label || '').trim());
+    const indexByLabel = new Map(normalizedLabels.map((label, idx) => [label.toLowerCase(), idx]));
+
+    const values = rows
+      .map(valueGetter)
+      .map((value) => {
+        const normalized = String(value || '').trim().toLowerCase();
+        if (!normalized) return null;
+        const idx = indexByLabel.get(normalized);
+        return Number.isFinite(idx) ? idx : null;
+      })
+      .filter((value) => value !== null);
+
+    if (values.length === 0) return 'N/A';
+
+    const averageIndex = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const roundedIndex = Math.max(0, Math.min(normalizedLabels.length - 1, Math.round(averageIndex)));
+    const label = normalizedLabels[roundedIndex];
+
+    const neutralKey = String(neutralLabel || '').trim().toLowerCase();
+    const neutralIndex = neutralKey ? indexByLabel.get(neutralKey) : null;
+    const center = Number.isFinite(neutralIndex) ? neutralIndex : ((normalizedLabels.length - 1) / 2);
+    const top = normalizedLabels.length - 1;
+    const distanceToTop = Math.max(1e-9, top - center);
+    const normalizedValue = Math.max(-1, Math.min(1, (averageIndex - center) / distanceToTop));
+
+    return `${label} (${normalizedValue.toFixed(2)})`;
+  };
+
   const topFromListFields = (arr, field) => {
     const flattened = arr
       .flatMap(m => {
@@ -158,10 +192,15 @@ function TeamStats(props) {
           const ranked = Array.from(teamToMatches.entries())
             .map(([team, matchSet]) => {
               const submittedByNow = Array.from(matchSet).filter(n => n <= currentMatch).length;
+              const latestSubmittedMatch = Array.from(matchSet)
+                .filter(n => n <= currentMatch)
+                .reduce((max, n) => Math.max(max, n), 0);
+              const scoringWindow = Math.max(1, latestSubmittedMatch);
               return {
                 team,
                 submittedByNow,
-                score: submittedByNow / currentMatch,
+                // Keep score stable between this team's own matches.
+                score: submittedByNow / scoringWindow,
               };
             })
             .filter(teamData => teamData.submittedByNow > 0)
@@ -237,6 +276,7 @@ function TeamStats(props) {
   const safeStats = stats || {};
 
   const attrs = teamData?.TeamAttributes || {};
+  const qualificationMatches = matches.filter(isQualificationSubmission);
   
   // Handle AutoStrat as an array
   const flattenedAutoStrats = matches
@@ -249,16 +289,54 @@ function TeamStats(props) {
         acc === val || acc.split(',').includes(val) ? acc : acc + ',' + val, '')
     : 'None';
   
-  const autoHangMode = mode(matches.map(m => m?.Autonomous?.AutoHang || 'None'));
-  const autoWinMode = mode(matches.map(m => m?.AutoWin));
-  const autoImpactMode = mode(matches.map(m => m?.AutoImpact));
-  const endgameMode = mode(matches.map(m => m?.Teleop?.Endgame || 'None'));
-  const matchResultMode = mode(matches.map(m => m?.MatchResult || 'N/A'));
-  const teamImpactMode = mode(matches.map(m => m?.TeamImpact || 'N/A'));
+  const autoHangMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.Autonomous?.AutoHang,
+    ['None', 'Level1', 'Level2', 'Level3']
+  );
+  const autoWinMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.AutoWin,
+    ['Lose', 'Tie', 'Win'],
+    'Tie'
+  );
+  const autoImpactMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.AutoImpact,
+    ['Nothing', 'Low', 'Medium', 'High', 'Very High'],
+    'Medium'
+  );
+  const endgameMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.Teleop?.Endgame,
+    ['None', 'Level1', 'Level2', 'Level3']
+  );
+  const matchResultMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.MatchResult,
+    ['Lose', 'Tie', 'Win'],
+    'Tie'
+  );
+  const teamImpactMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.TeamImpact,
+    ['Nothing', 'Low', 'Medium', 'High', 'Very High'],
+    'Medium'
+  );
   const activeMode = topFromListFields(matches, 'ActiveStrat');
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
-  const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
-  const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
+  const shooterMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.RobotInfo?.ShooterSpeed,
+    ['Very Slow', 'Slow', 'Average', 'Fast', 'Very Fast'],
+    'Average'
+  );
+  const driverSkillMode = averageOrdinalLabel(
+    qualificationMatches,
+    (m) => m?.RobotInfo?.DriverSkill,
+    ['Very Poor', 'Poor', 'Average', 'Good', 'Excellent'],
+    'Average'
+  );
   
   const ballsShot = mode(matches.map(m => m?.RobotInfo?.BallsShot || 'None'))
 

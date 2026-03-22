@@ -31,7 +31,7 @@ const normalizeSeedWeights = (weights, fallback) => {
 
 function AllLeaderboardView({ tableData, regional }) {
   const defaultSeedWeights = useMemo(() => {
-    const defaults = getDefaultAllianceRankingOptions('frc2026Rebuilt')
+    const defaults = getDefaultAllianceRankingOptions()
     return normalizeSeedWeights(defaults.seedWeights, {
       avgPoints: 0.46,
       avgAutoPts: 0.26,
@@ -65,7 +65,6 @@ function AllLeaderboardView({ tableData, regional }) {
   const [isSavingSettings, setIsSavingSettings] = useState(false)
 
   const rankingOptions = useMemo(() => ({
-    gameProfile: 'frc2026Rebuilt',
     seedWeights,
   }), [seedWeights])
 
