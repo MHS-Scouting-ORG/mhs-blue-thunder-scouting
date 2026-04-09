@@ -12,6 +12,12 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [lookupSuggestions, setLookupSuggestions] = useState([]);
 
+  const formatDefenseEffectiveness = (value) => {
+    const normalized = String(value || '').trim()
+    if (!normalized) return 'N/A'
+    return normalized === 'VeryPoor' ? 'Very Poor' : normalized
+  }
+
   const applySelectedTeam = (teamNum) => {
     setSelectedTeam(teamNum);
     setSearchTerm('');
@@ -282,7 +288,7 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
                             <div>Match Result: {m?.MatchResult || 'N/A'} • Team Impact: {m?.TeamImpact || 'N/A'}</div>
                             <div>Alliance Score: {Number.isFinite(Number(m?.AllianceScore)) ? Number(m?.AllianceScore) : 'N/A'} • Opponent Score: {Number.isFinite(Number(m?.OpponentScore)) ? Number(m?.OpponentScore) : 'N/A'}</div>
                             <div>Active: {stringifyList(m?.ActiveStrat)} • Inactive: {stringifyList(m?.InactiveStrat)}</div>
-                            <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
+                            <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Defense: {formatDefenseEffectiveness(m?.RobotInfo?.DefenseEffectiveness)} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
                             <div>Penalties: {Object.entries(m?.Penalties?.PenaltiesCommitted || {}).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None'}</div>
                             {String(m?.RobotInfo?.Comments || '').trim() ? <div>Comments: {String(m?.RobotInfo?.Comments || '').trim()}</div> : null}
                           </>

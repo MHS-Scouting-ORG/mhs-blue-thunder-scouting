@@ -22,6 +22,8 @@ export const createTeam = /* GraphQL */ `
         HangTeamwork
         HangTime
         CanAutoHang
+        Pickable
+        Turret
         Photo
         Notes
         __typename
@@ -57,6 +59,7 @@ export const createTeam = /* GraphQL */ `
             RobotSpeed
             ShooterSpeed
             DriverSkill
+            DefenseEffectiveness
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -111,6 +114,8 @@ export const updateTeam = /* GraphQL */ `
         HangTeamwork
         HangTime
         CanAutoHang
+        Pickable
+        Turret
         Photo
         Notes
         __typename
@@ -146,6 +151,7 @@ export const updateTeam = /* GraphQL */ `
             RobotSpeed
             ShooterSpeed
             DriverSkill
+            DefenseEffectiveness
             FuelCapacity
             BallsShot
             ShootingCycles
@@ -200,6 +206,8 @@ export const deleteTeam = /* GraphQL */ `
         HangTeamwork
         HangTime
         CanAutoHang
+        Pickable
+        Turret
         Photo
         Notes
         __typename
@@ -235,6 +243,7 @@ export const deleteTeam = /* GraphQL */ `
             RobotSpeed
             ShooterSpeed
             DriverSkill
+            DefenseEffectiveness
             FuelCapacity
             BallsShot
             ShootingCycles

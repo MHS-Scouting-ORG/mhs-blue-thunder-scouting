@@ -34,6 +34,14 @@ export enum DriverSkillOpts {
   EXCELLENT = "Excellent"
 }
 
+export enum DefenseEffectivenessOpts {
+  VERY_POOR = "VeryPoor",
+  POOR = "Poor",
+  AVERAGE = "Average",
+  GOOD = "Good",
+  EXCELLENT = "Excellent"
+}
+
 export enum StratOpts {
   HOARDING = "Hoarding",
   DEFENSE = "Defense",
@@ -142,6 +150,7 @@ type EagerRobotInfoType = {
   readonly RobotSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly ShooterSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly DriverSkill?: DriverSkillOpts | keyof typeof DriverSkillOpts | null;
+  readonly DefenseEffectiveness?: DefenseEffectivenessOpts | keyof typeof DefenseEffectivenessOpts | null;
   readonly FuelCapacity?: number | null;
   readonly BallsShot?: number | null;
   readonly ShootingCycles?: number | null;
@@ -153,6 +162,7 @@ type LazyRobotInfoType = {
   readonly RobotSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly ShooterSpeed?: SpeedOpts | keyof typeof SpeedOpts | null;
   readonly DriverSkill?: DriverSkillOpts | keyof typeof DriverSkillOpts | null;
+  readonly DefenseEffectiveness?: DefenseEffectivenessOpts | keyof typeof DefenseEffectivenessOpts | null;
   readonly FuelCapacity?: number | null;
   readonly BallsShot?: number | null;
   readonly ShootingCycles?: number | null;
@@ -222,6 +232,8 @@ type EagerTeamAttributesType = {
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
   readonly CanAutoHang?: boolean | null;
+  readonly Pickable?: boolean | null;
+  readonly Turret?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }
@@ -238,6 +250,8 @@ type LazyTeamAttributesType = {
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
   readonly CanAutoHang?: boolean | null;
+  readonly Pickable?: boolean | null;
+  readonly Turret?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
 }

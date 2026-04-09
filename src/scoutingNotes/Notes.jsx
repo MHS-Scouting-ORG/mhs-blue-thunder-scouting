@@ -56,6 +56,8 @@ function Notes(props) {
   const [canDoubleHang, setCanDoubleHang] = useState(false)
   const [canTripleHang, setCanTripleHang] = useState(false)
   const [canAutoHang, setCanAutoHang] = useState(false)
+  const [hasTurret, setHasTurret] = useState(false)
+  const [pickable, setPickable] = useState(true)
 
   /* Submit */
   const [confirm, setConfirm] = useState(false);
@@ -180,6 +182,8 @@ function Notes(props) {
     setCanDoubleHang(false)
     setCanTripleHang(false)
     setCanAutoHang(false)
+    setHasTurret(false)
+    setPickable(true)
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
       setStream(null)
@@ -273,12 +277,14 @@ function Notes(props) {
         const selectedCapabilities = Array.isArray(attrs.Capabilities)
           ? attrs.Capabilities
           : (attrs.Capabilities ? [attrs.Capabilities] : [])
-        setBump(selectedCapabilities.includes("Bump"))
+            setBump(selectedCapabilities.includes("Bump"))
         setTrench(selectedCapabilities.includes("Trench"))
         setMaxHangHeight(attrs.MaxHang || "None")
         setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
         setCanTripleHang(attrs.HangTeamwork === "TripleHang")
         setCanAutoHang(Boolean(attrs.CanAutoHang))
+        setHasTurret(Boolean(attrs.Turret))
+        setPickable(attrs.Pickable !== false)
       } else {
         alert('Unable to load or create team data. Please try again.')
       }
@@ -389,7 +395,9 @@ function Notes(props) {
       ].filter(Boolean),
       MaxHang: normalizeMaxHang(maxHangHeight),
       HangTeamwork: canTripleHang ? "TripleHang" : canDoubleHang ? "DoubleHang" : "None",
-      CanAutoHang: Boolean(canAutoHang)
+      CanAutoHang: Boolean(canAutoHang),
+      Turret: Boolean(hasTurret),
+      Pickable: Boolean(pickable)
     }
 
     try {
@@ -532,22 +540,43 @@ function Notes(props) {
           {findTeam && (
             <>
               <div style={gridRowStyle}>
-                <div style={{ flex: "1", minWidth: "150px" }}>
+                <div style={{ flex: "1 1 400px", minWidth: "220px" }}>
                   <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Team Name</label>
-                  <input 
-                    style={{
-                      height: "50px",
-                      width: "100%",
-                      padding: "8px",
-                      fontSize: "16px",
-                      borderRadius: "8px",
-                      boxSizing: "border-box"
-                    }}
-                    placeholder="Auto-filled from Blue Alliance" 
-                    type="text" 
-                    value={teamName} 
-                    readOnly
-                  />
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <input 
+                      style={{
+                        height: "50px",
+                        flex: 1,
+                        padding: "8px",
+                        fontSize: "16px",
+                        borderRadius: "8px",
+                        boxSizing: "border-box"
+                      }}
+                      placeholder="Auto-filled from Blue Alliance" 
+                      type="text" 
+                      value={teamName} 
+                      readOnly
+                    />
+                    <button
+                      type="button"
+                      aria-label={pickable ? 'Pickable robot' : 'Not pickable'}
+                      onClick={() => setPickable(prev => !prev)}
+                      className={`${tableStyling.ToggleButton} ${pickable ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        padding: 0,
+                        borderRadius: "12px",
+                        fontSize: "20px",
+                        lineHeight: 1,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}
+                    >
+                      {pickable ? '★' : '☆'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -739,6 +768,18 @@ function Notes(props) {
                       className={`${tableStyling.ToggleButton} ${canAutoHang ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
                       {canAutoHang ? 'Can Auto Hang' : 'Cannot Auto Hang'}
+                    </button>
+                  </div>
+                </div>
+
+                <div style={{ flex: "1", minWidth: "150px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Turret</label>
+                  <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
+                    <button
+                      onClick={() => setHasTurret(!hasTurret)}
+                      className={`${tableStyling.ToggleButton} ${hasTurret ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                    >
+                      {hasTurret ? 'Has Turret' : 'No Turret'}
                     </button>
                   </div>
                 </div>

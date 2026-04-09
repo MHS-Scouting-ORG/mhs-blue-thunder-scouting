@@ -12,8 +12,6 @@ function TeamStats(props) {
   const [stats, setStats] = useState(null);
   const [matches, setMatches] = useState([]);
   const [simpleTeamName, setSimpleTeamName] = useState('');
-  const [rankingTrend, setRankingTrend] = useState([]);
-  const [rankingTrendMeta, setRankingTrendMeta] = useState({ currentMatch: 0, teamsWithData: 0, hasEnoughTeams: false });
 
   const mode = (arr) => {
     const cleaned = arr.filter(v => v !== null && v !== undefined && String(v).trim() !== '');
@@ -47,16 +45,10 @@ function TeamStats(props) {
     return mode(flattened);
   };
 
-  const parseMatchNumberFromId = (matchId) => {
-    if (typeof matchId !== 'string') return null;
-    const normalized = matchId.toLowerCase();
-    const qmMatch = normalized.match(/qm(\d+)/);
-    if (qmMatch?.[1]) return Number(qmMatch[1]);
-
-    const trailing = normalized.match(/(\d+)$/);
-    if (trailing?.[1]) return Number(trailing[1]);
-
-    return null;
+  const formatDefenseEffectiveness = (value) => {
+    const normalized = String(value || '').trim();
+    if (!normalized || normalized === 'N/A') return normalized || 'N/A';
+    return normalized === 'VeryPoor' ? 'Very Poor' : normalized;
   };
 
   useEffect(() => {
@@ -100,81 +92,6 @@ function TeamStats(props) {
       : null;
     setStats(teamStats);
   }, [selectedTeam, information, regional]);
-
-  useEffect(() => {
-    if (!selectedTeam || !regional) {
-      setRankingTrend([]);
-      setRankingTrendMeta({ currentMatch: 0, teamsWithData: 0, hasEnoughTeams: false });
-      return;
-    }
-
-    apigetMatchesForRegional(regional)
-      .then(res => {
-        const items = res?.data?.teamMatchesByRegional?.items || [];
-        const teamToMatches = new Map();
-        let latestMatchNumber = 0;
-
-        items.forEach(match => {
-          const team = String(match?.Team || '').trim();
-          const matchNumber = parseMatchNumberFromId(match?.MatchId);
-          if (!team || !matchNumber || Number.isNaN(matchNumber)) return;
-
-          latestMatchNumber = Math.max(latestMatchNumber, matchNumber);
-          if (!teamToMatches.has(team)) teamToMatches.set(team, new Set());
-          teamToMatches.get(team).add(matchNumber);
-        });
-
-        const teamsWithData = Array.from(teamToMatches.values()).filter(set => set.size > 0).length;
-        const hasEnoughTeams = teamsWithData >= 2;
-        const selectedTeamKey = String(selectedTeam);
-        const selectedSet = teamToMatches.get(selectedTeamKey);
-
-        if (!hasEnoughTeams || !selectedSet || latestMatchNumber < 1) {
-          setRankingTrend([]);
-          setRankingTrendMeta({ currentMatch: latestMatchNumber, teamsWithData, hasEnoughTeams });
-          return;
-        }
-
-        const points = [];
-
-        for (let currentMatch = 1; currentMatch <= latestMatchNumber; currentMatch++) {
-          const ranked = Array.from(teamToMatches.entries())
-            .map(([team, matchSet]) => {
-              const submittedByNow = Array.from(matchSet).filter(n => n <= currentMatch).length;
-              return {
-                team,
-                submittedByNow,
-                score: submittedByNow / currentMatch,
-              };
-            })
-            .filter(teamData => teamData.submittedByNow > 0)
-            .sort((a, b) => {
-              if (b.score !== a.score) return b.score - a.score;
-              if (b.submittedByNow !== a.submittedByNow) return b.submittedByNow - a.submittedByNow;
-              return a.team.localeCompare(b.team);
-            });
-
-          const rankIndex = ranked.findIndex(teamData => teamData.team === selectedTeamKey);
-          if (rankIndex >= 0) {
-            points.push({
-              matchNumber: currentMatch,
-              rank: rankIndex + 1,
-              score: ranked[rankIndex].score,
-              submittedByNow: ranked[rankIndex].submittedByNow,
-              teamsRanked: ranked.length,
-            });
-          }
-        }
-
-        setRankingTrend(points);
-        setRankingTrendMeta({ currentMatch: latestMatchNumber, teamsWithData, hasEnoughTeams });
-      })
-      .catch(err => {
-        console.log('Error loading ranking trend:', err);
-        setRankingTrend([]);
-        setRankingTrendMeta({ currentMatch: 0, teamsWithData: 0, hasEnoughTeams: false });
-      });
-  }, [selectedTeam, regional]);
 
   useEffect(() => {
     if (!selectedTeam || !regional) {
@@ -242,6 +159,7 @@ function TeamStats(props) {
   const inactiveMode = topFromListFields(matches, 'InactiveStrat');
   const shooterMode = mode(matches.map(m => m?.RobotInfo?.ShooterSpeed || 'None'));
   const driverSkillMode = mode(matches.map(m => m?.RobotInfo?.DriverSkill || 'None'));
+  const defenseEffectivenessMode = formatDefenseEffectiveness(mode(matches.map(m => m?.RobotInfo?.DefenseEffectiveness || 'N/A')));
   
   const ballsShot = mode(matches.map(m => m?.RobotInfo?.BallsShot || 'None'))
 
@@ -267,31 +185,10 @@ function TeamStats(props) {
     ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
     : (attrs?.Capabilities || 'None');
   const canAutoHangText = typeof attrs?.CanAutoHang === 'boolean' ? (attrs.CanAutoHang ? 'Yes' : 'No') : 'N/A';
+  const turretText = typeof attrs?.Turret === 'boolean' ? (attrs.Turret ? 'Yes' : 'No') : 'N/A';
   const formattedEndgameMode = String(endgameMode || 'N/A').replace(/Level(\d+)/g, 'Level $1');
   const hangTimeText = typeof attrs?.HangTime === 'number' ? `${attrs.HangTime.toFixed(2)} s` : 'N/A';
   const brokenRateText = `${brokenRate}%`;
-
-  const chartWidth = 720;
-  const chartHeight = 230;
-  const chartPadding = { top: 20, right: 20, bottom: 34, left: 52 };
-  const plotWidth = chartWidth - chartPadding.left - chartPadding.right;
-  const plotHeight = chartHeight - chartPadding.top - chartPadding.bottom;
-  const maxRank = rankingTrend.length > 0 ? Math.max(...rankingTrend.map(point => point.rank)) : 1;
-  const minMatch = rankingTrend.length > 0 ? Math.min(...rankingTrend.map(point => point.matchNumber)) : 1;
-  const maxMatch = rankingTrend.length > 0 ? Math.max(...rankingTrend.map(point => point.matchNumber)) : 1;
-
-  const getX = (matchNumber) => {
-    if (maxMatch === minMatch) return chartPadding.left + (plotWidth / 2);
-    return chartPadding.left + ((matchNumber - minMatch) / (maxMatch - minMatch)) * plotWidth;
-  };
-
-  const getY = (rank) => {
-    if (maxRank <= 1) return chartPadding.top + (plotHeight / 2);
-    return chartPadding.top + ((rank - 1) / (maxRank - 1)) * plotHeight;
-  };
-
-  const trendPolylinePoints = rankingTrend.map(point => `${getX(point.matchNumber)},${getY(point.rank)}`).join(' ');
-  const latestTrendPoint = rankingTrend.length > 0 ? rankingTrend[rankingTrend.length - 1] : null;
 
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
@@ -357,6 +254,9 @@ function TeamStats(props) {
             <strong>Driver Skill:</strong> {driverSkillMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Defense Effectiveness:</strong> {defenseEffectivenessMode || 'N/A'}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Shooter Speed:</strong> {shooterMode || 'N/A'}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
@@ -399,6 +299,9 @@ function TeamStats(props) {
             <strong>Can Auto Hang (Notes)</strong>: {canAutoHangText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
+            <strong>Turret (Notes)</strong>: {turretText}
+          </div>
+          <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Capabilities:</strong> {capabilitiesText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
@@ -414,66 +317,6 @@ function TeamStats(props) {
         </div>
       </div>
 
-      {/* Ranking Evolution */}
-      <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
-        <h3 style={{ marginTop: 0, marginBottom: "10px" }}>Ranking Evolution by Match</h3>
-
-        {!rankingTrendMeta.hasEnoughTeams ? (
-          <p style={{ margin: 0 }}>Need scouting submissions from at least 2 teams to build this graph.</p>
-        ) : rankingTrend.length < 2 ? (
-          <p style={{ margin: 0 }}>Not enough points yet to chart Team {selectedTeam}. Add more submitted matches.</p>
-        ) : (
-          <>
-            <div style={{ backgroundColor: 'white', borderRadius: '6px', border: '1px solid #ddd', padding: '10px', overflowX: 'auto' }}>
-              <svg width={chartWidth} height={chartHeight} role="img" aria-label={`Ranking evolution for team ${selectedTeam}`}>
-                <line
-                  x1={chartPadding.left}
-                  y1={chartPadding.top + plotHeight}
-                  x2={chartPadding.left + plotWidth}
-                  y2={chartPadding.top + plotHeight}
-                  stroke="#777"
-                  strokeWidth="1"
-                />
-                <line
-                  x1={chartPadding.left}
-                  y1={chartPadding.top}
-                  x2={chartPadding.left}
-                  y2={chartPadding.top + plotHeight}
-                  stroke="#777"
-                  strokeWidth="1"
-                />
-
-                <polyline
-                  fill="none"
-                  stroke="#77B6E2"
-                  strokeWidth="3"
-                  points={trendPolylinePoints}
-                />
-
-                {rankingTrend.map((point) => (
-                  <circle
-                    key={`trend-${point.matchNumber}`}
-                    cx={getX(point.matchNumber)}
-                    cy={getY(point.rank)}
-                    r="4"
-                    fill="#1f78b4"
-                  />
-                ))}
-
-                <text x={chartPadding.left} y={chartPadding.top + plotHeight + 24} fill="#444" fontSize="12">Match {minMatch}</text>
-                <text x={chartPadding.left + plotWidth - 60} y={chartPadding.top + plotHeight + 24} fill="#444" fontSize="12">Match {maxMatch}</text>
-                <text x={8} y={chartPadding.top + 10} fill="#444" fontSize="12">Rank 1</text>
-                <text x={8} y={chartPadding.top + plotHeight} fill="#444" fontSize="12">Rank {maxRank}</text>
-              </svg>
-            </div>
-
-            <p style={{ marginTop: '10px', marginBottom: 0, color: '#333' }}>
-              Current match #: {rankingTrendMeta.currentMatch} • Teams with submissions: {rankingTrendMeta.teamsWithData}
-              {latestTrendPoint ? ` • Latest rank: ${latestTrendPoint.rank}/${latestTrendPoint.teamsRanked} (score ${latestTrendPoint.score.toFixed(2)})` : ''}
-            </p>
-          </>
-        )}
-      </div>
     </div>
   );
 }

@@ -8,7 +8,7 @@ input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONL
 
 # enums
 enum AutoStratOpts {
-  LeftStartingZone
+  MovedInAuto
   ScoredInGoal
   Nothing
 }
@@ -77,12 +77,21 @@ enum DriverSkillOpts {
   Excellent
 }
 
+enum DefenseEffectivenessOpts {
+  VeryPoor
+  Poor
+  Average
+  Good
+  Excellent
+}
+
 # types
 
 type RobotInfoType {
   RobotSpeed: SpeedOpts
   ShooterSpeed: SpeedOpts
   DriverSkill: DriverSkillOpts
+  DefenseEffectiveness: DefenseEffectivenessOpts
   FuelCapacity: Int
   BallsShot: Int
   ShootingCycles: Int
@@ -166,11 +175,13 @@ type TeamAttributesType {
   CyclesPerMatch: Int
   FuelPerCycle: Int
   NumAutos: Int
+  Pickable: Boolean
   Capabilities: [CapabilitiesOpts]
   MaxHang: HangOpts
   HangTeamwork: HangTeamworkOpts
   HangTime: Float
   CanAutoHang: Boolean
+  Turret: Boolean
   Photo: String
   Notes: String
 }
