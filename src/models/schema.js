@@ -138,6 +138,16 @@ export const schema = {
                 "Excellent"
             ]
         },
+        "DefenseEffectivenessOpts": {
+            "name": "DefenseEffectivenessOpts",
+            "values": [
+                "VeryPoor",
+                "Poor",
+                "Average",
+                "Good",
+                "Excellent"
+            ]
+        },
         "StratOpts": {
             "name": "StratOpts",
             "values": [
@@ -331,6 +341,15 @@ export const schema = {
                     "isArray": false,
                     "type": {
                         "enum": "DriverSkillOpts"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "DefenseEffectiveness": {
+                    "name": "DefenseEffectiveness",
+                    "isArray": false,
+                    "type": {
+                        "enum": "DefenseEffectivenessOpts"
                     },
                     "isRequired": false,
                     "attributes": []
@@ -609,6 +628,20 @@ export const schema = {
                 },
                 "CanAutoHang": {
                     "name": "CanAutoHang",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "Pickable": {
+                    "name": "Pickable",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "Turret": {
+                    "name": "Turret",
                     "isArray": false,
                     "type": "Boolean",
                     "isRequired": false,

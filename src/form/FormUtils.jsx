@@ -53,9 +53,6 @@ export async function submitState( //params are states of data from form
   timesTravelledMidActive,
   timesTravelledMidInactive,
   shootingCycles,
-  matchResult,
-  allianceScore,
-  opponentScore,
   teamImpact,
   disable,
   dq,
@@ -65,6 +62,7 @@ export async function submitState( //params are states of data from form
   stuckOnBalls,
   robotSpeed,
   driverSkill,
+  defenseEffectiveness,
   fuelCapacity,
   shootingSpeed,
   estimatedBallsShot,
@@ -139,6 +137,18 @@ export async function submitState( //params are states of data from form
       "Excellent": "Excellent",
     }
     return skillMap[String(value || "").trim()] || ""
+  }
+
+  const normalizeDefenseEffectivenessValue = (value) => {
+    const effectivenessMap = {
+      "VeryPoor": "VeryPoor",
+      "Very Poor": "VeryPoor",
+      "Poor": "Poor",
+      "Average": "Average",
+      "Good": "Good",
+      "Excellent": "Excellent",
+    }
+    return effectivenessMap[String(value || "").trim()] || ""
   }
 
   const normalizeTeamImpactValue = (value) => {
@@ -221,6 +231,11 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nDriver Skill"
   }
 
+  if (defenseEffectiveness === '') {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nDefense Effectiveness"
+  }
+
   if (Number.isNaN(parsedFuelCapacity)) {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nFuel Capacity"
@@ -241,11 +256,6 @@ export async function submitState( //params are states of data from form
     windowAlertMsg = windowAlertMsg + "\nMatch Number"
   }
 
-  if (matchResult === '') {
-    incompleteForm = true;
-    windowAlertMsg = windowAlertMsg + "\nMatch Result"
-  }
-
   const normalizedTeamImpact = normalizeTeamImpactValue(teamImpact)
   if (teamImpact === '' || normalizedTeamImpact === '') {
     incompleteForm = true;
@@ -255,11 +265,9 @@ export async function submitState( //params are states of data from form
   const normalizedRobotSpeed = normalizeSpeedValue(robotSpeed)
   const normalizedShootingSpeed = normalizeSpeedValue(shootingSpeed)
   const normalizedDriverSkill = normalizeDriverSkillValue(driverSkill)
+  const normalizedDefenseEffectiveness = normalizeDefenseEffectivenessValue(defenseEffectiveness)
   const normalizedAutoImpact = normalizeTeamImpactValue(autoImpact)
   const normalizedAutoWin = normalizeAutoWinValue(autoWin)
-  const parsedAllianceScore = parseScore(allianceScore)
-  const parsedOpponentScore = parseScore(opponentScore)
-
   /* AutoHang */
   if (autoHang === "None" && (dq || noShow || disable || botBroke) === false) {
     autoPoints += 0;
@@ -304,6 +312,12 @@ export async function submitState( //params are states of data from form
   if (!normalizedDriverSkill) {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nDriver Skill"
+  }
+
+  /* Defense Effectiveness Select */
+  if (!normalizedDefenseEffectiveness) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nDefense Effectiveness"
   }
 
   /* Point Calc */
@@ -358,6 +372,7 @@ export async function submitState( //params are states of data from form
     matchEntry.RobotInfo.RobotSpeed = normalizedRobotSpeed
     matchEntry.RobotInfo.ShooterSpeed = normalizedShootingSpeed
     matchEntry.RobotInfo.DriverSkill = normalizedDriverSkill
+    matchEntry.RobotInfo.DefenseEffectiveness = normalizedDefenseEffectiveness
     matchEntry.RobotInfo.FuelCapacity = Number.isNaN(parsedFuelCapacity) ? 0 : parsedFuelCapacity
     matchEntry.RobotInfo.BallsShot = Number.isNaN(parsedBallsShot) ? 0 : parsedBallsShot
     matchEntry.RobotInfo.ShootingCycles = Number.isNaN(parsedShootingCycles) ? 0 : parsedShootingCycles
@@ -371,7 +386,6 @@ export async function submitState( //params are states of data from form
     matchEntry.Penalties.PenaltiesCommitted.NoShow = noShow
     matchEntry.Penalties.PenaltiesCommitted.StuckOnBump = stuckOnBump
     matchEntry.Penalties.PenaltiesCommitted.StuckOnBalls = stuckOnBalls
-    matchEntry.MatchResult = matchResult
     matchEntry.TeamImpact = normalizedTeamImpact
 
     //console.log("check")
@@ -443,12 +457,9 @@ export async function submitState( //params are states of data from form
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
         MatchType: matchType,
-        MatchResult: matchResult,
         AutoWin: normalizedAutoWin,
         TeamImpact: normalizedTeamImpact,
         AutoImpact: normalizedAutoImpact === '' ? null : normalizedAutoImpact,
-        AllianceScore: parsedAllianceScore,
-        OpponentScore: parsedOpponentScore,
         Autonomous: {
           AutoStrat: Array.isArray(matchEntry.Autonomous.AutoStrat)
             ? matchEntry.Autonomous.AutoStrat

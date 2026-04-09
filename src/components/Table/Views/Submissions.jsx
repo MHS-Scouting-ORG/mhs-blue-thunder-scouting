@@ -41,6 +41,12 @@ function Submissions({ regional }) {
         return 'None'
       }
 
+      const formatDefenseEffectiveness = (value) => {
+        const normalized = String(value || '').trim()
+        if (!normalized) return 'N/A'
+        return normalized === 'VeryPoor' ? 'Very Poor' : normalized
+      }
+
       teams.forEach(team => {
         const teamId = String(team?.id || '');
         const notesRecord = isNotesTeamId(teamId)
@@ -105,6 +111,7 @@ function Submissions({ regional }) {
             const inactive = stringifyList(match?.InactiveStrat)
             const robotSpeed = match?.RobotInfo?.RobotSpeed || 'None'
             const driverSkill = match?.RobotInfo?.DriverSkill || 'None'
+            const defenseEffectiveness = formatDefenseEffectiveness(match?.RobotInfo?.DefenseEffectiveness)
             const shooterSpeed = match?.RobotInfo?.ShooterSpeed || 'None'
             const ballsShot = Number(match?.RobotInfo?.BallsShot || 0)
             const fuelCap = Number(match?.RobotInfo?.FuelCapacity || 0)
@@ -120,14 +127,15 @@ function Submissions({ regional }) {
             const allianceScore = Number.isFinite(Number(match?.AllianceScore)) ? Number(match?.AllianceScore) : null
             const opponentScore = Number.isFinite(Number(match?.OpponentScore)) ? Number(match?.OpponentScore) : null
             const autoStr = Array.isArray(auto) ? auto.join(', ') : auto
+            const uniqueMatchId = `${teamId}-${reg?.RegionalId || 'unknown'}-${matchId}-${idx}-${matchTimestamp}-${flat.length}`
 
             flat.push({
-              id: `form-${teamId}-${matchId}-${idx}`,
+              id: `form-${uniqueMatchId}`,
               type: 'Form',
               team: String(match?.Team || teamId),
               regional: reg?.RegionalId || '',
               title: formatMatchLabel(matchId),
-              detail: `Auto: ${autoStr} (${autoHang}) • Auto Win: ${autoWin} • Auto Impact: ${autoImpact} • Endgame: ${endgame} • Match Result: ${match?.MatchResult || 'N/A'} • Team Impact: ${teamImpact} • Score: ${allianceScore ?? 'N/A'}-${opponentScore ?? 'N/A'} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${matchComment ? ` • Comments: ${matchComment}` : ''}`,
+              detail: `Auto: ${autoStr} (${autoHang}) • Auto Win: ${autoWin} • Auto Impact: ${autoImpact} • Endgame: ${endgame} • Match Result: ${match?.MatchResult || 'N/A'} • Team Impact: ${teamImpact} • Score: ${allianceScore ?? 'N/A'}-${opponentScore ?? 'N/A'} • Active: ${active} • Inactive: ${inactive} • Driver: ${driverSkill} • Defense: ${defenseEffectiveness} • Robot: ${robotSpeed}/${shooterSpeed} • Balls: ${ballsShot} • Fuel Cap: ${fuelCap} • Penalties: ${penaltyList}${matchComment ? ` • Comments: ${matchComment}` : ''}`,
               submittedBy: match?.SubmittedBy || 'Unknown',
               timestamp: matchTimestamp,
               updatedAt: teamUpdatedAt,

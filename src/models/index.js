@@ -34,6 +34,14 @@ const DriverSkillOpts = {
   "EXCELLENT": "Excellent"
 };
 
+const DefenseEffectivenessOpts = {
+  "VERY_POOR": "VeryPoor",
+  "POOR": "Poor",
+  "AVERAGE": "Average",
+  "GOOD": "Good",
+  "EXCELLENT": "Excellent"
+};
+
 const StratOpts = {
   "HOARDING": "Hoarding",
   "DEFENSE": "Defense",
@@ -83,6 +91,7 @@ export {
   HangOpts,
   SpeedOpts,
   DriverSkillOpts,
+  DefenseEffectivenessOpts,
   StratOpts,
   MatchResultOpts,
   TeamImpactOpts,

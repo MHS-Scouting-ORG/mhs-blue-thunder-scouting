@@ -11,6 +11,7 @@ import {
   getRankingsForRegional as fetchRankingsForRegional,
 } from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
+import { getTeamEventPrediction, getEventPredictions } from './stats'
 
 const NOTES_TEAM_PREFIX = 'notes-'
 
@@ -293,7 +294,8 @@ const normalizeTeamRead = (team) => {
     TeamAttributes: {
       ...(team.TeamAttributes || {}),
       Capabilities: normalizeCapabilitiesList(team?.TeamAttributes?.Capabilities),
-      CanAutoHang: team?.TeamAttributes?.CanAutoHang
+      CanAutoHang: team?.TeamAttributes?.CanAutoHang,
+      Turret: team?.TeamAttributes?.Turret,
     },
     Regionals: normalizeRegionals(team.Regionals)
   }
@@ -583,6 +585,14 @@ const apiGetRankingsForRegional = async function (regionalId) {
   return fetchRankingsForRegional(regionalId)
 }
 
+const apiGetStatboticsTeamEventPrediction = async function (teamNumber, eventKey) {
+  return getTeamEventPrediction(teamNumber, eventKey)
+}
+
+const apiGetStatboticsEventPredictions = async function (eventKey) {
+  return getEventPredictions(eventKey)
+}
+
 const apiGetAllianceSelection = async function (regionalId) {
   if (!regionalId) return null
   const allianceId = `alliances-${regionalId}`
@@ -660,6 +670,8 @@ export {
   apiGetTeamsInRegional,
   apiGetSimpleTeamsForRegional,
   apiGetRankingsForRegional,
+  apiGetStatboticsTeamEventPrediction,
+  apiGetStatboticsEventPredictions,
   apiGetAllianceSelection,
   apiSaveAllianceSelection,
   apiUpdateTeamEntry,

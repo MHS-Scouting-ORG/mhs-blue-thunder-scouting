@@ -23,6 +23,7 @@ const DEFAULT_GAME_PROFILES = {
       robotSpeed: 0.09,
       shooterSpeed: 0.04,
       driverSkill: 0.03,
+      defenseEffectiveness: 0,
       teamImpact: 0.03,
       strategyExecution: 0.03,
       reliability: 0.03
@@ -46,6 +47,7 @@ const DEFAULT_GAME_PROFILES = {
       robotSpeed: 0.07,
       shooterSpeed: 0.04,
       driverSkill: 0.05,
+      defenseEffectiveness: 0,
       teamImpact: 0.04,
       strategyExecution: 0.05,
       reliability: 0.03
@@ -229,6 +231,16 @@ const parseDriverSkillScore = (skill) => {
   return 0
 }
 
+const parseDefenseEffectivenessScore = (effectiveness) => {
+  const v = safeLower(effectiveness)
+  if (v.includes('excellent')) return 1
+  if (v.includes('good')) return 0.75
+  if (v.includes('average')) return 0.5
+  if (v.includes('very') && v.includes('poor')) return 0
+  if (v.includes('poor')) return 0.25
+  return 0
+}
+
 const parseTeamImpactScore = (impact) => {
   const v = safeLower(impact)
   if (v.includes('high')) return 1
@@ -322,6 +334,7 @@ const getMatchPerformanceScore = (match, options) => {
   const robotSpeed = parseSpeedScore(match?.RobotInfo?.RobotSpeed)
   const shooterSpeed = parseSpeedScore(match?.RobotInfo?.ShooterSpeed)
   const driverSkill = parseDriverSkillScore(match?.RobotInfo?.DriverSkill)
+  const defenseEffectiveness = parseDefenseEffectivenessScore(match?.RobotInfo?.DefenseEffectiveness)
   const teamImpact = parseTeamImpactScore(match?.TeamImpact)
 
   const autoActions = parseAutoScore(match?.Autonomous?.AutoStrat)
@@ -342,6 +355,7 @@ const getMatchPerformanceScore = (match, options) => {
     robotSpeed,
     shooterSpeed,
     driverSkill,
+    defenseEffectiveness,
     teamImpact,
     strategyExecution,
     reliability
@@ -636,13 +650,14 @@ const buildAllianceRows = (entries) => {
       const completenessSignals = alliance.members.map((row) => {
         const match = row?.match
         let present = 0
-        let total = 7
+        let total = 8
         if (Array.isArray(match?.Autonomous?.AutoStrat) && match.Autonomous.AutoStrat.length > 0) present += 1
         if (safeLower(match?.Autonomous?.AutoHang)) present += 1
         if (Number.isFinite(toNumber(match?.RobotInfo?.BallsShot, NaN))) present += 1
         if (Number.isFinite(toNumber(match?.RobotInfo?.ShootingCycles, NaN))) present += 1
         if (safeLower(match?.Teleop?.Endgame)) present += 1
         if (safeLower(match?.RobotInfo?.DriverSkill)) present += 1
+        if (safeLower(match?.RobotInfo?.DefenseEffectiveness)) present += 1
         if (safeLower(match?.TeamImpact)) present += 1
         return present / total
       })
@@ -773,6 +788,7 @@ const computeTeamScoutAverages = (team, options) => {
       robotSpeed: 0,
       shooterSpeed: 0,
       driverSkill: 0,
+      defenseEffectiveness: 0,
       teamImpact: 0,
       autoImpact: 0,
       strategyExecution: 0,
@@ -790,6 +806,7 @@ const computeTeamScoutAverages = (team, options) => {
     robotSpeed: avg(quals.map((m) => parseSpeedScore(m?.RobotInfo?.RobotSpeed))),
     shooterSpeed: avg(quals.map((m) => parseSpeedScore(m?.RobotInfo?.ShooterSpeed))),
     driverSkill: avg(quals.map((m) => parseDriverSkillScore(m?.RobotInfo?.DriverSkill))),
+    defenseEffectiveness: avg(quals.map((m) => parseDefenseEffectivenessScore(m?.RobotInfo?.DefenseEffectiveness))),
     teamImpact: avg(quals.map((m) => parseTeamImpactScore(m?.TeamImpact))),
     strategyExecution: avg(quals.map((m) => strategyExecutionScore(m?.ActiveStrat, m?.InactiveStrat))),
     winRate: avg(quals.map((m) => {
@@ -963,6 +980,7 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         toNumber(metricWeights.robotSpeed, 0) * scout.robotSpeed +
         toNumber(metricWeights.shooterSpeed, 0) * scout.shooterSpeed +
         toNumber(metricWeights.driverSkill, 0) * scout.driverSkill +
+        toNumber(metricWeights.defenseEffectiveness, 0) * scout.defenseEffectiveness +
         toNumber(metricWeights.teamImpact, 0) * Math.max(scout.teamImpact, scout.autoImpact) +
         toNumber(metricWeights.strategyExecution, 0) * scout.strategyExecution +
         toNumber(metricWeights.reliability, 0) * scout.reliability

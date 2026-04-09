@@ -21,7 +21,7 @@ const BROKEN_OPTIONS = [100, 80, 60, 50, 40, 30, 20, 10, 0]
 function AllLeaderboardView({ tableData, regional }) {
   const [simpleTeams, setSimpleTeams] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortKey, setSortKey] = useState('allianceScore')
+  const [sortKey, setSortKey] = useState('baselineScore')
   const [sortDir, setSortDir] = useState('desc')
   const [minMatches, setMinMatches] = useState(1)
   const [minConfidence, setMinConfidence] = useState(0)
@@ -102,6 +102,8 @@ function AllLeaderboardView({ tableData, regional }) {
         ? team.BrokenRobot.length
         : toNumber(team?.BrokenRobot, 0)
       const brokenRate = matches > 0 ? (brokenCount / matches) * 100 : 0
+      const statboticsScore = toNumber(team?.StatboticsScore, 0)
+      const baselineScore = toNumber(team?.allianceScore, 0) * 0.65 + statboticsScore * 0.35
 
       const speedText = safeLower(team?.RobotSpeed)
       const speedBucket = speedText.includes('fast')
@@ -117,9 +119,11 @@ function AllLeaderboardView({ tableData, regional }) {
         TeamNumber: teamNumber,
         TeamName: nameMap.get(teamNumber) || '',
         allianceScore: toNumber(team?.allianceScore, 0),
+        baselineScore,
+        statboticsScore,
         skillRating: toNumber(team?.skillRating, 0),
         confidence: toNumber(team?.confidence, 0),
-        matchesRated: toNumber(team?.matchesRated, 0),
+        matchesRated: matches,
         Matches: matches,
         AvgPoints: toNumber(team?.AvgPoints, 0),
         AvgAutoPts: toNumber(team?.AvgAutoPts, 0),
@@ -129,10 +133,12 @@ function AllLeaderboardView({ tableData, regional }) {
         canHang: Boolean(team?.canHang),
         canTrench: Boolean(team?.canTrench),
         hasAutos: Boolean(team?.hasAutos),
+        StatboticsPredictedWins: toNumber(team?.StatboticsPredictedWins, 0),
+        StatboticsPredictedLosses: toNumber(team?.StatboticsPredictedLosses, 0),
+        StatboticsWinRate: toNumber(team?.StatboticsWinRate, 0)
       }
     })
   }, [tableData, nameMap])
-
   const filteredAndSorted = useMemo(() => {
     const search = safeLower(searchTerm)
 
@@ -221,6 +227,8 @@ function AllLeaderboardView({ tableData, regional }) {
           />
 
           <select value={sortKey} onChange={e => setSortKey(e.target.value)} style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}>
+            <option value="baselineScore">Sort: Baseline Score</option>
+            <option value="statboticsScore">Sort: Statbotics Score</option>
             <option value="allianceScore">Sort: Alliance Score</option>
             <option value="skillRating">Sort: Skill Rating</option>
             <option value="confidence">Sort: Confidence</option>
@@ -424,7 +432,9 @@ function AllLeaderboardView({ tableData, regional }) {
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Name</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Baseline</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
+                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Statbotics</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Skill</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Confidence</th>
                   <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Matches</th>
@@ -440,7 +450,9 @@ function AllLeaderboardView({ tableData, regional }) {
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{idx + 1}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center', fontWeight: 700 }}>{team.TeamNumber}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{team.TeamName || '-'}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.baselineScore.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.allianceScore.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.statboticsScore.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.skillRating.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{(team.confidence * 100).toFixed(1)}%</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.Matches}</td>

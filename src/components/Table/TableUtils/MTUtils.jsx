@@ -1,4 +1,4 @@
-import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional, toNotesTeamId } from "../../../api";
+import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional, apiGetStatboticsTeamEventPrediction, toNotesTeamId } from "../../../api";
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
 import { isSameTeam } from "../../../utils/teamId"
 
@@ -89,8 +89,20 @@ consolidates all calculations, averages, and sets the object for each team(row) 
 */
 async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {  
   try {
-    const data = await apigetMatchesForRegional(regional) 
+    const data = await apigetMatchesForRegional(regional)
     
+    const statboticsResults = await Promise.all(teamNumbers.map(async (team) => {
+      try {
+        const prediction = await apiGetStatboticsTeamEventPrediction(team.TeamNumber, regional)
+        return { teamNumber: team.TeamNumber, prediction }
+      } catch (err) {
+        console.warn('Statbotics prediction failed for', team.TeamNumber, err)
+        return { teamNumber: team.TeamNumber, prediction: null }
+      }
+    }))
+
+    const statboticsByTeam = new Map(statboticsResults.map((item) => [item.teamNumber, item.prediction]))
+
     console.log("getTeamMatchesAndTableDataFunc", data)
     
     const tableData = mtable
@@ -111,6 +123,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const mcRobotSpeed = arrMode(teamStats.map(m => m?.RobotInfo?.RobotSpeed ?? null))
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
       const mcDriverSkill = arrMode(teamStats.map(m => m?.RobotInfo?.DriverSkill ?? null))
+      const mcDefenseEffectiveness = arrMode(teamStats.map(m => m?.RobotInfo?.DefenseEffectiveness ?? null))
       const mcActiveStrat = arrMode(teamStats.map(m => m?.ActiveStrat ?? 'None' ))
       
       // For AutoStrat as array, get most common item
@@ -159,14 +172,21 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
 
 
 
+      const statboticsPrediction = statboticsByTeam.get(team.TeamNumber) || {}
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
         Matches: totalMatches,
         TeamMatches: teamStats,
+        StatboticsPredictedWins: statboticsPrediction.statboticsPredictedWins || 0,
+        StatboticsPredictedLosses: statboticsPrediction.statboticsPredictedLosses || 0,
+        StatboticsWinRate: statboticsPrediction.statboticsWinRate || 0,
+        StatboticsScore: statboticsPrediction.statboticsScore || 0,
+        StatboticsRank: statboticsPrediction.statboticsRank || 0,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         DriverSkill: mcDriverSkill === null ? '' : mcDriverSkill,
+        DefenseEffectiveness: mcDefenseEffectiveness === null ? '' : mcDefenseEffectiveness,
         RobotHang: mcRobotHang === null ? '' : mcRobotHang + ' ' + (isNaN(reliableRobotEndgame) ? '' : reliableRobotEndgame + '%' ),
         //ActiveStrat: mcActiveStrat === 'None' ? '' : mcActiveStrat, needs to be fixed
        
@@ -193,6 +213,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         canHang: canHangByForm || canHangByNotes,
         canTrench: capabilities.includes('Trench'),
         hasAutos: hasScoredAuto || hasAutosByNotes,
+        Turret: Boolean(team?.TeamAttributes?.Turret),
         /* Grade */
         SumPriorities: team.SumPriorities,
         //NPts: isNaN(rPts) ? 0 : 67,//rPts,

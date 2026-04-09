@@ -71,6 +71,14 @@ const DriverSkillOpts = {
   Excellent: "Excellent",
 }
 
+const DefenseEffectivenessOpts = {
+  VERY_POOR: "VeryPoor",
+  POOR: "Poor",
+  AVERAGE: "Average",
+  GOOD: "Good",
+  EXCELLENT: "Excellent",
+}
+
 const MatchResultOpts = {
   Win: "Win",
   Lose: "Lose",
@@ -180,6 +188,7 @@ const buildMatchEntry = (teamId, matchKey) => {
       RobotSpeed: SpeedOpts.None,
       ShooterSpeed: SpeedOpts.None,
       DriverSkill: DriverSkillOpts.Average,
+      DefenseEffectiveness: DefenseEffectivenessOpts.AVERAGE,
       FuelCapacity: 0,
       BallsShot: 0,
       ShootingCycles: 0,
@@ -237,6 +246,7 @@ const buildTeamEntry = (teamNumber, regional) => {
         HangTeamwork: HangTeamworkOpts.None,
         HangTime: 0.0,
         CanAutoHang: false,
+        Turret: false,
         Photo: "",
         Notes: "",
       },

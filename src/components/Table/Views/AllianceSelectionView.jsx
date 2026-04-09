@@ -66,6 +66,7 @@ function AllianceSelectionView({ tableData, regional }) {
     { key: 'robotSpeed', label: 'Robot Speed' },
     { key: 'shooterSpeed', label: 'Shooter Speed' },
     { key: 'driverSkill', label: 'Driver Skill' },
+    { key: 'defenseEffectiveness', label: 'Defense Effectiveness' },
     { key: 'teamImpact', label: 'Team Impact' },
     { key: 'strategyExecution', label: 'Strategy Execution' },
     { key: 'reliability', label: 'Reliability' }
