@@ -881,7 +881,24 @@ const InfoIcon = ({ text, onClick }) => (
       setAutoActions([...autoActions, action])
     }
   }
-  
+
+  const teamEntriesById = new Map(
+    (Array.isArray(apiTeamListData) ? apiTeamListData : [])
+      .map((entry) => [String(entry?.id || '').trim(), entry])
+      .filter(([id]) => Boolean(id))
+  )
+
+  const hasScoutedMatchForTeam = (teamId) => {
+    const normalizedTeam = normalizeTeamId(teamId)
+    if (!normalizedTeam) return false
+    return getRegionalTeamMatches(teamEntriesById.get(normalizedTeam)).length > 0
+  }
+
+  const formatScheduledTeamOptionLabel = (teamId) => {
+    const normalizedTeam = normalizeTeamId(teamId)
+    if (!normalizedTeam) return ''
+    return hasScoutedMatchForTeam(normalizedTeam) ? normalizedTeam : `${normalizedTeam} *`
+  }
 
   const highlightedManualTeamNumber = matchType === 'qm' && color === suggestedAutoColor
     ? suggestedAutoTeamNumber
@@ -1166,7 +1183,7 @@ const InfoIcon = ({ text, onClick }) => (
                           key={team}
                           style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
                         >
-                          {normalizedTeam}
+                          {formatScheduledTeamOptionLabel(normalizedTeam)}
                         </option>
                       )
                     }) :
@@ -1179,7 +1196,7 @@ const InfoIcon = ({ text, onClick }) => (
                           key={team}
                           style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
                         >
-                          {normalizedTeam}
+                          {formatScheduledTeamOptionLabel(normalizedTeam)}
                         </option>
                       )
                     })
@@ -1210,6 +1227,11 @@ const InfoIcon = ({ text, onClick }) => (
                   fontWeight: 600
                 }}>
                   Auto would scout team {highlightedManualTeamNumber}
+                </div>
+              ) : null}
+              {matchNumber && color !== undefined ? (
+                <div style={{ marginTop: "8px", color: "#666", fontSize: "13px" }}>
+                  * = no matches scouted yet
                 </div>
               ) : null}
             </div>
