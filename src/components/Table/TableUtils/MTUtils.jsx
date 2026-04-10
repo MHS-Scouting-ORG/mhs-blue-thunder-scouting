@@ -49,6 +49,8 @@ const EMPTY_STATBOTICS_PREDICTION = {
   statboticsWinRate: 0,
   statboticsScore: 0,
   statboticsRank: 0,
+  statboticsEPA: 0,
+  statboticsAutoEPA: 0,
 }
 
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
@@ -187,6 +189,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStat
         StatboticsWinRate: statboticsPrediction.statboticsWinRate || 0,
         StatboticsScore: statboticsPrediction.statboticsScore || 0,
         StatboticsRank: statboticsPrediction.statboticsRank || 0,
+        StatboticsEPA: statboticsPrediction.statboticsEPA || statboticsPrediction.statboticsScore || 0,
+        StatboticsAutoEPA: statboticsPrediction.statboticsAutoEPA || 0,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         DriverSkill: mcDriverSkill === null ? '' : mcDriverSkill,
