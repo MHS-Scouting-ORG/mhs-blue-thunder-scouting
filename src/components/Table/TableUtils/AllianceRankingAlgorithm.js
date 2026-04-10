@@ -18,14 +18,14 @@ const DEFAULT_GAME_PROFILES = {
       autoHang: 0.04,
       teleopMobility: 0.08,
       endgame: 0.12,
-      ballsShot: 0.27,
+      ballsShot: 0.25,
       shootingCycles: 0.08,
-      robotSpeed: 0.09,
+      robotSpeed: 0.08,
       shooterSpeed: 0.04,
       driverSkill: 0.03,
-      defenseEffectiveness: 0,
+      defenseEffectiveness: 0.04,
       teamImpact: 0.03,
-      strategyExecution: 0.03,
+      strategyExecution: 0.02,
       reliability: 0.03
     },
     seedWeights: {
@@ -41,15 +41,15 @@ const DEFAULT_GAME_PROFILES = {
       autoActions: 0.17,
       autoHang: 0.06,
       teleopMobility: 0.07,
-      endgame: 0.16,
-      ballsShot: 0.16,
-      shootingCycles: 0.1,
+      endgame: 0.15,
+      ballsShot: 0.14,
+      shootingCycles: 0.09,
       robotSpeed: 0.07,
       shooterSpeed: 0.04,
       driverSkill: 0.05,
-      defenseEffectiveness: 0,
+      defenseEffectiveness: 0.05,
       teamImpact: 0.04,
-      strategyExecution: 0.05,
+      strategyExecution: 0.04,
       reliability: 0.03
     },
     seedWeights: {
@@ -86,12 +86,6 @@ const DEFAULT_OPTIONS = {
   aggregateSeedSpread: 24,
   ridgeLambda: 0.35,
 
-  normalizationCaps: {
-    ballsShotMax: 18,
-    shootingCyclesMax: 10,
-    teleopTravelMidMax: 6
-  },
-
   metricWeights: {
     ...DEFAULT_GAME_PROFILES.frc2026Rebuilt.metricWeights
   },
@@ -104,7 +98,8 @@ const DEFAULT_OPTIONS = {
     robotSpeed: 0.07,
     activeStrategies: 0.05,
     auto: 0.17,
-    endgame: 0.16
+    endgame: 0.16,
+    defenseEffectiveness: 0.05
   }
 }
 
@@ -166,7 +161,8 @@ const mapLegacyFeatureWeights = (featureWeights) => {
     ballsShot: featureWeights.ballsShot,
     robotSpeed: featureWeights.robotSpeed,
     strategyExecution: featureWeights.activeStrategies,
-    endgame: featureWeights.endgame
+    endgame: featureWeights.endgame,
+    defenseEffectiveness: featureWeights.defenseEffectiveness
   }
 }
 
@@ -193,10 +189,6 @@ const resolveRankingOptions = (options = {}) => {
     ...DEFAULT_OPTIONS,
     ...options,
     gameProfile: profileName,
-    normalizationCaps: {
-      ...DEFAULT_OPTIONS.normalizationCaps,
-      ...(options.normalizationCaps || {})
-    },
     metricWeights,
     seedWeights,
     featureWeights: {
@@ -207,11 +199,14 @@ const resolveRankingOptions = (options = {}) => {
 }
 
 const parseMatchOrder = (matchId) => {
-  const id = String(matchId || '')
+  const id = String(matchId || '').toLowerCase()
+  const qualMatchNumber = id.match(/qm(\d+)/i)
+  if (qualMatchNumber?.[1]) return toNumber(qualMatchNumber[1], 0)
+
   const matchNumber = id.match(/m(\d+)$/i) || id.match(/_(\d+)$/)
-  if (matchNumber) return toNumber(matchNumber[1], 0)
-  const anyDigits = id.match(/(\d+)/)
-  return anyDigits ? toNumber(anyDigits[1], 0) : 0
+  if (matchNumber?.[1]) return toNumber(matchNumber[1], 0)
+
+  return 0
 }
 
 const parseSpeedScore = (speed) => {
@@ -253,13 +248,13 @@ const parseAutoScore = (autoStrat) => {
   // Handle array-based AutoStrat (new format)
   if (Array.isArray(autoStrat)) {
     if (autoStrat.length === 0) return 0
-    // Give points for each auto action: ScoredInGoal=1, LeftStartingZone=0.3, Nothing=0
+    // Give points for each auto action: ScoredInGoal=1, MovedInAuto=0.3, Nothing=0
     let maxScore = 0
     for (const action of autoStrat) {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
-      } else if (v.includes('left') || v.includes('starting') || v.includes('zone')) {
+      } else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) {
         maxScore = Math.max(maxScore, 0.3)
       }
     }
@@ -269,7 +264,7 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
-  if (v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
+  if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
   if (v.includes('wentmid') || v.includes('crossedmid')) return 0.45
   return 0
 }
@@ -323,53 +318,6 @@ const getPenaltySeverity = (match) => {
   return clamp(severity, 0, 0.85)
 }
 
-const getMatchPerformanceScore = (match, options) => {
-  const weights = options.metricWeights
-  const caps = options.normalizationCaps
-
-  const ballsShot = clamp(toNumber(match?.RobotInfo?.BallsShot, 0) / Math.max(1, toNumber(caps?.ballsShotMax, 18)), 0, 1)
-  const shootingCycles = clamp(toNumber(match?.RobotInfo?.ShootingCycles, 0) / Math.max(1, toNumber(caps?.shootingCyclesMax, 10)), 0, 1)
-  const teleopMobility = clamp(toNumber(match?.Teleop?.TravelMid, 0) / Math.max(1, toNumber(caps?.teleopTravelMidMax, 6)), 0, 1)
-
-  const robotSpeed = parseSpeedScore(match?.RobotInfo?.RobotSpeed)
-  const shooterSpeed = parseSpeedScore(match?.RobotInfo?.ShooterSpeed)
-  const driverSkill = parseDriverSkillScore(match?.RobotInfo?.DriverSkill)
-  const defenseEffectiveness = parseDefenseEffectivenessScore(match?.RobotInfo?.DefenseEffectiveness)
-  const teamImpact = parseTeamImpactScore(match?.TeamImpact)
-
-  const autoActions = parseAutoScore(match?.Autonomous?.AutoStrat)
-  const autoHang = parseAutoHangScore(match?.Autonomous?.AutoHang)
-  const endgame = parseEndgameScore(match?.Teleop?.Endgame)
-  const strategyExecution = strategyExecutionScore(match?.ActiveStrat, match?.InactiveStrat)
-
-  const penaltySeverity = getPenaltySeverity(match)
-  const reliability = 1 - penaltySeverity
-
-  const metrics = {
-    autoActions,
-    autoHang,
-    teleopMobility,
-    endgame,
-    ballsShot,
-    shootingCycles,
-    robotSpeed,
-    shooterSpeed,
-    driverSkill,
-    defenseEffectiveness,
-    teamImpact,
-    strategyExecution,
-    reliability
-  }
-
-  const rawPerformance = Object.entries(metrics)
-    .reduce((sum, [key, value]) => {
-      const weight = toNumber(weights?.[key], 0)
-      return sum + (value * weight)
-    }, 0)
-
-  return clamp(rawPerformance * 100, 0, 100)
-}
-
 const getAggregateSeedScoreWithOptions = (teamData, options) => {
   if (!teamData) return 0.5
 
@@ -412,7 +360,7 @@ const extractTeamMatches = (team) => {
 const isQualificationMatch = (match, matchId) => {
   const matchType = safeLower(match?.MatchType)
   if (matchType === 'q' || matchType === 'qm') return true
-  return /_qm\d+$/i.test(String(matchId || ''))
+  return /(?:^|_)qm\d+/i.test(String(matchId || ''))
 }
 
 const extractNumeric = (...values) => {
@@ -771,6 +719,75 @@ const solveContributionMetric = ({ allianceRows, teamIndex, ridgeLambda, valueAc
 
 const normalizeByCap = (value, cap) => clamp(toNumber(value, 0) / Math.max(1, toNumber(cap, 1)), 0, 1)
 
+const getStatboticsEpaValues = (team) => {
+  const totalEPA = toNumber(
+    team?.StatboticsEPA ?? team?.StatboticsScore ?? team?.statboticsEPA ?? team?.statboticsScore,
+    0
+  )
+  const autoEPA = toNumber(
+    team?.StatboticsAutoEPA ?? team?.statboticsAutoEPA,
+    0
+  )
+
+  return {
+    totalEPA: Math.max(0, totalEPA),
+    autoEPA: Math.max(0, autoEPA)
+  }
+}
+
+const deriveStatboticsNormalizationBaseline = (teamsData) => {
+  let maxTotalEPA = 0
+  let maxAutoEPA = 0
+
+  ;(Array.isArray(teamsData) ? teamsData : []).forEach((team) => {
+    const values = getStatboticsEpaValues(team)
+    maxTotalEPA = Math.max(maxTotalEPA, values.totalEPA)
+    maxAutoEPA = Math.max(maxAutoEPA, values.autoEPA)
+  })
+
+  return {
+    maxTotalEPA: Math.max(1, maxTotalEPA),
+    maxAutoEPA: Math.max(1, maxAutoEPA)
+  }
+}
+
+const blendAsSingleSyntheticMatch = (observedValue, observedMatchCount, syntheticValue, includeSyntheticMatch) => {
+  const matchCount = Math.max(0, toNumber(observedMatchCount, 0))
+  const syntheticCount = includeSyntheticMatch ? 1 : 0
+  const totalCount = matchCount + syntheticCount
+
+  if (totalCount <= 0) return 0
+
+  return (
+    (toNumber(observedValue, 0) * matchCount) +
+    (toNumber(syntheticValue, 0) * syntheticCount)
+  ) / totalCount
+}
+
+const getStatboticsSyntheticMatch = (team, baseline) => {
+  const statboticsValues = getStatboticsEpaValues(team)
+  const totalEPA = statboticsValues.totalEPA
+  const autoEPA = statboticsValues.autoEPA
+
+  const hasSignal = totalEPA > 0 || autoEPA > 0
+  const normalizedTotal = normalizeByCap(totalEPA, baseline?.maxTotalEPA ?? 1)
+  const normalizedAuto = normalizeByCap(autoEPA, baseline?.maxAutoEPA ?? 1)
+
+  // Synthetic match representation used in ranking blend; values are 0..1.
+  const syntheticSkill = clamp((normalizedTotal * 0.65) + (normalizedAuto * 0.35), 0, 1)
+  const syntheticScoreBoost = clamp((normalizedTotal * 0.75) + (normalizedAuto * 0.25), 0, 1)
+
+  return {
+    totalEPA,
+    autoEPA,
+    hasSignal,
+    normalizedTotal,
+    normalizedAuto,
+    syntheticSkill,
+    syntheticScoreBoost
+  }
+}
+
 const getTeamQualMatches = (team) => {
   const teamMatches = extractTeamMatches(team)
   return teamMatches.filter((match) => {
@@ -952,23 +969,30 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
 
   const ls = buildLeastSquaresRatings(teamsData, mergedOptions)
   const metricWeights = normalizeWeights(mergedOptions.metricWeights, DEFAULT_OPTIONS.metricWeights)
+  const statboticsNormalizationBaseline = deriveStatboticsNormalizationBaseline(teamsData)
 
   return teamsData
     .map((team) => {
       const teamNumber = normalizeTeamNumber(team?.TeamNumber ?? team?.id ?? team?.Team)
-      const teamMatches = getTeamQualMatches(team)
-      if (teamMatches.length === 0) {
+      const scout = computeTeamScoutAverages(team, mergedOptions)
+      const statboticsSynthetic = getStatboticsSyntheticMatch(team, statboticsNormalizationBaseline)
+      const syntheticMatchCount = statboticsSynthetic.hasSignal ? 1 : 0
+      const effectiveMatchCount = scout.matchCount + syntheticMatchCount
+
+      if (effectiveMatchCount === 0) {
         return {
           ...team,
           allianceScore: 0,
           skillRating: 0,
           uncertainty: mergedOptions.maxUncertainty,
           confidence: 0,
-          matchesRated: 0
+          matchesRated: 0,
+          ScoutMatchesRated: 0,
+          StatboticsSyntheticMatches: 0,
+          StatboticsEPA: statboticsSynthetic.totalEPA,
+          StatboticsAutoEPA: statboticsSynthetic.autoEPA
         }
       }
-
-      const scout = computeTeamScoutAverages(team, mergedOptions)
 
       const weightedSkill =
         toNumber(metricWeights.autoActions, 0) * toNumber(ls.autoActionsScore.get(teamNumber), 0) +
@@ -986,15 +1010,36 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         toNumber(metricWeights.reliability, 0) * scout.reliability
 
       const scoreDrivenBoost = 0.55 * toNumber(ls.totalScore.get(teamNumber), 0) + 0.45 * toNumber(ls.winContribution.get(teamNumber), 0)
-      const skillRating = clamp((0.78 * weightedSkill + 0.22 * scoreDrivenBoost) * 100, 0, 100)
+
+      const blendedSkill = blendAsSingleSyntheticMatch(
+        weightedSkill,
+        scout.matchCount,
+        statboticsSynthetic.syntheticSkill,
+        statboticsSynthetic.hasSignal
+      )
+      const blendedScoreBoost = blendAsSingleSyntheticMatch(
+        scoreDrivenBoost,
+        scout.matchCount,
+        statboticsSynthetic.syntheticScoreBoost,
+        statboticsSynthetic.hasSignal
+      )
+
+      const skillRating = clamp((0.78 * blendedSkill + 0.22 * blendedScoreBoost) * 100, 0, 100)
+
+      const reliabilityForRanking = blendAsSingleSyntheticMatch(
+        scout.reliability,
+        scout.matchCount,
+        0.6,
+        statboticsSynthetic.hasSignal
+      )
 
       const uncertaintyFromSample = clamp(
-        mergedOptions.maxUncertainty - (Math.log2(1 + scout.matchCount) * 6),
+        mergedOptions.maxUncertainty - (Math.log2(1 + effectiveMatchCount) * 6),
         mergedOptions.minUncertainty,
         mergedOptions.maxUncertainty
       )
 
-      const inconsistency = clamp((1 - scout.reliability) * 20, 0, 20)
+      const inconsistency = clamp((1 - reliabilityForRanking) * 20, 0, 20)
       const conservativeRating =
         skillRating -
         mergedOptions.uncertaintyPenalty * uncertaintyFromSample -
@@ -1008,7 +1053,11 @@ export function rankTeamsForAllianceSelection(teamsData, options = {}) {
         skillRating,
         uncertainty: uncertaintyFromSample,
         confidence,
-        matchesRated: scout.matchCount
+        matchesRated: effectiveMatchCount,
+        ScoutMatchesRated: scout.matchCount,
+        StatboticsSyntheticMatches: syntheticMatchCount,
+        StatboticsEPA: statboticsSynthetic.totalEPA,
+        StatboticsAutoEPA: statboticsSynthetic.autoEPA
       }
     })
     .sort((a, b) => b.allianceScore - a.allianceScore)
@@ -1065,7 +1114,6 @@ export function getDefaultAllianceRankingOptions(gameProfile = DEFAULT_GAME_PROF
     ...DEFAULT_OPTIONS,
     gameProfile,
     metricWeights: { ...profile.metricWeights },
-    seedWeights: { ...profile.seedWeights },
-    normalizationCaps: { ...DEFAULT_OPTIONS.normalizationCaps }
+    seedWeights: { ...profile.seedWeights }
   }
 }

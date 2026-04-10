@@ -14,12 +14,13 @@ export const onCreateTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         CanAutoHang
-        Pickable
+        ShooterType
         Turret
         Photo
         Notes
@@ -103,12 +104,13 @@ export const onUpdateTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         CanAutoHang
-        Pickable
+        ShooterType
         Turret
         Photo
         Notes
@@ -192,12 +194,13 @@ export const onDeleteTeam = /* GraphQL */ `
         CyclesPerMatch
         FuelPerCycle
         NumAutos
+        Pickable
         Capabilities
         MaxHang
         HangTeamwork
         HangTime
         CanAutoHang
-        Pickable
+        ShooterType
         Turret
         Photo
         Notes

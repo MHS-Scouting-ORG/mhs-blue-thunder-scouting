@@ -3,6 +3,7 @@ import { apigetMatchesForRegional, apiGetSimpleTeamsForRegional } from '../../..
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
 import { getTopTeamSuggestions } from '../../../utils/teamSearch';
+import { formatShooterType, getShooterTypeFromRow } from '../../../utils/shooterType';
 
 function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -176,6 +177,12 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
     return val.join(', ')
   }
 
+  const selectedTeamRow = Array.isArray(tableData)
+    ? tableData.find((team) => String(team?.TeamNumber || '') === String(selectedTeam || '')) || null
+    : null
+
+  const shooterTypeText = formatShooterType(getShooterTypeFromRow(selectedTeamRow))
+
   return (
     <div>
       <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Search Teams</h2>
@@ -288,7 +295,7 @@ function SearchView({ tableData, regional, teamsClicked, setTeamsClicked }) {
                             <div>Match Result: {m?.MatchResult || 'N/A'} • Team Impact: {m?.TeamImpact || 'N/A'}</div>
                             <div>Alliance Score: {Number.isFinite(Number(m?.AllianceScore)) ? Number(m?.AllianceScore) : 'N/A'} • Opponent Score: {Number.isFinite(Number(m?.OpponentScore)) ? Number(m?.OpponentScore) : 'N/A'}</div>
                             <div>Active: {stringifyList(m?.ActiveStrat)} • Inactive: {stringifyList(m?.InactiveStrat)}</div>
-                            <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Defense: {formatDefenseEffectiveness(m?.RobotInfo?.DefenseEffectiveness)} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
+                            <div>Driver: {m?.RobotInfo?.DriverSkill || 'None'} • Defense: {formatDefenseEffectiveness(m?.RobotInfo?.DefenseEffectiveness)} • Shooter Type: {shooterTypeText} • Robot: {m?.RobotInfo?.RobotSpeed || 'None'} / {m?.RobotInfo?.ShooterSpeed || 'None'} • Balls: {Number(m?.RobotInfo?.BallsShot || 0)}</div>
                             <div>Penalties: {Object.entries(m?.Penalties?.PenaltiesCommitted || {}).filter(([, v]) => v).map(([k]) => k).join(', ') || 'None'}</div>
                             {String(m?.RobotInfo?.Comments || '').trim() ? <div>Comments: {String(m?.RobotInfo?.Comments || '').trim()}</div> : null}
                           </>

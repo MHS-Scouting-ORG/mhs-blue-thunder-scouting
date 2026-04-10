@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { apiGetMatchesForRegional, apigetMatchesForRegional, apiGetStatboticsTeamEventPrediction, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry, apiGetRegionalTeams, toNotesTeamId } from '../api/index';
+import { apiGetMatchesForRegional, apiGetStatboticsTeamEventPrediction, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry, apiGetRegionalTeams, toNotesTeamId } from '../api/index';
 import { normalizeTeamId, isSameTeam } from '../utils/teamId';
 import { getTopTeamSuggestions } from "../utils/teamSearch";
 
@@ -17,6 +17,8 @@ const sectionHelp = {
   results: "Capture final match outcome, endgame hang, scores, and overall impact. Use penalty toggles only when they clearly occurred.",
   robotInfo: "Rate robot quality vs event average: drive speed, shooter speed, driver skill, and defense effectiveness. Add Fuel Capacity and comments for anything notable or unusual."
 };
+
+const OUR_TEAM_NUMBER = '2443';
 
 const InfoIcon = ({ text, onClick }) => (
   <button
@@ -67,6 +69,7 @@ const InfoIcon = ({ text, onClick }) => (
   /* MATCH STATES*/
   const [matchData, setMatchData] = useState([]) //used to pick blue alliance info
   const [apiTeamListData, setApiTeamListData] = useState([]) //team list data in our database
+  const [isTeamListLoaded, setIsTeamListLoaded] = useState(false)
   const [matchType, setMatchType] = useState(''); //match type
   // const [elmNum, setElmNum] = useState(''); //elimination
   const [matchNumber, setMatchNumber] = useState(''); //match number
@@ -76,7 +79,10 @@ const InfoIcon = ({ text, onClick }) => (
   const [blue, setBlue] = useState([]); //blue teams for a given match
   const [matchKey, setMatchKey] = useState(''); //match key
   const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+  const [suggestedAutoTeamNumber, setSuggestedAutoTeamNumber] = useState('');
+  const [suggestedAutoColor, setSuggestedAutoColor] = useState(undefined);
   const [simpleTeams, setSimpleTeams] = useState([]);
+  const [regionalMatches, setRegionalMatches] = useState([]);
   const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [teamSearchInput, setTeamSearchInput] = useState('');
   const [teamSuggestions, setTeamSuggestions] = useState([]);
@@ -132,9 +138,32 @@ const InfoIcon = ({ text, onClick }) => (
   const fieldRefs = useRef({});
   const ballsHoldTimerRef = useRef(null);
   const lastAutoSelectionSignature = useRef('');
+  const lastManualSuggestionSignature = useRef('');
   const statboticsPredictionCache = useRef(new Map());
 
- /* Blue Alliance API List Teams */
+  useEffect(() => {
+    if (!regional) {
+      setRegionalMatches([]);
+      return;
+    }
+
+    let isActive = true;
+
+    apiGetMatchesForRegional(regional)
+      .then((data) => {
+        if (!isActive) return;
+        setRegionalMatches(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!isActive) return;
+        setRegionalMatches([]);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [regional]);
+
   useEffect(() => {
     const normalizedMatchNumber = String(matchNumber || '').trim();
     if (!matchType || !normalizedMatchNumber) {
@@ -143,6 +172,9 @@ const InfoIcon = ({ text, onClick }) => (
       setBlue([]);
       setMatchData([]);
       lastAutoSelectionSignature.current = '';
+      lastManualSuggestionSignature.current = '';
+      setSuggestedAutoTeamNumber('');
+      setSuggestedAutoColor(undefined);
       return;
     }
 
@@ -155,48 +187,33 @@ const InfoIcon = ({ text, onClick }) => (
       return;
     }
 
-    /* Get latest regional key each time in case it was undefined earlier */
-    const reg = regional || apiGetRegional();
-    if (!reg) {
-      console.warn('regional not provided, skipping blue alliance fetch');
+    if (!regional) {
       return;
     }
 
-    /* Get Matches for Regional from bluealliance via our API wrapper */
-    apiGetMatchesForRegional(reg)
-    /* creates unique matchkey based on the type of match being record(usually quals tho) */
-      .then(data => {
-        let match_key = regional + "_" + matchType + "m" + normalizedMatchNumber
+    const baMatchType = matchType === "qa" || matchType === "qm" ? "q" : matchType;
+    let nextMatchKey = `${regional}_${baMatchType}m${normalizedMatchNumber}`;
 
-        if(matchType === "sf") {
-          match_key = regional + "_" + matchType + normalizedMatchNumber + "m1" 
-        }
-        if(matchType === "f"){
-          match_key = regional + "_" + matchType + "1" + "m" + normalizedMatchNumber
-        }
+    if (baMatchType === "sf") {
+      nextMatchKey = `${regional}_${baMatchType}${normalizedMatchNumber}m1`;
+    }
+    if (baMatchType === "f") {
+      nextMatchKey = `${regional}_${baMatchType}1m${normalizedMatchNumber}`;
+    }
 
-        setMatchKey(match_key)
+    setMatchKey(nextMatchKey);
 
-        /* Finds match data from bluealliance based on user input */
-        const match = data.find((x) => x.key === match_key)
-        /* sets the team keys for each allaince color */
-        if (match) {
-          setMatchData(match)
-          setRed(match.alliances.red.team_keys)
-          setBlue(match.alliances.blue.team_keys)
-        }
-        else {
-          setRed([])
-          setBlue([])
-          setMatchData([])
-        }
-      })
-      .catch(() => {
-        setRed([])
-        setBlue([])
-        setMatchData([])
-      })
-  }, [matchType, matchNumber, regional])
+    const match = regionalMatches.find((entry) => entry?.key === nextMatchKey);
+    if (match) {
+      setMatchData(match);
+      setRed(Array.isArray(match?.alliances?.red?.team_keys) ? match.alliances.red.team_keys : []);
+      setBlue(Array.isArray(match?.alliances?.blue?.team_keys) ? match.alliances.blue.team_keys : []);
+    } else {
+      setRed([]);
+      setBlue([]);
+      setMatchData([]);
+    }
+  }, [matchType, matchNumber, regional, regionalMatches])
 
   useEffect(() => {
     if (!regional) {
@@ -236,15 +253,7 @@ const InfoIcon = ({ text, onClick }) => (
   }, [teamSearchInput, simpleTeams, matchType]);
 
   useEffect(() => {
-    /* Check for pre-existing team entry data in our api */
-    apiListTeams()
-      .then((data) => {
-        const teamList = data?.data?.listTeams?.items || []
-        setApiTeamListData(teamList)
-      })
-      .catch(() => {
-        setApiTeamListData([])
-      })
+    loadTeamList()
   }, [])
 
   /* Stop Non Numbers From Going Into Number States */
@@ -258,7 +267,6 @@ const InfoIcon = ({ text, onClick }) => (
   /* resets form based on successful submission */
   const resetStates = () => {
     setMatchData([])
-    setApiTeamListData([])
     setMatchNumber('')
     setTeamNumber('')
     setTeamSearchInput('')
@@ -318,49 +326,289 @@ const InfoIcon = ({ text, onClick }) => (
   }
 
   const parseMatchOrder = (matchId) => {
-    const id = String(matchId || '')
+    const id = String(matchId || '').toLowerCase()
+    const qualMatchNumber = id.match(/qm(\d+)/i)
+    if (qualMatchNumber?.[1]) return toNumber(qualMatchNumber[1], 0)
+
     const matchNumber = id.match(/m(\d+)$/i) || id.match(/_(\d+)$/)
-    if (matchNumber) return toNumber(matchNumber[1], 0)
-    const anyDigits = id.match(/(\d+)/)
-    return anyDigits ? toNumber(anyDigits[1], 0) : 0
+    if (matchNumber?.[1]) return toNumber(matchNumber[1], 0)
+
+    return 0
   }
 
   const normalizeMatchId = (matchId) => String(matchId || '').trim()
 
+  const isQualificationMatchEntry = (entry) => {
+    const matchType = String(entry?.MatchType || '').trim().toLowerCase()
+    if (matchType === 'q' || matchType === 'qm') return true
+    const matchId = normalizeMatchId(entry?.MatchId || entry?.id)
+    return /(?:^|_)qm\d+/i.test(matchId)
+  }
+
+  const getSubmittedQualificationMatchNumbers = (teamEntry) => {
+    return getRegionalTeamMatches(teamEntry)
+      .filter((entry) => isQualificationMatchEntry(entry))
+      .map((entry) => {
+        const explicitMatchNumber = toNumber(entry?.match_number, NaN)
+        if (Number.isFinite(explicitMatchNumber) && explicitMatchNumber > 0) return explicitMatchNumber
+        return parseMatchOrder(entry?.MatchId || entry?.id)
+      })
+      .filter((value) => Number.isFinite(value) && value > 0)
+  }
+
+  const getRegionalTeamMatches = (teamEntry) => {
+    const regionals = Array.isArray(teamEntry?.Regionals) ? teamEntry.Regionals : [];
+    const currentRegional = regionals.find((entry) => entry?.RegionalId === regional);
+    return Array.isArray(currentRegional?.TeamMatches) ? currentRegional.TeamMatches : [];
+  }
+
+  const getAllianceTeamNumbers = (match, allianceColor) => {
+    const keys = Array.isArray(match?.alliances?.[allianceColor]?.team_keys)
+      ? match.alliances[allianceColor].team_keys
+      : [];
+    return keys.map(normalizeTeamId).filter(Boolean);
+  }
+
+  const loadTeamList = async () => {
+    setIsTeamListLoaded(false);
+    try {
+      const data = await apiListTeams();
+      const teamList = data?.data?.listTeams?.items || [];
+      setApiTeamListData(teamList);
+      setIsTeamListLoaded(true);
+      return teamList;
+    } catch (_) {
+      setApiTeamListData([]);
+      setIsTeamListLoaded(true);
+      return [];
+    }
+  }
+
+  const getAutoScoutRecommendation = async () => {
+    const currentMatchNumber = toNumber(matchData?.match_number, parseMatchOrder(matchKey));
+    const matchTeams = [
+      ...getAllianceTeamNumbers(matchData, 'red'),
+      ...getAllianceTeamNumbers(matchData, 'blue')
+    ]
+      .map(normalizeTeamId)
+      .filter(Boolean);
+
+    if (matchTeams.length === 0) return null;
+
+    const futureOurMatches = regionalMatches
+      .filter((entry) => entry?.comp_level === 'qm')
+      .filter((entry) => toNumber(entry?.match_number, 0) > currentMatchNumber)
+      .filter((entry) => {
+        const redTeams = getAllianceTeamNumbers(entry, 'red');
+        const blueTeams = getAllianceTeamNumbers(entry, 'blue');
+        return [...redTeams, ...blueTeams].includes(OUR_TEAM_NUMBER);
+      })
+      .sort((a, b) => toNumber(a?.match_number, 0) - toNumber(b?.match_number, 0));
+
+    const opponentDueMatches = new Map();
+    futureOurMatches.forEach((entry) => {
+      const redTeams = getAllianceTeamNumbers(entry, 'red');
+      const blueTeams = getAllianceTeamNumbers(entry, 'blue');
+      const ourAlliance = redTeams.includes(OUR_TEAM_NUMBER) ? redTeams : blueTeams;
+      const opponentAlliance = ourAlliance === redTeams ? blueTeams : redTeams;
+      const dueMatchNumber = toNumber(entry?.match_number, 0);
+
+      opponentAlliance.forEach((teamNum) => {
+        if (!teamNum || teamNum === OUR_TEAM_NUMBER || opponentDueMatches.has(teamNum)) return;
+        opponentDueMatches.set(teamNum, dueMatchNumber);
+      });
+    });
+
+    const teamsToLoad = Array.from(new Set([
+      ...matchTeams,
+      ...opponentDueMatches.keys(),
+    ]));
+
+    const cachedEntriesById = new Map(
+      (Array.isArray(apiTeamListData) ? apiTeamListData : [])
+        .map((entry) => [String(entry?.id || '').trim(), entry])
+        .filter(([id]) => Boolean(id))
+    );
+
+    const baseTeamsByNumber = new Map(
+      teamsToLoad.map((teamNum) => [teamNum, cachedEntriesById.get(teamNum) || null])
+    );
+
+    const notesTeamsByNumber = new Map(
+      matchTeams.map((teamNum) => [teamNum, cachedEntriesById.get(toNotesTeamId(teamNum)) || null])
+    );
+
+    const uncoveredOpponents = new Map();
+    opponentDueMatches.forEach((dueMatchNumber, teamNum) => {
+      const priorMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
+
+      const hasCoverageBeforeDueMatch = priorMatchNumbers.some((value) => value < dueMatchNumber);
+      if (!hasCoverageBeforeDueMatch) {
+        uncoveredOpponents.set(teamNum, dueMatchNumber);
+      }
+    });
+
+    const teamSummaries = await Promise.all(matchTeams.map(async (teamNum) => {
+      if (teamNum === OUR_TEAM_NUMBER) {
+        return null;
+      }
+
+      const notesEntry = notesTeamsByNumber.get(teamNum);
+      const attrs = notesEntry?.TeamAttributes || {};
+      const isPickable = attrs.Pickable !== false;
+
+      const scoutedMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
+      const hasAnyScoutData = scoutedMatchNumbers.length > 0;
+      const lastScoutedMatch = hasAnyScoutData ? Math.max(...scoutedMatchNumbers) : 0;
+
+      const cacheKey = `${regional}::${teamNum}`;
+      let predictionScore = 0;
+      if (statboticsPredictionCache.current.has(cacheKey)) {
+        predictionScore = statboticsPredictionCache.current.get(cacheKey);
+      } else {
+        try {
+          const prediction = await apiGetStatboticsTeamEventPrediction(teamNum, regional);
+          predictionScore = toNumber(prediction?.statboticsScore, 0);
+          statboticsPredictionCache.current.set(cacheKey, predictionScore);
+        } catch (_) {
+          predictionScore = 0;
+        }
+      }
+
+      return {
+        teamNum,
+        predictionScore,
+        hasAnyScoutData,
+        lastScoutedMatch,
+        isPickable,
+        targetDueMatchNumber: uncoveredOpponents.get(teamNum) || null,
+      };
+    }));
+
+    const eligibleSummaries = teamSummaries.filter(Boolean);
+    if (eligibleSummaries.length === 0) return null;
+
+    const pickableTeams = eligibleSummaries.filter((summary) => summary.isPickable);
+    const candidates = pickableTeams.length > 0 ? pickableTeams : eligibleSummaries;
+
+    const priorityCandidates = candidates
+      .filter((summary) => summary.targetDueMatchNumber !== null)
+      .filter((summary) => currentMatchNumber < summary.targetDueMatchNumber);
+
+    let selectionPool = priorityCandidates;
+    if (selectionPool.length === 0) {
+      const unscouted = candidates.filter((summary) => !summary.hasAnyScoutData);
+      selectionPool = unscouted.length > 0 ? unscouted : candidates;
+    }
+
+    if (selectionPool.length === 0) return null;
+
+    selectionPool.sort((a, b) => {
+      const aDueMatch = a.targetDueMatchNumber ?? Number.POSITIVE_INFINITY;
+      const bDueMatch = b.targetDueMatchNumber ?? Number.POSITIVE_INFINITY;
+      if (aDueMatch !== bDueMatch) {
+        return aDueMatch - bDueMatch;
+      }
+      if (a.predictionScore !== b.predictionScore) {
+        return a.predictionScore - b.predictionScore;
+      }
+      return a.lastScoutedMatch - b.lastScoutedMatch;
+    });
+
+    const selected = selectionPool[0];
+    if (!selected?.teamNum) return null;
+
+    return {
+      teamNum: selected.teamNum,
+      color: getAllianceTeamNumbers(matchData, 'red').includes(selected.teamNum) ? false : true,
+    };
+  }
+
   useEffect(() => {
-    if (matchType !== 'q' || !matchKey || !regional || !matchData) return;
-    const selectionSignature = `${matchKey}:${String(color)}`;
+    if (matchType !== 'qa' || !matchKey || !regional || !matchData || !isTeamListLoaded) return;
+    const selectionSignature = matchKey;
     if (lastAutoSelectionSignature.current === selectionSignature) return;
     let isActive = true;
 
     const pickAutoTeam = async () => {
       setIsAutoSelecting(true);
       try {
+        const currentMatchNumber = toNumber(matchData?.match_number, parseMatchOrder(matchKey));
         const matchTeams = [
-          ...(Array.isArray(red) ? red : []),
-          ...(Array.isArray(blue) ? blue : [])
+          ...getAllianceTeamNumbers(matchData, 'red'),
+          ...getAllianceTeamNumbers(matchData, 'blue')
         ]
           .map(normalizeTeamId)
           .filter(Boolean);
 
         if (matchTeams.length === 0) return;
 
+        const futureOurMatches = regionalMatches
+          .filter((entry) => entry?.comp_level === 'qm')
+          .filter((entry) => toNumber(entry?.match_number, 0) > currentMatchNumber)
+          .filter((entry) => {
+            const redTeams = getAllianceTeamNumbers(entry, 'red');
+            const blueTeams = getAllianceTeamNumbers(entry, 'blue');
+            return [...redTeams, ...blueTeams].includes(OUR_TEAM_NUMBER);
+          })
+          .sort((a, b) => toNumber(a?.match_number, 0) - toNumber(b?.match_number, 0));
+
+        const opponentDueMatches = new Map();
+        futureOurMatches.forEach((entry) => {
+          const redTeams = getAllianceTeamNumbers(entry, 'red');
+          const blueTeams = getAllianceTeamNumbers(entry, 'blue');
+          const ourAlliance = redTeams.includes(OUR_TEAM_NUMBER) ? redTeams : blueTeams;
+          const opponentAlliance = ourAlliance === redTeams ? blueTeams : redTeams;
+          const dueMatchNumber = toNumber(entry?.match_number, 0);
+
+          opponentAlliance.forEach((teamNum) => {
+            if (!teamNum || teamNum === OUR_TEAM_NUMBER || opponentDueMatches.has(teamNum)) return;
+            opponentDueMatches.set(teamNum, dueMatchNumber);
+          });
+        });
+
+        const teamsToLoad = Array.from(new Set([
+          ...matchTeams,
+          ...opponentDueMatches.keys(),
+        ]));
+
+        const cachedEntriesById = new Map(
+          (Array.isArray(apiTeamListData) ? apiTeamListData : [])
+            .map((entry) => [String(entry?.id || '').trim(), entry])
+            .filter(([id]) => Boolean(id))
+        );
+
+        const baseTeamsByNumber = new Map(
+          teamsToLoad.map((teamNum) => [teamNum, cachedEntriesById.get(teamNum) || null])
+        );
+
+        const notesTeamsByNumber = new Map(
+          matchTeams.map((teamNum) => [teamNum, cachedEntriesById.get(toNotesTeamId(teamNum)) || null])
+        );
+
+        const uncoveredOpponents = new Map();
+        opponentDueMatches.forEach((dueMatchNumber, teamNum) => {
+          const priorMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
+
+          const hasCoverageBeforeDueMatch = priorMatchNumbers.some((value) => value < dueMatchNumber);
+          if (!hasCoverageBeforeDueMatch) {
+            uncoveredOpponents.set(teamNum, dueMatchNumber);
+          }
+        });
+
         const teamSummaries = await Promise.all(matchTeams.map(async (teamNum) => {
-          let isPickable = true;
-          let teamMatches = [];
-          try {
-            const teamEntry = await apiGetTeam(toNotesTeamId(teamNum));
-            const attrs = teamEntry?.TeamAttributes || {};
-            isPickable = attrs.Pickable !== false;
-            const regionals = Array.isArray(teamEntry?.Regionals) ? teamEntry.Regionals : [];
-            const currentRegional = regionals.find((entry) => entry?.RegionalId === regional);
-            teamMatches = Array.isArray(currentRegional?.TeamMatches) ? currentRegional.TeamMatches : [];
-          } catch (_) {
-            // missing team record means unscouted and default pickable
+          if (teamNum === OUR_TEAM_NUMBER) {
+            return null;
           }
 
-          const alreadyScouted = teamMatches.some((match) => normalizeMatchId(match?.MatchId) === normalizeMatchId(matchKey));
-          const lastScoutedMatch = teamMatches.reduce((max, match) => Math.max(max, parseMatchOrder(match?.MatchId)), 0);
+          let isPickable = true;
+          const notesEntry = notesTeamsByNumber.get(teamNum);
+          const attrs = notesEntry?.TeamAttributes || {};
+          isPickable = attrs.Pickable !== false;
+
+          const scoutedMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
+          const hasAnyScoutData = scoutedMatchNumbers.length > 0;
+          const lastScoutedMatch = hasAnyScoutData ? Math.max(...scoutedMatchNumbers) : 0;
 
           const cacheKey = `${regional}::${teamNum}`;
           let predictionScore = 0;
@@ -379,19 +627,37 @@ const InfoIcon = ({ text, onClick }) => (
           return {
             teamNum,
             predictionScore,
-            alreadyScouted,
+            hasAnyScoutData,
             lastScoutedMatch,
             isPickable,
+            targetDueMatchNumber: uncoveredOpponents.get(teamNum) || null,
           };
         }));
 
-        const pickableTeams = teamSummaries.filter((summary) => summary.isPickable);
-        const candidates = pickableTeams.length > 0 ? pickableTeams : teamSummaries;
-        const unscouted = candidates.filter((summary) => !summary.alreadyScouted);
-        const selectionPool = unscouted.length > 0 ? unscouted : candidates;
+        const eligibleSummaries = teamSummaries.filter(Boolean);
+        if (eligibleSummaries.length === 0) return;
+
+        const pickableTeams = eligibleSummaries.filter((summary) => summary.isPickable);
+        const candidates = pickableTeams.length > 0 ? pickableTeams : eligibleSummaries;
+
+        const priorityCandidates = candidates
+          .filter((summary) => summary.targetDueMatchNumber !== null)
+          .filter((summary) => currentMatchNumber < summary.targetDueMatchNumber);
+
+        let selectionPool = priorityCandidates;
+        if (selectionPool.length === 0) {
+          const unscouted = candidates.filter((summary) => !summary.hasAnyScoutData);
+          selectionPool = unscouted.length > 0 ? unscouted : candidates;
+        }
+
         if (selectionPool.length === 0) return;
 
         selectionPool.sort((a, b) => {
+          const aDueMatch = a.targetDueMatchNumber ?? Number.POSITIVE_INFINITY;
+          const bDueMatch = b.targetDueMatchNumber ?? Number.POSITIVE_INFINITY;
+          if (aDueMatch !== bDueMatch) {
+            return aDueMatch - bDueMatch;
+          }
           if (a.predictionScore !== b.predictionScore) {
             return a.predictionScore - b.predictionScore;
           }
@@ -404,11 +670,9 @@ const InfoIcon = ({ text, onClick }) => (
         const selectedColor = (Array.isArray(red) ? red.map(normalizeTeamId) : []).includes(selected.teamNum) ? false : true;
 
         if (isActive) {
-          if (color === undefined) setColor(selectedColor);
-          if (!teamNumber) {
-            setTeamNumber(selected.teamNum);
-            await ensureTeamExists(selected.teamNum);
-          }
+          setColor(selectedColor);
+          setTeamNumber(selected.teamNum);
+          await ensureTeamExists(selected.teamNum);
         }
 
         lastAutoSelectionSignature.current = selectionSignature;
@@ -421,7 +685,33 @@ const InfoIcon = ({ text, onClick }) => (
 
     pickAutoTeam();
     return () => { isActive = false; };
-  }, [matchType, matchKey, red, blue, regional, matchData, color]);
+  }, [matchType, matchKey, regional, matchData, regionalMatches, apiTeamListData, isTeamListLoaded]);
+
+  useEffect(() => {
+    if (matchType !== 'qm' || !matchKey || !regional || !matchData || !isTeamListLoaded) return;
+    const selectionSignature = matchKey;
+    if (lastManualSuggestionSignature.current === selectionSignature) return;
+    let isActive = true;
+
+    const loadManualSuggestion = async () => {
+      try {
+        const selected = await getAutoScoutRecommendation();
+        if (!isActive) return;
+
+        setSuggestedAutoTeamNumber(selected?.teamNum || '');
+        setSuggestedAutoColor(selected?.color);
+        lastManualSuggestionSignature.current = selectionSignature;
+      } catch (err) {
+        console.warn('Manual recommendation load failed', err);
+        if (!isActive) return;
+        setSuggestedAutoTeamNumber('');
+        setSuggestedAutoColor(undefined);
+      }
+    };
+
+    loadManualSuggestion();
+    return () => { isActive = false; };
+  }, [matchType, matchKey, regional, matchData, regionalMatches, apiTeamListData, isTeamListLoaded]);
 
   const isSubmitLocked = isSubmitting || Date.now() < submitLockedUntil
 
@@ -593,6 +883,10 @@ const InfoIcon = ({ text, onClick }) => (
   }
   
 
+  const highlightedManualTeamNumber = matchType === 'qm' && color === suggestedAutoColor
+    ? suggestedAutoTeamNumber
+    : ''
+
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto", position: "relative" }}>
 
@@ -714,7 +1008,8 @@ const InfoIcon = ({ text, onClick }) => (
                 onInput={(e) => {setMatchType(e.target.value); resetStates() }}
               >
                 <option value="">Select Type</option>
-                <option value='q'>Qualification</option>
+                <option value='qm'>Quals Manual</option>
+                <option value='qa'>Quals Auto</option>
                 <option value='sf'>Semifinal</option>
                 <option value='f'>Final</option>
                 <option value='p'>Practice</option>
@@ -863,10 +1158,30 @@ const InfoIcon = ({ text, onClick }) => (
                   <option value="">Select robot number</option>
                   {color === false ?
                     red.map((team) => {
-                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                      const normalizedTeam = normalizeTeamId(team)
+                      const isSuggested = highlightedManualTeamNumber === normalizedTeam
+                      return (
+                        <option
+                          value={normalizedTeam}
+                          key={team}
+                          style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
+                        >
+                          {normalizedTeam}
+                        </option>
+                      )
                     }) :
                     blue.map((team) => {
-                      return <option value={normalizeTeamId(team)} key={team}>{normalizeTeamId(team)}</option>
+                      const normalizedTeam = normalizeTeamId(team)
+                      const isSuggested = highlightedManualTeamNumber === normalizedTeam
+                      return (
+                        <option
+                          value={normalizedTeam}
+                          key={team}
+                          style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
+                        >
+                          {normalizedTeam}
+                        </option>
+                      )
                     })
                   }
                 </select>
@@ -881,6 +1196,22 @@ const InfoIcon = ({ text, onClick }) => (
                   Enter a match number and select an alliance first to choose a robot.
                 </div>
               )}
+              {highlightedManualTeamNumber ? (
+                <div style={{
+                  marginTop: "8px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 10px",
+                  borderRadius: "999px",
+                  backgroundColor: "#fff4bf",
+                  color: "#5c4b00",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}>
+                  Auto would scout team {highlightedManualTeamNumber}
+                </div>
+              ) : null}
             </div>
           )}
         </div>
@@ -1564,8 +1895,9 @@ const InfoIcon = ({ text, onClick }) => (
             robotInsight,
             robotBrokenComments
         )
-        .then(_ => {
+        .then(async _ => {
           if(_ === false){ //checks if the form utils return true or false which based on if the user filled all required
+            await loadTeamList()
             resetStates()
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }

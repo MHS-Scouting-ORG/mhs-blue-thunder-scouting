@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { apiGetMatchesForRegional, apiGetSimpleTeamsForRegional } from '../../../api';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
+import { formatShooterType, getShooterTypeFromRow, isTurretShooter } from '../../../utils/shooterType';
 
 const OUR_TEAM_NUMBER = '2443';
 
@@ -24,6 +25,12 @@ const parseMatchNumberFromId = (matchId) => {
 const getTeamByNumber = (tableData, teamNumber) => {
   if (!Array.isArray(tableData)) return null;
   return tableData.find((team) => String(team?.TeamNumber || '') === String(teamNumber || '')) || null;
+};
+
+const formatDefenseEffectiveness = (value) => {
+  const normalized = String(value || '').trim()
+  if (!normalized) return 'N/A'
+  return normalized === 'VeryPoor' ? 'Very Poor' : normalized
 };
 
 const buildTeamGraphData = (teamRow) => {
@@ -229,9 +236,13 @@ function OurMatchesView({ tableData, regional }) {
     return index >= 0 ? index + 1 : null;
   };
 
-  const isTurretTeam = (teamNumber) => {
+  const getShooterTypeForTeam = (teamNumber) => {
     const row = getTeamByNumber(tableData, teamNumber);
-    return Boolean(row?.Turret || row?.TeamAttributes?.Turret || row?.turret);
+    return getShooterTypeFromRow(row);
+  };
+
+  const isTurretTeam = (teamNumber) => {
+    return isTurretShooter(getShooterTypeForTeam(teamNumber));
   };
 
   const getAlliancePrediction = (teamNumbers) => {
@@ -250,6 +261,7 @@ function OurMatchesView({ tableData, regional }) {
       const avgAuto = toNumber(row?.AvgAutoPts, 0);
       const avgEndgame = toNumber(row?.AvgEndgamePts, 0);
       const avgTeleop = Math.max(0, expected - avgAuto - avgEndgame);
+      const shooterType = getShooterTypeForTeam(teamNumber);
       return {
         teamNumber,
         expected,
@@ -257,7 +269,10 @@ function OurMatchesView({ tableData, regional }) {
         avgTeleop,
         avgEndgame,
         rank: getRankByAveragePoints(teamNumber),
-        hasTurret: isTurretTeam(teamNumber),
+        hasTurret: isTurretShooter(shooterType),
+        shooterType,
+        shooterTypeLabel: formatShooterType(shooterType),
+        defenseEffectiveness: formatDefenseEffectiveness(row?.DefenseEffectiveness),
       };
     });
 
@@ -292,8 +307,9 @@ function OurMatchesView({ tableData, regional }) {
     const oppAlliance = ourIsRed ? blue : red;
 
     const expectedDiff = ourAlliance.totalExpected - oppAlliance.totalExpected;
-    const ourWinChance = 1 / (1 + Math.exp(-expectedDiff / 8));
-    const opponentWinChance = 1 - ourWinChance;
+    const totalMatchExpected = ourAlliance.totalExpected + oppAlliance.totalExpected;
+    const ourWinChance = totalMatchExpected > 0 ? ourAlliance.totalExpected / totalMatchExpected : 0.5;
+    const opponentWinChance = totalMatchExpected > 0 ? oppAlliance.totalExpected / totalMatchExpected : 0.5;
 
     let inactiveStrategySuggestion = 'Support';
     if (expectedDiff > 0) {
@@ -308,7 +324,7 @@ function OurMatchesView({ tableData, regional }) {
       });
       const target = prioritized[0];
       inactiveStrategySuggestion = target
-        ? `Defense on ${target.teamNumber}${target.hasTurret ? '' : ' (preferred non-turret target)'}`
+        ? `Defense on ${target.teamNumber}${target.shooterType === 'Static' ? ' (preferred static shooter target)' : target.shooterType === 'Turret' ? ' (turret shooter)' : ''}`
         : 'Defense';
     }
 
@@ -488,51 +504,56 @@ function OurMatchesView({ tableData, regional }) {
               return (
                 <div
                   key={matchKey}
-                  onClick={toggleExpanded}
                   style={{
                     backgroundColor: isExpanded ? '#f8fbff' : 'white',
                     border: isExpanded ? '2px solid #77B6E2' : '1px solid #ddd',
                     borderRadius: '10px',
                     padding: '14px 16px',
                     marginBottom: '10px',
-                    cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: isExpanded ? '0 2px 8px rgba(119,182,226,0.18)' : '0 1px 3px rgba(0,0,0,0.06)',
                   }}
+                >
+                <div
+                  onClick={toggleExpanded}
+                  style={{ cursor: 'pointer' }}
                   onMouseEnter={(e) => {
+                    const parent = e.currentTarget.parentElement;
                     if (!isExpanded) {
-                      e.currentTarget.style.borderColor = '#a8d4f0';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(119,182,226,0.15)';
+                      parent.style.borderColor = '#a8d4f0';
+                      parent.style.boxShadow = '0 2px 8px rgba(119,182,226,0.15)';
                     }
                   }}
                   onMouseLeave={(e) => {
+                    const parent = e.currentTarget.parentElement;
                     if (!isExpanded) {
-                      e.currentTarget.style.borderColor = '#ddd';
-                      e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
+                      parent.style.borderColor = '#ddd';
+                      parent.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)';
                     }
                   }}
                 >
-                <div style={{ textAlign: 'center', fontWeight: 700, marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '16px', fontWeight: 700, color: '#2f4f73' }}>
-                    Match {match?.match_number}
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#999', transition: 'transform 0.2s ease', display: 'inline-block', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', columnGap: '16px', rowGap: '12px', cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#cc0000', fontSize: '14px' }}>Red</div>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
-                      {(match?.alliances?.red?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'red', matchKey))}
-                    </div>
+                  <div style={{ textAlign: 'center', fontWeight: 700, marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '16px', fontWeight: 700, color: '#2f4f73' }}>
+                      Match {match?.match_number}
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#999', transition: 'transform 0.2s ease', display: 'inline-block', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                   </div>
 
-                  <div style={{ fontWeight: 700, fontSize: '16px', textAlign: 'center' }}>VS</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', columnGap: '16px', rowGap: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ marginBottom: '6px', fontWeight: 600, color: '#cc0000', fontSize: '14px' }}>Red</div>
+                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+                        {(match?.alliances?.red?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'red', matchKey))}
+                      </div>
+                    </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <div style={{ marginBottom: '6px', fontWeight: 600, color: '#0066cc', fontSize: '14px' }}>Blue</div>
-                    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
-                      {(match?.alliances?.blue?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'blue', matchKey))}
+                    <div style={{ fontWeight: 700, fontSize: '16px', textAlign: 'center' }}>VS</div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ marginBottom: '6px', fontWeight: 600, color: '#0066cc', fontSize: '14px' }}>Blue</div>
+                      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+                        {(match?.alliances?.blue?.team_keys || []).map(teamKey => renderTeamButton(teamKey, 'blue', matchKey))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -572,6 +593,9 @@ function OurMatchesView({ tableData, regional }) {
                                 {renderMetricButton({ label: 'End', value: team.avgEndgame.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'endgame') })}
                                 {renderMetricButton({ label: 'Rank', value: team.rank || 'N/A', onClick: () => openMetricGraph(matchKey, team.teamNumber, 'rank') })}
                               </div>
+                              <div style={{ marginTop: '8px', fontSize: '13px', color: '#555' }}>
+                                Defense: {team.defenseEffectiveness} • Shooter: {team.shooterTypeLabel}
+                              </div>
                             </div>
                           );
                         })}
@@ -594,6 +618,9 @@ function OurMatchesView({ tableData, regional }) {
                                 {renderMetricButton({ label: 'Tele', value: team.avgTeleop.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'teleop') })}
                                 {renderMetricButton({ label: 'End', value: team.avgEndgame.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'endgame') })}
                                 {renderMetricButton({ label: 'Rank', value: team.rank || 'N/A', onClick: () => openMetricGraph(matchKey, team.teamNumber, 'rank') })}
+                              </div>
+                              <div style={{ marginTop: '8px', fontSize: '13px', color: '#555' }}>
+                                Defense: {team.defenseEffectiveness} • Shooter: {team.shooterTypeLabel}
                               </div>
                             </div>
                           );

@@ -145,6 +145,11 @@ enum CapabilitiesOpts {
   None
 }
 
+enum ShooterTypeOpts {
+  Turret
+  Static
+}
+
 # types
 
 type TeamMatchesType {
@@ -181,6 +186,7 @@ type TeamAttributesType {
   HangTeamwork: HangTeamworkOpts
   HangTime: Float
   CanAutoHang: Boolean
+  ShooterType: ShooterTypeOpts
   Turret: Boolean
   Photo: String
   Notes: String

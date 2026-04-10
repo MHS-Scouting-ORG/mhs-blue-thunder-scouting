@@ -1,5 +1,5 @@
 const AutoStratOpts = {
-  LeftStartingZone: "LeftStartingZone",
+  MovedInAuto: "MovedInAuto",
   ScoredInGoal: "ScoredInGoal",
   Nothing: "Nothing"
 }
@@ -246,7 +246,8 @@ const buildTeamEntry = (teamNumber, regional) => {
         HangTeamwork: HangTeamworkOpts.None,
         HangTime: 0.0,
         CanAutoHang: false,
-        Turret: false,
+        ShooterType: null,
+        Turret: null,
         Photo: "",
         Notes: "",
       },

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { getUrl } from 'aws-amplify/storage';
 import { apiGetTeam, apiGetSimpleTeamsForRegional, apigetMatchesForRegional, toNotesTeamId } from '../../../api/index';
+import { formatShooterType, getShooterTypeFromAttributes } from '../../../utils/shooterType';
 
 function TeamStats(props) {
   const information = props.information
@@ -185,7 +186,7 @@ function TeamStats(props) {
     ? (attrs.Capabilities.filter(v => v && v !== 'None').join(', ') || 'None')
     : (attrs?.Capabilities || 'None');
   const canAutoHangText = typeof attrs?.CanAutoHang === 'boolean' ? (attrs.CanAutoHang ? 'Yes' : 'No') : 'N/A';
-  const turretText = typeof attrs?.Turret === 'boolean' ? (attrs.Turret ? 'Yes' : 'No') : 'N/A';
+  const shooterTypeText = formatShooterType(getShooterTypeFromAttributes(attrs));
   const formattedEndgameMode = String(endgameMode || 'N/A').replace(/Level(\d+)/g, 'Level $1');
   const hangTimeText = typeof attrs?.HangTime === 'number' ? `${attrs.HangTime.toFixed(2)} s` : 'N/A';
   const brokenRateText = `${brokenRate}%`;
@@ -299,7 +300,7 @@ function TeamStats(props) {
             <strong>Can Auto Hang (Notes)</strong>: {canAutoHangText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Turret (Notes)</strong>: {turretText}
+            <strong>Shooter Type (Notes)</strong>: {shooterTypeText}
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
             <strong>Capabilities:</strong> {capabilitiesText}

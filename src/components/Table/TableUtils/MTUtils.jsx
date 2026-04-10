@@ -1,6 +1,7 @@
-import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional, apiGetStatboticsTeamEventPrediction, toNotesTeamId } from "../../../api";
+import { apigetMatchesForRegional, apiGetTeamsInRegional, apiListTeams, apiGetCachedStatboticsTeamEventPrediction, apiWarmStatboticsTeamEventPredictions, toNotesTeamId } from "../../../api";
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
-import { isSameTeam } from "../../../utils/teamId"
+import { normalizeTeamId } from "../../../utils/teamId"
+import { getShooterTypeFromAttributes } from "../../../utils/shooterType";
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
@@ -42,10 +43,30 @@ const getShotPoints = (match) => {
   return Number(match?.RobotInfo?.BallsShot || 0)
 }
 
+const EMPTY_STATBOTICS_PREDICTION = {
+  statboticsPredictedWins: 0,
+  statboticsPredictedLosses: 0,
+  statboticsWinRate: 0,
+  statboticsScore: 0,
+  statboticsRank: 0,
+  statboticsEPA: 0,
+  statboticsAutoEPA: 0,
+}
+
 /* Runs with getTeamsInRegional to find and set teams to return an array of object teamNumbers  */
 async function getTeams (regional) {
   try {
-  const data = await apiGetTeamsInRegional(regional)
+  const [data, listTeamsResponse] = await Promise.all([
+    apiGetTeamsInRegional(regional),
+    apiListTeams(),
+  ])
+
+     const allTeamEntries = listTeamsResponse?.data?.listTeams?.items || []
+     const teamEntriesById = new Map(
+      allTeamEntries
+        .map((entry) => [String(entry?.id || '').trim(), entry])
+        .filter(([id]) => Boolean(id))
+     )
 
      const teamsWithPhotos = await Promise.all(data.map(async obj => {
       const teamNumber = String(obj.team_number)
@@ -55,24 +76,17 @@ async function getTeams (regional) {
        TeamAttributes: {},
       }
 
-       // Pull both base and notes records so table views can use data from both forms.
-       try {
-         const [dbTeam, notesTeam] = await Promise.all([
-           apiGetTeam(teamNumber),
-           apiGetTeam(toNotesTeamId(teamNumber)),
-         ])
+       const dbTeam = teamEntriesById.get(teamNumber)
+       const notesTeam = teamEntriesById.get(toNotesTeamId(teamNumber))
 
-         const mergedAttrs = {
-           ...(dbTeam?.TeamAttributes || {}),
-           ...(notesTeam?.TeamAttributes || {}),
-         }
+       const mergedAttrs = {
+         ...(dbTeam?.TeamAttributes || {}),
+         ...(notesTeam?.TeamAttributes || {}),
+       }
 
-         teamNumObj.TeamAttributes = mergedAttrs
-         if (mergedAttrs?.Photo) {
-           teamNumObj.photo = mergedAttrs.Photo
-         }
-       } catch (_) {
-         // most teams dont have a photo yet so dont display error
+       teamNumObj.TeamAttributes = mergedAttrs
+       if (mergedAttrs?.Photo) {
+         teamNumObj.photo = mergedAttrs.Photo
        }
 
        return teamNumObj
@@ -87,30 +101,23 @@ async function getTeams (regional) {
 /* 
 consolidates all calculations, averages, and sets the object for each team(row) and their properties(stats) 
 */
-async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {  
+async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStatboticsUpdate) {  
   try {
     const data = await apigetMatchesForRegional(regional)
-    
-    const statboticsResults = await Promise.all(teamNumbers.map(async (team) => {
-      try {
-        const prediction = await apiGetStatboticsTeamEventPrediction(team.TeamNumber, regional)
-        return { teamNumber: team.TeamNumber, prediction }
-      } catch (err) {
-        console.warn('Statbotics prediction failed for', team.TeamNumber, err)
-        return { teamNumber: team.TeamNumber, prediction: null }
-      }
-    }))
+    const tableData = Array.isArray(mtable) ? mtable : []
+    const teamMatchData = data?.data?.teamMatchesByRegional?.items || []
+    const teamMatchesByTeam = new Map()
 
-    const statboticsByTeam = new Map(statboticsResults.map((item) => [item.teamNumber, item.prediction]))
+    teamMatchData.forEach((match) => {
+      const teamKey = normalizeTeamId(match?.Team)
+      if (!teamKey) return
+      const currentMatches = teamMatchesByTeam.get(teamKey) || []
+      currentMatches.push(match)
+      teamMatchesByTeam.set(teamKey, currentMatches)
+    })
 
-    console.log("getTeamMatchesAndTableDataFunc", data)
-    
-    const tableData = mtable
-
-    return teamNumbers.map(team => {
-      //teamMatchesByRegional is left undefined
-      const teamMatchData = data.data.teamMatchesByRegional.items;
-      const teamStats = teamMatchData.filter(x => isSameTeam(x.Team, team.TeamNumber))
+    const buildTableRows = (statboticsByTeam) => teamNumbers.map(team => {
+      const teamStats = teamMatchesByTeam.get(normalizeTeamId(team.TeamNumber)) || []
       const totalMatches = teamStats.length
 
       const pointsByMatch = teamStats.map(m => getAutoPoints(m) + getEndgamePoints(m) + getTravelPoints(m) + getShotPoints(m))
@@ -163,6 +170,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const canHangByForm = teamStats.some((match) => String(match?.Teleop?.Endgame || 'None') !== 'None')
       const canHangByNotes = String(team?.TeamAttributes?.MaxHang || 'None') !== 'None'
       const hasAutosByNotes = Number(team?.TeamAttributes?.NumAutos || 0) > 0
+      const shooterType = getShooterTypeFromAttributes(team?.TeamAttributes)
 
       //grade
 
@@ -170,9 +178,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
       const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
 
-
-
-      const statboticsPrediction = statboticsByTeam.get(team.TeamNumber) || {}
+      const statboticsPrediction = statboticsByTeam.get(String(team.TeamNumber)) || EMPTY_STATBOTICS_PREDICTION
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
@@ -183,6 +189,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         StatboticsWinRate: statboticsPrediction.statboticsWinRate || 0,
         StatboticsScore: statboticsPrediction.statboticsScore || 0,
         StatboticsRank: statboticsPrediction.statboticsRank || 0,
+        StatboticsEPA: statboticsPrediction.statboticsEPA || statboticsPrediction.statboticsScore || 0,
+        StatboticsAutoEPA: statboticsPrediction.statboticsAutoEPA || 0,
         //==Robot Performance==/
         RobotSpeed: mcRobotSpeed === null ? '' : mcRobotSpeed + ' ' + (isNaN(reliableRobotSpeed) ? '' : reliableRobotSpeed + '%' ),
         DriverSkill: mcDriverSkill === null ? '' : mcDriverSkill,
@@ -213,7 +221,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         canHang: canHangByForm || canHangByNotes,
         canTrench: capabilities.includes('Trench'),
         hasAutos: hasScoredAuto || hasAutosByNotes,
-        Turret: Boolean(team?.TeamAttributes?.Turret),
+        ShooterType: shooterType,
+        Turret: shooterType ? shooterType === 'Turret' : (typeof team?.TeamAttributes?.Turret === 'boolean' ? team.TeamAttributes.Turret : null),
         /* Grade */
         SumPriorities: team.SumPriorities,
         //NPts: isNaN(rPts) ? 0 : 67,//rPts,
@@ -221,6 +230,33 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       }
       return tableDataObj;
     })
+
+    const cachedStatboticsByTeam = new Map(
+      teamNumbers.map((team) => [
+        String(team.TeamNumber),
+        apiGetCachedStatboticsTeamEventPrediction(team.TeamNumber, regional, { allowStale: true }) || EMPTY_STATBOTICS_PREDICTION,
+      ])
+    )
+
+    const initialTableRows = buildTableRows(cachedStatboticsByTeam)
+
+    void apiWarmStatboticsTeamEventPredictions(
+      teamNumbers.map((team) => team.TeamNumber),
+      regional,
+      { maxAgeMs: 5 * 60 * 1000, concurrency: 6 }
+    ).then((results) => {
+      if (!Array.isArray(results) || typeof onStatboticsUpdate !== 'function') return
+
+      const refreshedStatboticsByTeam = new Map(
+        results.map((item) => [String(item.teamNumber), item.prediction || EMPTY_STATBOTICS_PREDICTION])
+      )
+
+      onStatboticsUpdate(buildTableRows(refreshedStatboticsByTeam))
+    }).catch((err) => {
+      console.warn('Statbotics background refresh failed', err)
+    })
+
+    return initialTableRows
   }
   catch(err) {
     console.log(err)
