@@ -11,7 +11,7 @@ import {
   getRankingsForRegional as fetchRankingsForRegional,
 } from './bluealliance'
 import { normalizeTeamId } from '../utils/teamId'
-import { getTeamEventPrediction, getEventPredictions } from './stats'
+import { getTeamEventPrediction, getEventPredictions, getCachedTeamEventPrediction, warmTeamEventPredictions } from './stats'
 
 const NOTES_TEAM_PREFIX = 'notes-'
 
@@ -258,6 +258,18 @@ const normalizeCapabilitiesList = (value) => {
   return []
 }
 
+const normalizeMatchType = (value) => {
+  const type = String(value || '').trim().toLowerCase()
+  if (!type) return null
+
+  if (type === 'q' || type === 'qa' || type === 'qm' || type === 'qual' || type === 'quals' || type === 'qualification' || type === 'qualifications') return 'q'
+  if (type === 'sf' || type === 'semi' || type === 'semis' || type === 'semifinal' || type === 'semifinals') return 'sf'
+  if (type === 'f' || type === 'final' || type === 'finals') return 'f'
+  if (type === 'p' || type === 'practice') return 'p'
+
+  return null
+}
+
 const normalizeRegionals = (regionalsValue) => {
   const regionals = Array.isArray(regionalsValue)
     ? regionalsValue
@@ -276,6 +288,7 @@ const normalizeRegionals = (regionalsValue) => {
           .filter(match => match && typeof match === 'object' && !Array.isArray(match))
           .map(match => ({
             ...match,
+            MatchType: normalizeMatchType(match?.MatchType),
             Autonomous: {
               ...match?.Autonomous,
               AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat)
@@ -586,12 +599,20 @@ const apiGetRankingsForRegional = async function (regionalId) {
   return fetchRankingsForRegional(regionalId)
 }
 
-const apiGetStatboticsTeamEventPrediction = async function (teamNumber, eventKey) {
-  return getTeamEventPrediction(teamNumber, eventKey)
+const apiGetStatboticsTeamEventPrediction = async function (teamNumber, eventKey, options) {
+  return getTeamEventPrediction(teamNumber, eventKey, options)
 }
 
 const apiGetStatboticsEventPredictions = async function (eventKey) {
   return getEventPredictions(eventKey)
+}
+
+const apiGetCachedStatboticsTeamEventPrediction = function (teamNumber, eventKey, options) {
+  return getCachedTeamEventPrediction(teamNumber, eventKey, options)
+}
+
+const apiWarmStatboticsTeamEventPredictions = async function (teamNumbers, eventKey, options) {
+  return warmTeamEventPredictions(teamNumbers, eventKey, options)
 }
 
 const apiGetAllianceSelection = async function (regionalId) {
@@ -673,6 +694,8 @@ export {
   apiGetRankingsForRegional,
   apiGetStatboticsTeamEventPrediction,
   apiGetStatboticsEventPredictions,
+  apiGetCachedStatboticsTeamEventPrediction,
+  apiWarmStatboticsTeamEventPredictions,
   apiGetAllianceSelection,
   apiSaveAllianceSelection,
   apiUpdateTeamEntry,

@@ -35,11 +35,21 @@ function Summary() {
 
   /* runs in sync with the functions of EffectFunc function to call the function for the table data(avgs/modes/stats) */
   useEffect(() => {
-    ueTableData(tableData, regional)
+    let isActive = true
+
+    ueTableData(tableData, regional, (nextTableData) => {
+      if (!isActive || !Array.isArray(nextTableData)) return
+      setTableData(nextTableData)
+    })
       .then(data => {
+        if (!isActive) return
         setTableData(data)
       })
       .catch(err => console.error('error building table data', err))
+
+    return () => {
+      isActive = false
+    }
   }, [sortBy, teamsClicked, regional, refreshTick]) //depended on the teams clicked, sortby, and regional readiness
 
   /* Function to return an object to an array with game specific avgs for the individual team clicked */

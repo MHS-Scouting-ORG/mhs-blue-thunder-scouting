@@ -18,6 +18,26 @@ const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
 const ENDGAME_OPTIONS = [0, 5, 10, 15, 20, 25, 30]
 const BROKEN_OPTIONS = [100, 80, 60, 50, 40, 30, 20, 10, 0]
 
+const getDefaultSortDirection = (key) => (
+  key === 'TeamNumberValue' || key === 'TeamName' ? 'asc' : 'desc'
+)
+
+const TABLE_HEADERS = [
+  { label: 'Rank', sortKey: null },
+  { label: 'Team', sortKey: 'TeamNumberValue' },
+  { label: 'Name', sortKey: 'TeamName' },
+  { label: 'Baseline', sortKey: 'baselineScore' },
+  { label: 'Alliance Score', sortKey: 'allianceScore' },
+  { label: 'Statbotics', sortKey: 'statboticsScore' },
+  { label: 'Skill', sortKey: 'skillRating' },
+  { label: 'Confidence', sortKey: 'confidence' },
+  { label: 'Matches', sortKey: 'Matches' },
+  { label: 'Avg Pts', sortKey: 'AvgPoints' },
+  { label: 'Auto', sortKey: 'AvgAutoPts' },
+  { label: 'Endgame', sortKey: 'AvgEndgamePts' },
+  { label: 'Broken %', sortKey: 'brokenRate' },
+]
+
 function AllLeaderboardView({ tableData, regional }) {
   const [simpleTeams, setSimpleTeams] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -36,6 +56,18 @@ function AllLeaderboardView({ tableData, regional }) {
   const [canHang, setCanHang] = useState(false)
   const [canTrench, setCanTrench] = useState(false)
   const [hasAutos, setHasAutos] = useState(false)
+
+  const handleHeaderSort = (headerSortKey) => {
+    if (!headerSortKey) return
+
+    if (sortKey === headerSortKey) {
+      setSortDir((prevDir) => (prevDir === 'asc' ? 'desc' : 'asc'))
+      return
+    }
+
+    setSortKey(headerSortKey)
+    setSortDir(getDefaultSortDirection(headerSortKey))
+  }
 
   useEffect(() => {
     if (!regional) {
@@ -117,6 +149,7 @@ function AllLeaderboardView({ tableData, regional }) {
       return {
         ...team,
         TeamNumber: teamNumber,
+        TeamNumberValue: toNumber(teamNumber, 0),
         TeamName: nameMap.get(teamNumber) || '',
         allianceScore: toNumber(team?.allianceScore, 0),
         baselineScore,
@@ -196,7 +229,7 @@ function AllLeaderboardView({ tableData, regional }) {
 
   const resetFilters = () => {
     setSearchTerm('')
-    setSortKey('allianceScore')
+    setSortKey('baselineScore')
     setSortDir('desc')
     setMinMatches(1)
     setMinConfidence(0)
@@ -237,7 +270,7 @@ function AllLeaderboardView({ tableData, regional }) {
             <option value="AvgAutoPts">Sort: Avg Auto Pts</option>
             <option value="AvgEndgamePts">Sort: Avg Endgame Pts</option>
             <option value="brokenRate">Sort: Broken %</option>
-            <option value="TeamNumber">Sort: Team Number</option>
+            <option value="TeamNumberValue">Sort: Team Number</option>
           </select>
 
           <select value={sortDir} onChange={e => setSortDir(e.target.value)} style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}>
@@ -429,19 +462,36 @@ function AllLeaderboardView({ tableData, regional }) {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f8f9fa' }}>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Name</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Baseline</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Statbotics</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Skill</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Confidence</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Matches</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Avg Pts</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Auto</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Endgame</th>
-                  <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Broken %</th>
+                  {TABLE_HEADERS.map((header) => {
+                    const isSortable = Boolean(header.sortKey)
+                    const isActiveSort = isSortable && sortKey === header.sortKey
+                    const directionLabel = isActiveSort ? ` (${sortDir})` : ''
+
+                    return (
+                      <th key={header.label} style={{ padding: '10px', border: '1px solid #dee2e6' }}>
+                        {isSortable ? (
+                          <button
+                            type="button"
+                            onClick={() => handleHeaderSort(header.sortKey)}
+                            style={{
+                              border: 'none',
+                              background: 'transparent',
+                              cursor: 'pointer',
+                              fontWeight: isActiveSort ? 700 : 600,
+                              color: isActiveSort ? '#0d6efd' : '#111',
+                              width: '100%',
+                              textAlign: 'center',
+                              padding: 0,
+                            }}
+                          >
+                            {header.label}{directionLabel}
+                          </button>
+                        ) : (
+                          header.label
+                        )}
+                      </th>
+                    )
+                  })}
                 </tr>
               </thead>
               <tbody>

@@ -175,6 +175,18 @@ export async function submitState( //params are states of data from form
     return null
   }
 
+  const normalizeMatchTypeValue = (value) => {
+    const type = String(value || '').trim().toLowerCase()
+    if (!type) return ''
+
+    if (type === 'q' || type === 'qa' || type === 'qm' || type === 'qual' || type === 'quals' || type === 'qualification' || type === 'qualifications') return 'q'
+    if (type === 'sf' || type === 'semi' || type === 'semis' || type === 'semifinal' || type === 'semifinals') return 'sf'
+    if (type === 'f' || type === 'final' || type === 'finals') return 'f'
+    if (type === 'p' || type === 'practice') return 'p'
+
+    return ''
+  }
+
   let windowAlertMsg = 'Form is incomplete, you still need to fill out: ';
   let incompleteForm = false;
 
@@ -189,6 +201,7 @@ export async function submitState( //params are states of data from form
 
   /* idk what this is - not mine (dom) */
   const normalizedTeamNumber = normalizeTeamId(teamNumber)
+  const normalizedMatchType = normalizeMatchTypeValue(matchType)
   const parsedMatchNumber = Number.parseInt(matchNumber, 10)
   const parsedFuelCapacity = Number.parseInt(fuelCapacity, 10)
   const parsedBallsShot = Number.parseInt(estimatedBallsShot, 10)
@@ -196,7 +209,7 @@ export async function submitState( //params are states of data from form
   /* */
 
   /* Checks Match Selects */
-  if (matchType === '') {
+  if (normalizedMatchType === '') {
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nMatch Type (Qualifications, Semifinals, Finals or Practice)"
   }
@@ -408,6 +421,7 @@ export async function submitState( //params are states of data from form
             .filter(match => match && typeof match === "object" && !Array.isArray(match))
             .map(match => ({
               ...match,
+              MatchType: normalizeMatchTypeValue(match?.MatchType) || null,
               Autonomous: {
                 ...match?.Autonomous,
                 AutoStrat: Array.isArray(match?.Autonomous?.AutoStrat) 
@@ -456,7 +470,7 @@ export async function submitState( //params are states of data from form
         SubmittedBy: submittedBy,
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
-        MatchType: matchType,
+        MatchType: normalizedMatchType || null,
         AutoWin: normalizedAutoWin,
         TeamImpact: normalizedTeamImpact,
         AutoImpact: normalizedAutoImpact === '' ? null : normalizedAutoImpact,
