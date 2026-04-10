@@ -212,14 +212,16 @@ const normalizeStratList = (value) => {
 }
 
 const normalizeAutoStrat = (value) => {
-  const allowed = ["LeftStartingZone", "ScoredInGoal", "Nothing"]
+  const allowed = ["MovedInAuto", "ScoredInGoal", "Nothing"]
   const autoMap = {
-    WentMid: "LeftStartingZone",
-    CrossedMid: "LeftStartingZone",
-    "Crossed Bump/Trench": "LeftStartingZone",
-    Moved: "Nothing",
+    WentMid: "MovedInAuto",
+    CrossedMid: "MovedInAuto",
+    "Crossed Bump/Trench": "MovedInAuto",
+    "Left Starting Zone": "MovedInAuto",
+    LeftStartingZone: "MovedInAuto",
+    MovedInAuto: "MovedInAuto",
+    Moved: "MovedInAuto",
     Scored: "ScoredInGoal",
-    LeftStartingZone: "LeftStartingZone",
     ScoredInGoal: "ScoredInGoal",
     Nothing: "Nothing",
     None: "Nothing",
@@ -237,6 +239,66 @@ const normalizeAutoStrat = (value) => {
 
   if (cleaned.length === 0) return ["Nothing"]
   return [...new Set(cleaned)]
+}
+
+const normalizeMatchResult = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'win') return 'Win'
+  if (token === 'lose' || token === 'loss') return 'Lose'
+  if (token === 'tie') return 'Tie'
+  return null
+}
+
+const normalizeTeamImpact = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (!token || token === 'nothing' || token === 'none') return null
+  if (token === 'low') return 'Low'
+  if (token === 'medium') return 'Medium'
+  if (token === 'high' || token === 'very high' || token === 'veryhigh') return 'High'
+  return null
+}
+
+const normalizeAutoHang = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'level1') return 'Level1'
+  return 'None'
+}
+
+const normalizeHang = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'level3') return 'Level3'
+  if (token === 'level2') return 'Level2'
+  if (token === 'level1') return 'Level1'
+  if (token === 'none') return 'None'
+  return null
+}
+
+const normalizeSpeed = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'very slow' || token === 'slow') return 'Slow'
+  if (token === 'average' || token === 'medium') return 'Average'
+  if (token === 'very fast' || token === 'fast') return 'Fast'
+  if (token === 'none') return 'None'
+  return null
+}
+
+const normalizeDriverSkill = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'very poor' || token === 'poor') return 'Poor'
+  if (token === 'average') return 'Average'
+  if (token === 'good') return 'Good'
+  if (token === 'excellent') return 'Excellent'
+  return null
+}
+
+const normalizeDefenseEffectiveness = (value) => {
+  const token = String(value || '').trim().toLowerCase()
+  if (token === 'verypoor' || token === 'very poor') return 'VeryPoor'
+  if (token === 'poor') return 'Poor'
+  if (token === 'average') return 'Average'
+  if (token === 'good') return 'Good'
+  if (token === 'excellent') return 'Excellent'
+  return null
 }
 
 const normalizeCapabilitiesList = (value) => {
@@ -289,9 +351,24 @@ const normalizeRegionals = (regionalsValue) => {
           .map(match => ({
             ...match,
             MatchType: normalizeMatchType(match?.MatchType),
+            AutoWin: normalizeMatchResult(match?.AutoWin),
+            TeamImpact: normalizeTeamImpact(match?.TeamImpact),
+            AutoImpact: normalizeTeamImpact(match?.AutoImpact),
             Autonomous: {
               ...match?.Autonomous,
-              AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat)
+              AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat),
+              AutoHang: normalizeAutoHang(match?.Autonomous?.AutoHang)
+            },
+            Teleop: {
+              ...match?.Teleop,
+              Endgame: normalizeHang(match?.Teleop?.Endgame)
+            },
+            RobotInfo: {
+              ...match?.RobotInfo,
+              RobotSpeed: normalizeSpeed(match?.RobotInfo?.RobotSpeed),
+              ShooterSpeed: normalizeSpeed(match?.RobotInfo?.ShooterSpeed),
+              DriverSkill: normalizeDriverSkill(match?.RobotInfo?.DriverSkill),
+              DefenseEffectiveness: normalizeDefenseEffectiveness(match?.RobotInfo?.DefenseEffectiveness)
             },
             ActiveStrat: normalizeStratList(match?.ActiveStrat),
             InactiveStrat: normalizeStratList(match?.InactiveStrat)
