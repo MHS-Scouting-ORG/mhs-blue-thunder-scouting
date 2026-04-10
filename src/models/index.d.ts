@@ -3,7 +3,7 @@ import { ModelInit, MutableModel, __modelMeta__, OptionallyManagedIdentifier } f
 import { LazyLoading, LazyLoadingDisabled } from "@aws-amplify/datastore";
 
 export enum AutoStratOpts {
-  LEFT_STARTING_ZONE = "LeftStartingZone",
+  MOVED_IN_AUTO = "MovedInAuto",
   SCORED_IN_GOAL = "ScoredInGoal",
   NOTHING = "Nothing"
 }
@@ -80,6 +80,11 @@ export enum CapabilitiesOpts {
   BUMP = "Bump",
   TRENCH = "Trench",
   NONE = "None"
+}
+
+export enum ShooterTypeOpts {
+  TURRET = "Turret",
+  STATIC = "Static"
 }
 
 type EagerAutonomousType = {
@@ -227,12 +232,13 @@ type EagerTeamAttributesType = {
   readonly CyclesPerMatch?: number | null;
   readonly FuelPerCycle?: number | null;
   readonly NumAutos?: number | null;
+  readonly Pickable?: boolean | null;
   readonly Capabilities?: (CapabilitiesOpts | null)[] | Array<keyof typeof CapabilitiesOpts> | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
   readonly CanAutoHang?: boolean | null;
-  readonly Pickable?: boolean | null;
+  readonly ShooterType?: ShooterTypeOpts | keyof typeof ShooterTypeOpts | null;
   readonly Turret?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;
@@ -245,12 +251,13 @@ type LazyTeamAttributesType = {
   readonly CyclesPerMatch?: number | null;
   readonly FuelPerCycle?: number | null;
   readonly NumAutos?: number | null;
+  readonly Pickable?: boolean | null;
   readonly Capabilities?: (CapabilitiesOpts | null)[] | Array<keyof typeof CapabilitiesOpts> | null;
   readonly MaxHang?: HangOpts | keyof typeof HangOpts | null;
   readonly HangTeamwork?: HangTeamworkOpts | keyof typeof HangTeamworkOpts | null;
   readonly HangTime?: number | null;
   readonly CanAutoHang?: boolean | null;
-  readonly Pickable?: boolean | null;
+  readonly ShooterType?: ShooterTypeOpts | keyof typeof ShooterTypeOpts | null;
   readonly Turret?: boolean | null;
   readonly Photo?: string | null;
   readonly Notes?: string | null;

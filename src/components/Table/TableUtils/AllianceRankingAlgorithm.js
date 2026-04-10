@@ -18,14 +18,14 @@ const DEFAULT_GAME_PROFILES = {
       autoHang: 0.04,
       teleopMobility: 0.08,
       endgame: 0.12,
-      ballsShot: 0.27,
+      ballsShot: 0.25,
       shootingCycles: 0.08,
-      robotSpeed: 0.09,
+      robotSpeed: 0.08,
       shooterSpeed: 0.04,
       driverSkill: 0.03,
-      defenseEffectiveness: 0,
+      defenseEffectiveness: 0.04,
       teamImpact: 0.03,
-      strategyExecution: 0.03,
+      strategyExecution: 0.02,
       reliability: 0.03
     },
     seedWeights: {
@@ -41,15 +41,15 @@ const DEFAULT_GAME_PROFILES = {
       autoActions: 0.17,
       autoHang: 0.06,
       teleopMobility: 0.07,
-      endgame: 0.16,
-      ballsShot: 0.16,
-      shootingCycles: 0.1,
+      endgame: 0.15,
+      ballsShot: 0.14,
+      shootingCycles: 0.09,
       robotSpeed: 0.07,
       shooterSpeed: 0.04,
       driverSkill: 0.05,
-      defenseEffectiveness: 0,
+      defenseEffectiveness: 0.05,
       teamImpact: 0.04,
-      strategyExecution: 0.05,
+      strategyExecution: 0.04,
       reliability: 0.03
     },
     seedWeights: {
@@ -104,7 +104,8 @@ const DEFAULT_OPTIONS = {
     robotSpeed: 0.07,
     activeStrategies: 0.05,
     auto: 0.17,
-    endgame: 0.16
+    endgame: 0.16,
+    defenseEffectiveness: 0.05
   }
 }
 
@@ -166,7 +167,8 @@ const mapLegacyFeatureWeights = (featureWeights) => {
     ballsShot: featureWeights.ballsShot,
     robotSpeed: featureWeights.robotSpeed,
     strategyExecution: featureWeights.activeStrategies,
-    endgame: featureWeights.endgame
+    endgame: featureWeights.endgame,
+    defenseEffectiveness: featureWeights.defenseEffectiveness
   }
 }
 

@@ -1,6 +1,7 @@
 import { apigetMatchesForRegional, apiGetTeam, apiGetTeamsInRegional, apiGetStatboticsTeamEventPrediction, toNotesTeamId } from "../../../api";
 import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
 import { isSameTeam } from "../../../utils/teamId"
+import { getShooterTypeFromAttributes } from "../../../utils/shooterType";
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
@@ -163,6 +164,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
       const canHangByForm = teamStats.some((match) => String(match?.Teleop?.Endgame || 'None') !== 'None')
       const canHangByNotes = String(team?.TeamAttributes?.MaxHang || 'None') !== 'None'
       const hasAutosByNotes = Number(team?.TeamAttributes?.NumAutos || 0) > 0
+      const shooterType = getShooterTypeFromAttributes(team?.TeamAttributes)
 
       //grade
 
@@ -213,7 +215,8 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional) {
         canHang: canHangByForm || canHangByNotes,
         canTrench: capabilities.includes('Trench'),
         hasAutos: hasScoredAuto || hasAutosByNotes,
-        Turret: Boolean(team?.TeamAttributes?.Turret),
+        ShooterType: shooterType,
+        Turret: shooterType ? shooterType === 'Turret' : (typeof team?.TeamAttributes?.Turret === 'boolean' ? team.TeamAttributes.Turret : null),
         /* Grade */
         SumPriorities: team.SumPriorities,
         //NPts: isNaN(rPts) ? 0 : 67,//rPts,

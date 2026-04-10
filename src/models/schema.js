@@ -99,7 +99,7 @@ export const schema = {
         "AutoStratOpts": {
             "name": "AutoStratOpts",
             "values": [
-                "LeftStartingZone",
+                "MovedInAuto",
                 "ScoredInGoal",
                 "Nothing"
             ]
@@ -198,6 +198,13 @@ export const schema = {
                 "Bump",
                 "Trench",
                 "None"
+            ]
+        },
+        "ShooterTypeOpts": {
+            "name": "ShooterTypeOpts",
+            "values": [
+                "Turret",
+                "Static"
             ]
         }
     },
@@ -591,6 +598,13 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "Pickable": {
+                    "name": "Pickable",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "Capabilities": {
                     "name": "Capabilities",
                     "isArray": true,
@@ -633,10 +647,12 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
-                "Pickable": {
-                    "name": "Pickable",
+                "ShooterType": {
+                    "name": "ShooterType",
                     "isArray": false,
-                    "type": "Boolean",
+                    "type": {
+                        "enum": "ShooterTypeOpts"
+                    },
                     "isRequired": false,
                     "attributes": []
                 },
@@ -687,5 +703,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "97a50c380ead0f72dc6f1d91f10a2e76"
+    "version": "19cbc55daf49b667ac8f26631ea1bb4f"
 };

@@ -19,6 +19,7 @@ import CollapseTButton from "../components/Table/TableUtils/CollapseTButton";
 import tableStyling from "../components/Table/Table.module.css";
 
 import { uploadData, getUrl } from 'aws-amplify/storage';
+import { getShooterTypeFromAttributes, normalizeShooterTypeValue } from '../utils/shooterType';
 
 
 function Notes(props) {
@@ -56,7 +57,7 @@ function Notes(props) {
   const [canDoubleHang, setCanDoubleHang] = useState(false)
   const [canTripleHang, setCanTripleHang] = useState(false)
   const [canAutoHang, setCanAutoHang] = useState(false)
-  const [hasTurret, setHasTurret] = useState(false)
+  const [shooterType, setShooterType] = useState('')
   const [pickable, setPickable] = useState(true)
 
   /* Submit */
@@ -182,7 +183,7 @@ function Notes(props) {
     setCanDoubleHang(false)
     setCanTripleHang(false)
     setCanAutoHang(false)
-    setHasTurret(false)
+    setShooterType('')
     setPickable(true)
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
@@ -283,7 +284,7 @@ function Notes(props) {
         setCanDoubleHang(attrs.HangTeamwork === "DoubleHang")
         setCanTripleHang(attrs.HangTeamwork === "TripleHang")
         setCanAutoHang(Boolean(attrs.CanAutoHang))
-        setHasTurret(Boolean(attrs.Turret))
+        setShooterType(getShooterTypeFromAttributes(attrs))
         setPickable(attrs.Pickable !== false)
       } else {
         alert('Unable to load or create team data. Please try again.')
@@ -381,6 +382,8 @@ function Notes(props) {
       return allowed.has(normalized) ? normalized : 'None'
     }
 
+    const normalizedShooterType = normalizeShooterTypeValue(shooterType)
+
     const teamAttrs = {
       DeclaredFuelCap: fuelCapacity ? parseInt(fuelCapacity) : null,
       Notes: notes,
@@ -396,7 +399,8 @@ function Notes(props) {
       MaxHang: normalizeMaxHang(maxHangHeight),
       HangTeamwork: canTripleHang ? "TripleHang" : canDoubleHang ? "DoubleHang" : "None",
       CanAutoHang: Boolean(canAutoHang),
-      Turret: Boolean(hasTurret),
+      ShooterType: normalizedShooterType || null,
+      Turret: normalizedShooterType ? normalizedShooterType === 'Turret' : null,
       Pickable: Boolean(pickable)
     }
 
@@ -563,18 +567,19 @@ function Notes(props) {
                       onClick={() => setPickable(prev => !prev)}
                       className={`${tableStyling.ToggleButton} ${pickable ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                       style={{
-                        width: "48px",
+                        minWidth: "110px",
                         height: "48px",
-                        padding: 0,
+                        padding: "0 14px",
                         borderRadius: "12px",
-                        fontSize: "20px",
+                        fontSize: "14px",
+                        fontWeight: "600",
                         lineHeight: 1,
                         display: "inline-flex",
                         alignItems: "center",
                         justifyContent: "center"
                       }}
                     >
-                      {pickable ? '★' : '☆'}
+                      Pickable
                     </button>
                   </div>
                 </div>
@@ -773,13 +778,23 @@ function Notes(props) {
                 </div>
 
                 <div style={{ flex: "1", minWidth: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Turret</label>
+                  <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Shooter Type</label>
                   <div style={{display: "flex", flexDirection: "row", gap: "10px", justifyContent: "center", flexWrap: "wrap"}}>
                     <button
-                      onClick={() => setHasTurret(!hasTurret)}
-                      className={`${tableStyling.ToggleButton} ${hasTurret ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                      onClick={() => {
+                        setShooterType((prev) => (prev === 'Turret' ? '' : 'Turret'))
+                      }}
+                      className={`${tableStyling.ToggleButton} ${shooterType === 'Turret' ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
                     >
-                      {hasTurret ? 'Has Turret' : 'No Turret'}
+                      Turret
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShooterType((prev) => (prev === 'Static' ? '' : 'Static'))
+                      }}
+                      className={`${tableStyling.ToggleButton} ${shooterType === 'Static' ? tableStyling.ToggleButtonOn : tableStyling.ToggleButtonOff}`}
+                    >
+                      Static Shooter
                     </button>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 import { apiListTeams, apiDeleteMatchSubmission, apiDeleteTeam, fromNotesTeamId, isNotesTeamId } from '../../../api';
 import { isTableNotesAllowed } from '../../../utils/tableNotesPermissions';
 import tableStyles from '../Table.module.css';
+import { formatShooterType, getShooterTypeFromAttributes } from '../../../utils/shooterType';
 
 function Submissions({ regional }) {
   const { user } = useOutletContext() ?? {}
@@ -47,6 +48,10 @@ function Submissions({ regional }) {
         return normalized === 'VeryPoor' ? 'Very Poor' : normalized
       }
 
+      const formatShooterTypeText = (attrs) => {
+        return formatShooterType(getShooterTypeFromAttributes(attrs), '')
+      }
+
       teams.forEach(team => {
         const teamId = String(team?.id || '');
         const notesRecord = isNotesTeamId(teamId)
@@ -68,6 +73,8 @@ function Submissions({ regional }) {
         if (capabilities !== 'None') noteParts.push(`Capabilities: ${capabilities}`)
         if (attrs?.MaxHang && attrs.MaxHang !== 'None') noteParts.push(`Max Hang: ${attrs.MaxHang}`)
         if (attrs?.HangTeamwork && attrs.HangTeamwork !== 'None') noteParts.push(`Teamwork: ${attrs.HangTeamwork}`)
+        const shooterType = formatShooterTypeText(attrs)
+        if (shooterType) noteParts.push(`Shooter Type: ${shooterType}`)
 
         if (notesRecord && noteParts.length > 0) {
 

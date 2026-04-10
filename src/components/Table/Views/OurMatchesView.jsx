@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { apiGetMatchesForRegional, apiGetSimpleTeamsForRegional } from '../../../api';
 import TeamStats from '../Tables/TeamStats';
 import tableStyles from '../Table.module.css';
+import { formatShooterType, getShooterTypeFromRow, isTurretShooter } from '../../../utils/shooterType';
 
 const OUR_TEAM_NUMBER = '2443';
 
@@ -24,6 +25,12 @@ const parseMatchNumberFromId = (matchId) => {
 const getTeamByNumber = (tableData, teamNumber) => {
   if (!Array.isArray(tableData)) return null;
   return tableData.find((team) => String(team?.TeamNumber || '') === String(teamNumber || '')) || null;
+};
+
+const formatDefenseEffectiveness = (value) => {
+  const normalized = String(value || '').trim()
+  if (!normalized) return 'N/A'
+  return normalized === 'VeryPoor' ? 'Very Poor' : normalized
 };
 
 const buildTeamGraphData = (teamRow) => {
@@ -229,9 +236,13 @@ function OurMatchesView({ tableData, regional }) {
     return index >= 0 ? index + 1 : null;
   };
 
-  const isTurretTeam = (teamNumber) => {
+  const getShooterTypeForTeam = (teamNumber) => {
     const row = getTeamByNumber(tableData, teamNumber);
-    return Boolean(row?.Turret || row?.TeamAttributes?.Turret || row?.turret);
+    return getShooterTypeFromRow(row);
+  };
+
+  const isTurretTeam = (teamNumber) => {
+    return isTurretShooter(getShooterTypeForTeam(teamNumber));
   };
 
   const getAlliancePrediction = (teamNumbers) => {
@@ -250,6 +261,7 @@ function OurMatchesView({ tableData, regional }) {
       const avgAuto = toNumber(row?.AvgAutoPts, 0);
       const avgEndgame = toNumber(row?.AvgEndgamePts, 0);
       const avgTeleop = Math.max(0, expected - avgAuto - avgEndgame);
+      const shooterType = getShooterTypeForTeam(teamNumber);
       return {
         teamNumber,
         expected,
@@ -257,7 +269,10 @@ function OurMatchesView({ tableData, regional }) {
         avgTeleop,
         avgEndgame,
         rank: getRankByAveragePoints(teamNumber),
-        hasTurret: isTurretTeam(teamNumber),
+        hasTurret: isTurretShooter(shooterType),
+        shooterType,
+        shooterTypeLabel: formatShooterType(shooterType),
+        defenseEffectiveness: formatDefenseEffectiveness(row?.DefenseEffectiveness),
       };
     });
 
@@ -308,7 +323,7 @@ function OurMatchesView({ tableData, regional }) {
       });
       const target = prioritized[0];
       inactiveStrategySuggestion = target
-        ? `Defense on ${target.teamNumber}${target.hasTurret ? '' : ' (preferred non-turret target)'}`
+        ? `Defense on ${target.teamNumber}${target.shooterType === 'Static' ? ' (preferred static shooter target)' : target.shooterType === 'Turret' ? ' (turret shooter)' : ''}`
         : 'Defense';
     }
 
@@ -572,6 +587,9 @@ function OurMatchesView({ tableData, regional }) {
                                 {renderMetricButton({ label: 'End', value: team.avgEndgame.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'endgame') })}
                                 {renderMetricButton({ label: 'Rank', value: team.rank || 'N/A', onClick: () => openMetricGraph(matchKey, team.teamNumber, 'rank') })}
                               </div>
+                              <div style={{ marginTop: '8px', fontSize: '13px', color: '#555' }}>
+                                Defense: {team.defenseEffectiveness} • Shooter: {team.shooterTypeLabel}
+                              </div>
                             </div>
                           );
                         })}
@@ -594,6 +612,9 @@ function OurMatchesView({ tableData, regional }) {
                                 {renderMetricButton({ label: 'Tele', value: team.avgTeleop.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'teleop') })}
                                 {renderMetricButton({ label: 'End', value: team.avgEndgame.toFixed(1), onClick: () => openMetricGraph(matchKey, team.teamNumber, 'endgame') })}
                                 {renderMetricButton({ label: 'Rank', value: team.rank || 'N/A', onClick: () => openMetricGraph(matchKey, team.teamNumber, 'rank') })}
+                              </div>
+                              <div style={{ marginTop: '8px', fontSize: '13px', color: '#555' }}>
+                                Defense: {team.defenseEffectiveness} • Shooter: {team.shooterTypeLabel}
                               </div>
                             </div>
                           );

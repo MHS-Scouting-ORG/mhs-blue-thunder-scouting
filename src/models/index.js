@@ -3,7 +3,7 @@ import { initSchema } from '@aws-amplify/datastore';
 import { schema } from './schema';
 
 const AutoStratOpts = {
-  "LEFT_STARTING_ZONE": "LeftStartingZone",
+  "MOVED_IN_AUTO": "MovedInAuto",
   "SCORED_IN_GOAL": "ScoredInGoal",
   "NOTHING": "Nothing"
 };
@@ -82,6 +82,11 @@ const CapabilitiesOpts = {
   "NONE": "None"
 };
 
+const ShooterTypeOpts = {
+  "TURRET": "Turret",
+  "STATIC": "Static"
+};
+
 const { Team, AutonomousType, PenaltyOpts, TeleType, PenaltyType, RobotInfoType, TeamMatchesType, TeamAttributesType, RegionalType } = initSchema(schema);
 
 export {
@@ -98,6 +103,7 @@ export {
   MatchTypeOpts,
   HangTeamworkOpts,
   CapabilitiesOpts,
+  ShooterTypeOpts,
   AutonomousType,
   PenaltyOpts,
   TeleType,
