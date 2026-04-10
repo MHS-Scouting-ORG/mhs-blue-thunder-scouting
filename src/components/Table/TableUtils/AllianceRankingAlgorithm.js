@@ -255,13 +255,13 @@ const parseAutoScore = (autoStrat) => {
   // Handle array-based AutoStrat (new format)
   if (Array.isArray(autoStrat)) {
     if (autoStrat.length === 0) return 0
-    // Give points for each auto action: ScoredInGoal=1, LeftStartingZone=0.3, Nothing=0
+    // Give points for each auto action: ScoredInGoal=1, MovedInAuto=0.3, Nothing=0
     let maxScore = 0
     for (const action of autoStrat) {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
-      } else if (v.includes('left') || v.includes('starting') || v.includes('zone')) {
+      } else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) {
         maxScore = Math.max(maxScore, 0.3)
       }
     }
@@ -271,7 +271,7 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
-  if (v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
+  if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
   if (v.includes('wentmid') || v.includes('crossedmid')) return 0.45
   return 0
 }

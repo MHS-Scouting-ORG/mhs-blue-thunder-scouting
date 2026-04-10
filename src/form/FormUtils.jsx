@@ -70,18 +70,81 @@ export async function submitState( //params are states of data from form
   robotBrokenComments
 ) {
 
-  const normalizeAutoStratFromActions = (actions) => {
-    if (!Array.isArray(actions) || actions.length === 0) return []
-    const autoMap = {
-      "Moved": "Nothing",
-      "Scored": "ScoredInGoal",
-      "Crossed Bump/Trench": "LeftStartingZone",
+  const normalizeAutoStratValue = (value) => {
+    const token = String(value || '').trim().toLowerCase()
+    if (!token) return null
+
+    if (
+      token === 'movedinauto' ||
+      token === 'moved' ||
+      token === 'wentmid' ||
+      token === 'crossedmid' ||
+      token === 'crossed bump/trench' ||
+      token === 'leftstartingzone' ||
+      token === 'left starting zone'
+    ) {
+      return 'MovedInAuto'
     }
-    const normalized = actions
-      .map(action => autoMap[action])
+
+    if (token === 'scoredingoal' || token === 'scored' || token.includes('goal')) {
+      return 'ScoredInGoal'
+    }
+
+    if (token === 'nothing' || token === 'none') {
+      return 'Nothing'
+    }
+
+    return null
+  }
+
+  const normalizeAutoStratList = (value, fallback = []) => {
+    const raw = Array.isArray(value)
+      ? value
+      : (typeof value === 'string'
+        ? value.split(',')
+        : (value ? [value] : []))
+
+    const normalized = raw
+      .map((entry) => normalizeAutoStratValue(entry))
       .filter(Boolean)
 
+    if (normalized.length === 0) return [...fallback]
     return [...new Set(normalized)]
+  }
+
+  const normalizeAutoHangValue = (value) => {
+    const token = String(value || '').trim().toLowerCase()
+    if (token === 'level1') return 'Level1'
+    if (token === 'none' || token === '') return 'None'
+    return 'None'
+  }
+
+  const normalizeHangValue = (value) => {
+    const token = String(value || '').trim().toLowerCase()
+    if (token === 'level3') return 'Level3'
+    if (token === 'level2') return 'Level2'
+    if (token === 'level1') return 'Level1'
+    if (token === 'none') return 'None'
+    return null
+  }
+
+  const normalizeMatchResultValue = (value) => {
+    const token = String(value || '').trim().toLowerCase()
+    if (token === 'win') return 'Win'
+    if (token === 'lose' || token === 'loss') return 'Lose'
+    if (token === 'tie') return 'Tie'
+    return null
+  }
+
+  const normalizeTeamImpactEnumValue = (value) => {
+    const normalized = normalizeTeamImpactValue(value)
+    return normalized === '' ? null : normalized
+  }
+
+  const asNullable = (value) => (value === '' ? null : value)
+
+  const normalizeAutoStratFromActions = (actions) => {
+    return normalizeAutoStratList(actions, [])
   }
 
   const normalizeStratList = (value) => {
@@ -422,11 +485,24 @@ export async function submitState( //params are states of data from form
             .map(match => ({
               ...match,
               MatchType: normalizeMatchTypeValue(match?.MatchType) || null,
+              AutoWin: normalizeMatchResultValue(match?.AutoWin),
+              TeamImpact: normalizeTeamImpactEnumValue(match?.TeamImpact),
+              AutoImpact: normalizeTeamImpactEnumValue(match?.AutoImpact),
               Autonomous: {
                 ...match?.Autonomous,
-                AutoStrat: Array.isArray(match?.Autonomous?.AutoStrat) 
-                  ? match.Autonomous.AutoStrat
-                  : []
+                AutoStrat: normalizeAutoStratList(match?.Autonomous?.AutoStrat, []),
+                AutoHang: normalizeAutoHangValue(match?.Autonomous?.AutoHang)
+              },
+              Teleop: {
+                ...match?.Teleop,
+                Endgame: normalizeHangValue(match?.Teleop?.Endgame)
+              },
+              RobotInfo: {
+                ...match?.RobotInfo,
+                RobotSpeed: asNullable(normalizeSpeedValue(match?.RobotInfo?.RobotSpeed)),
+                ShooterSpeed: asNullable(normalizeSpeedValue(match?.RobotInfo?.ShooterSpeed)),
+                DriverSkill: asNullable(normalizeDriverSkillValue(match?.RobotInfo?.DriverSkill)),
+                DefenseEffectiveness: asNullable(normalizeDefenseEffectivenessValue(match?.RobotInfo?.DefenseEffectiveness))
               },
               ActiveStrat: normalizeStratList(match?.ActiveStrat),
               InactiveStrat: normalizeStratList(match?.InactiveStrat)
@@ -475,14 +551,12 @@ export async function submitState( //params are states of data from form
         TeamImpact: normalizedTeamImpact,
         AutoImpact: normalizedAutoImpact === '' ? null : normalizedAutoImpact,
         Autonomous: {
-          AutoStrat: Array.isArray(matchEntry.Autonomous.AutoStrat)
-            ? matchEntry.Autonomous.AutoStrat
-            : [],
-          AutoHang: matchEntry.Autonomous.AutoHang,
+          AutoStrat: normalizeAutoStratList(matchEntry.Autonomous.AutoStrat, []),
+          AutoHang: normalizeAutoHangValue(matchEntry.Autonomous.AutoHang),
         },
         Teleop: {
           TravelMid: matchEntry.Teleop.TravelMid,
-          Endgame: matchEntry.Teleop.Endgame,
+          Endgame: normalizeHangValue(matchEntry.Teleop.Endgame),
         },
         ActiveStrat: normalizeStratList(matchEntry.ActiveStrat),
         InactiveStrat: normalizeStratList(matchEntry.InactiveStrat),

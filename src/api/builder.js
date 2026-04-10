@@ -1,5 +1,5 @@
 const AutoStratOpts = {
-  LeftStartingZone: "LeftStartingZone",
+  MovedInAuto: "MovedInAuto",
   ScoredInGoal: "ScoredInGoal",
   Nothing: "Nothing"
 }
