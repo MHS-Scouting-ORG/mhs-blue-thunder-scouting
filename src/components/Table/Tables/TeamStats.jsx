@@ -52,6 +52,27 @@ function TeamStats(props) {
     return normalized === 'VeryPoor' ? 'Very Poor' : normalized;
   };
 
+  const formatMatchTextHistory = (matchList, selector, notesValue) => {
+    const entries = (Array.isArray(matchList) ? matchList : []).flatMap((match, index) => {
+      const text = String(selector(match) || '').trim();
+      if (!text || text === 'None' || text === 'N/A') return [];
+
+      const rawMatchId = String(match?.MatchId || '').trim();
+      const matchLabel = rawMatchId && rawMatchId !== 'matchEntry.MatchId'
+        ? rawMatchId.split('_').pop() || `Match ${index + 1}`
+        : `Match ${index + 1}`;
+
+      return [`${String(matchLabel).toUpperCase()}: ${text}`];
+    });
+
+    const notesText = String(notesValue || '').trim();
+    if (notesText) {
+      entries.push(`NOTES: ${notesText}`);
+    }
+
+    return entries.length > 0 ? entries.join('\n') : 'N/A';
+  };
+
   useEffect(() => {
     if (!selectedTeam) return;
 
@@ -138,6 +159,7 @@ function TeamStats(props) {
   const safeStats = stats || {};
 
   const attrs = teamData?.TeamAttributes || {};
+  const notesText = String(attrs?.Notes || teamData?.notes || '').trim();
   
   // Handle AutoStrat as an array
   const flattenedAutoStrats = matches
@@ -172,10 +194,8 @@ function TeamStats(props) {
     ? (matches.reduce((sum, m) => sum + (Number.isFinite(Number(m?.OpponentScore)) ? Number(m.OpponentScore) : 0), 0) / matches.length).toFixed(1)
     : 'N/A'
   
-  /* I made this ~ Jmoney */
-  const brokenText =  mode(matches.map(m => m?.RobotInfo?.WhatBrokeDesc  ?? 'None'));
-  
-  const insightText = mode(matches.map(m => m?.RobotInfo?.Comments ?? 'None'));
+  const brokenText = formatMatchTextHistory(matches, (match) => match?.RobotInfo?.WhatBrokeDesc, notesText);
+  const insightText = formatMatchTextHistory(matches, (match) => match?.RobotInfo?.Comments, notesText);
 
   const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
 
@@ -310,10 +330,12 @@ function TeamStats(props) {
           </div>
           {/* Is displayed in all matches */}
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>What Broke: </strong> {brokenText}
+            <strong>What Broke:</strong>
+            <div style={{ marginTop: "6px", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>{brokenText}</div>
           </div>
           <div style={{ padding: "10px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #ddd" }}>
-            <strong>Insight: </strong> {insightText}
+            <strong>Insight:</strong>
+            <div style={{ marginTop: "6px", whiteSpace: "pre-wrap", lineHeight: "1.4" }}>{insightText}</div>
           </div>
         </div>
       </div>

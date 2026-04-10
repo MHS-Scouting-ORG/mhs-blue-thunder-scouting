@@ -13,7 +13,7 @@ const safeLower = (value) => String(value || '').toLowerCase()
 
 const MATCH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 8, 10]
 const CONFIDENCE_OPTIONS = [0, 20, 40, 50, 60, 70, 80, 90]
-const ALLIANCE_SCORE_OPTIONS = [0, 10, 20, 30, 40, 50, 60, 70]
+const ALLIANCE_SCORE_OPTIONS = [-999, 0, 10, 20, 30, 40, 50, 60, 70]
 const AUTO_OPTIONS = [0, 2, 4, 6, 8, 10, 12]
 const ENDGAME_OPTIONS = [0, 5, 10, 15, 20, 25, 30]
 const BROKEN_OPTIONS = [100, 80, 60, 50, 40, 30, 20, 10, 0]
@@ -46,7 +46,7 @@ function AllLeaderboardView({ tableData, regional }) {
   const [sortDir, setSortDir] = useState('desc')
   const [minMatches, setMinMatches] = useState(0)
   const [minConfidence, setMinConfidence] = useState(0)
-  const [minAllianceScore, setMinAllianceScore] = useState(0)
+  const [minAllianceScore, setMinAllianceScore] = useState(-999)
   const [minAutoPts, setMinAutoPts] = useState(0)
   const [minEndgamePts, setMinEndgamePts] = useState(0)
   const [maxBrokenRate, setMaxBrokenRate] = useState(100)
@@ -220,7 +220,7 @@ function AllLeaderboardView({ tableData, regional }) {
     let count = 0
     if (minMatches !== 0) count += 1
     if (minConfidence !== 0) count += 1
-    if (minAllianceScore !== 0) count += 1
+    if (minAllianceScore !== -999) count += 1
     if (minAutoPts !== 0) count += 1
     if (minEndgamePts !== 0) count += 1
     if (maxBrokenRate !== 100) count += 1
@@ -237,7 +237,7 @@ function AllLeaderboardView({ tableData, regional }) {
     setSortDir('desc')
     setMinMatches(0)
     setMinConfidence(0)
-    setMinAllianceScore(0)
+    setMinAllianceScore(-999)
     setMinAutoPts(0)
     setMinEndgamePts(0)
     setMaxBrokenRate(100)
@@ -399,8 +399,8 @@ function AllLeaderboardView({ tableData, regional }) {
 
               <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span>Min Alliance Score</span>
-                <select value={minAllianceScore} onChange={e => setMinAllianceScore(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
-                  {ALLIANCE_SCORE_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
+                <select value={minAllianceScore} onChange={e => setMinAllianceScore(toNumber(e.target.value, -999))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                  {ALLIANCE_SCORE_OPTIONS.map(v => <option key={v} value={v}>{v === -999 ? 'Any' : v}</option>)}
                 </select>
               </label>
 
