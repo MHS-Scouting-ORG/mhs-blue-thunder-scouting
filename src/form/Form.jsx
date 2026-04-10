@@ -326,14 +326,35 @@ const InfoIcon = ({ text, onClick }) => (
   }
 
   const parseMatchOrder = (matchId) => {
-    const id = String(matchId || '')
+    const id = String(matchId || '').toLowerCase()
+    const qualMatchNumber = id.match(/qm(\d+)/i)
+    if (qualMatchNumber?.[1]) return toNumber(qualMatchNumber[1], 0)
+
     const matchNumber = id.match(/m(\d+)$/i) || id.match(/_(\d+)$/)
-    if (matchNumber) return toNumber(matchNumber[1], 0)
-    const anyDigits = id.match(/(\d+)/)
-    return anyDigits ? toNumber(anyDigits[1], 0) : 0
+    if (matchNumber?.[1]) return toNumber(matchNumber[1], 0)
+
+    return 0
   }
 
   const normalizeMatchId = (matchId) => String(matchId || '').trim()
+
+  const isQualificationMatchEntry = (entry) => {
+    const matchType = String(entry?.MatchType || '').trim().toLowerCase()
+    if (matchType === 'q' || matchType === 'qm') return true
+    const matchId = normalizeMatchId(entry?.MatchId || entry?.id)
+    return /(?:^|_)qm\d+/i.test(matchId)
+  }
+
+  const getSubmittedQualificationMatchNumbers = (teamEntry) => {
+    return getRegionalTeamMatches(teamEntry)
+      .filter((entry) => isQualificationMatchEntry(entry))
+      .map((entry) => {
+        const explicitMatchNumber = toNumber(entry?.match_number, NaN)
+        if (Number.isFinite(explicitMatchNumber) && explicitMatchNumber > 0) return explicitMatchNumber
+        return parseMatchOrder(entry?.MatchId || entry?.id)
+      })
+      .filter((value) => Number.isFinite(value) && value > 0)
+  }
 
   const getRegionalTeamMatches = (teamEntry) => {
     const regionals = Array.isArray(teamEntry?.Regionals) ? teamEntry.Regionals : [];
@@ -419,9 +440,7 @@ const InfoIcon = ({ text, onClick }) => (
 
     const uncoveredOpponents = new Map();
     opponentDueMatches.forEach((dueMatchNumber, teamNum) => {
-      const priorMatchNumbers = getRegionalTeamMatches(baseTeamsByNumber.get(teamNum))
-        .map((entry) => parseMatchOrder(entry?.MatchId))
-        .filter((value) => value > 0);
+      const priorMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
 
       const hasCoverageBeforeDueMatch = priorMatchNumbers.some((value) => value < dueMatchNumber);
       if (!hasCoverageBeforeDueMatch) {
@@ -438,10 +457,7 @@ const InfoIcon = ({ text, onClick }) => (
       const attrs = notesEntry?.TeamAttributes || {};
       const isPickable = attrs.Pickable !== false;
 
-      const teamMatches = getRegionalTeamMatches(baseTeamsByNumber.get(teamNum));
-      const scoutedMatchNumbers = teamMatches
-        .map((entry) => parseMatchOrder(entry?.MatchId))
-        .filter((value) => value > 0);
+      const scoutedMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
       const hasAnyScoutData = scoutedMatchNumbers.length > 0;
       const lastScoutedMatch = hasAnyScoutData ? Math.max(...scoutedMatchNumbers) : 0;
 
@@ -572,9 +588,7 @@ const InfoIcon = ({ text, onClick }) => (
 
         const uncoveredOpponents = new Map();
         opponentDueMatches.forEach((dueMatchNumber, teamNum) => {
-          const priorMatchNumbers = getRegionalTeamMatches(baseTeamsByNumber.get(teamNum))
-            .map((entry) => parseMatchOrder(entry?.MatchId))
-            .filter((value) => value > 0);
+          const priorMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
 
           const hasCoverageBeforeDueMatch = priorMatchNumbers.some((value) => value < dueMatchNumber);
           if (!hasCoverageBeforeDueMatch) {
@@ -592,10 +606,7 @@ const InfoIcon = ({ text, onClick }) => (
           const attrs = notesEntry?.TeamAttributes || {};
           isPickable = attrs.Pickable !== false;
 
-          const teamMatches = getRegionalTeamMatches(baseTeamsByNumber.get(teamNum));
-          const scoutedMatchNumbers = teamMatches
-            .map((entry) => parseMatchOrder(entry?.MatchId))
-            .filter((value) => value > 0);
+          const scoutedMatchNumbers = getSubmittedQualificationMatchNumbers(baseTeamsByNumber.get(teamNum));
           const hasAnyScoutData = scoutedMatchNumbers.length > 0;
           const lastScoutedMatch = hasAnyScoutData ? Math.max(...scoutedMatchNumbers) : 0;
 

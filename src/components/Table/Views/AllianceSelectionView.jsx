@@ -43,6 +43,11 @@ const getEmptyAlliances = () => ({
 });
 
 function AllianceSelectionView({ tableData, regional }) {
+  const toNumber = (value, fallback = 0) => {
+    const num = Number(value)
+    return Number.isFinite(num) ? num : fallback
+  }
+
   const defaultRankingOptions = useMemo(() => getDefaultAllianceRankingOptions('frc2026Rebuilt'), []);
   const defaultMetricWeights = useMemo(() => ({ ...(defaultRankingOptions.metricWeights || {}) }), [defaultRankingOptions]);
 
@@ -474,6 +479,8 @@ function AllianceSelectionView({ tableData, regional }) {
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Rank</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Team</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Alliance Score</th>
+                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>EPA</th>
+                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Auto EPA</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>RS</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Action</th>
               </tr>
@@ -489,6 +496,12 @@ function AllianceSelectionView({ tableData, regional }) {
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     {team.allianceScore?.toFixed(2) || '0.00'}
+                  </td>
+                  <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
+                    {toNumber(team?.StatboticsEPA ?? team?.StatboticsScore, 0).toFixed(2)}
+                  </td>
+                  <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
+                    {toNumber(team?.StatboticsAutoEPA, 0).toFixed(2)}
                   </td>
                   <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>
                     {getRSOutOfFive(team)} / 5

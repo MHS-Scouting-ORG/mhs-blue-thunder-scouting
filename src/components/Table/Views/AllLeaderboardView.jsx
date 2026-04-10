@@ -28,7 +28,8 @@ const TABLE_HEADERS = [
   { label: 'Name', sortKey: 'TeamName' },
   { label: 'Baseline', sortKey: 'baselineScore' },
   { label: 'Alliance Score', sortKey: 'allianceScore' },
-  { label: 'Statbotics', sortKey: 'statboticsScore' },
+  { label: 'EPA', sortKey: 'statboticsEPA' },
+  { label: 'Auto EPA', sortKey: 'statboticsAutoEPA' },
   { label: 'Skill', sortKey: 'skillRating' },
   { label: 'Confidence', sortKey: 'confidence' },
   { label: 'Matches', sortKey: 'Matches' },
@@ -43,7 +44,7 @@ function AllLeaderboardView({ tableData, regional }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortKey, setSortKey] = useState('baselineScore')
   const [sortDir, setSortDir] = useState('desc')
-  const [minMatches, setMinMatches] = useState(1)
+  const [minMatches, setMinMatches] = useState(0)
   const [minConfidence, setMinConfidence] = useState(0)
   const [minAllianceScore, setMinAllianceScore] = useState(0)
   const [minAutoPts, setMinAutoPts] = useState(0)
@@ -134,8 +135,9 @@ function AllLeaderboardView({ tableData, regional }) {
         ? team.BrokenRobot.length
         : toNumber(team?.BrokenRobot, 0)
       const brokenRate = matches > 0 ? (brokenCount / matches) * 100 : 0
-      const statboticsScore = toNumber(team?.StatboticsScore, 0)
-      const baselineScore = toNumber(team?.allianceScore, 0) * 0.65 + statboticsScore * 0.35
+      const statboticsEPA = toNumber(team?.StatboticsEPA ?? team?.StatboticsScore, 0)
+      const statboticsAutoEPA = toNumber(team?.StatboticsAutoEPA, 0)
+      const baselineScore = toNumber(team?.allianceScore, 0) * 0.65 + statboticsEPA * 0.35
 
       const speedText = safeLower(team?.RobotSpeed)
       const speedBucket = speedText.includes('fast')
@@ -153,7 +155,9 @@ function AllLeaderboardView({ tableData, regional }) {
         TeamName: nameMap.get(teamNumber) || '',
         allianceScore: toNumber(team?.allianceScore, 0),
         baselineScore,
-        statboticsScore,
+        statboticsScore: statboticsEPA,
+        statboticsEPA,
+        statboticsAutoEPA,
         skillRating: toNumber(team?.skillRating, 0),
         confidence: toNumber(team?.confidence, 0),
         matchesRated: matches,
@@ -214,7 +218,7 @@ function AllLeaderboardView({ tableData, regional }) {
 
   const activeFilterCount = useMemo(() => {
     let count = 0
-    if (minMatches !== 1) count += 1
+    if (minMatches !== 0) count += 1
     if (minConfidence !== 0) count += 1
     if (minAllianceScore !== 0) count += 1
     if (minAutoPts !== 0) count += 1
@@ -231,7 +235,7 @@ function AllLeaderboardView({ tableData, regional }) {
     setSearchTerm('')
     setSortKey('baselineScore')
     setSortDir('desc')
-    setMinMatches(1)
+    setMinMatches(0)
     setMinConfidence(0)
     setMinAllianceScore(0)
     setMinAutoPts(0)
@@ -261,7 +265,8 @@ function AllLeaderboardView({ tableData, regional }) {
 
           <select value={sortKey} onChange={e => setSortKey(e.target.value)} style={{ height: '40px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box', width: '100%' }}>
             <option value="baselineScore">Sort: Baseline Score</option>
-            <option value="statboticsScore">Sort: Statbotics Score</option>
+            <option value="statboticsEPA">Sort: Statbotics EPA</option>
+            <option value="statboticsAutoEPA">Sort: Statbotics Auto EPA</option>
             <option value="allianceScore">Sort: Alliance Score</option>
             <option value="skillRating">Sort: Skill Rating</option>
             <option value="confidence">Sort: Confidence</option>
@@ -380,7 +385,7 @@ function AllLeaderboardView({ tableData, regional }) {
 
               <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <span>Min Matches</span>
-                <select value={minMatches} onChange={e => setMinMatches(toNumber(e.target.value, 1))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
+                <select value={minMatches} onChange={e => setMinMatches(toNumber(e.target.value, 0))} style={{ height: '38px', padding: '8px', border: '1px solid #ddd', borderRadius: '8px' }}>
                   {MATCH_OPTIONS.map(v => <option key={v} value={v}>{v}</option>)}
                 </select>
               </label>
@@ -502,7 +507,8 @@ function AllLeaderboardView({ tableData, regional }) {
                     <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{team.TeamName || '-'}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.baselineScore.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.allianceScore.toFixed(2)}</td>
-                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.statboticsScore.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.statboticsEPA.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.statboticsAutoEPA.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.skillRating.toFixed(2)}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{(team.confidence * 100).toFixed(1)}%</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6', textAlign: 'center' }}>{team.Matches}</td>

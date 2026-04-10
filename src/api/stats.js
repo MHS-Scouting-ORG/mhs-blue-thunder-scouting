@@ -8,7 +8,9 @@ const EMPTY_STATBOTICS_PREDICTION = Object.freeze({
   statboticsPredictedLosses: 0,
   statboticsWinRate: 0,
   statboticsScore: 0,
-  statboticsRank: 0
+  statboticsRank: 0,
+  statboticsEPA: 0,
+  statboticsAutoEPA: 0
 })
 
 const toNumber = (value, fallback = 0) => {
@@ -110,15 +112,32 @@ const normalizeStatboticsPrediction = (data) => {
   const winRate = toNumber(recordQual.winrate ?? recordQual.win_rate ?? 0, 0)
   const wins = toNumber(recordQual.wins ?? 0, 0)
   const losses = toNumber(recordQual.losses ?? 0, 0)
-  const score = toNumber(data?.epa?.total_points?.mean ?? data?.epa?.unitless ?? 0, 0)
+  const totalEPA = toNumber(
+    data?.epa?.total_points?.mean ??
+    data?.epa?.total_points ??
+    data?.epa?.norm ??
+    data?.epa?.unitless ??
+    0,
+    0
+  )
+  const autoEPA = toNumber(
+    data?.epa?.auto_points?.mean ??
+    data?.epa?.auto_points ??
+    data?.epa?.breakdown?.auto_points ??
+    data?.epa?.auto ??
+    0,
+    0
+  )
   const rank = toNumber(recordQual.rank ?? 0, 0)
 
   return clonePrediction({
     statboticsPredictedWins: wins,
     statboticsPredictedLosses: losses,
     statboticsWinRate: winRate,
-    statboticsScore: score,
-    statboticsRank: rank
+    statboticsScore: totalEPA,
+    statboticsRank: rank,
+    statboticsEPA: totalEPA,
+    statboticsAutoEPA: autoEPA
   })
 }
 
