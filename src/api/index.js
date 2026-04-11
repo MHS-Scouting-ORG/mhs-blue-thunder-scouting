@@ -69,6 +69,9 @@ const forceSignOutForAuthError = async () => {
 }
 
 let regionalKey
+const HISTORICAL_MATCH_METADATA_BACKFILL_SCOPE = 'all-regionals'
+const historicalMatchMetadataBackfillInFlight = new Map()
+const historicalMatchMetadataBackfillCompleted = new Set()
 
 const extractGraphQLErrorMessages = (errors) => {
   if (!Array.isArray(errors)) return []
@@ -301,6 +304,12 @@ const normalizeDefenseEffectiveness = (value) => {
   return null
 }
 
+const normalizeScoreValue = (value) => {
+  if (value === '' || value === null || value === undefined) return null
+  const parsed = Number.parseInt(String(value), 10)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
 const normalizeCapabilitiesList = (value) => {
   const allowed = ["Bump", "Trench", "None"]
 
@@ -351,9 +360,12 @@ const normalizeRegionals = (regionalsValue) => {
           .map(match => ({
             ...match,
             MatchType: normalizeMatchType(match?.MatchType),
+            MatchResult: normalizeMatchResult(match?.MatchResult),
             AutoWin: normalizeMatchResult(match?.AutoWin),
             TeamImpact: normalizeTeamImpact(match?.TeamImpact),
             AutoImpact: normalizeTeamImpact(match?.AutoImpact),
+            AllianceScore: normalizeScoreValue(match?.AllianceScore),
+            OpponentScore: normalizeScoreValue(match?.OpponentScore),
             Autonomous: {
               ...match?.Autonomous,
               AutoStrat: normalizeAutoStrat(match?.Autonomous?.AutoStrat),
@@ -593,7 +605,7 @@ const apiListTeams = async function ({ limit = 1000, filter, nextToken: starting
 
 const apigetMatchesForRegional = async function (regionalId, teamNumber) {
 
-  const full = await runGraphQL({ query: listTeams, allowPartialData: true });
+  const full = await apiListTeams();
   const items = full?.data?.listTeams?.items || [];
 
   const normalizedTeamId = normalizeTeamId(teamNumber);
@@ -606,7 +618,7 @@ const apigetMatchesForRegional = async function (regionalId, teamNumber) {
     return true
   }
 
-  items.map(normalizeTeamRead).forEach(team => {
+  items.forEach(team => {
     const regArray = Array.isArray(team.Regionals) ? team.Regionals : (team.Regionals ? [team.Regionals] : []);
     regArray.forEach(r => {
       if (r.RegionalId === regionalId) {
@@ -759,6 +771,250 @@ const apiGetRegional = () => {
   return regionalKey
 }
 
+const isBaseScoutingTeamId = (teamId) => {
+  const normalized = normalizeTeamId(teamId)
+  return Boolean(normalized) && /^\d+$/.test(normalized) && !isNotesTeamId(String(teamId || ''))
+}
+
+const isOfficialBackfillableMatchId = (matchId) => {
+  const value = String(matchId || '').trim().toLowerCase()
+  if (!value || value === 'matchentry.matchid') return false
+  if (/_pm\d+$/i.test(value)) return false
+  return /_(qm\d+|sf\d+m\d+|f\d+m\d+)$/i.test(value)
+}
+
+const hasStoredMatchResult = (value) => {
+  const normalized = normalizeMatchResult(value)
+  return normalized === 'Win' || normalized === 'Lose' || normalized === 'Tie'
+}
+
+const getStoredScorePair = (match) => {
+  const allianceScore = normalizeScoreValue(match?.AllianceScore)
+  const opponentScore = normalizeScoreValue(match?.OpponentScore)
+  return {
+    allianceScore,
+    opponentScore,
+    hasScores: allianceScore !== null && opponentScore !== null,
+  }
+}
+
+const needsHistoricalMatchMetadataBackfill = (match) => {
+  if (!isOfficialBackfillableMatchId(match?.MatchId)) return false
+
+  const { allianceScore, opponentScore, hasScores } = getStoredScorePair(match)
+  const hasPlaceholderZeroScores = hasScores && allianceScore === 0 && opponentScore === 0
+
+  return !hasStoredMatchResult(match?.MatchResult) || !hasScores || hasPlaceholderZeroScores
+}
+
+const getOfficialScoreValue = (match, allianceColor) => {
+  const score = Number(match?.alliances?.[allianceColor]?.score)
+  if (!Number.isFinite(score) || score < 0) return null
+  return score
+}
+
+const deriveOfficialMatchMetadataForTeam = (officialMatch, teamNumber) => {
+  const normalizedTeamNumber = normalizeTeamId(teamNumber)
+  if (!normalizedTeamNumber || !officialMatch) return null
+
+  const redTeams = Array.isArray(officialMatch?.alliances?.red?.team_keys)
+    ? officialMatch.alliances.red.team_keys.map(normalizeTeamId)
+    : []
+  const blueTeams = Array.isArray(officialMatch?.alliances?.blue?.team_keys)
+    ? officialMatch.alliances.blue.team_keys.map(normalizeTeamId)
+    : []
+
+  let allianceColor = null
+  if (redTeams.includes(normalizedTeamNumber)) allianceColor = 'red'
+  if (blueTeams.includes(normalizedTeamNumber)) allianceColor = 'blue'
+  if (!allianceColor) return null
+
+  const opponentColor = allianceColor === 'red' ? 'blue' : 'red'
+  const allianceScore = getOfficialScoreValue(officialMatch, allianceColor)
+  const opponentScore = getOfficialScoreValue(officialMatch, opponentColor)
+
+  if (allianceScore === null || opponentScore === null) return null
+
+  let matchResult = 'Tie'
+  if (allianceScore > opponentScore) matchResult = 'Win'
+  else if (allianceScore < opponentScore) matchResult = 'Lose'
+
+  return {
+    allianceScore,
+    opponentScore,
+    matchResult,
+  }
+}
+
+const apiBackfillHistoricalMatchMetadata = async function () {
+  const scope = HISTORICAL_MATCH_METADATA_BACKFILL_SCOPE
+
+  if (historicalMatchMetadataBackfillCompleted.has(scope)) {
+    return {
+      skipped: true,
+      reason: 'already-completed-this-session',
+      updatedTeams: 0,
+      updatedMatches: 0,
+      scannedMatches: 0,
+      failedRegionals: [],
+    }
+  }
+
+  if (historicalMatchMetadataBackfillInFlight.has(scope)) {
+    return await historicalMatchMetadataBackfillInFlight.get(scope)
+  }
+
+  const task = (async () => {
+    const response = await apiListTeams()
+    const teams = response?.data?.listTeams?.items || []
+
+    const candidateRegionals = new Set()
+
+    teams.forEach((team) => {
+      if (!isBaseScoutingTeamId(team?.id)) return
+
+      const regionals = Array.isArray(team?.Regionals) ? team.Regionals : (team?.Regionals ? [team.Regionals] : [])
+      regionals.forEach((regional) => {
+        const teamMatches = Array.isArray(regional?.TeamMatches)
+          ? regional.TeamMatches
+          : (regional?.TeamMatches ? [regional.TeamMatches] : [])
+
+        if (teamMatches.some((match) => needsHistoricalMatchMetadataBackfill(match))) {
+          const regionalId = String(regional?.RegionalId || '').trim()
+          if (regionalId) candidateRegionals.add(regionalId)
+        }
+      })
+    })
+
+    if (candidateRegionals.size === 0) {
+      historicalMatchMetadataBackfillCompleted.add(scope)
+      return {
+        skipped: false,
+        reason: 'no-candidates',
+        updatedTeams: 0,
+        updatedMatches: 0,
+        scannedMatches: 0,
+        failedRegionals: [],
+      }
+    }
+
+    const officialMatchesByRegional = new Map()
+    const failedRegionals = []
+
+    for (const regionalId of candidateRegionals) {
+      try {
+        const matches = await apiGetMatchesForRegional(regionalId)
+        const matchMap = new Map(
+          (Array.isArray(matches) ? matches : [])
+            .map((match) => [String(match?.key || '').trim(), match])
+            .filter(([key]) => Boolean(key))
+        )
+        officialMatchesByRegional.set(regionalId, matchMap)
+      } catch (error) {
+        failedRegionals.push(regionalId)
+        console.warn('Historical match metadata backfill failed to load regional matches', regionalId, error)
+      }
+    }
+
+    let updatedTeams = 0
+    let updatedMatches = 0
+    let scannedMatches = 0
+    let hadUpdateFailure = false
+
+    for (const team of teams) {
+      if (!isBaseScoutingTeamId(team?.id)) continue
+
+      const normalizedRegionals = normalizeRegionals(team?.Regionals)
+      let teamChanged = false
+
+      const nextRegionals = normalizedRegionals.map((regional) => {
+        const regionalId = String(regional?.RegionalId || '').trim()
+        const officialMatchMap = officialMatchesByRegional.get(regionalId)
+        if (!officialMatchMap) return regional
+
+        const teamMatches = Array.isArray(regional?.TeamMatches)
+          ? regional.TeamMatches
+          : (regional?.TeamMatches ? [regional.TeamMatches] : [])
+
+        let regionalChanged = false
+
+        const nextTeamMatches = teamMatches.map((savedMatch) => {
+          if (!needsHistoricalMatchMetadataBackfill(savedMatch)) return savedMatch
+
+          scannedMatches += 1
+
+          const matchId = String(savedMatch?.MatchId || '').trim()
+          const officialMatch = officialMatchMap.get(matchId)
+          if (!officialMatch) return savedMatch
+
+          const derivedMetadata = deriveOfficialMatchMetadataForTeam(
+            officialMatch,
+            savedMatch?.Team || team?.id
+          )
+
+          if (!derivedMetadata) return savedMatch
+
+          const storedScores = getStoredScorePair(savedMatch)
+          const hasPlaceholderZeroScores = storedScores.hasScores && storedScores.allianceScore === 0 && storedScores.opponentScore === 0
+          const needsScoreBackfill = !storedScores.hasScores || hasPlaceholderZeroScores
+          const needsResultBackfill = !hasStoredMatchResult(savedMatch?.MatchResult)
+
+          if (!needsScoreBackfill && !needsResultBackfill) return savedMatch
+
+          regionalChanged = true
+          teamChanged = true
+          updatedMatches += 1
+
+          return {
+            ...savedMatch,
+            MatchResult: needsResultBackfill ? derivedMetadata.matchResult : savedMatch?.MatchResult,
+            AllianceScore: needsScoreBackfill ? derivedMetadata.allianceScore : savedMatch?.AllianceScore,
+            OpponentScore: needsScoreBackfill ? derivedMetadata.opponentScore : savedMatch?.OpponentScore,
+          }
+        })
+
+        if (!regionalChanged) return regional
+
+        return {
+          ...regional,
+          TeamMatches: nextTeamMatches,
+        }
+      })
+
+      if (!teamChanged) continue
+
+      try {
+        await apiUpdateTeamEntry(String(team.id), {
+          ...team,
+          Regionals: nextRegionals,
+        })
+        updatedTeams += 1
+      } catch (error) {
+        hadUpdateFailure = true
+        console.warn('Historical match metadata backfill failed to update team', team?.id, error)
+      }
+    }
+
+    if (!hadUpdateFailure && failedRegionals.length === 0) {
+      historicalMatchMetadataBackfillCompleted.add(scope)
+    }
+
+    return {
+      skipped: false,
+      reason: hadUpdateFailure || failedRegionals.length > 0 ? 'partial' : 'completed',
+      updatedTeams,
+      updatedMatches,
+      scannedMatches,
+      failedRegionals,
+    }
+  })().finally(() => {
+    historicalMatchMetadataBackfillInFlight.delete(scope)
+  })
+
+  historicalMatchMetadataBackfillInFlight.set(scope, task)
+  return await task
+}
+
 export {
   apiGetTeam,
   apiAddTeam,
@@ -780,6 +1036,7 @@ export {
   apiDeleteMatchSubmission,
   apiUpdateRegional,
   apiGetRegional,
+  apiBackfillHistoricalMatchMetadata,
   apiCreateTeamEntry,
   apiUpdateTeamEntryMatch,
   isNotesTeamId,

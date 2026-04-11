@@ -33,6 +33,11 @@ const formatDefenseEffectiveness = (value) => {
   return normalized === 'VeryPoor' ? 'Very Poor' : normalized
 };
 
+const isAutoMobilityAction = (value) => {
+  const lower = String(value || '').toLowerCase();
+  return lower.includes('movedinauto') || lower.includes('moved') || lower.includes('left') || lower.includes('starting') || lower.includes('zone');
+};
+
 const buildTeamGraphData = (teamRow) => {
   const matches = Array.isArray(teamRow?.TeamMatches) ? teamRow.TeamMatches : [];
   const pointsByMatch = matches
@@ -44,7 +49,7 @@ const buildTeamGraphData = (teamRow) => {
       const autoPoints = autoActions.reduce((sum, action) => {
         const lower = String(action || '').toLowerCase();
         if (lower.includes('scored') || lower.includes('goal')) return sum + 8;
-        if (lower.includes('left') || lower.includes('starting') || lower.includes('zone')) return sum + 3;
+        if (isAutoMobilityAction(lower)) return sum + 3;
         return sum;
       }, 0) + (String(entry?.Autonomous?.AutoHang || '') === 'Level1' ? 15 : 0);
 

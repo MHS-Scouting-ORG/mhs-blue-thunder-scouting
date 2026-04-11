@@ -11,13 +11,17 @@ const normalizeAutoActions = (autoStrat) => {
   return []
 }
 
+const isAutoMobilityAction = (value) => {
+  return value.includes('movedinauto') || value.includes('moved') || value.includes('left') || value.includes('starting') || value.includes('zone')
+}
+
 const getAutoPoints = (match) => {
   const actions = normalizeAutoActions(match?.Autonomous?.AutoStrat)
 
   const actionPoints = actions.reduce((sum, action) => {
     const value = safeLower(action)
     if (value.includes('scored') || value.includes('goal')) return sum + 8
-    if (value.includes('left') || value.includes('starting') || value.includes('zone')) return sum + 3
+    if (isAutoMobilityAction(value)) return sum + 3
     return sum
   }, 0)
 
@@ -160,11 +164,11 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStat
       const capabilities = Array.isArray(team?.TeamAttributes?.Capabilities)
         ? team.TeamAttributes.Capabilities
         : []
-      const hasScoredAuto = teamStats.some((match) => {
+      const hasAutonomousActivity = teamStats.some((match) => {
         const actions = normalizeAutoActions(match?.Autonomous?.AutoStrat)
         return actions.some((action) => {
           const value = safeLower(action)
-          return value.includes('scored') || value.includes('goal') || value.includes('left') || value.includes('zone')
+          return value.includes('scored') || value.includes('goal') || isAutoMobilityAction(value)
         })
       })
       const canHangByForm = teamStats.some((match) => String(match?.Teleop?.Endgame || 'None') !== 'None')
@@ -220,7 +224,7 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStat
         Evaluations: evaluations, 
         canHang: canHangByForm || canHangByNotes,
         canTrench: capabilities.includes('Trench'),
-        hasAutos: hasScoredAuto || hasAutosByNotes,
+        hasAutos: hasAutonomousActivity || hasAutosByNotes,
         ShooterType: shooterType,
         Turret: shooterType ? shooterType === 'Turret' : (typeof team?.TeamAttributes?.Turret === 'boolean' ? team.TeamAttributes.Turret : null),
         /* Grade */
