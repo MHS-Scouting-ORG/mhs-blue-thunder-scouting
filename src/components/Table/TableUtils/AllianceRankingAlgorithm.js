@@ -112,6 +112,11 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value))
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
+const isAutoMobilityAction = (value) => {
+  const v = safeLower(value)
+  return v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')
+}
+
 const avg = (arr) => {
   if (!Array.isArray(arr) || arr.length === 0) return 0
   return arr.reduce((sum, x) => sum + toNumber(x, 0), 0) / arr.length
@@ -254,7 +259,7 @@ const parseAutoScore = (autoStrat) => {
       const v = safeLower(action)
       if (v.includes('scored') || v.includes('goal')) {
         maxScore = Math.max(maxScore, 1)
-      } else if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) {
+      } else if (isAutoMobilityAction(v)) {
         maxScore = Math.max(maxScore, 0.3)
       }
     }
@@ -264,7 +269,7 @@ const parseAutoScore = (autoStrat) => {
   // Handle string-based AutoStrat (backwards compatibility)
   const v = safeLower(autoStrat)
   if (v.includes('scored') || v.includes('goal')) return 1
-  if (v.includes('movedinauto') || v.includes('moved') || v.includes('left') || v.includes('starting') || v.includes('zone')) return 0.3
+  if (isAutoMobilityAction(v)) return 0.3
   if (v.includes('wentmid') || v.includes('crossedmid')) return 0.45
   return 0
 }
@@ -405,7 +410,7 @@ const getAutoActionPoints = (autoStrat) => {
   actions.forEach((action) => {
     const v = safeLower(action)
     if (v.includes('scored') || v.includes('goal')) points += 8
-    else if (v.includes('left') || v.includes('starting') || v.includes('zone')) points += 3
+    else if (isAutoMobilityAction(v)) points += 3
   })
   return points
 }

@@ -54,6 +54,9 @@ export async function submitState( //params are states of data from form
   timesTravelledMidInactive,
   shootingCycles,
   teamImpact,
+  matchResult,
+  allianceScore,
+  opponentScore,
   disable,
   dq,
   botBroke,
@@ -344,6 +347,9 @@ export async function submitState( //params are states of data from form
   const normalizedDefenseEffectiveness = normalizeDefenseEffectivenessValue(defenseEffectiveness)
   const normalizedAutoImpact = normalizeTeamImpactValue(autoImpact)
   const normalizedAutoWin = normalizeAutoWinValue(autoWin)
+  const normalizedMatchResult = normalizeMatchResultValue(matchResult)
+  const parsedAllianceScore = parseScore(allianceScore)
+  const parsedOpponentScore = parseScore(opponentScore)
   /* AutoHang */
   if (autoHang === "None" && (dq || noShow || disable || botBroke) === false) {
     autoPoints += 0;
@@ -417,6 +423,7 @@ export async function submitState( //params are states of data from form
 
     //matchEntry.Team = teamNumber
     matchEntry.MatchId = matchKey
+    matchEntry.MatchResult = normalizedMatchResult
 
     // At this point the object still contains the builder defaults; we'll log
     // the final version after we massage the strategy fields below.
@@ -485,9 +492,12 @@ export async function submitState( //params are states of data from form
             .map(match => ({
               ...match,
               MatchType: normalizeMatchTypeValue(match?.MatchType) || null,
+              MatchResult: normalizeMatchResultValue(match?.MatchResult),
               AutoWin: normalizeMatchResultValue(match?.AutoWin),
               TeamImpact: normalizeTeamImpactEnumValue(match?.TeamImpact),
               AutoImpact: normalizeTeamImpactEnumValue(match?.AutoImpact),
+              AllianceScore: parseScore(match?.AllianceScore),
+              OpponentScore: parseScore(match?.OpponentScore),
               Autonomous: {
                 ...match?.Autonomous,
                 AutoStrat: normalizeAutoStratList(match?.Autonomous?.AutoStrat, []),
@@ -547,9 +557,12 @@ export async function submitState( //params are states of data from form
         Team: String(normalizedTeamNumber),
         MatchId: matchEntry.MatchId,
         MatchType: normalizedMatchType || null,
+        MatchResult: normalizedMatchResult,
         AutoWin: normalizedAutoWin,
         TeamImpact: normalizedTeamImpact,
         AutoImpact: normalizedAutoImpact === '' ? null : normalizedAutoImpact,
+        AllianceScore: parsedAllianceScore,
+        OpponentScore: parsedOpponentScore,
         Autonomous: {
           AutoStrat: normalizeAutoStratList(matchEntry.Autonomous.AutoStrat, []),
           AutoHang: normalizeAutoHangValue(matchEntry.Autonomous.AutoHang),

@@ -4,7 +4,7 @@ import * as Auth from 'aws-amplify/auth'
 import Menu from './utils/menu'
 import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { apiUpdateRegional } from './api';
+import { apiBackfillHistoricalMatchMetadata, apiUpdateRegional } from './api';
 
 function AuthenticatedUI({ user }) {
   return (
@@ -105,6 +105,15 @@ function App() {
 
         // Only call IAM-protected AWS services once we have an authenticated session.
         await apiUpdateRegional()
+        void apiBackfillHistoricalMatchMetadata()
+          .then((summary) => {
+            if (summary?.updatedMatches > 0) {
+              console.log('Historical match metadata backfill completed', summary)
+            }
+          })
+          .catch((error) => {
+            console.warn('Historical match metadata backfill failed', error)
+          })
       } catch (err) {
         // Not signed in (or session invalid) => render LoginUI
         console.log(err)
