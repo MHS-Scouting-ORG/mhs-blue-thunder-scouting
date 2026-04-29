@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { apiGetMatchesForRegional, apiGetStatboticsTeamEventPrediction, apiGetRegional, apiGetTeam, apiListTeams, apiCreateTeamEntry, apiGetRegionalTeams, toNotesTeamId } from '../api/index';
-import { normalizeTeamId, isSameTeam } from '../utils/teamId';
+import { normalizeTeamId } from '../utils/teamId';
 import { getTopTeamSuggestions } from "../utils/teamSearch";
+import { getPreferredQualificationMatches, getPreferredScoutingMatches } from '../utils/teamMatchHistory';
 
 import tableStyling from "../components/Table/Table.module.css";
 
@@ -19,6 +20,8 @@ const sectionHelp = {
 };
 
 const OUR_TEAM_NUMBER = '2443';
+
+const normalizeRegionalCode = (value) => String(value || '').trim().toLowerCase()
 
 const InfoIcon = ({ text, onClick }) => (
   <button
@@ -86,6 +89,7 @@ const InfoIcon = ({ text, onClick }) => (
   const [regionalTeamSet, setRegionalTeamSet] = useState(new Set());
   const [teamSearchInput, setTeamSearchInput] = useState('');
   const [teamSuggestions, setTeamSuggestions] = useState([]);
+  const [regionalCode, setRegionalCode] = useState('');
 
   /* AUTO SPECIFIC */
   const [autoActions, setAutoActions] = useState([]);
@@ -140,16 +144,18 @@ const InfoIcon = ({ text, onClick }) => (
   const lastAutoSelectionSignature = useRef('');
   const lastManualSuggestionSignature = useRef('');
   const statboticsPredictionCache = useRef(new Map());
+  const isAnyRegionalQual = matchType === 'rq';
+  const formRegional = isAnyRegionalQual ? normalizeRegionalCode(regionalCode) : regional;
 
   useEffect(() => {
-    if (!regional) {
+    if (!formRegional) {
       setRegionalMatches([]);
       return;
     }
 
     let isActive = true;
 
-    apiGetMatchesForRegional(regional)
+    apiGetMatchesForRegional(formRegional)
       .then((data) => {
         if (!isActive) return;
         setRegionalMatches(Array.isArray(data) ? data : []);
@@ -162,7 +168,7 @@ const InfoIcon = ({ text, onClick }) => (
     return () => {
       isActive = false;
     };
-  }, [regional]);
+  }, [formRegional]);
 
   useEffect(() => {
     const normalizedMatchNumber = String(matchNumber || '').trim();
@@ -179,7 +185,7 @@ const InfoIcon = ({ text, onClick }) => (
     }
 
     if (matchType === "p") {
-      const practiceKey = `${regional || ""}_pm${normalizedMatchNumber}`;
+      const practiceKey = `${formRegional || ""}_pm${normalizedMatchNumber}`;
       setMatchKey(practiceKey);
       setRed([]);
       setBlue([]);
@@ -187,18 +193,18 @@ const InfoIcon = ({ text, onClick }) => (
       return;
     }
 
-    if (!regional) {
+    if (!formRegional) {
       return;
     }
 
-    const baMatchType = matchType === "qa" || matchType === "qm" ? "q" : matchType;
-    let nextMatchKey = `${regional}_${baMatchType}m${normalizedMatchNumber}`;
+    const baMatchType = matchType === "qa" || matchType === "qm" || matchType === 'rq' ? "q" : matchType;
+    let nextMatchKey = `${formRegional}_${baMatchType}m${normalizedMatchNumber}`;
 
     if (baMatchType === "sf") {
-      nextMatchKey = `${regional}_${baMatchType}${normalizedMatchNumber}m1`;
+      nextMatchKey = `${formRegional}_${baMatchType}${normalizedMatchNumber}m1`;
     }
     if (baMatchType === "f") {
-      nextMatchKey = `${regional}_${baMatchType}1m${normalizedMatchNumber}`;
+      nextMatchKey = `${formRegional}_${baMatchType}1m${normalizedMatchNumber}`;
     }
 
     setMatchKey(nextMatchKey);
@@ -213,16 +219,16 @@ const InfoIcon = ({ text, onClick }) => (
       setBlue([]);
       setMatchData([]);
     }
-  }, [matchType, matchNumber, regional, regionalMatches])
+  }, [matchType, matchNumber, formRegional, regionalMatches])
 
   useEffect(() => {
-    if (!regional) {
+    if (!formRegional) {
       setSimpleTeams([]);
       setRegionalTeamSet(new Set());
       return;
     }
 
-    apiGetRegionalTeams(regional)
+    apiGetRegionalTeams(formRegional)
       .then((data) => {
         const teamsData = Array.isArray(data) ? data : [];
         setSimpleTeams(teamsData);
@@ -232,7 +238,7 @@ const InfoIcon = ({ text, onClick }) => (
         setSimpleTeams([]);
         setRegionalTeamSet(new Set());
       });
-  }, [regional]);
+  }, [formRegional]);
 
   useEffect(() => {
     const term = String(teamSearchInput || '').trim();
@@ -311,6 +317,7 @@ const InfoIcon = ({ text, onClick }) => (
 
   const resetEntireForm = () => {
     setMatchType('')
+    setRegionalCode('')
     resetStates()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -336,30 +343,14 @@ const InfoIcon = ({ text, onClick }) => (
     return 0
   }
 
-  const normalizeMatchId = (matchId) => String(matchId || '').trim()
-
-  const isQualificationMatchEntry = (entry) => {
-    const matchType = String(entry?.MatchType || '').trim().toLowerCase()
-    if (matchType === 'q' || matchType === 'qm') return true
-    const matchId = normalizeMatchId(entry?.MatchId || entry?.id)
-    return /(?:^|_)qm\d+/i.test(matchId)
-  }
-
   const getSubmittedQualificationMatchNumbers = (teamEntry) => {
-    return getRegionalTeamMatches(teamEntry)
-      .filter((entry) => isQualificationMatchEntry(entry))
+    return getPreferredQualificationMatches(teamEntry, regional)
       .map((entry) => {
         const explicitMatchNumber = toNumber(entry?.match_number, NaN)
         if (Number.isFinite(explicitMatchNumber) && explicitMatchNumber > 0) return explicitMatchNumber
         return parseMatchOrder(entry?.MatchId || entry?.id)
       })
       .filter((value) => Number.isFinite(value) && value > 0)
-  }
-
-  const getRegionalTeamMatches = (teamEntry) => {
-    const regionals = Array.isArray(teamEntry?.Regionals) ? teamEntry.Regionals : [];
-    const currentRegional = regionals.find((entry) => entry?.RegionalId === regional);
-    return Array.isArray(currentRegional?.TeamMatches) ? currentRegional.TeamMatches : [];
   }
 
   const getAllianceTeamNumbers = (match, allianceColor) => {
@@ -745,6 +736,7 @@ const InfoIcon = ({ text, onClick }) => (
     const missingFields = []
 
     if (!matchType) missingFields.push('matchType')
+    if (isAnyRegionalQual && !formRegional) missingFields.push('regionalCode')
     if (normalizeNumberField(matchNumber) === null) missingFields.push('matchNumber')
     if (!teamNumber) missingFields.push('teamNumber')
     if (!autoHang) missingFields.push('autoHang')
@@ -811,7 +803,7 @@ const InfoIcon = ({ text, onClick }) => (
       const checkData = await apiGetTeam(normalizedTeamNumber)
 
       if (checkData === null) {
-        await apiCreateTeamEntry(normalizedTeamNumber, regional)
+        await apiCreateTeamEntry(normalizedTeamNumber, formRegional || regional)
       }
     } catch (err) {
       console.error("error fetching/creating team", err)
@@ -891,18 +883,109 @@ const InfoIcon = ({ text, onClick }) => (
   const hasScoutedMatchForTeam = (teamId) => {
     const normalizedTeam = normalizeTeamId(teamId)
     if (!normalizedTeam) return false
-    return getRegionalTeamMatches(teamEntriesById.get(normalizedTeam)).length > 0
+    return getPreferredScoutingMatches(teamEntriesById.get(normalizedTeam), formRegional || regional).length > 0
   }
 
-  const formatScheduledTeamOptionLabel = (teamId) => {
-    const normalizedTeam = normalizeTeamId(teamId)
-    if (!normalizedTeam) return ''
-    return hasScoutedMatchForTeam(normalizedTeam) ? normalizedTeam : `${normalizedTeam} *`
-  }
-
-  const highlightedManualTeamNumber = matchType === 'qm' && color === suggestedAutoColor
+  const highlightedManualTeamNumber = matchType === 'qm'
     ? suggestedAutoTeamNumber
     : ''
+  const canLoadScheduledTeams = Boolean(matchType) && matchType !== 'p' && Boolean(matchNumber) && (!isAnyRegionalQual || Boolean(formRegional))
+  const hasLoadedScheduledTeams = blue.length > 0 || red.length > 0
+  const shouldShowNoMatchMessage = canLoadScheduledTeams && regionalMatches.length > 0 && !hasLoadedScheduledTeams
+  const selectedAllianceLabel = color === true ? 'Blue' : color === false ? 'Red' : ''
+
+  const selectScheduledTeam = async (selectedTeamNumber, allianceColor) => {
+    const normalizedTeam = normalizeTeamId(selectedTeamNumber)
+    if (!normalizedTeam) return
+
+    setColor(allianceColor)
+    setTeamNumber(normalizedTeam)
+    await ensureTeamExists(normalizedTeam)
+  }
+
+  const renderScheduledTeamCard = (team, allianceColor) => {
+    const normalizedTeam = normalizeTeamId(team)
+    if (!normalizedTeam) return null
+
+    const isSelected = teamNumber === normalizedTeam && color === allianceColor
+    const isSuggested = highlightedManualTeamNumber === normalizedTeam && suggestedAutoColor === allianceColor
+    const hasScoutData = hasScoutedMatchForTeam(normalizedTeam)
+    const accent = allianceColor
+      ? {
+          baseText: '#0f4c81',
+          softBg: 'rgba(15, 76, 129, 0.08)',
+          border: 'rgba(15, 76, 129, 0.16)',
+          selectedBg: 'linear-gradient(135deg, #2f80ed 0%, #1f4f99 100%)',
+          selectedShadow: '0 16px 30px rgba(32, 92, 186, 0.28)',
+        }
+      : {
+          baseText: '#8f2d40',
+          softBg: 'rgba(143, 45, 64, 0.08)',
+          border: 'rgba(143, 45, 64, 0.16)',
+          selectedBg: 'linear-gradient(135deg, #ef6f8b 0%, #b93d58 100%)',
+          selectedShadow: '0 16px 30px rgba(185, 61, 88, 0.24)',
+        }
+
+    return (
+      <button
+        key={`${allianceColor ? 'blue' : 'red'}-${normalizedTeam}`}
+        type="button"
+        onClick={() => selectScheduledTeam(normalizedTeam, allianceColor)}
+        style={{
+          width: '100%',
+          border: `1px solid ${isSelected ? 'transparent' : accent.border}`,
+          background: isSelected ? accent.selectedBg : 'rgba(255,255,255,0.72)',
+          color: isSelected ? 'white' : accent.baseText,
+          borderRadius: '18px',
+          padding: '14px 16px',
+          cursor: 'pointer',
+          textAlign: 'left',
+          boxShadow: isSelected ? accent.selectedShadow : '0 10px 24px rgba(15, 23, 42, 0.08)',
+          display: 'grid',
+          gap: '8px',
+          backdropFilter: 'blur(8px)',
+          transition: 'transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease'
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+          <div>
+            <div style={{ fontSize: '13px', opacity: isSelected ? 0.86 : 0.72, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Team
+            </div>
+            <div style={{ fontSize: '28px', fontWeight: 800, lineHeight: 1 }}>
+              {normalizedTeam}
+            </div>
+          </div>
+          {isSuggested ? (
+            <div style={{
+              padding: '5px 9px',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: 700,
+              backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#fff4bf',
+              color: isSelected ? 'white' : '#6c5600',
+              whiteSpace: 'nowrap'
+            }}>
+              Suggested
+            </div>
+          ) : null}
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{
+            padding: '5px 9px',
+            borderRadius: '999px',
+            fontSize: '11px',
+            fontWeight: 700,
+            backgroundColor: isSelected ? 'rgba(255,255,255,0.18)' : hasScoutData ? 'rgba(76, 175, 80, 0.14)' : 'rgba(234, 179, 8, 0.14)',
+            color: isSelected ? 'white' : hasScoutData ? '#166534' : '#8a6500'
+          }}>
+            {hasScoutData ? 'Scouted' : 'Need Data'}
+          </div>
+        </div>
+      </button>
+    )
+  }
 
   return (
     <div style={{ padding: "20px", maxWidth: "1000px", margin: "0 auto", position: "relative" }}>
@@ -1022,16 +1105,52 @@ const InfoIcon = ({ text, onClick }) => (
                   cursor: "pointer"
                 }} 
                 value={matchType} 
-                onInput={(e) => {setMatchType(e.target.value); resetStates() }}
+                onInput={(e) => {
+                  const nextMatchType = e.target.value
+                  setMatchType(nextMatchType)
+                  setRegionalCode('')
+                  resetStates()
+                }}
               >
                 <option value="">Select Type</option>
                 <option value='qm'>Quals Manual</option>
                 <option value='qa'>Quals Auto</option>
+                <option value='rq'>Any Regional Qual</option>
                 <option value='sf'>Semifinal</option>
                 <option value='f'>Final</option>
                 <option value='p'>Practice</option>
               </select>
             </div>
+
+            {isAnyRegionalQual ? (
+              <div style={{ flex: "1", minWidth: "180px" }}>
+                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Regional Code</label>
+                <input
+                  ref={setFieldRef('regionalCode')}
+                  style={{
+                    height: "50px",
+                    width: "100%",
+                    padding: "8px",
+                    fontSize: "16px",
+                    border: "2px solid #ddd",
+                    borderRadius: "8px",
+                    boxSizing: "border-box",
+                  }}
+                  placeholder="2026miket"
+                  value={regionalCode}
+                  onChange={(e) => {
+                    setRegionalCode(e.target.value)
+                    setMatchNumber('')
+                    setTeamNumber('')
+                    setColor(undefined)
+                    setRed([])
+                    setBlue([])
+                    setMatchData([])
+                    setMatchKey('')
+                  }}
+                />
+              </div>
+            ) : null}
 
             <div style={{ flex: "1", minWidth: "150px" }}>
               <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Number</label>
@@ -1045,13 +1164,13 @@ const InfoIcon = ({ text, onClick }) => (
                   border: "2px solid #ddd",
                   borderRadius: "8px",
                   boxSizing: "border-box",
-                  opacity: !matchType ? 0.5 : 1,
-                  cursor: !matchType ? "not-allowed" : "text",
+                  opacity: !matchType || (isAnyRegionalQual && !formRegional) ? 0.5 : 1,
+                  cursor: !matchType || (isAnyRegionalQual && !formRegional) ? "not-allowed" : "text",
                 }}
                 placeholder="Enter match #" 
                 type="number" 
                 min="1"
-                disabled={!matchType}
+                disabled={!matchType || (isAnyRegionalQual && !formRegional)}
                 value={matchNumber} 
                 onKeyDown={stopNonNum}
                 onChange={(e) => {
@@ -1062,42 +1181,11 @@ const InfoIcon = ({ text, onClick }) => (
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "2px solid #ddd", opacity: !matchNumber ? 0.5 : 1 }}>
-            <label style={{ fontWeight: "600", marginBottom: "5px" }}>Alliance Color</label>
-            <div style={{ display: "flex", flexDirection: "row", gap: "20px", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <input 
-                  style={{ cursor: !matchNumber || isAutoSelecting ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
-                  disabled={!matchNumber || isAutoSelecting}
-                  onChange={() => setColor(false)} 
-                  type="radio" 
-                  id="redAllianceChosen" 
-                  name="alliance"
-                  checked={color === false}
-                />
-                <label htmlFor="redAllianceChosen" style={{ cursor: !matchNumber || isAutoSelecting ? "not-allowed" : "pointer", margin: "0" }}>Red</label>
-              </div>
-              
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <input 
-                  style={{ cursor: !matchNumber || isAutoSelecting ? "not-allowed" : "pointer", width: "20px", height: "20px" }}
-                  disabled={!matchNumber || isAutoSelecting}
-                  onChange={() => setColor(true)} 
-                  type="radio" 
-                  id="blueAllianceChosen" 
-                  name="alliance"
-                  checked={color === true}
-                />
-                <label htmlFor="blueAllianceChosen" style={{ cursor: !matchNumber || isAutoSelecting ? "not-allowed" : "pointer", margin: "0" }}>Blue</label>
-              </div>
-
-              {color ? (
-                <img src="./images/white-blueGrad.png" style={{ width: "50px", height: "auto" }} />
-              ) : (
-                <img src="./images/white-redGrad.png" style={{ width: "50px", height: "auto" }} />
-              )}
+          {isAnyRegionalQual ? (
+            <div style={{ color: '#666', fontSize: '13px' }}>
+              Enter a Blue Alliance event code, then a qualification match number, then select the team from that match.
             </div>
-          </div>
+          ) : null}
 
           {matchType === 'p' ? (
             <div style={{ opacity: matchNumber ? 1 : 0.5, cursor: !matchNumber ? "not-allowed" : "text" }}>
@@ -1150,90 +1238,79 @@ const InfoIcon = ({ text, onClick }) => (
               ) : null}
             </div>
           ) : (
-            <div style={{ opacity: matchNumber && color !== undefined ? 1 : 0.5 }}>
-              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Robot Number</label>
-              {matchNumber && color !== undefined ? (
-                <select 
-                  ref={setFieldRef('teamNumber')}
-                  style={{
-                    height: "50px",
-                    width: "100%",
-                    padding: "8px",
-                    fontSize: "16px",
-                    border: "2px solid #ddd",
-                    borderRadius: "8px",
-                    cursor: isAutoSelecting ? "not-allowed" : "pointer"
-                  }} 
-                  disabled={isAutoSelecting}
-                  value={teamNumber}
-                  onChange={async (e) => {
-                    const normalized = normalizeTeamId(e.target.value);
-                    setTeamNumber(normalized);
-                    await ensureTeamExists(normalized)
-                  }}
-                >
-                  <option value="">Select robot number</option>
-                  {color === false ?
-                    red.map((team) => {
-                      const normalizedTeam = normalizeTeamId(team)
-                      const isSuggested = highlightedManualTeamNumber === normalizedTeam
-                      return (
-                        <option
-                          value={normalizedTeam}
-                          key={team}
-                          style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
-                        >
-                          {formatScheduledTeamOptionLabel(normalizedTeam)}
-                        </option>
-                      )
-                    }) :
-                    blue.map((team) => {
-                      const normalizedTeam = normalizeTeamId(team)
-                      const isSuggested = highlightedManualTeamNumber === normalizedTeam
-                      return (
-                        <option
-                          value={normalizedTeam}
-                          key={team}
-                          style={isSuggested ? { backgroundColor: '#fff4bf' } : undefined}
-                        >
-                          {formatScheduledTeamOptionLabel(normalizedTeam)}
-                        </option>
-                      )
-                    })
-                  }
-                </select>
+            <div
+              ref={setFieldRef('teamNumber')}
+              tabIndex={-1}
+              style={{ opacity: canLoadScheduledTeams ? 1 : 0.5, outline: 'none' }}
+            >
+              <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>Match Teams</label>
+              {hasLoadedScheduledTeams ? (
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                  gap: '18px'
+                }}>
+                  <div style={{
+                    background: 'linear-gradient(180deg, #f2f8ff 0%, #dcecff 100%)',
+                    border: '1px solid rgba(47, 128, 237, 0.18)',
+                    borderRadius: '24px',
+                    padding: '18px',
+                    boxShadow: '0 18px 34px rgba(47, 128, 237, 0.12)'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                      <div>
+                        <div style={{ fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4f6f97', marginBottom: '4px' }}>Alliance</div>
+                        <div style={{ fontWeight: 800, fontSize: '22px', color: '#1252a3' }}>Blue</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {blue.map((team) => renderScheduledTeamCard(team, true))}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    background: 'linear-gradient(180deg, #fff8f8 0%, #ffe1e6 100%)',
+                    border: '1px solid rgba(185, 61, 88, 0.18)',
+                    borderRadius: '24px',
+                    padding: '18px',
+                    boxShadow: '0 18px 34px rgba(185, 61, 88, 0.12)'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+                      <div>
+                        <div style={{ fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#a06472', marginBottom: '4px' }}>Alliance</div>
+                        <div style={{ fontWeight: 800, fontSize: '22px', color: '#b93d58' }}>Red</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gap: '12px' }}>
+                      {red.map((team) => renderScheduledTeamCard(team, false))}
+                    </div>
+                  </div>
+                </div>
+              ) : shouldShowNoMatchMessage ? (
+                <div style={{
+                  padding: "18px",
+                  border: "1px dashed #d4d4d8",
+                  borderRadius: "18px",
+                  background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+                  color: "#667085",
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)'
+                }}>
+                  No official team list was found for that match yet. Try a different match number or wait for the event schedule to update.
+                </div>
               ) : (
                 <div style={{
-                  padding: "16px",
-                  border: "2px dashed #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#fafafa",
-                  color: "#666"
+                  padding: "18px",
+                  border: "1px dashed #d4d4d8",
+                  borderRadius: "18px",
+                  background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+                  color: "#667085",
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75)'
                 }}>
-                  Enter a match number and select an alliance first to choose a robot.
+                  Enter a match number to load both alliances, then tap the team you want to scout.
                 </div>
               )}
-              {highlightedManualTeamNumber ? (
-                <div style={{
-                  marginTop: "8px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 10px",
-                  borderRadius: "999px",
-                  backgroundColor: "#fff4bf",
-                  color: "#5c4b00",
-                  fontSize: "14px",
-                  fontWeight: 600
-                }}>
-                  Auto would scout team {highlightedManualTeamNumber}
-                </div>
-              ) : null}
-              {matchNumber && color !== undefined ? (
-                <div style={{ marginTop: "8px", color: "#666", fontSize: "13px" }}>
-                  * = no matches scouted yet
-                </div>
-              ) : null}
+
+
             </div>
           )}
         </div>
@@ -1884,7 +1961,7 @@ const InfoIcon = ({ text, onClick }) => (
           setSubmitLockedUntil(Date.now() + 5000)
 
           submitState( //passes all data (states) of the form into the build in formutils
-            regional,
+            formRegional || regional,
             teamNumber,
             matchKey,
             apiTeamListData,

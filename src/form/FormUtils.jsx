@@ -1,4 +1,3 @@
-import React from "react"
 import * as Auth from 'aws-amplify/auth'
 import { buildMatchEntry } from '../api/builder';
 import { apiCreateTeamEntry, apiUpdateTeamEntry, apiGetTeam, apiGetMatchesForRegional } from '../api';
@@ -245,7 +244,7 @@ export async function submitState( //params are states of data from form
     const type = String(value || '').trim().toLowerCase()
     if (!type) return ''
 
-    if (type === 'q' || type === 'qa' || type === 'qm' || type === 'qual' || type === 'quals' || type === 'qualification' || type === 'qualifications') return 'q'
+    if (type === 'q' || type === 'qa' || type === 'qm' || type === 'rq' || type === 'qual' || type === 'quals' || type === 'qualification' || type === 'qualifications') return 'q'
     if (type === 'sf' || type === 'semi' || type === 'semis' || type === 'semifinal' || type === 'semifinals') return 'sf'
     if (type === 'f' || type === 'final' || type === 'finals') return 'f'
     if (type === 'p' || type === 'practice') return 'p'
@@ -259,11 +258,6 @@ export async function submitState( //params are states of data from form
   // variable used for API lookups; declared here to avoid block scope issues
   let data;
 
-
-  /* Points Init */
-  let autoPoints = 0;
-  let endGamePoints = 0;
-  let telePoints = 0;
 
   /* idk what this is - not mine (dom) */
   const normalizedTeamNumber = normalizeTeamId(teamNumber)
@@ -350,32 +344,10 @@ export async function submitState( //params are states of data from form
   const normalizedMatchResult = normalizeMatchResultValue(matchResult)
   const parsedAllianceScore = parseScore(allianceScore)
   const parsedOpponentScore = parseScore(opponentScore)
-  /* AutoHang */
-  if (autoHang === "None" && (dq || noShow || disable || botBroke) === false) {
-    autoPoints += 0;
-  }
-  else if (autoHang === 'Level1' && (dq || noShow || disable || botBroke) === false) {
-    autoPoints += 15;
-  }
-
   /* EndGame Select */
-  switch(hangType){
-    case 'None':
-      endGamePoints += 0
-      break;
-    case 'Level3':
-      endGamePoints += 30
-      break;
-    case 'Level2':
-      endGamePoints += 20
-      break;
-    case 'Level1':
-      endGamePoints += 10
-      break;
-    default: 
-      incompleteForm = true;
-      windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
-      break;
+  if (!['None', 'Level1', 'Level2', 'Level3'].includes(hangType)) {
+    incompleteForm = true;
+    windowAlertMsg = windowAlertMsg + "\nWhat the endgame hang result was"
   }
 
   /* Robot Info Select */
@@ -401,16 +373,6 @@ export async function submitState( //params are states of data from form
     incompleteForm = true;
     windowAlertMsg = windowAlertMsg + "\nDefense Effectiveness"
   }
-
-  /* Point Calc */
-
-  // Calculate fuel points based on autoActions
-  let autoFuelPoints = autoActions.includes("Scored") ? 8 : 0; // Assume scored fuel = 8 points because of 8 preload max
-  autoPoints = autoFuelPoints;
-
-  // Teleop travel count - assume some points per travel
-  let teleTravelPoints = (timesTravelledMidActive + timesTravelledMidInactive) > 0 ? (timesTravelledMidActive + timesTravelledMidInactive) * 2 : 0; // Example: 2 points per travel
-  telePoints = teleTravelPoints;
 
   /* Window Msg Check */
   if (incompleteForm) {

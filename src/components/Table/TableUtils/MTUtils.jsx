@@ -1,7 +1,7 @@
-import { apigetMatchesForRegional, apiGetTeamsInRegional, apiListTeams, apiGetCachedStatboticsTeamEventPrediction, apiWarmStatboticsTeamEventPredictions, toNotesTeamId } from "../../../api";
-import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getMax, getSummary } from "./CalculationUtils"
-import { normalizeTeamId } from "../../../utils/teamId"
+import { apiGetTeamsInRegional, apiListTeams, apiGetCachedStatboticsTeamEventPrediction, apiWarmStatboticsTeamEventPredictions, toNotesTeamId } from "../../../api";
+import { arrMode, calcAvg, getMatchesOfPenalty, getReliability, getSummary } from "./CalculationUtils"
 import { getShooterTypeFromAttributes } from "../../../utils/shooterType";
+import { getHistoricalQualificationMatches, getMatchesForRegionalBucket, getPreferredScoutingMatches, hasCurrentRegionalScoutData } from '../../../utils/teamMatchHistory';
 
 const safeLower = (value) => String(value || '').toLowerCase()
 
@@ -78,6 +78,7 @@ async function getTeams (regional) {
        TeamNumber: obj.team_number,
        TeamNum: `frc${obj.team_number}`,
        TeamAttributes: {},
+         Regionals: [],
       }
 
        const dbTeam = teamEntriesById.get(teamNumber)
@@ -89,6 +90,9 @@ async function getTeams (regional) {
        }
 
        teamNumObj.TeamAttributes = mergedAttrs
+       teamNumObj.Regionals = Array.isArray(dbTeam?.Regionals)
+         ? dbTeam.Regionals
+         : (dbTeam?.Regionals ? [dbTeam.Regionals] : [])
        if (mergedAttrs?.Photo) {
          teamNumObj.photo = mergedAttrs.Photo
        }
@@ -107,21 +111,10 @@ consolidates all calculations, averages, and sets the object for each team(row) 
 */
 async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStatboticsUpdate) {  
   try {
-    const data = await apigetMatchesForRegional(regional)
-    const tableData = Array.isArray(mtable) ? mtable : []
-    const teamMatchData = data?.data?.teamMatchesByRegional?.items || []
-    const teamMatchesByTeam = new Map()
-
-    teamMatchData.forEach((match) => {
-      const teamKey = normalizeTeamId(match?.Team)
-      if (!teamKey) return
-      const currentMatches = teamMatchesByTeam.get(teamKey) || []
-      currentMatches.push(match)
-      teamMatchesByTeam.set(teamKey, currentMatches)
-    })
-
     const buildTableRows = (statboticsByTeam) => teamNumbers.map(team => {
-      const teamStats = teamMatchesByTeam.get(normalizeTeamId(team.TeamNumber)) || []
+      const teamStats = getPreferredScoutingMatches(team, regional)
+      const currentRegionalMatches = getMatchesForRegionalBucket(team, regional)
+      const historicalTeamMatches = getHistoricalQualificationMatches(team, regional)
       const totalMatches = teamStats.length
 
       const pointsByMatch = teamStats.map(m => getAutoPoints(m) + getEndgamePoints(m) + getTravelPoints(m) + getShotPoints(m))
@@ -135,8 +128,6 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStat
       const mcRobotHang = arrMode(teamStats.map(m => m?.Teleop?.Endgame ?? null))
       const mcDriverSkill = arrMode(teamStats.map(m => m?.RobotInfo?.DriverSkill ?? null))
       const mcDefenseEffectiveness = arrMode(teamStats.map(m => m?.RobotInfo?.DefenseEffectiveness ?? null))
-      const mcActiveStrat = arrMode(teamStats.map(m => m?.ActiveStrat ?? 'None' ))
-      
       // For AutoStrat as array, get most common item
       const allAutoStrats = teamStats.flatMap(m => Array.isArray(m?.Autonomous?.AutoStrat) ? m.Autonomous.AutoStrat : [])
       const mcAutoStrat = arrMode(allAutoStrats.length > 0 ? allAutoStrats : ['None'])
@@ -178,16 +169,17 @@ async function getTeamsMatchesAndTableData(teamNumbers, mtable, regional, onStat
 
       //grade
 
-      const maxPts = getMax(tableData.map(team => team.AvgPoints))
-      const maxAutoPts = getMax(tableData.map(team => team.AvgAutoPts))
-      const maxEndgamePts = getMax(tableData.map(team => team.AvgEndgamePts))
-
       const statboticsPrediction = statboticsByTeam.get(String(team.TeamNumber)) || EMPTY_STATBOTICS_PREDICTION
       const tableDataObj = {
         TeamNumber: team.TeamNumber,
         photo: team.photo,
         Matches: totalMatches,
         TeamMatches: teamStats,
+        CurrentRegionalMatches: currentRegionalMatches,
+        HistoricalTeamMatches: historicalTeamMatches,
+        CurrentRegionalMatchCount: currentRegionalMatches.length,
+        HistoricalMatchCount: historicalTeamMatches.length,
+        HasCurrentRegionalScoutData: hasCurrentRegionalScoutData(team, regional),
         StatboticsPredictedWins: statboticsPrediction.statboticsPredictedWins || 0,
         StatboticsPredictedLosses: statboticsPrediction.statboticsPredictedLosses || 0,
         StatboticsWinRate: statboticsPrediction.statboticsWinRate || 0,

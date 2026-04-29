@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import { getUrl } from 'aws-amplify/storage';
-import { apiGetTeam, apiGetSimpleTeamsForRegional, apigetMatchesForRegional, toNotesTeamId } from '../../../api/index';
+import { apiGetTeam, apiGetSimpleTeamsForRegional, toNotesTeamId } from '../../../api/index';
 import { formatShooterType, getShooterTypeFromAttributes } from '../../../utils/shooterType';
+import { getPreferredScoutingMatches, hasCurrentRegionalScoutData } from '../../../utils/teamMatchHistory';
 
 function TeamStats(props) {
   const information = props.information
@@ -13,6 +14,8 @@ function TeamStats(props) {
   const [stats, setStats] = useState(null);
   const [matches, setMatches] = useState([]);
   const [simpleTeamName, setSimpleTeamName] = useState('');
+  const [matchHistoryMode, setMatchHistoryMode] = useState('none');
+  const [matchHistoryRegionals, setMatchHistoryRegionals] = useState([]);
 
   const mode = (arr) => {
     const cleaned = arr.filter(v => v !== null && v !== undefined && String(v).trim() !== '');
@@ -61,8 +64,10 @@ function TeamStats(props) {
       const matchLabel = rawMatchId && rawMatchId !== 'matchEntry.MatchId'
         ? rawMatchId.split('_').pop() || `Match ${index + 1}`
         : `Match ${index + 1}`;
+      const sourceRegional = String(match?.SourceRegionalId || '').trim();
+      const sourcePrefix = sourceRegional && sourceRegional !== regional ? `${sourceRegional} ` : '';
 
-      return [`${String(matchLabel).toUpperCase()}: ${text}`];
+      return [`${sourcePrefix}${String(matchLabel).toUpperCase()}: ${text}`];
     });
 
     const notesText = String(notesValue || '').trim();
@@ -84,30 +89,30 @@ function TeamStats(props) {
         const baseAttrs = baseTeam?.TeamAttributes || {}
         const notesAttrs = notesTeam?.TeamAttributes || {}
 
-        setTeamData({
+        const mergedTeam = {
           ...(baseTeam || {}),
           TeamAttributes: {
             ...baseAttrs,
             ...notesAttrs,
           },
-        });
+        };
+
+        const preferredMatches = getPreferredScoutingMatches(baseTeam, regional)
+        const usingCurrentRegional = hasCurrentRegionalScoutData(baseTeam, regional)
+        const fallbackRegionals = [...new Set(preferredMatches.map((match) => String(match?.SourceRegionalId || '').trim()).filter(Boolean))]
+
+        setTeamData(mergedTeam);
+        setMatches(preferredMatches);
+        setMatchHistoryMode(usingCurrentRegional ? 'current' : preferredMatches.length > 0 ? 'historical' : 'none');
+        setMatchHistoryRegionals(fallbackRegionals);
       })
       .catch(err => {
         console.log('Error fetching team data:', err);
         setTeamData(null);
+        setMatches([]);
+        setMatchHistoryMode('none');
+        setMatchHistoryRegionals([]);
       });
-
-    if (regional) {
-      apigetMatchesForRegional(regional, selectedTeam)
-        .then(res => {
-          const items = res?.data?.teamMatchesByRegional?.items || [];
-          setMatches(items);
-        })
-        .catch(err => {
-          console.log('Error fetching team matches:', err);
-          setMatches([]);
-        });
-    }
 
     const teamStats = information && Array.isArray(information)
       ? information.find(t => String(t.TeamNumber) === String(selectedTeam))
@@ -168,7 +173,7 @@ function TeamStats(props) {
       return Array.isArray(auto) ? auto : (auto ? [auto] : []);
     });
   const autoMode = flattenedAutoStrats.length > 0 
-    ? flattenedAutoStrats.reduce((acc, val, _, arr) => 
+    ? flattenedAutoStrats.reduce((acc, val) => 
         acc === val || acc.split(',').includes(val) ? acc : acc + ',' + val, '')
     : 'None';
   
@@ -197,8 +202,6 @@ function TeamStats(props) {
   const brokenText = formatMatchTextHistory(matches, (match) => match?.RobotInfo?.WhatBrokeDesc, notesText);
   const insightText = formatMatchTextHistory(matches, (match) => match?.RobotInfo?.Comments, notesText);
 
-  const dqCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.DQ ? 1 : 0), 0);
-
   const brokenCount = matches.reduce((sum, m) => sum + (m?.Penalties?.PenaltiesCommitted?.Broken ? 1 : 0), 0);
 
   const brokenRate = matches.length > 0 ? ((brokenCount / matches.length) * 100).toFixed(2) : '0.00';
@@ -214,6 +217,18 @@ function TeamStats(props) {
   return (
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h2 style={{ textAlign: "center", marginBottom: "30px", color: "#333" }}>Team {selectedTeam} Statistics</h2>
+
+      {matchHistoryMode === 'historical' ? (
+        <div style={{ backgroundColor: '#fff7e6', border: '1px solid #f1d9a6', borderRadius: '8px', padding: '12px', marginBottom: '16px', color: '#7a5a00' }}>
+          Using fallback scouting from {matchHistoryRegionals.join(', ')} until this regional has submissions for team {selectedTeam}.
+        </div>
+      ) : null}
+
+      {matchHistoryMode === 'current' ? (
+        <div style={{ backgroundColor: '#eef6ff', border: '1px solid #c8def5', borderRadius: '8px', padding: '12px', marginBottom: '16px', color: '#124c8f' }}>
+          Showing current-regional scouting for team {selectedTeam}.
+        </div>
+      ) : null}
 
       {/* Team Info */}
       <div style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginBottom: "20px" }}>
