@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { rankTeamsForAllianceSelection } from '../TableUtils/AllianceRankingAlgorithm';
 import tableStyles from '../Table.module.css';
 import { apiGetSimpleTeamsForRegional } from '../../../api';
@@ -253,6 +253,9 @@ function AllLeaderboardView({ tableData, regional }) {
 
       <div className={tableStyles.Card}>
         <h3 style={{ marginTop: 0, marginBottom: '14px' }}>Filters & Sorting</h3>
+        <div style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
+          Teams use current-regional scouting as soon as it exists. Until then, prior qualification scouting from other regionals is used as fallback.
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '10px' }}>
           <input

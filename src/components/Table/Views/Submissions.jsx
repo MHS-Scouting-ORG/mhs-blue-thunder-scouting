@@ -98,8 +98,6 @@ function Submissions({ regional }) {
           : (team?.Regionals ? [team.Regionals] : []);
 
         regionals.forEach(reg => {
-          if (regional && reg?.RegionalId && reg.RegionalId !== regional) return;
-
           const teamMatches = Array.isArray(reg?.TeamMatches)
             ? reg.TeamMatches
             : (reg?.TeamMatches ? [reg.TeamMatches] : []);
@@ -162,7 +160,7 @@ function Submissions({ regional }) {
       console.log('Error loading all entries', err);
       setEntries([]);
     }
-  }, [regional]);
+  }, []);
 
   useEffect(() => {
     loadEntries();
@@ -206,11 +204,17 @@ function Submissions({ regional }) {
 
   const sortedEntries = useMemo(() => {
     return [...entries].sort((a, b) => {
+      const aIsActiveRegional = String(a?.regional || '') === String(regional || '')
+      const bIsActiveRegional = String(b?.regional || '') === String(regional || '')
+      if (aIsActiveRegional !== bIsActiveRegional) {
+        return aIsActiveRegional ? -1 : 1
+      }
+
       const t = (b.timestamp || 0) - (a.timestamp || 0);
       if (t !== 0) return t;
       return String(b.title || '').localeCompare(String(a.title || ''));
     });
-  }, [entries]);
+  }, [entries, regional]);
 
   const formatWhen = (entry) => {
     if (entry?.type === 'Form') {
@@ -255,11 +259,15 @@ function Submissions({ regional }) {
                 <span style={{ color: '#666' }}>{formatWhen(entry)}</span>
               </div>
               <div style={{ marginTop: '4px' }}>{entry.title}</div>
+              {entry.regional ? (
+                <div style={{ marginTop: '4px', color: '#666' }}>
+                  Regional: {entry.regional}{String(entry.regional) === String(regional || '') ? ' • active event' : ''}
+                </div>
+              ) : null}
               <div style={{ marginTop: '4px', color: '#444' }}>{entry.detail}</div>
               {entry.submittedBy ? (
                 <div style={{ marginTop: '4px', color: '#666' }}>Submitted by: {entry.submittedBy}</div>
               ) : null}
-              {entry.regional ? <div style={{ marginTop: '4px', color: '#666' }}>Regional: {entry.regional}</div> : null}
                       {entry.deleteMeta && canDelete ? (
                 <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
                   <button
